@@ -824,8 +824,6 @@ input[type="date"] {
                         <tr style="background: #0f172a; color: #ffffff;">
                             <th style="padding: 8px; border: 1px solid #0f172a; width: 35px; text-align: center;">No</th>
                             <th style="padding: 8px; border: 1px solid #0f172a;">Customer Name</th>
-                            <th style="padding: 8px; border: 1px solid #0f172a; width: 100px;">Passport No</th>
-                            <th style="padding: 8px; border: 1px solid #0f172a; width: 80px;">Nationality</th>
                             <th style="padding: 8px; border: 1px solid #0f172a; width: 70px; text-align: right;">VIP</th>
                             <th style="padding: 8px; border: 1px solid #0f172a; width: 75px; text-align: right;">Clearance</th>
                             <th style="padding: 8px; border: 1px solid #0f172a; width: 70px; text-align: right;">Permit</th>
@@ -1359,8 +1357,6 @@ input[type="date"] {
                         <tr style="border-bottom:1px solid #cbd5e1;">
                             <td style="padding:6px; text-align:center; border:1px solid #cbd5e1;">${idx + 1}</td>
                             <td style="padding:6px; border:1px solid #cbd5e1; font-weight:600;">${name}</td>
-                            <td style="padding:6px; border:1px solid #cbd5e1;">${pass}</td>
-                            <td style="padding:6px; border:1px solid #cbd5e1;">${nat}</td>
                             <td style="padding:6px; border:1px solid #cbd5e1; text-align:right;">${fmtUsd(vip)}</td>
                             <td style="padding:6px; border:1px solid #cbd5e1; text-align:right;">${fmtUsd(clear)}</td>
                             <td style="padding:6px; border:1px solid #cbd5e1; text-align:right;">${fmtUsd(permit)}</td>
@@ -1384,8 +1380,6 @@ input[type="date"] {
                     <tr style="border-bottom:1px solid #cbd5e1;">
                         <td style="padding:6px; text-align:center; border:1px solid #cbd5e1;">1</td>
                         <td style="padding:6px; border:1px solid #cbd5e1; font-weight:600;">${name}</td>
-                        <td style="padding:6px; border:1px solid #cbd5e1;">${pass}</td>
-                        <td style="padding:6px; border:1px solid #cbd5e1;">${nat}</td>
                         <td style="padding:6px; border:1px solid #cbd5e1; text-align:right;">${fmtUsd(vip)}</td>
                         <td style="padding:6px; border:1px solid #cbd5e1; text-align:right;">${fmtUsd(clear)}</td>
                         <td style="padding:6px; border:1px solid #cbd5e1; text-align:right;">${fmtUsd(permit)}</td>
@@ -1436,18 +1430,37 @@ input[type="date"] {
 
 
         function shareReceiptTelegram() {
-            const rNo = document.getElementById('mReceiptNo').textContent;
-            const sender = document.getElementById('mSenderName').textContent;
-            const total = document.getElementById('mGrandUSD').textContent;
+            const rNo = document.getElementById('mReceiptNo')?.textContent || 'INV';
+            const sender = document.getElementById('mSenderName')?.textContent || '';
+            const total = document.getElementById('mGrandUSD')?.textContent || '';
             const receiptEl = document.getElementById('printableReceiptArea');
 
             if (receiptEl && typeof html2canvas !== 'undefined') {
                 html2canvas(receiptEl, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
                     canvas.toBlob(blob => {
+                        if (!blob) {
+                            downloadAndOpenTgFallback(canvas, rNo, sender, total);
+                            return;
+                        }
+
+                        // 1. Android & Mobile Native Share (Passes PNG image directly into Telegram)
+                        const file = new File([blob], `Receipt_${rNo}.png`, { type: 'image/png' });
+                        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                            navigator.share({
+                                files: [file],
+                                title: `Receipt ${rNo}`,
+                                text: `🧾 VIP Border Receipt: ${rNo}\n👤 Customer/Group: ${sender}\n💰 Total: ${total}`
+                            }).catch(err => {
+                                console.log('Mobile share canceled/failed:', err);
+                            });
+                            return;
+                        }
+
+                        // 2. Desktop PC Clipboard Copy Fallback
                         if (navigator.clipboard && window.ClipboardItem) {
                             const item = new ClipboardItem({ 'image/png': blob });
                             navigator.clipboard.write([item]).then(() => {
-                                alert(`🚀 បាន Copy រូបភាពវិក័យប័ត្រ (${rNo}) ចូល Clipboard រួចរាល់!\n\nសូមចុច Ctrl + V ក្នុង Telegram Chat ដើម្បី Paste ផ្ញើរូបភាពវិក័យប័ត្រ!`);
+                                alert(`🚀 បាន Copy រូបភាពវិក័យប័ត្រ (${rNo}) ចូល Clipboard រួចរាល់!\n\nសូមចុច Ctrl + V ក្នុង Telegram Chat ដើម្បី Paste ផ្ញើរូបភាព!`);
                                 window.location.href = 'tg://msg';
                             }).catch(() => {
                                 downloadAndOpenTgFallback(canvas, rNo, sender, total);
@@ -1455,13 +1468,14 @@ input[type="date"] {
                         } else {
                             downloadAndOpenTgFallback(canvas, rNo, sender, total);
                         }
-                    });
+                    }, 'image/png');
                 });
             } else {
                 const text = encodeURIComponent(`🧾 VIP Border Receipt: ${rNo}\n👤 Customer/Group: ${sender}\n💰 Total USD: ${total}\n🏢 Golden Mekong Commercial Service`);
                 window.location.href = `tg://msg?text=${text}`;
             }
         }
+
 
         function downloadAndOpenTgFallback(canvas, rNo, sender, total) {
             let tDate = document.getElementById('mTravelDate')?.textContent?.trim() || '';
