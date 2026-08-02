@@ -593,11 +593,11 @@ class ReceiptGenerator:
             draw.text((logo_cx - 18, logo_cy - 12), "CMP", font=get_pil_font(16, True), fill='#e11923')
 
         # 2. Header Text (Center)
-        draw_multilingual_text(draw, (220, 18), "บริษัท โกลเด้น เมกง พาณิชย์ เซอร์วิส จำกัด", size=18, bold=True, fill='#0a52be')
+        draw_multilingual_text(draw, (220, 18), "บริษัท โกลเด้น เมกง พาณิชย์ เซอร์วิส จำกัด", size=15, bold=True, fill='#0a52be')
         draw.text((230, 48), "Chamkar Dong, Dangkao, Phnom Penh, Cambodia", font=f_sub, fill='#475569')
         draw.text((310, 68), "Tel: 0888022656 / 081662083", font=f_sub, fill='#475569')
 
-        draw.text((360, 98), "INVOICE", font=get_pil_font(18, True), fill='#0f172a')
+        draw.text((360, 98), "INVOICE", font=get_pil_font(15, True), fill='#0f172a')
         draw.line([(360, 122), (445, 122)], fill='#0a52be', width=2)
 
         # 3. Customer Info (Left) & Bank Info (Right) - Plain Text Without Yellow Box
