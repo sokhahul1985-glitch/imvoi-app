@@ -1,0 +1,585 @@
+[
+  {
+    "date_saved": "01/08/2026 18:00",
+    "customer": {
+      "full_english_name": "GROUP: Kookai🐥🇨🇭 (1 Pax)",
+      "nationality": "GROUP",
+      "sex": "1 Pax",
+      "receipt_no": "INV 0763"
+    },
+    "payment_status": "PAID",
+    "group_info": {
+      "group_name": "Kookai🐥🇨🇭",
+      "sender_name": "Kookai🐥🇨🇭",
+      "customer_name": "PHITANARI MAKKHUMTOD",
+      "agency_company": "",
+      "travel_date": "30-07-2026"
+    },
+    "members": [
+      {
+        "full_english_name": "PHITANARI MAKKHUMTOD",
+        "english_name": "PHITANARI MAKKHUMTOD",
+        "passport_no": "",
+        "nationality": "THAI",
+        "car_fee": 0.0,
+        "visa_fee": 0.0,
+        "price": 0.0,
+        "e_visa": 0.0,
+        "vip": 25.0,
+        "clearance_fee": 0.0,
+        "work_permit": 0.0,
+        "usd": 25.0,
+        "qty": "1"
+      }
+    ],
+    "group_data": {
+      "customer_name": "Kookai🐥🇨🇭",
+      "sender_name": "Kookai🐥🇨🇭",
+      "group_customer_name": "PHITANARI MAKKHUMTOD",
+      "agency_company": "",
+      "date_str": "30-07-2026",
+      "receipt_no": "INV 0763",
+      "exchange_rate": 33.9,
+      "items": [
+        {
+          "no": 1,
+          "description": "PHITANARI MAKKHUMTOD",
+          "qty": "1",
+          "e_visa": "",
+          "vip": "$25.0",
+          "overstay": "",
+          "car_fee": "",
+          "visa": "",
+          "clearance_fee": "",
+          "work_permit": "",
+          "usd": 25.0
+        }
+      ],
+      "totals": {
+        "usd": 25.0,
+        "baht": 847.5
+      },
+      "payment_status": "PAID"
+    },
+    "totals": {
+      "usd": 25.0,
+      "baht": 847.5
+    }
+  },
+  {
+    "date_saved": "01/08/2026 18:00",
+    "customer": {
+      "full_english_name": "GROUP: Kookai🐥🇨🇭 (5 Pax)",
+      "nationality": "GROUP",
+      "sex": "5 Pax",
+      "receipt_no": "INV 0762"
+    },
+    "payment_status": "UNPAID",
+    "group_info": {
+      "group_name": "Kookai🐥🇨🇭",
+      "sender_name": "Kookai🐥🇨🇭",
+      "customer_name": "PEERAPONG ARTHIT",
+      "agency_company": "",
+      "travel_date": "30-07-2026"
+    },
+    "members": [
+      {
+        "full_english_name": "PEERAPONG ARTHIT",
+        "english_name": "PEERAPONG ARTHIT",
+        "passport_no": "",
+        "nationality": "THAI",
+        "car_fee": 85.0,
+        "visa_fee": 0.0,
+        "price": 0.0,
+        "e_visa": 0.0,
+        "vip": 25.0,
+        "clearance_fee": 0.0,
+        "work_permit": 0.0,
+        "usd": 110.0,
+        "qty": "1"
+      },
+      {
+        "full_english_name": "WORRAPOL THIENCHAI",
+        "english_name": "WORRAPOL THIENCHAI",
+        "passport_no": "",
+        "nationality": "THAI",
+        "car_fee": 0.0,
+        "visa_fee": 0.0,
+        "price": 0.0,
+        "e_visa": 0.0,
+        "vip": 25.0,
+        "clearance_fee": 0.0,
+        "work_permit": 0.0,
+        "usd": 25.0,
+        "qty": "1"
+      },
+      {
+        "full_english_name": "THANACHAI JAMSUWAN",
+        "english_name": "THANACHAI JAMSUWAN",
+        "passport_no": "",
+        "nationality": "THAI",
+        "car_fee": 0.0,
+        "visa_fee": 0.0,
+        "price": 0.0,
+        "e_visa": 0.0,
+        "vip": 25.0,
+        "clearance_fee": 0.0,
+        "work_permit": 0.0,
+        "usd": 25.0,
+        "qty": "1"
+      },
+      {
+        "full_english_name": "PARADOL VONGSPROM",
+        "english_name": "PARADOL VONGSPROM",
+        "passport_no": "",
+        "nationality": "THAI",
+        "car_fee": 0.0,
+        "visa_fee": 0.0,
+        "price": 0.0,
+        "e_visa": 0.0,
+        "vip": 25.0,
+        "clearance_fee": 0.0,
+        "work_permit": 0.0,
+        "usd": 25.0,
+        "qty": "1"
+      },
+      {
+        "full_english_name": "NATTHAPAS FUNG",
+        "english_name": "NATTHAPAS FUNG",
+        "passport_no": "",
+        "nationality": "THAI",
+        "car_fee": 0.0,
+        "visa_fee": 0.0,
+        "price": 0.0,
+        "e_visa": 0.0,
+        "vip": 25.0,
+        "clearance_fee": 0.0,
+        "work_permit": 0.0,
+        "usd": 25.0,
+        "qty": "1"
+      }
+    ],
+    "group_data": {
+      "customer_name": "Kookai🐥🇨🇭",
+      "sender_name": "Kookai🐥🇨🇭",
+      "group_customer_name": "PEERAPONG ARTHIT",
+      "agency_company": "",
+      "date_str": "30-07-2026",
+      "receipt_no": "INV 0762",
+      "exchange_rate": 33.9,
+      "items": [
+        {
+          "no": 1,
+          "description": "PEERAPONG ARTHIT",
+          "qty": "1",
+          "e_visa": "",
+          "vip": "$25.0",
+          "overstay": "",
+          "car_fee": "$85.0",
+          "visa": "",
+          "clearance_fee": "",
+          "work_permit": "",
+          "usd": 110.0
+        },
+        {
+          "no": 2,
+          "description": "WORRAPOL THIENCHAI",
+          "qty": "1",
+          "e_visa": "",
+          "vip": "$25.0",
+          "overstay": "",
+          "car_fee": "",
+          "visa": "",
+          "clearance_fee": "",
+          "work_permit": "",
+          "usd": 25.0
+        },
+        {
+          "no": 3,
+          "description": "THANACHAI JAMSUWAN",
+          "qty": "1",
+          "e_visa": "",
+          "vip": "$25.0",
+          "overstay": "",
+          "car_fee": "",
+          "visa": "",
+          "clearance_fee": "",
+          "work_permit": "",
+          "usd": 25.0
+        },
+        {
+          "no": 4,
+          "description": "PARADOL VONGSPROM",
+          "qty": "1",
+          "e_visa": "",
+          "vip": "$25.0",
+          "overstay": "",
+          "car_fee": "",
+          "visa": "",
+          "clearance_fee": "",
+          "work_permit": "",
+          "usd": 25.0
+        },
+        {
+          "no": 5,
+          "description": "NATTHAPAS FUNG",
+          "qty": "1",
+          "e_visa": "",
+          "vip": "$25.0",
+          "overstay": "",
+          "car_fee": "",
+          "visa": "",
+          "clearance_fee": "",
+          "work_permit": "",
+          "usd": 25.0
+        }
+      ],
+      "totals": {
+        "usd": 210.0,
+        "baht": 7119.0
+      }
+    },
+    "totals": {
+      "usd": 210.0,
+      "baht": 7119.0
+    }
+  },
+  {
+    "date_saved": "01/08/2026 14:53",
+    "customer": {
+      "full_english_name": "GROUP: A. HR 88INTER (1 Pax)",
+      "nationality": "GROUP",
+      "sex": "1 Pax",
+      "receipt_no": "INV 0760"
+    },
+    "payment_status": "UNPAID",
+    "group_info": {
+      "group_name": "A. HR 88INTER",
+      "sender_name": "A. HR 88INTER",
+      "customer_name": "SAWITREE SUWANNASOM",
+      "agency_company": "",
+      "travel_date": "29-07-2026"
+    },
+    "members": [
+      {
+        "full_english_name": "SAWITREE SUWANNASOM",
+        "english_name": "SAWITREE SUWANNASOM",
+        "passport_no": "",
+        "nationality": "THAI",
+        "car_fee": 65.0,
+        "visa_fee": 0.0,
+        "price": 0.0,
+        "e_visa": 0.0,
+        "vip": 25.0,
+        "clearance_fee": 0.0,
+        "work_permit": 0.0,
+        "usd": 90.0,
+        "qty": "1"
+      }
+    ],
+    "group_data": {
+      "customer_name": "A. HR 88INTER",
+      "sender_name": "A. HR 88INTER",
+      "group_customer_name": "SAWITREE SUWANNASOM",
+      "agency_company": "",
+      "date_str": "29-07-2026",
+      "receipt_no": "INV 0760",
+      "exchange_rate": 33.9,
+      "items": [
+        {
+          "no": 1,
+          "description": "SAWITREE SUWANNASOM",
+          "qty": "1",
+          "e_visa": "",
+          "vip": "$25.0",
+          "overstay": "",
+          "car_fee": "$65.0",
+          "visa": "",
+          "clearance_fee": "",
+          "work_permit": "",
+          "usd": 90.0
+        }
+      ],
+      "totals": {
+        "usd": 90.0,
+        "baht": 3051.0
+      }
+    },
+    "totals": {
+      "usd": 90.0,
+      "baht": 3051.0
+    }
+  },
+  {
+    "date_saved": "01/08/2026 14:52",
+    "customer": {
+      "full_english_name": "GROUP: A. HR 88INTER (1 Pax)",
+      "nationality": "GROUP",
+      "sex": "1 Pax",
+      "receipt_no": "INV 0759"
+    },
+    "payment_status": "UNPAID",
+    "group_info": {
+      "group_name": "A. HR 88INTER",
+      "sender_name": "A. HR 88INTER",
+      "customer_name": "AKKHARAPHON RIANTHONG",
+      "agency_company": "",
+      "travel_date": "29-07-2026"
+    },
+    "members": [
+      {
+        "full_english_name": "AKKHARAPHON RIANTHONG",
+        "english_name": "AKKHARAPHON RIANTHONG",
+        "passport_no": "",
+        "nationality": "THAI",
+        "car_fee": 0.0,
+        "visa_fee": 0.0,
+        "price": 0.0,
+        "e_visa": 0.0,
+        "vip": 25.0,
+        "clearance_fee": 0.0,
+        "work_permit": 0.0,
+        "usd": 25.0,
+        "qty": "1"
+      }
+    ],
+    "group_data": {
+      "customer_name": "A. HR 88INTER",
+      "sender_name": "A. HR 88INTER",
+      "group_customer_name": "AKKHARAPHON RIANTHONG",
+      "agency_company": "",
+      "date_str": "29-07-2026",
+      "receipt_no": "INV 0759",
+      "exchange_rate": 33.9,
+      "items": [
+        {
+          "no": 1,
+          "description": "AKKHARAPHON RIANTHONG",
+          "qty": "1",
+          "e_visa": "",
+          "vip": "$25.0",
+          "overstay": "",
+          "car_fee": "",
+          "visa": "",
+          "clearance_fee": "",
+          "work_permit": "",
+          "usd": 25.0
+        }
+      ],
+      "totals": {
+        "usd": 25.0,
+        "baht": 847.5
+      }
+    },
+    "totals": {
+      "usd": 25.0,
+      "baht": 847.5
+    }
+  },
+  {
+    "date_saved": "31/07/2026 11:41",
+    "customer": {
+      "full_english_name": "GROUP: BIW (6 Pax)",
+      "nationality": "GROUP",
+      "sex": "6 Pax",
+      "receipt_no": "INV 0753"
+    },
+    "payment_status": "UNPAID",
+    "group_info": {
+      "group_name": "BIW",
+      "sender_name": "BIW",
+      "customer_name": "VUSNS",
+      "agency_company": "",
+      "travel_date": "31-07-2026"
+    },
+    "members": [
+      {
+        "full_english_name": "VUSNS",
+        "english_name": "VUSNS",
+        "passport_no": "",
+        "nationality": "THAI",
+        "car_fee": 200.0,
+        "visa_fee": 0.0,
+        "price": 0.0,
+        "e_visa": 0.0,
+        "vip": 150.0,
+        "clearance_fee": 40.0,
+        "work_permit": 40.0,
+        "usd": 430.0,
+        "qty": "1"
+      },
+      {
+        "full_english_name": "THIRAPHOB CHUEACHAT",
+        "english_name": "THIRAPHOB CHUEACHAT",
+        "passport_no": "",
+        "nationality": "THAI",
+        "car_fee": 200.0,
+        "visa_fee": 0.0,
+        "price": 0.0,
+        "e_visa": 0.0,
+        "vip": 150.0,
+        "clearance_fee": 40.0,
+        "work_permit": 40.0,
+        "usd": 430.0,
+        "qty": "1"
+      },
+      {
+        "full_english_name": "PHIRUNSAN PIANSOMPAN",
+        "english_name": "PHIRUNSAN PIANSOMPAN",
+        "passport_no": "",
+        "nationality": "THAI",
+        "car_fee": 200.0,
+        "visa_fee": 0.0,
+        "price": 0.0,
+        "e_visa": 0.0,
+        "vip": 150.0,
+        "clearance_fee": 40.0,
+        "work_permit": 40.0,
+        "usd": 430.0,
+        "qty": "1"
+      },
+      {
+        "full_english_name": "UNAENA",
+        "english_name": "UNAENA",
+        "passport_no": "",
+        "nationality": "THAI",
+        "car_fee": 200.0,
+        "visa_fee": 0.0,
+        "price": 0.0,
+        "e_visa": 0.0,
+        "vip": 150.0,
+        "clearance_fee": 40.0,
+        "work_permit": 40.0,
+        "usd": 430.0,
+        "qty": "1"
+      },
+      {
+        "full_english_name": "SA KAEO",
+        "english_name": "SA KAEO",
+        "passport_no": "",
+        "nationality": "THAI",
+        "car_fee": 200.0,
+        "visa_fee": 0.0,
+        "price": 0.0,
+        "e_visa": 0.0,
+        "vip": 150.0,
+        "clearance_fee": 40.0,
+        "work_permit": 40.0,
+        "usd": 430.0,
+        "qty": "1"
+      },
+      {
+        "full_english_name": "NANTITA KAMENTHAI",
+        "english_name": "NANTITA KAMENTHAI",
+        "passport_no": "",
+        "nationality": "THAI",
+        "car_fee": 200.0,
+        "visa_fee": 0.0,
+        "price": 0.0,
+        "e_visa": 0.0,
+        "vip": 150.0,
+        "clearance_fee": 40.0,
+        "work_permit": 40.0,
+        "usd": 430.0,
+        "qty": "1"
+      }
+    ],
+    "group_data": {
+      "customer_name": "BIW",
+      "sender_name": "BIW",
+      "group_customer_name": "VUSNS",
+      "agency_company": "",
+      "date_str": "31-07-2026",
+      "receipt_no": "INV 0753",
+      "exchange_rate": 33.9,
+      "items": [
+        {
+          "no": 1,
+          "description": "VUSNS",
+          "qty": "1",
+          "e_visa": "",
+          "vip": "$150.0",
+          "overstay": "",
+          "car_fee": "$200.0",
+          "visa": "",
+          "clearance_fee": "$40.0",
+          "work_permit": "$40.0",
+          "usd": 430.0
+        },
+        {
+          "no": 2,
+          "description": "THIRAPHOB CHUEACHAT",
+          "qty": "1",
+          "e_visa": "",
+          "vip": "$150.0",
+          "overstay": "",
+          "car_fee": "$200.0",
+          "visa": "",
+          "clearance_fee": "$40.0",
+          "work_permit": "$40.0",
+          "usd": 430.0
+        },
+        {
+          "no": 3,
+          "description": "PHIRUNSAN PIANSOMPAN",
+          "qty": "1",
+          "e_visa": "",
+          "vip": "$150.0",
+          "overstay": "",
+          "car_fee": "$200.0",
+          "visa": "",
+          "clearance_fee": "$40.0",
+          "work_permit": "$40.0",
+          "usd": 430.0
+        },
+        {
+          "no": 4,
+          "description": "UNAENA",
+          "qty": "1",
+          "e_visa": "",
+          "vip": "$150.0",
+          "overstay": "",
+          "car_fee": "$200.0",
+          "visa": "",
+          "clearance_fee": "$40.0",
+          "work_permit": "$40.0",
+          "usd": 430.0
+        },
+        {
+          "no": 5,
+          "description": "SA KAEO",
+          "qty": "1",
+          "e_visa": "",
+          "vip": "$150.0",
+          "overstay": "",
+          "car_fee": "$200.0",
+          "visa": "",
+          "clearance_fee": "$40.0",
+          "work_permit": "$40.0",
+          "usd": 430.0
+        },
+        {
+          "no": 6,
+          "description": "NANTITA KAMENTHAI",
+          "qty": "1",
+          "e_visa": "",
+          "vip": "$150.0",
+          "overstay": "",
+          "car_fee": "$200.0",
+          "visa": "",
+          "clearance_fee": "$40.0",
+          "work_permit": "$40.0",
+          "usd": 430.0
+        }
+      ],
+      "totals": {
+        "usd": 2580.0,
+        "baht": 87462.0
+      }
+    },
+    "totals": {
+      "usd": 2580.0,
+      "baht": 87462.0
+    }
+  }
+]
