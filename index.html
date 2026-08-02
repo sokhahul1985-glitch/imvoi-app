@@ -4,7 +4,564 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI OCR Passport Scanner & VIP Border Service Receipt System</title>
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <style>
+/* ==========================================================================
+   CMP Golden Mekong Commercial Service - Exact Desktop App Web UI Replica
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&family=Noto+Sans+Khmer:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg-main: #0f172a;
+    --bg-card: #1e293b;
+    --bg-input: #0f172a;
+    --border-color: #334155;
+    --border-highlight: #6366f1;
+    
+    --text-main: #f8fafc;
+    --text-muted: #cbd5e1;
+    --text-sub: #94a3b8;
+
+    --accent-indigo: #6366f1;
+    --accent-cyan: #38bdf8;
+    --accent-emerald: #10b981;
+    --accent-amber: #f59e0b;
+    --accent-rose: #f43f5e;
+    --accent-purple: #8b5cf6;
+
+    --font-family: 'Kantumruy Pro', 'Noto Sans Khmer', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: var(--font-family);
+    font-size: 13px;
+    min-height: 100vh;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* App Header / Top Window Bar */
+.app-topbar {
+    background: #1e293b;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.topbar-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-badge {
+    background: #1e1b4b;
+    border: 1px solid var(--accent-indigo);
+    color: var(--accent-cyan);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Main Splitter Layout */
+.workspace-grid {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+@media (max-width: 1024px) {
+    .workspace-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Cards & Panel Boxes */
+.panel-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #a5b4fc;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.3px;
+}
+
+/* Left Panel Scanner Dropzone */
+.dropzone-box {
+    border: 2px dashed #475569;
+    border-radius: 10px;
+    background: #0f172a;
+    padding: 30px 14px;
+    text-align: center;
+    color: #94a3b8;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+}
+
+.dropzone-box:hover {
+    border-color: var(--accent-indigo);
+    background: #111827;
+}
+
+.scanner-btn-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* Inputs & Form Controls */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.form-group-sm {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-group-sm label {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #f1f5f9;
+}
+
+.form-input {
+    background: var(--bg-input);
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 7px 10px;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    width: 100%;
+}
+
+.form-input::placeholder {
+    color: #cbd5e1;
+    opacity: 0.85;
+    font-size: 12.5px;
+    font-weight: 500;
+}
+
+/* Hide spinbox up/down arrows on number inputs */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    display: none !important;
+    margin: 0 !important;
+}
+input[type="number"] {
+    -webkit-appearance: textfield !important;
+    -moz-appearance: textfield !important;
+    appearance: textfield !important;
+}
+
+input[type="date"] {
+    color-scheme: dark;
+    cursor: pointer;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent-indigo);
+    background: #111827;
+}
+
+.form-input.highlight-input {
+    color: var(--accent-cyan);
+    font-weight: 700;
+    border-color: var(--accent-indigo);
+}
+
+/* Control Row with Save Button */
+.control-bar {
+    background: #0f172a;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.save-btn-green {
+    width: 100%;
+    background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    margin-bottom: 10px;
+}
+
+.save-btn-green:hover {
+    background: linear-gradient(90deg, #047857 0%, #059669 100%);
+    transform: translateY(-1px);
+}
+
+/* Custom Web Tables */
+.table-container {
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: #0f172a;
+}
+
+.app-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.app-table th {
+    background: #1e293b;
+    color: var(--accent-cyan);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 9px 12px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.app-table td {
+    padding: 8px 10px;
+    border: 1px solid rgba(51, 65, 85, 0.6);
+    background: rgba(15, 23, 42, 0.6);
+    color: #ffffff;
+    font-size: 13px;
+}
+
+.app-table tr:hover td {
+    background: rgba(30, 41, 59, 0.8);
+}
+
+/* Action Buttons */
+.btn-sys {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: #fff;
+    transition: all 0.15s ease;
+}
+
+.btn-indigo { background: linear-gradient(90deg, #4f46e5, #6366f1); }
+.btn-emerald { background: linear-gradient(90deg, #059669, #10b981); }
+.btn-amber { background: linear-gradient(90deg, #d97706, #f59e0b); }
+.btn-rose { background: linear-gradient(90deg, #e11d48, #f43f5e); }
+.btn-cyan { background: linear-gradient(90deg, #0284c7, #38bdf8); color: #0f172a; font-weight: 700; }
+.btn-purple { background: linear-gradient(90deg, #7c3aed, #8b5cf6); }
+.btn-dark { background: #334155; border-color: #475569; }
+
+.btn-sys:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.btn-action-sm {
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 4px;
+}
+
+/* Badges */
+.badge-status {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.badge-paid-st { background: #064e3b; color: #34d399; border: 1px solid #059669; }
+.badge-unpaid-st { background: #881337; color: #fda4af; border: 1px solid #e11d48; }
+
+/* Modal Printable Receipt Popup */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-card {
+    background: #ffffff;
+    color: #0f172a;
+    width: 100%;
+    max-width: 860px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    font-family: 'Kantumruy Pro', 'Noto Sans Khmer', sans-serif;
+}
+
+.modal-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+@media print {
+    body { background: #fff !important; color: #000 !important; padding: 0 !important; }
+    .app-topbar, .workspace-grid, .panel-box, .modal-toolbar { display: none !important; }
+    .modal-overlay { position: static !important; background: none !important; opacity: 1 !important; pointer-events: auto !important; }
+    .modal-card { box-shadow: none !important; max-width: 100% !important; padding: 0 !important; }
+}
+
+/* Official Golden Mekong CMP Invoice Exact Layout Styles */
+.cmp-receipt-paper, #printableReceiptArea {
+    background: #ffffff;
+    color: #000000;
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 40px 48px;
+    border-radius: 8px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    font-family: 'Kantumruy Pro', 'Noto Sans Khmer', Arial, sans-serif;
+    position: relative;
+    box-sizing: border-box;
+}
+
+
+.cmp-header-grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.cmp-logo-box {
+    width: 85px;
+    height: 85px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cmp-logo-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.cmp-header-center {
+    flex: 1;
+    text-align: center;
+    padding: 0 10px;
+}
+
+.cmp-company-th {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #0a52be;
+    line-height: 1.2;
+    margin-bottom: 3px;
+}
+
+.cmp-addr-line {
+    font-size: 0.8rem;
+    color: #475569;
+    line-height: 1.3;
+}
+
+.cmp-title-invoice {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #0f172a;
+    text-decoration: underline;
+    margin-top: 6px;
+    letter-spacing: 1px;
+}
+
+.cmp-sub-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 10px;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+    color: #000000;
+    line-height: 1.4;
+}
+
+.cmp-sub-left {
+    text-align: left;
+}
+
+.cmp-sub-right {
+    text-align: right;
+    font-weight: 500;
+}
+
+.cmp-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+}
+
+.cmp-table th {
+    background-color: #f1f5f9;
+    color: #000000;
+    border: 1px solid #000000;
+    padding: 4px 3px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 1.15;
+}
+
+.cmp-table td {
+    border: 1px solid #000000;
+    padding: 2px 4px;
+    font-size: 0.75rem;
+    color: #000000;
+    height: 20px;
+    vertical-align: middle;
+}
+
+.cmp-table tr.summary-row td {
+    height: 24px;
+    font-size: 0.8rem;
+}
+
+.cmp-bg-blue {
+    background-color: #bfdbfe !important;
+}
+
+.cmp-bg-grey {
+    background-color: #e2e8f0 !important;
+}
+
+.cmp-footer-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: #000000;
+    line-height: 1.35;
+}
+
+.cmp-footer-left {
+    text-align: left;
+}
+
+.cmp-footer-right {
+    text-align: right;
+}
+
+.stamp-badge-absolute {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    z-index: 10;
+}
+
+.stamp-paid {
+    display: inline-block;
+    border: 3px solid #10b981;
+    color: #10b981;
+    font-size: 1.2rem;
+    font-weight: 800;
+    padding: 3px 12px;
+    border-radius: 6px;
+    transform: rotate(-5deg);
+    letter-spacing: 1px;
+}
+
+.stamp-unpaid {
+    display: inline-block;
+    border: 3px solid #ef4444;
+    color: #ef4444;
+    font-size: 1.2rem;
+    font-weight: 800;
+    padding: 3px 12px;
+    border-radius: 6px;
+    transform: rotate(-5deg);
+    letter-spacing: 1px;
+}
+
+
+</style>
     <style>
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button {

@@ -231,6 +231,16 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
 
 
         # Serve static web files
+        if path == '/assets/css/styles.css':
+            css_path = os.path.join(BASE_DIR, 'assets', 'css', 'styles.css')
+            if os.path.exists(css_path):
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/css; charset=utf-8')
+                self.end_headers()
+                with open(css_path, 'rb') as f:
+                    self.wfile.write(f.read())
+                return
+
         if path == '/' or path == '':
             self.path = '/index.html'
 
