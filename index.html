@@ -1448,7 +1448,7 @@ input[type="date"] {
                             const item = new ClipboardItem({ 'image/png': blob });
                             navigator.clipboard.write([item]).then(() => {
                                 alert(`🚀 បាន Copy រូបភាពវិក័យប័ត្រ (${rNo}) ចូល Clipboard រួចរាល់!\n\nសូមចុច Ctrl + V ក្នុង Telegram Chat ដើម្បី Paste ផ្ញើរូបភាពវិក័យប័ត្រ!`);
-                                window.open('tg://msg', '_blank') || window.open('https://web.telegram.org', '_blank');
+                                window.location.href = 'tg://msg';
                             }).catch(() => {
                                 downloadAndOpenTgFallback(canvas, rNo, sender, total);
                             });
@@ -1459,8 +1459,7 @@ input[type="date"] {
                 });
             } else {
                 const text = encodeURIComponent(`🧾 VIP Border Receipt: ${rNo}\n👤 Customer/Group: ${sender}\n💰 Total USD: ${total}\n🏢 Golden Mekong Commercial Service`);
-
-                window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${text}`, '_blank');
+                window.location.href = `tg://msg?text=${text}`;
             }
         }
 
@@ -1479,7 +1478,7 @@ input[type="date"] {
             link.href = canvas.toDataURL('image/png');
             link.click();
             alert(`📥 បានទាញយករូបភាពវិក័យប័ត្រ (${tDate})!\n\nលោកអ្នកអាច Drag/Upload រូបភាព PNG នេះចូល Telegram Chat បាន!`);
-            window.open('https://t.me', '_blank');
+            window.location.href = 'tg://msg';
         }
 
     </script>
