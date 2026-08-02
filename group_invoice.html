@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Mekong Commercial Service - បង្កើតក្រុម (Group Invoice)</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <style>
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            display: none !important;
+            margin: 0 !important;
+        }
+        input[type="number"] {
+            -webkit-appearance: textfield !important;
+            -moz-appearance: textfield !important;
+            appearance: textfield !important;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="brand-container">
+            <div class="brand-logo">🧾</div>
+            <div>
+                <div class="brand-title">GOLDEN MEKONG COMMERCIAL SERVICE CO., LTD.</div>
+                <div class="brand-subtitle">ក្រុមហ៊ុន ហ្គោលដិន មេគង្គ ខមមើសល សឺវីស</div>
+            </div>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">📊 ផ្ទាំងគ្រប់គ្រង (Dashboard)</a>
+            <a href="group_invoice.html" class="nav-btn btn-emerald active">👥 + បង្កើតក្រុម (Group Invoice)</a>
+            <a href="single_invoice.html" class="nav-btn">👤 + វិក្កយបត្រទោល (Single)</a>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <form id="groupForm" onsubmit="submitGroupForm(event)">
+            
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h2 class="panel-title">👥 បង្កើតវិក្កយបត្រក្រុមថ្មី (New Group Invoice)</h2>
+                    <div style="font-size: 1.1rem; font-weight: 700; color: var(--accent-cyan);">
+                        វិក្កយបត្រលេខ៖ <span id="nextReceiptNoBox" style="background: rgba(56,189,248,0.15); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--accent-cyan);">INV ...</span>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>ឈ្មោះក្រុម / អ្នកផ្ញើ (Group / Sender Name) *</label>
+                        <input type="text" id="groupName" class="form-control" placeholder="ឧទាហរណ៍៖ Hr 222 - Sokha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>ឈ្មោះតំណាងអតិថិជន (Representative Customer)</label>
+                        <input type="text" id="customerName" class="form-control" placeholder="ឈ្មោះសមាជិកតំណាង...">
+                    </div>
+
+                    <div class="form-group">
+                        <label>ភ្នាក់ងារ / ក្រុមហ៊ុន (Agency / Company)</label>
+                        <input type="text" id="agencyCompany" class="form-control" placeholder="អាសយដ្ឋាន ឬឈ្មោះក្រុមហ៊ុន...">
+                    </div>
+
+                    <div class="form-group">
+                        <label>កាលបរិច្ឆេទធ្វើដំណើរ (Travel Date) *</label>
+                        <input type="date" id="travelDate" class="form-control" style="color-scheme: dark; cursor: pointer;" onclick="this.showPicker()" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>អត្រាប្តូរប្រាក់ (Exchange Rate USD to THB)</label>
+                        <input type="number" step="0.1" id="exchangeRate" class="form-control num-input" value="33.90" oninput="calcGrandTotal()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>ស្ថានភាពបង់ប្រាក់ (Payment Status)</label>
+                        <select id="paymentStatus" class="form-control" style="font-weight: 700;">
+                            <option value="UNPAID" selected>❌ មិនទាន់បង់ (UNPAID)</option>
+                            <option value="PAID">✅ បង់រួច (PAID)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Member Fee Grid Panel -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h3 class="panel-title">📋 បញ្ជីឈ្មោះសមាជិក និងតម្លៃសេវាកម្ម (Group Members & Fee Grid)</h3>
+                    <button type="button" class="btn btn-success" onclick="addRow()">➕ បន្ថែមសមាជិក (+ Add Pax)</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;">#</th>
+                                <th style="min-width: 180px;">ឈ្មោះសមាជិក (Customer Name)</th>
+                                <th style="min-width: 130px;">លេខ Passport</th>
+                                <th style="width: 100px;">សញ្ជាតិ</th>
+                                <th style="width: 95px;">VIP ($)</th>
+                                <th style="width: 95px;">Clearance ($)</th>
+                                <th style="width: 95px;">Permit ($)</th>
+                                <th style="width: 95px;">Car ($)</th>
+                                <th style="width: 95px;">Visa ($)</th>
+                                <th style="width: 95px;">E-Visa ($)</th>
+                                <th style="width: 110px;">សរុប USD</th>
+                                <th style="width: 50px;">លុប</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersBody">
+                            <!-- Rows inserted dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer Summary -->
+                <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; background: rgba(15,23,42,0.9); padding: 16px 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <div style="display: flex; gap: 24px; align-items: center;">
+                        <div><span style="color: var(--text-muted);">ចំនួនសមាជិក៖</span> <span id="paxCount" style="font-weight:700; color:#fff; font-size:1.1rem;">1 Pax</span></div>
+                        <div><span style="color: var(--text-muted);">សរុប (USD)៖</span> <span id="grandUSD" style="font-weight:800; color:var(--accent-emerald); font-size:1.4rem;">$360.00</span></div>
+                        <div><span style="color: var(--text-muted);">សរុប (THB)៖</span> <span id="grandTHB" style="font-weight:800; color:var(--accent-cyan); font-size:1.3rem;">฿12,204.00</span></div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px;">
+                        <a href="index.html" class="btn btn-secondary">❌ បោះបង់</a>
+                        <button type="submit" class="btn btn-emerald" style="padding: 10px 24px; font-size: 1rem;">💾 រក្សាទុកវិក្កយបត្រ (Save Group Invoice)</button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            document.getElementById('travelDate').value = `${day}-${month}-${now.getFullYear()}`;
+
+            fetch('/api/next_no')
+                .then(r => r.json())
+                .then(d => { if (d.next_no) document.getElementById('nextReceiptNoBox').textContent = d.next_no; });
+
+            addRow();
+        });
+
+        function addRow() {
+            const tbody = document.getElementById('membersBody');
+            const rowCount = tbody.children.length + 1;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="text-center font-bold row-num">${rowCount}</td>
+                <td><input type="text" class="form-control input-name" placeholder="Customer Name" required></td>
+                <td><input type="text" class="form-control input-pass" placeholder="Passport No"></td>
+                <td><input type="text" class="form-control input-nat" value="THAI"></td>
+                <td><input type="number" step="0.01" class="form-control fee-calc input-vip num-input" value="" placeholder="" oninput="calcRow(this)"></td>
+                <td><input type="number" step="0.01" class="form-control fee-calc input-clearance num-input" value="" placeholder="" oninput="calcRow(this)"></td>
+                <td><input type="number" step="0.01" class="form-control fee-calc input-permit num-input" value="" placeholder="" oninput="calcRow(this)"></td>
+                <td><input type="number" step="0.01" class="form-control fee-calc input-car num-input" value="" placeholder="" oninput="calcRow(this)"></td>
+                <td><input type="number" step="0.01" class="form-control fee-calc input-visa num-input" value="" placeholder="" oninput="calcRow(this)"></td>
+                <td><input type="number" step="0.01" class="form-control fee-calc input-evisa num-input" value="" placeholder="" oninput="calcRow(this)"></td>
+                <td><input type="number" step="0.01" class="form-control input-total num-input" value="" placeholder="" readonly></td>
+                <td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">🗑️</button></td>
+            `;
+            tbody.appendChild(tr);
+            calcGrandTotal();
+        }
+
+        function removeRow(btn) {
+            const tbody = document.getElementById('membersBody');
+            if (tbody.children.length <= 1) {
+                alert('ត្រូវតែមានអតិថិជនយ៉ាងហោចណាស់ 1 នាក់!');
+                return;
+            }
+            btn.closest('tr').remove();
+            Array.from(tbody.children).forEach((r, i) => r.querySelector('.row-num').textContent = i + 1);
+            calcGrandTotal();
+        }
+
+        function calcRow(el) {
+            const row = el.closest('tr');
+            const v = sel => parseFloat(row.querySelector(sel)?.value || 0);
+            const total = v('.input-vip') + v('.input-clearance') + v('.input-permit') + v('.input-car') + v('.input-visa') + v('.input-evisa');
+            row.querySelector('.input-total').value = total.toFixed(2);
+            calcGrandTotal();
+        }
+
+        function calcGrandTotal() {
+            let totalUSD = 0;
+            const tbody = document.getElementById('membersBody');
+            tbody.querySelectorAll('.input-total').forEach(inp => totalUSD += parseFloat(inp.value || 0));
+
+            const rate = parseFloat(document.getElementById('exchangeRate').value || 33.90);
+            const totalTHB = totalUSD * rate;
+
+            document.getElementById('paxCount').textContent = tbody.children.length + ' Pax';
+            document.getElementById('grandUSD').textContent = '$' + totalUSD.toFixed(2);
+            document.getElementById('grandTHB').textContent = '฿' + totalTHB.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+        }
+
+        function submitGroupForm(e) {
+            e.preventDefault();
+            const groupName = document.getElementById('groupName').value.trim();
+            if (!groupName) {
+                alert('⚠️ សូមបញ្ចូលឈ្មោះអ្នកផ្ញើ / អ្នកនាំ (Sender Name) ជាមុនសិន ទើបអាចរក្សាទុកបាន!');
+                document.getElementById('groupName').focus();
+                return;
+            }
+            const members = [];
+            document.querySelectorAll('#membersBody tr').forEach(r => {
+                const getV = sel => r.querySelector(sel)?.value || '';
+                members.push({
+                    name: getV('.input-name'),
+                    passport: getV('.input-pass'),
+                    nationality: getV('.input-nat'),
+                    vip: parseFloat(getV('.input-vip') || 0),
+                    clearance: parseFloat(getV('.input-clearance') || 0),
+                    work_permit: parseFloat(getV('.input-permit') || 0),
+                    car_fee: parseFloat(getV('.input-car') || 0),
+                    visa_fee: parseFloat(getV('.input-visa') || 0),
+                    evisa: parseFloat(getV('.input-evisa') || 0)
+                });
+            });
+
+            const now = new Date();
+            const dateSaved = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+            const payload = {
+                group_name: document.getElementById('groupName').value,
+                customer_name: document.getElementById('customerName').value,
+                agency_company: document.getElementById('agencyCompany').value,
+                travel_date: document.getElementById('travelDate').value,
+                exchange_rate: parseFloat(document.getElementById('exchangeRate').value || 33.90),
+                payment_status: document.getElementById('paymentStatus').value,
+                date_saved: encodeURIComponent(dateSaved),
+                members: members
+            };
+
+            fetch('/api/save_group', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    window.location.href = `view_receipt.html?no=${encodeURIComponent(res.receipt_no)}`;
+                } else {
+                    alert('បរាជ័យក្នុងការរក្សាទុក៖ ' + (res.error || ''));
+                }
+            });
+        }
+    </script>
+</body>
+</html>

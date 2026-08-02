@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Mekong Commercial Service - បង្កើតវិក្កយបត្រទោល (Single Invoice)</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <style>
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            display: none !important;
+            margin: 0 !important;
+        }
+        input[type="number"] {
+            -webkit-appearance: textfield !important;
+            -moz-appearance: textfield !important;
+            appearance: textfield !important;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="brand-container">
+            <div class="brand-logo">🧾</div>
+            <div>
+                <div class="brand-title">GOLDEN MEKONG COMMERCIAL SERVICE CO., LTD.</div>
+                <div class="brand-subtitle">ក្រុមហ៊ុន ហ្គោលដិន មេគង្គ ខមមើសល សឺវីស</div>
+            </div>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">📊 ផ្ទាំងគ្រប់គ្រង (Dashboard)</a>
+            <a href="group_invoice.html" class="nav-btn btn-emerald">👥 + បង្កើតក្រុម (Group Invoice)</a>
+            <a href="single_invoice.html" class="nav-btn active">👤 + វិក្កយបត្រទោល (Single)</a>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <form id="singleForm" onsubmit="submitSingleForm(event)">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                
+                <!-- Left Panel: Drag and Drop Passport Image Scanner -->
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h2 class="panel-title">📷 សែនរូបថត លិខិតឆ្លងដែន (Passport OCR Scanner)</h2>
+                    </div>
+
+                    <div id="dropZone" style="border: 2px dashed var(--accent-cyan); border-radius: var(--radius-lg); background: #0f172a; padding: 40px 20px; text-align: center; cursor: pointer;">
+                        <div style="font-size: 3rem; margin-bottom: 10px;">📁</div>
+                        <div style="font-weight: 700; color: #fff; margin-bottom: 6px;">Drag & Drop Passport Image Here</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">(ទាញទម្លាក់រូបថតលិខិតឆ្លងដែនទីនេះ ដើម្បីអានឈ្មោះ និងលេខលិខិតឆ្លងដែនស្វ័យប្រវត្តិ)</div>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFile(this.files[0])">
+                        <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click()">Choose File / ជ្រើសរើសរូបថត</button>
+                    </div>
+
+                    <div id="ocrStatus" style="margin-top: 14px; font-size: 0.85rem; color: var(--accent-cyan); text-align: center; display: none;">
+                        ⏳ កំពុងដំណើរការអានទិន្នន័យពី Passport (Processing OCR...)...
+                    </div>
+
+                    <div id="previewContainer" style="margin-top: 16px; text-align: center; display: none;">
+                        <img id="previewImg" src="" alt="Passport Preview" style="max-width: 100%; max-height: 240px; border-radius: 8px; border: 1px solid var(--border-color);">
+                    </div>
+                </div>
+
+                <!-- Right Panel: Single Customer Info & Fee Form -->
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h2 class="panel-title">👤 ព័ត៌មានអតិថិជន និងសេវាកម្ម</h2>
+                        <div style="font-size: 1.1rem; font-weight: 700; color: var(--accent-cyan);">
+                            វិក្កយបត្រលេខ៖ <span id="nextReceiptNoBox" style="background: rgba(56,189,248,0.15); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--accent-cyan);">INV ...</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label>ឈ្មោះពេញអតិថិជន (Full English Name) *</label>
+                        <input type="text" id="fullEnglishName" class="form-control" placeholder="ឧទាហរណ៍៖ SOMCHAI SUKSAWAD" required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div class="form-group">
+                            <label>លេខ Passport (Passport No)</label>
+                            <input type="text" id="passportNo" class="form-control" placeholder="AA1234567">
+                        </div>
+
+                        <div class="form-group">
+                            <label>សញ្ជាតិ (Nationality)</label>
+                            <input type="text" id="nationality" class="form-control" value="THAI">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div class="form-group">
+                            <label>ថ្ងៃខែឆ្នាំកំណើត (DOB)</label>
+                            <input type="text" id="dob" class="form-control" placeholder="DD/MM/YYYY">
+                        </div>
+
+                        <div class="form-group">
+                            <label>កាលបរិច្ឆេទធ្វើដំណើរ (Travel Date)</label>
+                            <input type="date" id="travelDate" class="form-control" style="color-scheme: dark; cursor: pointer;" onclick="this.showPicker()">
+                        </div>
+                    </div>
+
+                    <h4 style="color: var(--accent-cyan); margin: 18px 0 12px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 6px;">💰 តារាងគណនាតម្លៃសេវាកម្ម (Fees Calculation)</h4>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                        <div class="form-group">
+                            <label>VIP Service ($)</label>
+                            <input type="number" step="0.01" id="vipFee" class="form-control fee-calc num-input" value="" placeholder="" oninput="calcTotal()">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Clearance Fee ($)</label>
+                            <input type="number" step="0.01" id="clearanceFee" class="form-control fee-calc num-input" value="" placeholder="" oninput="calcTotal()">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Work Permit ($)</label>
+                            <input type="number" step="0.01" id="workPermit" class="form-control fee-calc num-input" value="" placeholder="" oninput="calcTotal()">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Car Fee ($)</label>
+                            <input type="number" step="0.01" id="carFee" class="form-control fee-calc num-input" value="" placeholder="" oninput="calcTotal()">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Visa Fee ($)</label>
+                            <input type="number" step="0.01" id="visaFee" class="form-control fee-calc num-input" value="" placeholder="" oninput="calcTotal()">
+                        </div>
+
+                        <div class="form-group">
+                            <label>E-Visa ($)</label>
+                            <input type="number" step="0.01" id="eVisa" class="form-control fee-calc num-input" value="" placeholder="" oninput="calcTotal()">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label>សរុប (Total USD)</label>
+                            <input type="number" step="0.01" id="totalUSD" class="form-control num-input" value="360.00" style="font-size: 1.2rem; color: var(--accent-emerald);" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label>ស្ថានភាពបង់ប្រាក់ (Status)</label>
+                            <select id="paymentStatus" class="form-control" style="font-weight: 700;">
+                                <option value="UNPAID" selected>❌ មិនទាន់បង់ (UNPAID)</option>
+                                <option value="PAID">✅ បង់រួច (PAID)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                        <a href="index.html" class="btn btn-secondary">❌ បោះបង់</a>
+                        <button type="submit" class="btn btn-primary" style="padding: 10px 24px;">💾 រក្សាទុកវិក្កយបត្រ (Save Single Invoice)</button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            document.getElementById('travelDate').value = `${day}-${month}-${now.getFullYear()}`;
+
+            fetch('/api/next_no')
+                .then(r => r.json())
+                .then(d => { if (d.next_no) document.getElementById('nextReceiptNoBox').textContent = d.next_no; });
+        });
+
+        function calcTotal() {
+            const getV = id => parseFloat(document.getElementById(id)?.value || 0);
+            const total = getV('vipFee') + getV('clearanceFee') + getV('workPermit') + getV('carFee') + getV('visaFee') + getV('eVisa');
+            document.getElementById('totalUSD').value = total.toFixed(2);
+        }
+
+        function handleFile(file) {
+            if (!file) return;
+            document.getElementById('previewImg').src = URL.createObjectURL(file);
+            document.getElementById('previewContainer').style.display = 'block';
+            document.getElementById('ocrStatus').style.display = 'block';
+
+            if (typeof Tesseract !== 'undefined') {
+                Tesseract.recognize(file, 'eng').then(({ data: { text } }) => {
+                    document.getElementById('ocrStatus').style.display = 'none';
+                    if (text) {
+                        const lines = text.split('\n');
+                        for (let line of lines) {
+                            line = line.trim();
+                            if (line.includes('P<') || /^[A-Z\s]{5,30}$/.test(line)) {
+                                let cleanName = line.replace(/P</g, '').replace(/</g, ' ').trim();
+                                if (cleanName.length > 3) {
+                                    document.getElementById('fullEnglishName').value = cleanName;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }).catch(() => { document.getElementById('ocrStatus').style.display = 'none'; });
+            }
+        }
+
+        function submitSingleForm(e) {
+            e.preventDefault();
+            const now = new Date();
+            const dateSaved = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+            const payload = {
+                full_english_name: document.getElementById('fullEnglishName').value,
+                passport_no: document.getElementById('passportNo').value,
+                nationality: document.getElementById('nationality').value,
+                dob: document.getElementById('dob').value,
+                travel_date: document.getElementById('travelDate').value,
+                vip_fee: parseFloat(document.getElementById('vipFee').value || 0),
+                clearance_fee: parseFloat(document.getElementById('clearanceFee').value || 0),
+                work_permit: parseFloat(document.getElementById('workPermit').value || 0),
+                car_fee: parseFloat(document.getElementById('carFee').value || 0),
+                visa_fee: parseFloat(document.getElementById('visaFee').value || 0),
+                e_visa: parseFloat(document.getElementById('eVisa').value || 0),
+                payment_status: document.getElementById('paymentStatus').value,
+                date_saved: encodeURIComponent(dateSaved)
+            };
+
+            fetch('/api/save_single', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    window.location.href = `view_receipt.html?no=${encodeURIComponent(res.receipt_no)}`;
+                } else {
+                    alert('បរាជ័យក្នុងការរក្សាទុក៖ ' + (res.error || ''));
+                }
+            });
+        }
+    </script>
+</body>
+</html>

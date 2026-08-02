@@ -43,6 +43,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SAVED_CUSTOMERS_FILE = os.path.join(BASE_DIR, 'saved_customers.json')
 INVOICE_COUNTER_FILE = os.path.join(BASE_DIR, 'invoice_counter.json')
 WEB_DIR = os.path.join(BASE_DIR, 'web_app')
+if not os.path.exists(WEB_DIR) or not os.path.exists(os.path.join(WEB_DIR, 'index.html')):
+    WEB_DIR = BASE_DIR
 
 def load_json(filepath, default):
     if not os.path.exists(filepath):
@@ -151,7 +153,8 @@ def extract_best_name(data):
 
 class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=WEB_DIR, **kwargs)
+        effective_dir = WEB_DIR if (os.path.exists(WEB_DIR) and os.path.exists(os.path.join(WEB_DIR, 'index.html'))) else BASE_DIR
+        super().__init__(*args, directory=effective_dir, **kwargs)
 
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
