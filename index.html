@@ -576,6 +576,20 @@ input[type="date"] {
             -moz-appearance: textfield !important;
             appearance: textfield !important;
         }
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #0284c7;
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #38bdf8;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -668,6 +682,15 @@ input[type="date"] {
                 </div>
             </div>
 
+            <!-- Quick Fee & Service Presets Bar -->
+            <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span style="font-weight: 700; color: #38bdf8; font-size: 12px;">⚡ ប៊ូតុងថ្លៃ និងសេវា:</span>
+                <button type="button" class="btn-sys btn-dark" style="font-size: 11px; padding: 4px 10px; background: rgba(30, 41, 59, 0.9); border: 1px solid #334155;" onclick="applyQuickFeePreset(280, 40, 0, 0)">👑 VIP Standard ($280+$40)</button>
+                <button type="button" class="btn-sys btn-dark" style="font-size: 11px; padding: 4px 10px; background: rgba(30, 41, 59, 0.9); border: 1px solid #334155;" onclick="applyQuickFeePreset(280, 40, 50, 0)">🚗 VIP + Car ($370)</button>
+                <button type="button" class="btn-sys btn-dark" style="font-size: 11px; padding: 4px 10px; background: rgba(30, 41, 59, 0.9); border: 1px solid #334155;" onclick="applyQuickFeePreset(280, 40, 0, 35)">💻 VIP + E-Visa ($355)</button>
+                <button type="button" class="btn-sys btn-dark" style="font-size: 11px; padding: 4px 10px; background: rgba(30, 41, 59, 0.9); border: 1px solid #334155;" onclick="applyQuickFeePreset(0, 0, 0, 0)">🧹 កំណត់ថ្លៃ 0.00</button>
+            </div>
+
             <div class="form-row">
                 <div class="form-group-sm">
                     <label>ថ្លៃ E-VISA ($):</label>
@@ -757,10 +780,10 @@ input[type="date"] {
                         <th style="width: 100px;">លេខវិក្កយបត្រ</th>
                         <th style="width: 100px;">ថ្ងៃធ្វើដំណើរ</th>
                         <th style="width: 140px;">ភ្នាក់ងារ / ក្រុម</th>
-                        <th>ឈ្មោះអតិថិជន (Customer)</th>
                         <th style="width: 100px;">ទឹកប្រាក់សរុប</th>
                         <th style="width: 110px;">ស្ថានភាព</th>
-                        <th style="width: 320px; text-align: center;">សកម្មភាព (Actions)</th>
+                        <th style="width: 220px; text-align: center;">សកម្មភាព (Actions)</th>
+                        <th>ឈ្មោះអតិថិជន (Customer)</th>
                     </tr>
                 </thead>
                 <tbody id="databaseTableBody">
@@ -769,6 +792,54 @@ input[type="date"] {
             </table>
         </div>
     </div>
+
+    <!-- Group Members Management Modal -->
+    <div id="groupMembersModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 750px;">
+            <div class="modal-toolbar" style="background: #0f172a; border-bottom: 1px solid var(--border-color); padding: 14px 20px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="font-size: 1.4rem;">👥</div>
+                    <div>
+                        <div style="font-weight: 800; font-size: 16px; color: #38bdf8;" id="gmmTitle">📋 គ្រប់គ្រងសមាជិកក្រុម</div>
+                        <div style="font-size: 11px; color: var(--text-sub);" id="gmmSubTitle">👤 គ្រប់គ្រងសមាជិកក្រុម: -</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-sys btn-dark" onclick="closeGroupMembersModal()">✖️ បិទ (Close)</button>
+            </div>
+
+            <div style="padding: 20px;">
+                <div id="gmmAlert" style="margin-bottom: 12px; font-size: 12px; color: #cbd5e1; background: rgba(56, 189, 248, 0.1); border-left: 4px solid #38bdf8; padding: 8px 12px; border-radius: 6px;">
+                    💡 លុបឈ្មោះសមាជិកចេញពីក្រុម នឹង លុបចេញពីផ្ទាំងបង្កើតវិក្កយបត្រដើម្បីកុំឱ្យគណនាលើសតម្លៃ។
+                </div>
+
+                <div class="table-container" style="max-height: 350px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <table class="app-table">
+                        <thead>
+                            <tr style="background: #1e293b; color: #f8fafc;">
+                                <th style="width: 40px; text-align: center;">ល.រ</th>
+                                <th>ឈ្មោះសមាជិក (Passport Name)</th>
+                                <th style="width: 120px;">លេខ Passport</th>
+                                <th style="width: 90px; text-align: center;">សញ្ជាតិ</th>
+                                <th style="width: 90px; text-align: right;">តម្លៃ ($)</th>
+                                <th style="width: 110px; text-align: center;">សកម្មភាព</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gmmMembersBody">
+                            <!-- Dynamic member rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="padding: 12px 20px; background: #0f172a; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <div id="gmmTotalFooter" style="font-size: 13px; font-weight: 700; color: var(--accent-emerald);">
+                    💵 ថ្លៃសេវាសរុប៖ $0.00
+                </div>
+                <button type="button" class="btn-sys btn-dark" onclick="closeGroupMembersModal()">❌ បិទផ្ទាំង (Close)</button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Official Receipt Printable Modal Popup -->
     <div id="receiptModal" class="modal-overlay">
@@ -1044,6 +1115,27 @@ input[type="date"] {
             document.getElementById('custNamePassport').focus();
         }
 
+        function applyQuickFeePreset(vip, clearance, car, evisa) {
+            const tbody = document.getElementById('groupMembersBody');
+            if (!tbody) return;
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach(r => {
+                const inpCar = r.querySelector('.input-m-car');
+                const inpEvisa = r.querySelector('.input-m-evisa');
+                const inpVip = r.querySelector('.input-m-vip');
+                const inpClearance = r.querySelector('.input-m-clearance');
+
+                if (inpCar) inpCar.value = car ? car.toFixed(2) : '0.00';
+                if (inpEvisa) inpEvisa.value = evisa ? evisa.toFixed(2) : '0.00';
+                if (inpVip) inpVip.value = vip ? vip.toFixed(2) : '0.00';
+                if (inpClearance) inpClearance.value = clearance ? clearance.toFixed(2) : '0.00';
+
+                const nameInp = r.querySelector('.input-m-name');
+                if (nameInp) calcMemberTotal(nameInp);
+            });
+            calcTotals();
+        }
+
         function clearGroupForm() {
             document.getElementById('senderName').value = '';
             document.getElementById('custNamePassport').value = '';
@@ -1159,36 +1251,160 @@ input[type="date"] {
                 const travelDate = item.group_info?.travel_date || item.group_data?.date_str || item.customer?.date_saved || '-';
                 const sender = item.group_info?.group_name || item.customer?.full_english_name || 'N/A';
                 const custName = item.group_info?.customer_name || item.customer?.full_english_name || '-';
-                const paxCount = item.members?.length || 1;
-                const custLabel = paxCount > 1 ? `${custName} (+${paxCount-1} នាក់)` : custName;
+                const members = item.members || [];
+                const paxCount = members.length || 1;
+                const isGroup = paxCount > 1;
+                const custLabel = isGroup ? `${custName} (+${paxCount-1} នាក់)` : custName;
                 const usdTotal = parseFloat(item.group_data?.totals?.usd || item.totals?.usd || 0);
                 const status = (item.payment_status || 'UNPAID').toUpperCase();
 
+                let custContent = '';
+                if (isGroup) {
+                    custContent = `
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; padding:2px 4px;">
+                            <span style="font-weight:600; color:#e2e8f0;">👥 ${custLabel}</span>
+                            <button type="button" class="btn-sys btn-indigo btn-action-sm" style="font-size:11px; padding:3px 8px; font-weight:700; background: linear-gradient(135deg, #0284c7, #2563eb); border: 1px solid #38bdf8; color: #ffffff;" onclick="event.stopPropagation(); openGroupMembersModal('${encodeURIComponent(rNo)}')">👁️ មើលលម្អិត (${paxCount})</button>
+                        </div>
+                    `;
+                } else {
+                    custContent = `
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; padding:2px 4px;">
+                            <span style="font-weight:600; color:#f8fafc;">👤 ${custName}</span>
+                            <button type="button" class="btn-sys btn-amber btn-action-sm" style="font-size:10px; padding:2px 6px;" onclick="event.stopPropagation(); loadRecordIntoForm('${encodeURIComponent(rNo)}')">✏️ កែប្រែ</button>
+                        </div>
+                    `;
+                }
+
                 html += `
-                    <tr>
+                    <tr style="cursor:pointer; vertical-align:top;" title="ចុចទីនេះដើម្បីមើលសមាជិកក្រុម" onclick="openGroupMembersModal('${encodeURIComponent(rNo)}')">
                         <td style="text-align:center; font-weight:bold;">${idx + 1}</td>
                         <td style="font-weight:700; color:var(--accent-cyan);">${rNo}</td>
                         <td>${travelDate}</td>
                         <td><strong style="color:#fff;">${sender}</strong></td>
-                        <td>${custLabel}</td>
                         <td style="font-weight:700; color:var(--accent-emerald);">$${usdTotal.toFixed(2)}</td>
-                        <td>
+                        <td onclick="event.stopPropagation()">
                             <span class="badge-status ${status==='PAID'?'badge-paid-st':'badge-unpaid-st'}" onclick="toggleStatus('${encodeURIComponent(rNo)}', '${status==='PAID'?'UNPAID':'PAID'}')">
                                 ${status==='PAID'?'✅ បង់រួច':'❌ មិនទាន់បង់'}
                             </span>
                         </td>
-                        <td style="text-align:center; white-space:nowrap;">
-                            <button class="btn-sys btn-cyan btn-action-sm" onclick="openReceiptModal('${encodeURIComponent(rNo)}')">📄 Download</button>
-                            <button class="btn-sys btn-emerald btn-action-sm" onclick="openReceiptModal('${encodeURIComponent(rNo)}')">🖼️ PNG</button>
+                        <td style="text-align:center; white-space:nowrap;" onclick="event.stopPropagation()">
                             <button class="btn-sys btn-purple btn-action-sm" onclick="openReceiptModal('${encodeURIComponent(rNo)}')">✈️ Share</button>
-                            <button class="btn-sys btn-amber btn-action-sm" onclick="loadRecordIntoForm('${encodeURIComponent(rNo)}')">✏️ Load</button>
+                            <button class="btn-sys btn-indigo btn-action-sm" style="background:#0284c7; color:#fff;" onclick="openGroupMembersModal('${encodeURIComponent(rNo)}')">👁️ មើលលម្អិត</button>
                             <button class="btn-sys btn-rose btn-action-sm" onclick="deleteRecord('${encodeURIComponent(rNo)}')">🗑️ Delete</button>
+                        </td>
+                        <td onclick="event.stopPropagation()">${custContent}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function toggleRowExpand(rNoEnc) {
+            openGroupMembersModal(rNoEnc);
+        }
+
+        let currentGmmReceiptNo = '';
+
+        function openGroupMembersModal(rNoEnc) {
+            const rNo = decodeURIComponent(rNoEnc);
+            currentGmmReceiptNo = rNo;
+            fetch(`/api/receipt?no=${encodeURIComponent(rNo)}`)
+                .then(r => r.json())
+                .then(res => {
+                    if (!res.success || !res.invoice) {
+                        alert('មិនអាចរកឃើញទិន្នន័យវិក្កយបត្រនេះទេ');
+                        return;
+                    }
+                    const item = res.invoice;
+                    const members = item.members || [];
+                    const sender = item.group_info?.group_name || item.group_data?.customer_name || item.customer?.full_english_name || 'VIP Group';
+
+                    document.getElementById('gmmTitle').textContent = `📋 គ្រប់គ្រងសមាជិកក្រុម ${rNo} (${members.length} នាក់)`;
+                    document.getElementById('gmmSubTitle').textContent = `👤 គ្រប់គ្រងសមាជិកក្រុម: ${sender}`;
+                    const alertEl = document.getElementById('gmmAlert');
+                    if (alertEl) {
+                        alertEl.innerHTML = `💡 លុបឈ្មោះសមាជិកចេញពីក្រុម នឹង លុបចេញពីផ្ទាំងបង្កើតវិក្កយបត្រដើម្បីកុំឱ្យគណនាលើសតម្លៃ។`;
+                    }
+
+                    renderGmmMembersList(members, rNo);
+
+                    const modal = document.getElementById('groupMembersModal');
+                    if (modal) modal.style.display = 'flex';
+                })
+                .catch(err => {
+                    alert('កំហុសក្នុងការទាញយកទិន្នន័យសមាជិក');
+                });
+        }
+
+        function renderGmmMembersList(members, rNo) {
+            const tbody = document.getElementById('gmmMembersBody');
+            if (!tbody) return;
+
+            let totalUsd = 0;
+            if (!members || members.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-sub);">មិនមានសមាជិកនៅក្នុងក្រុមនេះទេ</td></tr>`;
+                document.getElementById('gmmTotalFooter').textContent = `💵 ថ្លៃសេវាសរុប៖ $0.00`;
+                return;
+            }
+
+            let html = '';
+            members.forEach((m, idx) => {
+                const name = m.full_english_name || m.english_name || m.name || 'N/A';
+                const pass = m.passport_no || '-';
+                const nat = m.nationality || 'THAI';
+                let usd = parseFloat(m.usd || 0);
+                if (usd === 0) {
+                    usd = (parseFloat(m.vip||0) + parseFloat(m.clearance_fee||0) + parseFloat(m.work_permit||0) + parseFloat(m.car_fee||0) + parseFloat(m.visa_fee||0) + parseFloat(m.e_visa||0));
+                }
+                totalUsd += usd;
+
+                html += `
+                    <tr>
+                        <td style="text-align:center; font-weight:bold; color:var(--accent-cyan);">${idx + 1}</td>
+                        <td style="font-weight:700; color:#fff;">${name}</td>
+                        <td style="color:var(--accent-cyan); font-family:monospace;">${pass}</td>
+                        <td style="text-align:center;"><span class="badge-status" style="background:#1e293b; color:#38bdf8;">${nat}</span></td>
+                        <td style="text-align:right; font-weight:700; color:var(--accent-emerald);">$${usd.toFixed(2)}</td>
+                        <td style="text-align:center;">
+                            <button type="button" class="btn-sys btn-rose btn-action-sm" style="font-size:11px; padding:4px 10px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px;" onclick="deleteMemberFromGroup('${encodeURIComponent(rNo)}', ${idx}, '${encodeURIComponent(name)}')">
+                                ❌ លុបចេញ
+                            </button>
                         </td>
                     </tr>
                 `;
             });
 
             tbody.innerHTML = html;
+            document.getElementById('gmmTotalFooter').textContent = `💵 ថ្លៃសេវាសរុប៖ $${totalUsd.toFixed(2)}`;
+        }
+
+        function deleteMemberFromGroup(rNoEnc, index, nameEnc) {
+            const rNo = decodeURIComponent(rNoEnc);
+            const name = decodeURIComponent(nameEnc);
+
+            if (!confirm(`តើលោកអ្នកពិតជាចង់លុបសមាជិកឈ្មោះ "${name}" ចេញពីក្រុមនេះមែនទេ?`)) {
+                return;
+            }
+
+            fetch(`/api/delete_member?no=${encodeURIComponent(rNo)}&index=${index}`)
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        loadDatabaseRecords();
+                        openGroupMembersModal(encodeURIComponent(rNo));
+                    } else {
+                        alert('បរាជ័យក្នុងការលុបសមាជិក៖ ' + (res.error || ''));
+                    }
+                })
+                .catch(err => {
+                    alert('កំហុសក្នុងការផ្ញើទិន្នន័យលុបសមាជិក');
+                });
+        }
+
+        function closeGroupMembersModal() {
+            const modal = document.getElementById('groupMembersModal');
+            if (modal) modal.style.display = 'none';
         }
 
         function toggleStatus(rNo, newStatus) {
@@ -1461,7 +1677,8 @@ input[type="date"] {
                             const item = new ClipboardItem({ 'image/png': blob });
                             navigator.clipboard.write([item]).then(() => {
                                 alert(`🚀 បាន Copy រូបភាពវិក័យប័ត្រ (${rNo}) ចូល Clipboard រួចរាល់!\n\nសូមចុច Ctrl + V ក្នុង Telegram Chat ដើម្បី Paste ផ្ញើរូបភាព!`);
-                                window.location.href = 'tg://msg';
+                                const text = `🧾 VIP Border Receipt: ${rNo}\n👤 Customer/Group: ${sender}\n💰 Total: ${total}`;
+                                window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}`, '_blank');
                             }).catch(() => {
                                 downloadAndOpenTgFallback(canvas, rNo, sender, total);
                             });
@@ -1472,7 +1689,7 @@ input[type="date"] {
                 });
             } else {
                 const text = encodeURIComponent(`🧾 VIP Border Receipt: ${rNo}\n👤 Customer/Group: ${sender}\n💰 Total USD: ${total}\n🏢 Golden Mekong Commercial Service`);
-                window.location.href = `tg://msg?text=${text}`;
+                window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${text}`, '_blank');
             }
         }
 
@@ -1492,7 +1709,8 @@ input[type="date"] {
             link.href = canvas.toDataURL('image/png');
             link.click();
             alert(`📥 បានទាញយករូបភាពវិក័យប័ត្រ (${tDate})!\n\nលោកអ្នកអាច Drag/Upload រូបភាព PNG នេះចូល Telegram Chat បាន!`);
-            window.location.href = 'tg://msg';
+            const shareText = encodeURIComponent(`🧾 VIP Border Receipt: ${rNo}\n👤 Customer/Group: ${sender}\n💰 Total USD: ${total}`);
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${shareText}`, '_blank');
         }
 
     </script>

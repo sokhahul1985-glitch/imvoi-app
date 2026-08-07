@@ -42,9 +42,7 @@ PORT = 8000
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SAVED_CUSTOMERS_FILE = os.path.join(BASE_DIR, 'saved_customers.json')
 INVOICE_COUNTER_FILE = os.path.join(BASE_DIR, 'invoice_counter.json')
-WEB_DIR = os.path.join(BASE_DIR, 'web_app')
-if not os.path.exists(WEB_DIR) or not os.path.exists(os.path.join(WEB_DIR, 'index.html')):
-    WEB_DIR = BASE_DIR
+WEB_DIR = BASE_DIR
 
 def load_json(filepath, default):
     if not os.path.exists(filepath):
@@ -222,6 +220,76 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json_response({'success': True})
             else:
                 self.send_json_response({'success': False, 'error': 'Receipt not found'}, status=404)
+            return
+
+        elif path == '/api/delete_member':
+            receipt_no = query.get('no', [''])[0].strip().lower()
+            try:
+                m_idx = int(query.get('index', [-1])[0])
+            except Exception:
+                m_idx = -1
+
+            data = load_json(SAVED_CUSTOMERS_FILE, [])
+            found = False
+            for item in data:
+                r_no = item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or ''
+                if r_no.strip().lower() == receipt_no:
+                    members = item.get('members', [])
+                    if 0 <= m_idx < len(members):
+                        members.pop(m_idx)
+                        exchange_rate = float(item.get('group_data', {}).get('exchange_rate', 33.90))
+                        new_items = []
+                        grand_usd = 0.0
+                        for idx, m in enumerate(members, 1):
+                            name = m.get('full_english_name') or m.get('english_name') or m.get('name', '')
+                            vip = float(m.get('vip', 0.0))
+                            clearance = float(m.get('clearance_fee', 0.0))
+                            permit = float(m.get('work_permit', 0.0))
+                            car = float(m.get('car_fee', 0.0))
+                            visa = float(m.get('visa_fee', 0.0))
+                            evisa = float(m.get('e_visa', 0.0))
+                            row_usd = float(m.get('usd', 0.0))
+                            if row_usd == 0 and (vip or clearance or permit or car or visa or evisa):
+                                row_usd = vip + clearance + permit + car + visa + evisa
+                                m['usd'] = row_usd
+
+                            grand_usd += row_usd
+                            new_items.append({
+                                'no': idx,
+                                'description': name,
+                                'qty': '1',
+                                'e_visa': f"${evisa}" if evisa > 0 else '',
+                                'vip': f"${vip}" if vip > 0 else '',
+                                'overstay': '',
+                                'car_fee': f"${car}" if car > 0 else '',
+                                'visa': f"${visa}" if visa > 0 else '',
+                                'clearance_fee': f"${clearance}" if clearance > 0 else '',
+                                'work_permit': f"${permit}" if permit > 0 else '',
+                                'usd': row_usd
+                            })
+
+                        grand_thb = grand_usd * exchange_rate
+                        pax_count = len(members)
+                        first_cust_name = members[0].get('full_english_name') if members else 'N/A'
+
+                        if 'group_info' in item:
+                            item['group_info']['customer_name'] = first_cust_name
+                        if 'customer' in item:
+                            item['customer']['sex'] = f"{pax_count} Pax"
+                        if 'group_data' in item:
+                            item['group_data']['items'] = new_items
+                            item['group_data']['totals'] = {'usd': grand_usd, 'baht': grand_thb}
+                            item['group_data']['group_customer_name'] = first_cust_name
+                        item['totals'] = {'usd': grand_usd, 'baht': grand_thb}
+
+                        found = True
+                        break
+
+            if found:
+                save_json(SAVED_CUSTOMERS_FILE, data)
+                self.send_json_response({'success': True})
+            else:
+                self.send_json_response({'success': False, 'error': 'Member or Receipt not found'}, status=404)
             return
 
         elif path == '/api/get_telegram_config':
