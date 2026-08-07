@@ -1289,7 +1289,7 @@ input[type="date"] {
                         </td>
                         <td style="text-align:center; white-space:nowrap;" onclick="event.stopPropagation()">
                             <button class="btn-sys btn-purple btn-action-sm" onclick="openReceiptModal('${encodeURIComponent(rNo)}')">✈️ Share</button>
-                            <button class="btn-sys btn-indigo btn-action-sm" style="background:#0284c7; color:#fff;" onclick="openGroupMembersModal('${encodeURIComponent(rNo)}')">👁️ មើលលម្អិត</button>
+                            <button class="btn-sys btn-indigo btn-action-sm" style="background:#0284c7; color:#fff;" onclick="openReceiptModal('${encodeURIComponent(rNo)}')">👁️ មើលលម្អិត</button>
                             <button class="btn-sys btn-rose btn-action-sm" onclick="deleteRecord('${encodeURIComponent(rNo)}')">🗑️ Delete</button>
                         </td>
                         <td onclick="event.stopPropagation()">${custContent}</td>
@@ -1309,32 +1309,44 @@ input[type="date"] {
         function openGroupMembersModal(rNoEnc) {
             const rNo = decodeURIComponent(rNoEnc);
             currentGmmReceiptNo = rNo;
-            fetch(`/api/receipt?no=${encodeURIComponent(rNo)}`)
-                .then(r => r.json())
-                .then(res => {
-                    if (!res.success || !res.invoice) {
-                        alert('មិនអាចរកឃើញទិន្នន័យវិក្កយបត្រនេះទេ');
-                        return;
-                    }
-                    const item = res.invoice;
-                    const members = item.members || [];
-                    const sender = item.group_info?.group_name || item.group_data?.customer_name || item.customer?.full_english_name || 'VIP Group';
+            const item = (typeof allDatabaseRecords !== 'undefined' && allDatabaseRecords.length) ? allDatabaseRecords.find(i => (i.group_data?.receipt_no || i.customer?.receipt_no || '') === rNo) : null;
+            
+            if (item) {
+                showGmmModalWithItem(item, rNo);
+            } else {
+                fetch(`/api/receipt?no=${encodeURIComponent(rNo)}`)
+                    .then(r => r.json())
+                    .then(res => {
+                        if (!res.success || !res.invoice) {
+                            alert('មិនអាចរកឃើញទិន្នន័យវិក្កយបត្រនេះទេ');
+                            return;
+                        }
+                        showGmmModalWithItem(res.invoice, rNo);
+                    })
+                    .catch(err => {
+                        alert('កំហុសក្នុងការទាញយកទិន្នន័យសមាជិក');
+                    });
+            }
+        }
 
-                    document.getElementById('gmmTitle').textContent = `📋 គ្រប់គ្រងសមាជិកក្រុម ${rNo} (${members.length} នាក់)`;
-                    document.getElementById('gmmSubTitle').textContent = `👤 គ្រប់គ្រងសមាជិកក្រុម: ${sender}`;
-                    const alertEl = document.getElementById('gmmAlert');
-                    if (alertEl) {
-                        alertEl.innerHTML = `💡 លុបឈ្មោះសមាជិកចេញពីក្រុម នឹង លុបចេញពីផ្ទាំងបង្កើតវិក្កយបត្រដើម្បីកុំឱ្យគណនាលើសតម្លៃ។`;
-                    }
+        function showGmmModalWithItem(item, rNo) {
+            const members = item.members || [];
+            const sender = item.group_info?.group_name || item.group_data?.customer_name || item.customer?.full_english_name || 'VIP Group';
 
-                    renderGmmMembersList(members, rNo);
+            document.getElementById('gmmTitle').textContent = `📋 គ្រប់គ្រងសមាជិកក្រុម ${rNo} (${members.length} នាក់)`;
+            document.getElementById('gmmSubTitle').textContent = `👤 គ្រប់គ្រងសមាជិកក្រុម: ${sender}`;
+            const alertEl = document.getElementById('gmmAlert');
+            if (alertEl) {
+                alertEl.innerHTML = `💡 លុបឈ្មោះសមាជិកចេញពីក្រុម នឹង លុបចេញពីផ្ទាំងបង្កើតវិក្កយបត្រដើម្បីកុំឱ្យគណនាលើសតម្លៃ។`;
+            }
 
-                    const modal = document.getElementById('groupMembersModal');
-                    if (modal) modal.style.display = 'flex';
-                })
-                .catch(err => {
-                    alert('កំហុសក្នុងការទាញយកទិន្នន័យសមាជិក');
-                });
+            renderGmmMembersList(members, rNo);
+
+            const modal = document.getElementById('groupMembersModal');
+            if (modal) {
+                modal.classList.add('active');
+                modal.style.display = 'flex';
+            }
         }
 
         function renderGmmMembersList(members, rNo) {
@@ -1367,9 +1379,7 @@ input[type="date"] {
                         <td style="text-align:center;"><span class="badge-status" style="background:#1e293b; color:#38bdf8;">${nat}</span></td>
                         <td style="text-align:right; font-weight:700; color:var(--accent-emerald);">$${usd.toFixed(2)}</td>
                         <td style="text-align:center;">
-                            <button type="button" class="btn-sys btn-rose btn-action-sm" style="font-size:11px; padding:4px 10px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px;" onclick="deleteMemberFromGroup('${encodeURIComponent(rNo)}', ${idx}, '${encodeURIComponent(name)}')">
-                                ❌ លុបចេញ
-                            </button>
+                            <button type="button" class="btn-sys btn-rose btn-action-sm" style="font-size:11px; padding:4px 10px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px;" onclick="deleteMemberFromGroup('${encodeURIComponent(rNo)}', ${idx}, '${encodeURIComponent(name)}')">🗑️ លុប</button>
                         </td>
                     </tr>
                 `;
@@ -1377,6 +1387,14 @@ input[type="date"] {
 
             tbody.innerHTML = html;
             document.getElementById('gmmTotalFooter').textContent = `💵 ថ្លៃសេវាសរុប៖ $${totalUsd.toFixed(2)}`;
+        }
+
+        function closeGroupMembersModal() {
+            const modal = document.getElementById('groupMembersModal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+            }
         }
 
         function deleteMemberFromGroup(rNoEnc, index, nameEnc) {
