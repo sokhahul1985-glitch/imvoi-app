@@ -727,32 +727,32 @@ input[type="date"] {
 
                     <div class="form-group-sm">
                         <label>ថ្លៃ VISA ($):</label>
-                        <input type="number" step="0.01" id="feeVisa" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults()">
+                        <input type="number" step="0.01" id="feeVisa" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('visa')">
                     </div>
 
                     <div class="form-group-sm">
                         <label>ថ្លៃ E-VISA ($):</label>
-                        <input type="number" step="0.01" id="feeEvisa" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults()">
+                        <input type="number" step="0.01" id="feeEvisa" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('evisa')">
                     </div>
 
                     <div class="form-group-sm">
                         <label>ថ្លៃ VIP ($):</label>
-                        <input type="number" step="0.01" id="feeVip" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults()">
+                        <input type="number" step="0.01" id="feeVip" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('vip')">
                     </div>
 
                     <div class="form-group-sm">
                         <label>ថ្លៃឡាន ($):</label>
-                        <input type="number" step="0.01" id="feeCar" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults()">
+                        <input type="number" step="0.01" id="feeCar" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('car')">
                     </div>
 
                     <div class="form-group-sm">
                         <label>ថ្លៃក្លៀផ្លូវ ($):</label>
-                        <input type="number" step="0.01" id="feeClearance" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults()">
+                        <input type="number" step="0.01" id="feeClearance" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('clearance')">
                     </div>
 
                     <div class="form-group-sm">
                         <label>ថ្លៃ Work ($):</label>
-                        <input type="number" step="0.01" id="feeWork" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults()">
+                        <input type="number" step="0.01" id="feeWork" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('work')">
                     </div>
                 </div>
             </div>
@@ -764,7 +764,7 @@ input[type="date"] {
                         ចំនួនសមាជិកក្រុម: <span id="paxCountLabel" style="font-weight: 900; color: #0369a1;">3</span> នាក់
                     </div>
                     <span style="color: var(--text-muted); font-size: 12px; font-weight: 700; white-space: nowrap;">Pax:</span>
-                    <input type="number" id="paxInput" class="form-input" value="3" style="width: 44px; height: 30px; text-align: center; font-weight: 800; padding: 2px 4px; font-size: 12.5px;" min="1" max="50">
+                    <input type="number" id="paxInput" class="form-input" value="3" style="width: 44px; height: 30px; text-align: center; font-weight: 800; padding: 2px 4px; font-size: 12.5px;" min="1" max="50" onchange="adjustPaxRows()" oninput="adjustPaxRows()">
                     
                     <div style="display: flex; align-items: center; gap: 4px; flex: 0 0 auto;">
                         <input type="text" id="custNamePassport" list="customerNameSuggestions" class="form-input" placeholder="🔍 វាយឈ្មោះដើម្បីស្វែងរក ឬបញ្ចូលក្នុង Pax..." style="width: 210px; height: 30px; font-size: 12px; font-weight: 700; padding: 2px 8px; border: 1.5px solid #6366f1; border-radius: 6px; background: #ffffff; color: #0f172a;" oninput="syncNameHeader(this.value)" onkeydown="if(event.key==='Enter'){ event.preventDefault(); addPassportMember(); }">
@@ -1065,38 +1065,94 @@ input[type="date"] {
             calcTotals();
         }
 
-        function handleNameKeydown(event, input) {
-            if (event.key === 'Enter' || event.key === 'ArrowDown') {
-                if (event.key === 'Enter') event.preventDefault();
-                const tr = input.closest('tr');
-                let nextTr = tr ? tr.nextElementSibling : null;
-                if (!nextTr && event.key === 'Enter') {
-                    addMemberRow();
-                    const tbody = document.getElementById('groupMembersBody');
-                    nextTr = tbody ? tbody.lastElementChild : null;
+        function handleTableKeydown(event, input) {
+            const key = event.key;
+            if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(key)) return;
+
+            const tr = input.closest('tr');
+            if (!tr) return;
+            const tbody = tr.parentElement;
+            if (!tbody) return;
+
+            const inputsInRow = Array.from(tr.querySelectorAll('input:not([readonly])'));
+            const colIndex = inputsInRow.indexOf(input);
+            if (colIndex === -1) return;
+
+            if (key === 'ArrowDown' || key === 'Enter') {
+                event.preventDefault();
+                let nextTr = tr.nextElementSibling;
+                if (!nextTr && key === 'Enter') {
+                    if (typeof addMemberRow === 'function') addMemberRow();
+                    else if (typeof addNewGmmMemberRow === 'function') addNewGmmMemberRow();
+                    nextTr = tbody.lastElementChild;
                     const paxInput = document.getElementById('paxInput');
                     if (paxInput && tbody) {
                         paxInput.value = tbody.children.length;
                     }
-                }
-                if (nextTr) {
-                    const nextInput = nextTr.querySelector('.input-m-name');
-                    if (nextInput) {
-                        nextInput.focus();
-                        nextInput.select();
+                    const countLbl = document.getElementById('paxCountLabel');
+                    if (countLbl && tbody) {
+                        countLbl.textContent = tbody.children.length;
                     }
                 }
-            } else if (event.key === 'ArrowUp') {
-                const tr = input.closest('tr');
-                const prevTr = tr ? tr.previousElementSibling : null;
+                if (nextTr) {
+                    const inputsNext = Array.from(nextTr.querySelectorAll('input:not([readonly])'));
+                    const target = inputsNext[colIndex] || inputsNext[0];
+                    if (target) {
+                        target.focus();
+                        setTimeout(() => target.select(), 10);
+                    }
+                }
+            } else if (key === 'ArrowUp') {
+                event.preventDefault();
+                const prevTr = tr.previousElementSibling;
                 if (prevTr) {
-                    const prevInput = prevTr.querySelector('.input-m-name');
-                    if (prevInput) {
-                        prevInput.focus();
-                        prevInput.select();
+                    const inputsPrev = Array.from(prevTr.querySelectorAll('input:not([readonly])'));
+                    const target = inputsPrev[colIndex] || inputsPrev[0];
+                    if (target) {
+                        target.focus();
+                        setTimeout(() => target.select(), 10);
+                    }
+                }
+            } else if (key === 'ArrowRight') {
+                const isText = input.type === 'text';
+                const selectionEmpty = input.selectionStart === input.selectionEnd;
+                const atEnd = !isText || !selectionEmpty || input.selectionEnd === input.value.length;
+                if (atEnd && colIndex < inputsInRow.length - 1) {
+                    event.preventDefault();
+                    const target = inputsInRow[colIndex + 1];
+                    target.focus();
+                    setTimeout(() => target.select(), 10);
+                } else if (atEnd && colIndex === inputsInRow.length - 1 && tr.nextElementSibling) {
+                    event.preventDefault();
+                    const inputsNext = Array.from(tr.nextElementSibling.querySelectorAll('input:not([readonly])'));
+                    if (inputsNext[0]) {
+                        inputsNext[0].focus();
+                        setTimeout(() => inputsNext[0].select(), 10);
+                    }
+                }
+            } else if (key === 'ArrowLeft') {
+                const isText = input.type === 'text';
+                const selectionEmpty = input.selectionStart === input.selectionEnd;
+                const atStart = !isText || !selectionEmpty || input.selectionStart === 0;
+                if (atStart && colIndex > 0) {
+                    event.preventDefault();
+                    const target = inputsInRow[colIndex - 1];
+                    target.focus();
+                    setTimeout(() => target.select(), 10);
+                } else if (atStart && colIndex === 0 && tr.previousElementSibling) {
+                    event.preventDefault();
+                    const inputsPrev = Array.from(tr.previousElementSibling.querySelectorAll('input:not([readonly])'));
+                    const lastTarget = inputsPrev[inputsPrev.length - 1];
+                    if (lastTarget) {
+                        lastTarget.focus();
+                        setTimeout(() => lastTarget.select(), 10);
                     }
                 }
             }
+        }
+
+        function handleNameKeydown(event, input) {
+            handleTableKeydown(event, input);
         }
 
         function addMemberRow(rowNum, name = '', pass = '') {
@@ -1114,13 +1170,13 @@ input[type="date"] {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td class="text-center font-bold" style="text-align:center;">${num}</td>
-                <td><input type="text" class="form-input input-m-name" value="${name}" placeholder="ឈ្មោះតាម Passport (ឧ. SOMCHAI SUWANNAKOT)..." oninput="calcTotals()" onfocus="this.select()" onkeydown="handleNameKeydown(event, this)"></td>
-                <td><input type="number" step="0.01" class="form-input input-m-visa num-input" value="${fmtVal(visa)}" placeholder="" oninput="calcMemberTotal(this)"></td>
-                <td><input type="number" step="0.01" class="form-input input-m-evisa num-input" value="${fmtVal(evisa)}" placeholder="" oninput="calcMemberTotal(this)"></td>
-                <td><input type="number" step="0.01" class="form-input input-m-vip num-input" value="${fmtVal(vip)}" placeholder="" oninput="calcMemberTotal(this)"></td>
-                <td><input type="number" step="0.01" class="form-input input-m-car num-input" value="${fmtVal(car)}" placeholder="" oninput="calcMemberTotal(this)"></td>
-                <td><input type="number" step="0.01" class="form-input input-m-clearance num-input" value="${fmtVal(clearance)}" placeholder="" oninput="calcMemberTotal(this)"></td>
-                <td><input type="number" step="0.01" class="form-input input-m-work num-input" value="${fmtVal(work)}" placeholder="" oninput="calcMemberTotal(this)"></td>
+                <td><input type="text" class="form-input input-m-name" value="${name}" placeholder="ឈ្មោះតាម Passport (ឧ. SOMCHAI SUWANNAKOT)..." oninput="calcTotals()" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
+                <td><input type="number" step="0.01" class="form-input input-m-visa num-input" value="${fmtVal(visa)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
+                <td><input type="number" step="0.01" class="form-input input-m-evisa num-input" value="${fmtVal(evisa)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
+                <td><input type="number" step="0.01" class="form-input input-m-vip num-input" value="${fmtVal(vip)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
+                <td><input type="number" step="0.01" class="form-input input-m-car num-input" value="${fmtVal(car)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
+                <td><input type="number" step="0.01" class="form-input input-m-clearance num-input" value="${fmtVal(clearance)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
+                <td><input type="number" step="0.01" class="form-input input-m-work num-input" value="${fmtVal(work)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
                 <td><input type="number" step="0.01" class="form-input input-m-total num-input" value="${fmtVal(visa+evisa+vip+car+clearance+work)}" readonly></td>
             `;
             tbody.appendChild(tr);
@@ -1136,7 +1192,7 @@ input[type="date"] {
             calcTotals();
         }
 
-        function updateMemberFeesDefaults() {
+        function updateMemberFeesDefaults(targetField) {
             const visa = parseFloat(document.getElementById('feeVisa')?.value || 0);
             const evisa = parseFloat(document.getElementById('feeEvisa')?.value || 0);
             const vip = parseFloat(document.getElementById('feeVip')?.value || 0);
@@ -1146,14 +1202,45 @@ input[type="date"] {
             const fmtVal = v => (v > 0 ? (v % 1 === 0 ? v : v.toFixed(2)) : '');
 
             document.querySelectorAll('#groupMembersBody tr').forEach(r => {
-                if (r.querySelector('.input-m-visa')) r.querySelector('.input-m-visa').value = fmtVal(visa);
-                if (r.querySelector('.input-m-evisa')) r.querySelector('.input-m-evisa').value = fmtVal(evisa);
-                if (r.querySelector('.input-m-vip')) r.querySelector('.input-m-vip').value = fmtVal(vip);
-                if (r.querySelector('.input-m-car')) r.querySelector('.input-m-car').value = fmtVal(car);
-                if (r.querySelector('.input-m-clearance')) r.querySelector('.input-m-clearance').value = fmtVal(clearance);
-                if (r.querySelector('.input-m-work')) r.querySelector('.input-m-work').value = fmtVal(work);
+                if (!targetField || targetField === 'visa') {
+                    if (r.querySelector('.input-m-visa')) r.querySelector('.input-m-visa').value = fmtVal(visa);
+                }
+                if (!targetField || targetField === 'evisa') {
+                    if (r.querySelector('.input-m-evisa')) r.querySelector('.input-m-evisa').value = fmtVal(evisa);
+                }
+                if (!targetField || targetField === 'vip') {
+                    if (r.querySelector('.input-m-vip')) r.querySelector('.input-m-vip').value = fmtVal(vip);
+                }
+                if (!targetField || targetField === 'car') {
+                    if (r.querySelector('.input-m-car')) r.querySelector('.input-m-car').value = fmtVal(car);
+                }
+                if (!targetField || targetField === 'clearance') {
+                    if (r.querySelector('.input-m-clearance')) r.querySelector('.input-m-clearance').value = fmtVal(clearance);
+                }
+                if (!targetField || targetField === 'work') {
+                    if (r.querySelector('.input-m-work')) r.querySelector('.input-m-work').value = fmtVal(work);
+                }
                 calcMemberTotal(r.querySelector('.input-m-vip') || r.querySelector('.input-m-name'));
             });
+        }
+
+        function adjustPaxRows() {
+            const targetCount = parseInt(document.getElementById('paxInput').value || 1);
+            const tbody = document.getElementById('groupMembersBody');
+            if (!tbody || targetCount < 1) return;
+            const currentCount = tbody.children.length;
+
+            if (targetCount > currentCount) {
+                for (let i = currentCount + 1; i <= targetCount; i++) {
+                    addMemberRow(i);
+                }
+            } else if (targetCount < currentCount) {
+                for (let i = currentCount; i > targetCount; i--) {
+                    if (tbody.lastElementChild) tbody.lastElementChild.remove();
+                }
+            }
+            document.getElementById('paxCountLabel').textContent = tbody.children.length;
+            calcTotals();
         }
 
         function calcMemberTotal(el) {
@@ -1212,7 +1299,7 @@ input[type="date"] {
             const el = document.getElementById('custNamePassport');
             const rawVal = el ? el.value.trim() : '';
             if (!rawVal) {
-                setPaxRows();
+                if (el) el.focus();
                 return;
             }
 
@@ -1258,7 +1345,6 @@ input[type="date"] {
             // 2. If not found in yellow table, treat input as new Pax name(s) to add/fill in yellow table
             const names = rawVal.split(/[\n,;]+/).map(n => n.trim()).filter(n => n.length > 0);
             if (names.length === 0) {
-                setPaxRows();
                 return;
             }
 
@@ -2047,7 +2133,8 @@ input[type="date"] {
 
                         // 1. Android & Mobile Native Share (Passes PNG image directly into Telegram)
                         const file = new File([blob], `Receipt_${rNo}.png`, { type: 'image/png' });
-                        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                        if (isMobileDevice && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                             navigator.share({
                                 files: [file],
                                 title: `Receipt ${rNo}`,

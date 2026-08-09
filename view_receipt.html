@@ -1258,7 +1258,8 @@ input[type="date"] {
             renderReceiptCanvas().then(canvas => {
                 canvas.toBlob(blob => {
                     const file = new File([blob], `Receipt_${currentReceiptNo}.png`, { type: 'image/png' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                    if (isMobileDevice && navigator.canShare && navigator.canShare({ files: [file] })) {
                         navigator.share({
                             files: [file],
                             title: `Invoice ${currentReceiptNo}`,
