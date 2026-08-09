@@ -289,16 +289,19 @@ input[type="date"] {
 
 /* Action Buttons */
 .btn-sys {
-    padding: 6px 12px;
+    padding: 8px 14px;
     border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 13.5px;
+    font-weight: 700;
+    line-height: 1.4;
+    min-height: 36px;
+    white-space: nowrap;
     cursor: pointer;
     border: 1px solid transparent;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 6px;
     color: #fff;
     transition: all 0.15s ease;
 }
@@ -314,22 +317,29 @@ input[type="date"] {
 .btn-sys:hover { opacity: 0.9; transform: translateY(-1px); }
 
 .btn-action-sm {
-    padding: 4px 8px;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.4;
+    min-height: 32px;
+    white-space: nowrap;
+    border-radius: 5px;
 }
 
 /* Badges */
 .badge-status {
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 12.5px;
     font-weight: 700;
+    line-height: 1.4;
+    white-space: nowrap;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    justify-content: center;
+    gap: 5px;
     cursor: pointer;
+    min-height: 30px;
 }
 
 .badge-paid-st { background: #064e3b; color: #34d399; border: 1px solid #059669; }

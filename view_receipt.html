@@ -289,16 +289,19 @@ input[type="date"] {
 
 /* Action Buttons */
 .btn-sys {
-    padding: 6px 12px;
+    padding: 8px 14px;
     border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 13.5px;
+    font-weight: 700;
+    line-height: 1.4;
+    min-height: 36px;
+    white-space: nowrap;
     cursor: pointer;
     border: 1px solid transparent;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 6px;
     color: #fff;
     transition: all 0.15s ease;
 }
@@ -314,22 +317,29 @@ input[type="date"] {
 .btn-sys:hover { opacity: 0.9; transform: translateY(-1px); }
 
 .btn-action-sm {
-    padding: 4px 8px;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.4;
+    min-height: 32px;
+    white-space: nowrap;
+    border-radius: 5px;
 }
 
 /* Badges */
 .badge-status {
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 12.5px;
     font-weight: 700;
+    line-height: 1.4;
+    white-space: nowrap;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    justify-content: center;
+    gap: 5px;
     cursor: pointer;
+    min-height: 30px;
 }
 
 .badge-paid-st { background: #064e3b; color: #34d399; border: 1px solid #059669; }
@@ -1212,7 +1222,7 @@ input[type="date"] {
                         const item = new ClipboardItem({ 'image/png': blob });
                         navigator.clipboard.write([item]).then(() => {
                             showTgToast('✅ <b>បាន Copy រូបភាពវិក័យប័ត្រចូល Clipboard!</b><br>សូមចុច <b>Ctrl + V</b> ក្នុង Telegram Chat ដើម្បី Paste ផ្ញើរូបភាព!', 'success');
-                            window.open('tg://msg', '_blank') || window.open('https://web.telegram.org', '_blank');
+                            window.location.href = 'tg://msg';
                         }).catch(err => {
                             downloadFallbackAndOpenTelegram(canvas);
                         });
@@ -1238,7 +1248,7 @@ input[type="date"] {
             link.href = canvas.toDataURL('image/png');
             link.click();
             showTgToast('📥 បានទាញយករូបភាពវិក័យប័ត្រ! លោកអ្នកអាច Drag/Upload រូបភាពនេះចូល Telegram Chat បាន!', 'info');
-            window.open('https://t.me', '_blank');
+            window.location.href = 'tg://msg';
         }
 
 
@@ -1263,9 +1273,18 @@ input[type="date"] {
             });
         }
 
+        function getTelegramShareUrl(textStr) {
+            const encoded = typeof textStr === 'string' && (textStr.includes('%20') || textStr.includes('%0A')) ? textStr : encodeURIComponent(textStr);
+            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            if (!isLocal && window.location.protocol === 'https:') {
+                return `tg://msg_url?url=${encodeURIComponent(window.location.href)}&text=${encoded}`;
+            }
+            return `tg://msg_url?text=${encoded}`;
+        }
+
         function shareTextLink() {
-            const text = encodeURIComponent(`🧾 VIP Border Receipt: ${currentReceiptNo}\n👤 Customer/Group: ${currentCustomerName}\n💰 Total USD: $${currentTotalUSD}\n🏢 Golden Mekong Commercial Service`);
-            window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${text}`, '_blank');
+            const text = `🧾 VIP Border Receipt: ${currentReceiptNo}\n👤 Customer/Group: ${currentCustomerName}\n💰 Total USD: $${currentTotalUSD}\n🏢 Golden Mekong Commercial Service`;
+            window.location.href = getTelegramShareUrl(text);
         }
 
 

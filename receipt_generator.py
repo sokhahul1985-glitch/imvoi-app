@@ -165,15 +165,15 @@ class InvoiceNumberManager:
             try:
                 with open(cls.COUNTER_FILE, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                    return int(data.get("last_number", 172))
+                    return int(data.get("last_number", 0))
             except Exception:
                 pass
-        return 172
+        return 0
 
     @classmethod
     def get_next_invoice_no(cls) -> str:
         curr = cls.get_current_number()
-        return f"INV {curr + 1:04d}"
+        return f"INV {curr + 1:05d}"
 
     @classmethod
     def increment_invoice_no(cls, used_no=None) -> str:
@@ -192,7 +192,7 @@ class InvoiceNumberManager:
         except Exception as e:
             print(f"Error saving invoice counter: {e}")
 
-        return f"INV {next_num + 1:04d}"
+        return f"INV {next_num:05d}"
 
 
 class ReceiptGenerator:

@@ -40,8 +40,15 @@ except Exception as e:
 
 PORT = 8000
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SAVED_CUSTOMERS_FILE = os.path.join(BASE_DIR, 'saved_customers.json')
-INVOICE_COUNTER_FILE = os.path.join(BASE_DIR, 'invoice_counter.json')
+DATA_DIR = os.environ.get('DATA_DIR', '/var/data' if os.path.exists('/var/data') else BASE_DIR)
+if not os.path.exists(DATA_DIR):
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+    except Exception:
+        DATA_DIR = BASE_DIR
+
+SAVED_CUSTOMERS_FILE = os.path.join(DATA_DIR, 'saved_customers.json')
+INVOICE_COUNTER_FILE = os.path.join(DATA_DIR, 'invoice_counter.json')
 WEB_DIR = BASE_DIR
 
 def load_json(filepath, default):
@@ -62,18 +69,30 @@ def save_json(filepath, data):
         print("Save JSON Error:", e)
         return False
 
+def format_display_date(date_str):
+    if not date_str or not isinstance(date_str, str):
+        return ""
+    clean_str = date_str.strip().split(' ')[0]
+    parts = re.split(r'[-/.]', clean_str)
+    if len(parts) == 3:
+        if len(parts[0]) == 4:
+            return f"{parts[2].zfill(2)}-{parts[1].zfill(2)}-{parts[0]}"
+        elif len(parts[2]) == 4:
+            return f"{parts[0].zfill(2)}-{parts[1].zfill(2)}-{parts[2]}"
+    return clean_str
+
 def get_next_invoice_no():
-    counter = load_json(INVOICE_COUNTER_FILE, {"last_number": 747, "prefix": "INV "})
-    next_num = counter.get("last_number", 747) + 1
+    counter = load_json(INVOICE_COUNTER_FILE, {"last_number": 0, "prefix": "INV "})
+    next_num = counter.get("last_number", 0) + 1
     prefix = counter.get("prefix", "INV ")
-    return f"{prefix}{next_num:04d}"
+    return f"{prefix}{next_num:05d}"
 
 def increment_invoice_no():
-    counter = load_json(INVOICE_COUNTER_FILE, {"last_number": 747, "prefix": "INV "})
-    counter["last_number"] = counter.get("last_number", 747) + 1
+    counter = load_json(INVOICE_COUNTER_FILE, {"last_number": 0, "prefix": "INV "})
+    counter["last_number"] = counter.get("last_number", 0) + 1
     save_json(INVOICE_COUNTER_FILE, counter)
     prefix = counter.get("prefix", "INV ")
-    return f"{prefix}{counter['last_number']:04d}"
+    return f"{prefix}{counter['last_number']:05d}"
 
 def decode_b64_image(b64_str):
     if ',' in b64_str:
@@ -160,9 +179,9 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
         query = urllib.parse.parse_qs(parsed.query)
 
         # API Routes
-        if path == '/api/invoices':
+        if path in ['/api/invoices', '/api/get_database']:
             data = load_json(SAVED_CUSTOMERS_FILE, [])
-            self.send_json_response({'success': True, 'invoices': data})
+            self.send_json_response({'success': True, 'records': data, 'invoices': data})
             return
 
         elif path == '/api/next_no':
@@ -402,11 +421,11 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 pass_no = m.get('passport', '').strip()
                 nat = m.get('nationality', 'THAI').strip()
                 vip = float(m.get('vip', 0))
-                clearance = float(m.get('clearance', 0))
+                clearance = float(m.get('clearance_fee', m.get('clearance', 0)))
                 permit = float(m.get('work_permit', 0))
-                car = float(m.get('car_fee', 0))
-                visa = float(m.get('visa_fee', 0))
-                evisa = float(m.get('evisa', 0))
+                car = float(m.get('car_fee', m.get('car', 0)))
+                visa = float(m.get('visa_fee', m.get('visa', 0)))
+                evisa = float(m.get('evisa', m.get('e_visa', 0)))
 
                 row_usd = vip + clearance + permit + car + visa + evisa
                 grand_usd += row_usd
@@ -529,6 +548,119 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             save_json(SAVED_CUSTOMERS_FILE, all_invoices)
 
             self.send_json_response({'success': True, 'receipt_no': receipt_no})
+            return
+
+        elif path == '/api/update_members':
+            receipt_no = req_data.get('receipt_no', '').strip().lower()
+            members_data = req_data.get('members', [])
+            travel_date = req_data.get('travel_date', '').strip()
+            sender_name = req_data.get('sender_name', '').strip()
+
+            if not receipt_no:
+                self.send_json_response({'success': False, 'error': 'Missing receipt_no'}, status=400)
+                return
+
+            all_invoices = load_json(SAVED_CUSTOMERS_FILE, [])
+            found = False
+            updated_item = None
+
+            for item in all_invoices:
+                r_no = item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or ''
+                if r_no.strip().lower() == receipt_no:
+                    if travel_date:
+                        formatted_tdate = format_display_date(travel_date)
+                        item['travel_date'] = formatted_tdate
+                        if 'group_info' in item:
+                            item['group_info']['travel_date'] = formatted_tdate
+                        if 'group_data' in item:
+                            item['group_data']['travel_date'] = formatted_tdate
+                            item['group_data']['date_str'] = formatted_tdate
+                    if sender_name:
+                        if 'group_info' in item:
+                            item['group_info']['group_name'] = sender_name
+                        if 'group_data' in item:
+                            item['group_data']['customer_name'] = sender_name
+
+                    exchange_rate = float(item.get('group_data', {}).get('exchange_rate', 33.90))
+                    new_members = []
+                    new_items = []
+                    grand_usd = 0.0
+
+                    for idx, m in enumerate(members_data, 1):
+                        name = (m.get('full_english_name') or m.get('name') or m.get('english_name') or '').strip()
+                        if not name:
+                            continue
+                        pass_no = (m.get('passport_no') or m.get('passport') or '-').strip()
+                        nat = (m.get('nationality') or 'THAI').strip()
+                        usd = float(m.get('usd', 0.0))
+                        vip = float(m.get('vip', 0.0))
+                        clearance = float(m.get('clearance_fee', 0.0) or m.get('clearance', 0.0))
+                        permit = float(m.get('work_permit', 0.0))
+                        car = float(m.get('car_fee', 0.0))
+                        visa = float(m.get('visa_fee', 0.0))
+                        evisa = float(m.get('e_visa', 0.0) or m.get('evisa', 0.0))
+
+                        if usd == 0 and (vip or clearance or permit or car or visa or evisa):
+                            usd = vip + clearance + permit + car + visa + evisa
+
+                        grand_usd += usd
+
+                        new_members.append({
+                            'full_english_name': name,
+                            'english_name': name,
+                            'passport_no': pass_no,
+                            'nationality': nat,
+                            'car_fee': car,
+                            'visa_fee': visa,
+                            'price': 0.0,
+                            'e_visa': evisa,
+                            'vip': vip,
+                            'clearance_fee': clearance,
+                            'work_permit': permit,
+                            'usd': usd,
+                            'qty': '1'
+                        })
+
+                        new_items.append({
+                            'no': idx,
+                            'description': name,
+                            'qty': '1',
+                            'e_visa': f"${evisa}" if evisa > 0 else '',
+                            'vip': f"${vip}" if vip > 0 else '',
+                            'overstay': '',
+                            'car_fee': f"${car}" if car > 0 else '',
+                            'visa': f"${visa}" if visa > 0 else '',
+                            'clearance_fee': f"${clearance}" if clearance > 0 else '',
+                            'work_permit': f"${permit}" if permit > 0 else '',
+                            'usd': usd
+                        })
+
+                    grand_thb = grand_usd * exchange_rate
+                    pax_count = len(new_members)
+                    first_cust_name = new_members[0]['full_english_name'] if new_members else 'N/A'
+                    group_name = sender_name or item.get('group_info', {}).get('group_name') or item.get('group_data', {}).get('customer_name') or 'VIP Group'
+
+                    item['members'] = new_members
+                    if 'customer' in item:
+                        item['customer']['full_english_name'] = f"GROUP: {group_name} ({pax_count} Pax)"
+                        item['customer']['sex'] = f"{pax_count} Pax"
+                    if 'group_info' in item:
+                        item['group_info']['customer_name'] = first_cust_name
+                    if 'group_data' in item:
+                        item['group_data']['items'] = new_items
+                        item['group_data']['totals'] = {'usd': grand_usd, 'baht': grand_thb}
+                        item['group_data']['group_customer_name'] = first_cust_name
+                    item['totals'] = {'usd': grand_usd, 'baht': grand_thb}
+
+                    found = True
+                    updated_item = item
+                    break
+
+            if found:
+                save_json(SAVED_CUSTOMERS_FILE, all_invoices)
+                self.send_json_response({'success': True, 'invoice': updated_item})
+            else:
+                self.send_json_response({'success': False, 'error': 'Receipt not found'}, status=404)
             return
 
         elif path == '/api/save_telegram_config':
