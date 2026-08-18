@@ -338,6 +338,50 @@ input[type="date"] {
     background: #f8fafc;
 }
 
+/* Group Members Modal Compact Table Styling */
+#groupMembersModal .table-container {
+    max-height: 480px;
+    overflow-x: auto;
+    overflow-y: auto;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+#groupMembersModal table.app-table {
+    width: 100%;
+    min-width: 820px;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+}
+
+#groupMembersModal table.app-table th {
+    padding: 5px 4px !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+    background: #e2e8f0 !important;
+    border: 1px solid #cbd5e1 !important;
+    height: 28px !important;
+}
+
+#groupMembersModal table.app-table td {
+    padding: 1.5px 2px !important;
+    border: 1px solid #e2e8f0 !important;
+    vertical-align: middle !important;
+    height: 28px !important;
+    line-height: 1 !important;
+}
+
+#groupMembersModal .gmm-row {
+    height: 28px !important;
+}
+
+#groupMembersModal .gmm-row:hover td {
+    background: #f1f5f9 !important;
+}
+
 /* Action Buttons */
 .btn-sys {
     padding: 8px 14px;
@@ -3007,30 +3051,30 @@ input[type="date"] {
 
             if (mode === 'visa') {
                 head.innerHTML = `
-                    <tr style="background: #e2e8f0; color: #0f172a; font-size: 12.5px; font-weight: 800;">
-                        <th style="width: 32px; text-align: center; padding: 6px 2px;">ល.រ</th>
-                        <th style="min-width: 220px; text-align: left; padding: 6px 8px;">ឈ្មោះសមាជិក (Passport Name)</th>
-                        <th style="width: 64px; text-align: center; padding: 6px 2px;">ថ្លៃ VISA ($)</th>
-                        <th style="width: 56px; text-align: center; padding: 6px 2px; color: #0369a1;">ចំនួនខែត</th>
-                        <th style="width: 64px; text-align: center; padding: 6px 2px;">ថ្លៃវើក ($)</th>
-                        <th style="width: 64px; text-align: center; padding: 6px 2px;">ថ្លៃ VIP ($)</th>
-                        <th style="width: 64px; text-align: center; padding: 6px 2px;">ថ្លៃពិន័យ ($)</th>
-                        <th style="width: 64px; text-align: center; padding: 6px 2px;">សរុប ($)</th>
-                        <th style="width: 76px; text-align: center; padding: 6px 2px; color: #047857;">វីសាចេញ</th>
-                        <th style="width: 52px; text-align: center; padding: 6px 2px;">សកម្មភាព</th>
+                    <tr style="background: #e2e8f0; color: #0f172a; font-size: 12px; font-weight: 800;">
+                        <th style="width: 32px; text-align: center; padding: 4px 2px; white-space: nowrap;">ល.រ</th>
+                        <th style="min-width: 220px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
+                        <th style="width: 65px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃ VISA ($)</th>
+                        <th style="width: 58px; text-align: center; padding: 4px 2px; color: #0369a1; white-space: nowrap;">ចំនួនខែ</th>
+                        <th style="width: 65px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃវើក ($)</th>
+                        <th style="width: 65px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃ VIP ($)</th>
+                        <th style="width: 65px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃពិន័យ ($)</th>
+                        <th style="width: 65px; text-align: center; padding: 4px 2px; white-space: nowrap;">សរុប ($)</th>
+                        <th style="width: 88px; text-align: center; padding: 4px 2px; color: #047857; white-space: nowrap;">វីសាចេញ</th>
+                        <th style="width: 58px; text-align: center; padding: 4px 2px; white-space: nowrap;">សកម្មភាព</th>
                     </tr>
                 `;
             } else {
                 head.innerHTML = `
-                    <tr style="background: #e2e8f0; color: #0f172a; font-size: 12.5px; font-weight: 800;">
-                        <th style="width: 32px; text-align: center; padding: 6px 2px;">ល.រ</th>
-                        <th style="min-width: 250px; text-align: left; padding: 6px 8px;">ឈ្មោះសមាជិក (Passport Name)</th>
-                        <th style="width: 68px; text-align: center; padding: 6px 2px;">ថ្លៃ VIP ($)</th>
-                        <th style="width: 70px; text-align: center; padding: 6px 2px;">ថ្លៃក្លៀផ្លូវ ($)</th>
-                        <th style="width: 68px; text-align: center; padding: 6px 2px;">ថ្លៃឡាន ($)</th>
-                        <th style="width: 68px; text-align: center; padding: 6px 2px;">ថ្លៃពិន័យ ($)</th>
-                        <th style="width: 68px; text-align: center; padding: 6px 2px;">សរុប ($)</th>
-                        <th style="width: 52px; text-align: center; padding: 6px 2px;">សកម្មភាព</th>
+                    <tr style="background: #e2e8f0; color: #0f172a; font-size: 12px; font-weight: 800;">
+                        <th style="width: 32px; text-align: center; padding: 4px 2px; white-space: nowrap;">ល.រ</th>
+                        <th style="min-width: 240px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
+                        <th style="width: 68px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃ VIP ($)</th>
+                        <th style="width: 72px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃក្លៀផ្លូវ ($)</th>
+                        <th style="width: 68px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃឡាន ($)</th>
+                        <th style="width: 68px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃពិន័យ ($)</th>
+                        <th style="width: 68px; text-align: center; padding: 4px 2px; white-space: nowrap;">សរុប ($)</th>
+                        <th style="width: 58px; text-align: center; padding: 4px 2px; white-space: nowrap;">សកម្មភាព</th>
                     </tr>
                 `;
             }
@@ -3040,9 +3084,9 @@ input[type="date"] {
             const tbody = document.getElementById('gmmMembersBody');
             if (!tbody) return;
 
-            const inputStyleName = `width:100%; height:30px; padding:2px 8px; font-size:12.5px; background:#ffffff; border:1.2px solid #64748b; color:#0f172a; font-weight:700; border-radius:4px; box-sizing:border-box;`;
-            const inputStyleFee = `width:100%; height:30px; padding:2px 2px; font-size:12px; background:#ffffff; border:1.2px solid #64748b; color:#0284c7; font-weight:700; text-align:center; border-radius:4px; box-sizing:border-box;`;
-            const inputStyleUsd = `width:100%; height:30px; padding:2px 2px; font-size:12.5px; background:#ecfdf5; border:1.2px solid #10b981; color:#047857; font-weight:800; text-align:center; border-radius:4px; box-sizing:border-box;`;
+            const inputStyleName = `width:100%; height:26px; padding:1px 8px; font-size:12.5px; background:#ffffff; border:1px solid #94a3b8; color:#0f172a; font-weight:700; border-radius:4px; box-sizing:border-box;`;
+            const inputStyleFee = `width:100%; height:26px; padding:1px 2px; font-size:12px; background:#ffffff; border:1px solid #94a3b8; color:#0284c7; font-weight:700; text-align:center; border-radius:4px; box-sizing:border-box;`;
+            const inputStyleUsd = `width:100%; height:26px; padding:1px 2px; font-size:12px; background:#ecfdf5; border:1px solid #10b981; color:#047857; font-weight:800; text-align:center; border-radius:4px; box-sizing:border-box;`;
 
             if (!members || members.length === 0) {
                 if (mode === 'visa') {
@@ -3060,22 +3104,22 @@ input[type="date"] {
 
                     tbody.innerHTML = `
                         <tr class="gmm-row" data-mode="visa">
-                            <td style="text-align:center; font-weight:800; font-size:13px; color:#0284c7; padding: 2px 2px;" class="gmm-row-num">1</td>
-                            <td style="padding: 2px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${rawVisa ? formatNumNoZero(defVisa) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${rawMonths}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-permit" placeholder="" style="${inputStyleFee}" value="${rawWork ? formatNumNoZero(defWork) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${rawVip ? formatNumNoZero(defVip) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-fine" placeholder="" style="${inputStyleFee}" value="${rawFine ? formatNumNoZero(defFine) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${defUsd > 0 ? formatNumNoZero(defUsd) : ''}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="text-align:center; vertical-align:middle; padding: 2px 2px;">
-                                <label style="display:inline-flex; align-items:center; gap:3px; cursor:pointer; user-select:none; font-size:11px; font-weight:800; background:#f8fafc; color:#64748b; border:1px solid #cbd5e1; padding:3px 5px; border-radius:4px; transition:all 0.15s;">
-                                    <input type="checkbox" class="gmm-input-visa-issued" onchange="onGmmVisaIssuedChange(this)" style="cursor:pointer; width:14px; height:14px; accent-color:#10b981;">
-                                    <span class="visa-issued-label">⏳ រង់ចាំ</span>
+                            <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">1</td>
+                            <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${rawVisa ? formatNumNoZero(defVisa) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${rawMonths}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-permit" placeholder="" style="${inputStyleFee}" value="${rawWork ? formatNumNoZero(defWork) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${rawVip ? formatNumNoZero(defVip) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-fine" placeholder="" style="${inputStyleFee}" value="${rawFine ? formatNumNoZero(defFine) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${defUsd > 0 ? formatNumNoZero(defUsd) : ''}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">
+                                <label style="display:inline-flex; align-items:center; justify-content:center; gap:3px; cursor:pointer; user-select:none; font-size:10.5px; font-weight:800; background:#f8fafc; color:#64748b; border:1px solid #cbd5e1; padding:1px 5px; height:24px; border-radius:4px; transition:all 0.15s; white-space:nowrap; box-sizing:border-box;">
+                                    <input type="checkbox" class="gmm-input-visa-issued" onchange="onGmmVisaIssuedChange(this)" style="cursor:pointer; width:13px; height:13px; margin:0; accent-color:#10b981;">
+                                    <span class="visa-issued-label" style="white-space:nowrap;">⏳ រង់ចាំ</span>
                                 </label>
                             </td>
-                            <td style="text-align:center; padding: 2px 2px;">
-                                <button type="button" class="btn-sys btn-rose btn-action-sm" style="font-size:11px; padding:3px 6px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer;" onclick="removeGmmRow(this)">🗑️ លុប</button>
+                            <td style="text-align:center; padding: 1.5px 2px;">
+                                <button type="button" class="btn-sys btn-rose" style="font-size:10.5px; padding:1px 6px; height:24px; min-height:24px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; gap:2px; box-sizing:border-box;" onclick="removeGmmRow(this)">🗑️ លុប</button>
                             </td>
                         </tr>
                     `;
@@ -3093,15 +3137,15 @@ input[type="date"] {
 
                     tbody.innerHTML = `
                         <tr class="gmm-row" data-mode="line">
-                            <td style="text-align:center; font-weight:800; font-size:13px; color:#0284c7; padding: 2px 2px;" class="gmm-row-num">1</td>
-                            <td style="padding: 2px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${rawVip ? formatNumNoZero(defVip) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${rawClearance ? formatNumNoZero(defClearance) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-car" placeholder="" style="${inputStyleFee}" value="${rawCar ? formatNumNoZero(defCar) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-fine" placeholder="" style="${inputStyleFee}" value="${rawFine ? formatNumNoZero(defFine) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${defUsd > 0 ? formatNumNoZero(defUsd) : ''}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="text-align:center; padding: 2px 2px;">
-                                <button type="button" class="btn-sys btn-rose btn-action-sm" style="font-size:11px; padding:3px 6px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer;" onclick="removeGmmRow(this)">🗑️ លុប</button>
+                            <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">1</td>
+                            <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${rawVip ? formatNumNoZero(defVip) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${rawClearance ? formatNumNoZero(defClearance) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-car" placeholder="" style="${inputStyleFee}" value="${rawCar ? formatNumNoZero(defCar) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-fine" placeholder="" style="${inputStyleFee}" value="${rawFine ? formatNumNoZero(defFine) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${defUsd > 0 ? formatNumNoZero(defUsd) : ''}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="text-align:center; padding: 1.5px 2px;">
+                                <button type="button" class="btn-sys btn-rose" style="font-size:10.5px; padding:1px 6px; height:24px; min-height:24px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; gap:2px; box-sizing:border-box;" onclick="removeGmmRow(this)">🗑️ លុប</button>
                             </td>
                         </tr>
                     `;
@@ -3126,37 +3170,37 @@ input[type="date"] {
                     if (mode === 'visa') {
                         return `
                         <tr class="gmm-row" data-mode="visa">
-                            <td style="text-align:center; font-weight:800; font-size:13px; color:#0284c7; padding: 2px 2px;" class="gmm-row-num">${idx + 1}</td>
-                            <td style="padding: 2px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(visa)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${monthsVal}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-permit" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(permit)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(vip)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-fine" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(fine)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${formatNumNoZero(usd)}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="text-align:center; vertical-align:middle; padding: 2px 2px;">
-                                <label style="display:inline-flex; align-items:center; gap:3px; cursor:pointer; user-select:none; font-size:11px; font-weight:800; background:${isIssued ? '#ecfdf5' : '#f8fafc'}; color:${isIssued ? '#047857' : '#64748b'}; border:1px solid ${isIssued ? '#10b981' : '#cbd5e1'}; padding:3px 5px; border-radius:4px; transition:all 0.15s;">
-                                    <input type="checkbox" class="gmm-input-visa-issued" ${isIssued ? 'checked' : ''} onchange="onGmmVisaIssuedChange(this)" style="cursor:pointer; width:14px; height:14px; accent-color:#10b981;">
-                                    <span class="visa-issued-label">${isIssued ? '✅ ចេញរួច' : '⏳ រង់ចាំ'}</span>
+                            <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${idx + 1}</td>
+                            <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(visa)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${monthsVal}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-permit" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(permit)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(vip)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-fine" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(fine)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${formatNumNoZero(usd)}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">
+                                <label style="display:inline-flex; align-items:center; justify-content:center; gap:3px; cursor:pointer; user-select:none; font-size:10.5px; font-weight:800; background:${isIssued ? '#ecfdf5' : '#f8fafc'}; color:${isIssued ? '#047857' : '#64748b'}; border:1px solid ${isIssued ? '#10b981' : '#cbd5e1'}; padding:1px 5px; height:24px; border-radius:4px; transition:all 0.15s; white-space:nowrap; box-sizing:border-box;">
+                                    <input type="checkbox" class="gmm-input-visa-issued" ${isIssued ? 'checked' : ''} onchange="onGmmVisaIssuedChange(this)" style="cursor:pointer; width:13px; height:13px; margin:0; accent-color:#10b981;">
+                                    <span class="visa-issued-label" style="white-space:nowrap;">${isIssued ? '✅ ចេញរួច' : '⏳ រង់ចាំ'}</span>
                                 </label>
                             </td>
-                            <td style="text-align:center; padding: 2px 2px;">
-                                <button type="button" class="btn-sys btn-rose btn-action-sm" style="font-size:11px; padding:3px 6px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer;" onclick="removeGmmRow(this)">🗑️ លុប</button>
+                            <td style="text-align:center; padding: 1.5px 2px;">
+                                <button type="button" class="btn-sys btn-rose" style="font-size:10.5px; padding:1px 6px; height:24px; min-height:24px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; gap:2px; box-sizing:border-box;" onclick="removeGmmRow(this)">🗑️ លុប</button>
                             </td>
                         </tr>
                         `;
                     } else {
                         return `
                         <tr class="gmm-row" data-mode="line">
-                            <td style="text-align:center; font-weight:800; font-size:13px; color:#0284c7; padding: 2px 2px;" class="gmm-row-num">${idx + 1}</td>
-                            <td style="padding: 2px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(vip)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(clearance)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-car" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(car)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-fine" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(fine)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="padding: 2px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${formatNumNoZero(usd)}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                            <td style="text-align:center; padding: 2px 2px;">
-                                <button type="button" class="btn-sys btn-rose btn-action-sm" style="font-size:11px; padding:3px 6px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer;" onclick="removeGmmRow(this)">🗑️ លុប</button>
+                            <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${idx + 1}</td>
+                            <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(vip)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(clearance)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-car" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(car)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-fine" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(fine)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${formatNumNoZero(usd)}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="text-align:center; padding: 1.5px 2px;">
+                                <button type="button" class="btn-sys btn-rose" style="font-size:10.5px; padding:1px 6px; height:24px; min-height:24px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; gap:2px; box-sizing:border-box;" onclick="removeGmmRow(this)">🗑️ លុប</button>
                             </td>
                         </tr>
                         `;
@@ -3629,9 +3673,9 @@ input[type="date"] {
             const tbody = document.getElementById('gmmMembersBody');
             if (!tbody) return;
 
-            const inputStyleName = `width:100%; height:34px; padding:4px 10px; font-size:13px; background:#ffffff; border:1px solid #94a3b8; color:#0f172a; font-weight:bold; border-radius:4px; box-sizing:border-box;`;
-            const inputStyleFee = `width:100%; height:34px; padding:4px 2px; font-size:12px; background:#ffffff; border:1px solid #94a3b8; color:#0284c7; font-weight:bold; text-align:center; border-radius:4px; box-sizing:border-box;`;
-            const inputStyleUsd = `width:100%; height:34px; padding:4px 2px; font-size:12px; background:#f0fdf4; border:1px solid #86efac; color:#059669; font-weight:bold; text-align:center; border-radius:4px; box-sizing:border-box;`;
+            const inputStyleName = `width:100%; height:26px; padding:1px 8px; font-size:12.5px; background:#ffffff; border:1px solid #94a3b8; color:#0f172a; font-weight:700; border-radius:4px; box-sizing:border-box;`;
+            const inputStyleFee = `width:100%; height:26px; padding:1px 2px; font-size:12px; background:#ffffff; border:1px solid #94a3b8; color:#0284c7; font-weight:700; text-align:center; border-radius:4px; box-sizing:border-box;`;
+            const inputStyleUsd = `width:100%; height:26px; padding:1px 2px; font-size:12px; background:#ecfdf5; border:1px solid #10b981; color:#047857; font-weight:800; text-align:center; border-radius:4px; box-sizing:border-box;`;
 
             const currentCount = tbody.querySelectorAll('.gmm-row').length;
             const tr = document.createElement('tr');
@@ -3652,22 +3696,22 @@ input[type="date"] {
 
                 tr.setAttribute('data-mode', 'visa');
                 tr.innerHTML = `
-                    <td style="text-align:center; font-weight:bold; color:var(--accent-cyan);" class="gmm-row-num">${currentCount + 1}</td>
-                    <td><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                    <td><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${rawVisa ? formatNumNoZero(defVisa) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                    <td><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${rawMonths}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                    <td><input type="number" step="0.01" class="input-sys gmm-input-permit" placeholder="" style="${inputStyleFee}" value="${rawWork ? formatNumNoZero(defWork) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                    <td><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${rawVip ? formatNumNoZero(defVip) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                    <td><input type="number" step="0.01" class="input-sys gmm-input-fine" placeholder="" style="${inputStyleFee}" value="${rawFine ? formatNumNoZero(defFine) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                    <td><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${defUsd > 0 ? formatNumNoZero(defUsd) : ''}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                    <td style="text-align:center; vertical-align:middle;">
-                        <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer; user-select:none; font-size:12px; font-weight:800; background:#f8fafc; color:#64748b; border:1.5px solid #cbd5e1; padding:4px 8px; border-radius:6px; transition:all 0.15s;">
-                            <input type="checkbox" class="gmm-input-visa-issued" onchange="onGmmVisaIssuedChange(this)" style="cursor:pointer; width:16px; height:16px; accent-color:#10b981;">
-                            <span class="visa-issued-label">⏳ រង់ចាំ</span>
+                    <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${currentCount + 1}</td>
+                    <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${rawVisa ? formatNumNoZero(defVisa) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${rawMonths}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-permit" placeholder="" style="${inputStyleFee}" value="${rawWork ? formatNumNoZero(defWork) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${rawVip ? formatNumNoZero(defVip) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-fine" placeholder="" style="${inputStyleFee}" value="${rawFine ? formatNumNoZero(defFine) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${defUsd > 0 ? formatNumNoZero(defUsd) : ''}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">
+                        <label style="display:inline-flex; align-items:center; justify-content:center; gap:3px; cursor:pointer; user-select:none; font-size:10.5px; font-weight:800; background:#f8fafc; color:#64748b; border:1px solid #cbd5e1; padding:1px 5px; height:24px; border-radius:4px; transition:all 0.15s; white-space:nowrap; box-sizing:border-box;">
+                            <input type="checkbox" class="gmm-input-visa-issued" onchange="onGmmVisaIssuedChange(this)" style="cursor:pointer; width:13px; height:13px; margin:0; accent-color:#10b981;">
+                            <span class="visa-issued-label" style="white-space:nowrap;">⏳ រង់ចាំ</span>
                         </label>
                     </td>
-                    <td style="text-align:center;">
-                        <button type="button" class="btn-sys btn-rose btn-action-sm" style="font-size:11px; padding:4px 8px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer;" onclick="removeGmmRow(this)">🗑️ លុប</button>
+                    <td style="text-align:center; padding: 1.5px 2px;">
+                        <button type="button" class="btn-sys btn-rose" style="font-size:10.5px; padding:1px 6px; height:24px; min-height:24px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; gap:2px; box-sizing:border-box;" onclick="removeGmmRow(this)">🗑️ លុប</button>
                     </td>
                 `;
             } else {
@@ -3684,15 +3728,15 @@ input[type="date"] {
 
                 tr.setAttribute('data-mode', 'line');
                 tr.innerHTML = `
-                    <td style="text-align:center; font-weight:bold; color:var(--accent-cyan);" class="gmm-row-num">${currentCount + 1}</td>
-                    <td><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                    <td><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${rawVip ? formatNumNoZero(defVip) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                    <td><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${rawClearance ? formatNumNoZero(defClearance) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                    <td><input type="number" step="0.01" class="input-sys gmm-input-car" placeholder="" style="${inputStyleFee}" value="${rawCar ? formatNumNoZero(defCar) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                    <td><input type="number" step="0.01" class="input-sys gmm-input-fine" placeholder="" style="${inputStyleFee}" value="${rawFine ? formatNumNoZero(defFine) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                    <td><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${defUsd > 0 ? formatNumNoZero(defUsd) : ''}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
-                    <td style="text-align:center;">
-                        <button type="button" class="btn-sys btn-rose btn-action-sm" style="font-size:11px; padding:4px 8px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer;" onclick="removeGmmRow(this)">🗑️ លុប</button>
+                    <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${currentCount + 1}</td>
+                    <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${rawVip ? formatNumNoZero(defVip) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${rawClearance ? formatNumNoZero(defClearance) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-car" placeholder="" style="${inputStyleFee}" value="${rawCar ? formatNumNoZero(defCar) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-fine" placeholder="" style="${inputStyleFee}" value="${rawFine ? formatNumNoZero(defFine) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${defUsd > 0 ? formatNumNoZero(defUsd) : ''}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="text-align:center; padding: 1.5px 2px;">
+                        <button type="button" class="btn-sys btn-rose" style="font-size:10.5px; padding:1px 6px; height:24px; min-height:24px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; gap:2px; box-sizing:border-box;" onclick="removeGmmRow(this)">🗑️ លុប</button>
                     </td>
                 `;
             }
