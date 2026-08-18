@@ -3619,9 +3619,9 @@ input[type="date"] {
                 const usd = parseFloat(r.querySelector('.gmm-input-usd')?.value || 0);
                 sum += usd;
             });
-            const ft = document.getElementById('gmmTotalFooter');
+            const ft = document.getElementById('gmmGrandTotalDisplay') || document.getElementById('gmmTotalFooter');
             if (ft) {
-                ft.innerHTML = `💵 សរុបទឹកប្រាក់ក្នុងក្រុម (${rows.length} នាក់)៖ <span style="font-size: 16px; color: var(--accent-emerald);">$${sum.toFixed(2)}</span>`;
+                ft.innerHTML = `💵 សរុបទឹកប្រាក់ក្នុងក្រុម (${rows.length} នាក់)៖ <span style="font-size: 16px; font-weight: 800; color: #059669;">$${sum.toFixed(2)}</span>`;
             }
         }
 
