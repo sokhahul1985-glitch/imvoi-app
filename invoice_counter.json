@@ -1,4 +1,6 @@
 {
-  "last_number": 4,
-  "prefix": "INV "
+  "last_number": 113,
+  "prefix": "INV ",
+  "last_visa_number": 5,
+  "visa_prefix": "VISA "
 }
