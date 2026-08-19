@@ -1116,6 +1116,239 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json_response({'success': True, 'invoice': updated_item})
             return
 
+        elif path == '/api/split_group':
+            source_receipt_no = req_data.get('source_receipt_no', '').strip()
+            split_members_data = req_data.get('split_members', [])
+            new_receipt_no = req_data.get('new_receipt_no', '').strip()
+            new_sender_name = req_data.get('new_sender_name', '').strip()
+            new_travel_date = req_data.get('new_travel_date', '').strip()
+            new_agency_company = req_data.get('new_agency_company', '').strip()
+            service_category = req_data.get('service_category', 'visa').strip().lower()
+            exchange_rate = float(req_data.get('exchange_rate', 33.90))
+
+            if not source_receipt_no or not split_members_data:
+                self.send_json_response({'success': False, 'error': 'Missing source_receipt_no or split_members'}, status=400)
+                return
+
+            if not new_receipt_no:
+                new_receipt_no = increment_invoice_no(service_category)
+            else:
+                # Synchronize invoice counter if necessary
+                num_part = re.sub(r'[^0-9]', '', new_receipt_no)
+                if num_part.isdigit():
+                    num_val = int(num_part)
+                    counter = load_json(INVOICE_COUNTER_FILE, {"last_number": 0, "prefix": "INV ", "last_visa_number": 0, "visa_prefix": "VISA "})
+                    if service_category == 'visa':
+                        if num_val > counter.get("last_visa_number", 0):
+                            counter["last_visa_number"] = num_val
+                            save_json(INVOICE_COUNTER_FILE, counter)
+                    else:
+                        if num_val > counter.get("last_number", 0):
+                            counter["last_number"] = num_val
+                            save_json(INVOICE_COUNTER_FILE, counter)
+
+            all_invoices = load_json(SAVED_CUSTOMERS_FILE, [])
+            source_idx = -1
+            source_item = None
+
+            for i, item in enumerate(all_invoices):
+                r_no = item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or item.get('receipt_no') or ''
+                if r_no.strip().lower() == source_receipt_no.strip().lower():
+                    source_idx = i
+                    source_item = item
+                    break
+
+            if source_idx == -1 or not source_item:
+                self.send_json_response({'success': False, 'error': f'Source group {source_receipt_no} not found'}, status=404)
+                return
+
+            split_names = [
+                (m.get('full_english_name') or m.get('name') or m.get('english_name') or '').strip().lower()
+                for m in split_members_data
+                if (m.get('full_english_name') or m.get('name') or m.get('english_name') or '').strip()
+            ]
+
+            original_members = source_item.get('members', [])
+            remaining_members = []
+            moved_members = []
+
+            for m in original_members:
+                m_name = (m.get('full_english_name') or m.get('name') or m.get('english_name') or '').strip().lower()
+                if m_name in split_names:
+                    matching_split = next((sm for sm in split_members_data if (sm.get('full_english_name') or sm.get('name') or sm.get('english_name') or '').strip().lower() == m_name), m)
+                    moved_members.append(matching_split)
+                    split_names.remove(m_name)
+                else:
+                    remaining_members.append(m)
+
+            for sm in split_members_data:
+                sm_name = (sm.get('full_english_name') or sm.get('name') or sm.get('english_name') or '').strip().lower()
+                if sm_name in split_names:
+                    moved_members.append(sm)
+                    split_names.remove(sm_name)
+
+            if not moved_members:
+                self.send_json_response({'success': False, 'error': 'No valid members selected to split'}, status=400)
+                return
+
+            def process_members_and_items(members_list, rate):
+                new_m_list = []
+                new_i_list = []
+                grand_u = 0.0
+                for idx, m in enumerate(members_list, 1):
+                    name = (m.get('full_english_name') or m.get('name') or m.get('english_name') or '').strip()
+                    if not name: continue
+                    pass_no = (m.get('passport_no') or m.get('passport') or '-').strip()
+                    nat = (m.get('nationality') or 'THAI').strip()
+                    usd = float(m.get('usd', 0.0))
+                    vip = float(m.get('vip', 0.0))
+                    clearance = float(m.get('clearance_fee', 0.0) or m.get('clearance', 0.0))
+                    permit = float(m.get('work_permit', 0.0))
+                    car = float(m.get('car_fee', 0.0) or m.get('car', 0.0))
+                    visa = float(m.get('visa_fee', 0.0) or m.get('visa', 0.0))
+                    evisa = float(m.get('e_visa', 0.0) or m.get('evisa', 0.0))
+                    overstay = float(m.get('overstay', 0.0) or m.get('fine_fee', 0.0) or m.get('fine', 0.0))
+                    months = str(m.get('extension_months') or m.get('months') or m.get('visa_months') or '').strip()
+                    is_issued = m.get('visa_issued') in [True, 'true', 'True', 1, '1'] or m.get('visa_status') == 'issued' or m.get('status') == 'issued'
+                    visa_status = 'issued' if is_issued else 'pending'
+
+                    if usd == 0 and (vip or clearance or permit or car or visa or evisa or overstay):
+                        usd = vip + clearance + permit + car + visa + evisa + overstay
+
+                    grand_u += usd
+                    new_m_list.append({
+                        'full_english_name': name,
+                        'english_name': name,
+                        'name': name,
+                        'passport_no': pass_no,
+                        'nationality': nat,
+                        'car_fee': car,
+                        'visa_fee': visa,
+                        'extension_months': months,
+                        'months': months,
+                        'visa_months': months,
+                        'price': 0.0,
+                        'e_visa': evisa,
+                        'vip': vip,
+                        'clearance_fee': clearance,
+                        'work_permit': permit,
+                        'overstay': overstay,
+                        'fine_fee': overstay,
+                        'usd': usd,
+                        'qty': '1',
+                        'visa_issued': is_issued,
+                        'visa_status': visa_status
+                    })
+                    new_i_list.append({
+                        'no': idx,
+                        'description': name,
+                        'qty': '1',
+                        'extension_months': months,
+                        'months': months,
+                        'visa_months': months,
+                        'e_visa': f"${evisa:.0f}" if evisa > 0 else '',
+                        'vip': f"${vip:.0f}" if vip > 0 else '',
+                        'overstay': f"${overstay:.0f}" if overstay > 0 else '',
+                        'car_fee': f"${car:.0f}" if car > 0 else '',
+                        'visa': f"${visa:.0f}" if visa > 0 else '',
+                        'clearance_fee': f"${clearance:.0f}" if clearance > 0 else '',
+                        'work_permit': f"${permit:.0f}" if permit > 0 else '',
+                        'usd': usd,
+                        'visa_issued': is_issued,
+                        'visa_status': visa_status
+                    })
+                grand_t = grand_u * rate
+                return new_m_list, new_i_list, grand_u, grand_t
+
+            # Process remaining members for source group
+            src_rate = float(source_item.get('group_data', {}).get('exchange_rate', exchange_rate))
+            src_m_list, src_i_list, src_usd, src_thb = process_members_and_items(remaining_members, src_rate)
+            src_pax = len(src_m_list)
+            src_sender = source_item.get('sender_name') or source_item.get('group_info', {}).get('sender_name') or 'VIP Group'
+            src_first_cust = src_m_list[0]['full_english_name'] if src_m_list else 'N/A'
+            formatted_src_cust = format_group_customer_names(src_m_list) or src_first_cust
+
+            source_item['members'] = src_m_list
+            source_item['customer_name'] = f"{src_sender} ({src_pax} នាក់)" if src_pax > 0 else src_sender
+            if 'customer' in source_item:
+                source_item['customer']['full_english_name'] = f"GROUP: {src_sender} ({src_pax} នាក់)"
+                source_item['customer']['sex'] = f"{src_pax} Pax"
+            if 'group_info' in source_item:
+                source_item['group_info']['customer_name'] = formatted_src_cust
+                source_item['group_info']['pax_count'] = src_pax
+            if 'group_data' in source_item:
+                source_item['group_data']['items'] = src_i_list
+                source_item['group_data']['totals'] = {'usd': src_usd, 'baht': src_thb}
+                source_item['group_data']['group_customer_name'] = formatted_src_cust
+            source_item['totals'] = {'usd': src_usd, 'baht': src_thb}
+
+            # Create new invoice record for the split members
+            new_sender = new_sender_name or src_sender
+            new_tdate = format_display_date(new_travel_date) if new_travel_date else (source_item.get('travel_date') or datetime.datetime.now().strftime("%d-%m-%Y"))
+            new_agency = new_agency_company if new_agency_company is not None else (source_item.get('agency_company') or '')
+            new_m_list, new_i_list, new_usd, new_thb = process_members_and_items(moved_members, exchange_rate)
+            new_pax = len(new_m_list)
+            new_first_cust = new_m_list[0]['full_english_name'] if new_m_list else 'N/A'
+            formatted_new_cust = format_group_customer_names(new_m_list) or new_first_cust
+
+            new_invoice = {
+                'id': str(uuid.uuid4()),
+                'receipt_no': new_receipt_no,
+                'service_category': service_category,
+                'date_saved': datetime.datetime.now().strftime("%d/%m/%Y %H:%M"),
+                'travel_date': new_tdate,
+                'sender': new_sender,
+                'sender_name': new_sender,
+                'agency_company': new_agency,
+                'customer_name': f"{new_sender} ({new_pax} នាក់)" if new_pax > 0 else new_sender,
+                'payment_status': 'UNPAID',
+                'customer': {
+                    'receipt_no': new_receipt_no,
+                    'full_english_name': f"GROUP: {new_sender} ({new_pax} នាក់)",
+                    'nationality': 'GROUP',
+                    'agency_company': new_agency,
+                    'travel_date': new_tdate,
+                    'sex': f"{new_pax} Pax"
+                },
+                'group_info': {
+                    'receipt_no': new_receipt_no,
+                    'group_name': new_sender,
+                    'sender_name': new_sender,
+                    'customer_name': formatted_new_cust,
+                    'travel_date': new_tdate,
+                    'agency_company': new_agency,
+                    'service_category': service_category,
+                    'pax_count': new_pax
+                },
+                'group_data': {
+                    'receipt_no': new_receipt_no,
+                    'customer_name': new_sender,
+                    'sender_name': new_sender,
+                    'group_customer_name': formatted_new_cust,
+                    'agency_company': new_agency,
+                    'date_str': new_tdate,
+                    'travel_date': new_tdate,
+                    'exchange_rate': exchange_rate,
+                    'items': new_i_list,
+                    'totals': {'usd': new_usd, 'baht': new_thb}
+                },
+                'members': new_m_list,
+                'totals': {'usd': new_usd, 'baht': new_thb}
+            }
+
+            all_invoices.insert(source_idx, new_invoice)
+            save_json(SAVED_CUSTOMERS_FILE, all_invoices)
+
+            self.send_json_response({
+                'success': True,
+                'new_receipt_no': new_receipt_no,
+                'source_receipt_no': source_receipt_no,
+                'new_count': new_pax,
+                'remaining_count': src_pax,
+                'remaining_members': src_m_list
+            })
+            return
+
         elif path == '/api/save_telegram_config':
             token = req_data.get('bot_token', '').strip()
             chat_id = req_data.get('chat_id', '').strip()

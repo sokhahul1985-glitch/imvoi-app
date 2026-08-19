@@ -1390,13 +1390,77 @@ input[type="date"] {
             </div>
 
             <div class="modal-footer" style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 12px;">
-                <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                     <div style="font-weight: 800; font-size: 15px; color: #059669;" id="gmmGrandTotalDisplay">💵 សរុបទឹកប្រាក់ក្នុងក្រុម: $0.00</div>
+                    <div id="gmmSelectedSummary" style="display: none; font-size: 12.5px; font-weight: 800; color: #0284c7; background: #e0f2fe; padding: 4px 10px; border-radius: 6px; border: 1.5px solid #bae6fd; align-items: center; gap: 4px;">
+                        <span>☑️ បានជ្រើសរើស:</span>
+                        <span id="gmmSelectedCount" style="color: #0369a1; font-size: 13px;">0</span> នាក់
+                    </div>
                 </div>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; padding: 8px 20px; font-size: 14px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(5,150,105,0.3);" id="btnGmmSave" onclick="saveGroupMembersChanges()">💾 រក្សាទុក (Save Changes)</button>
+                    <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #0284c7, #0ea5e9); color: #ffffff; padding: 8px 18px; font-size: 13.5px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" id="btnGmmSplit" onclick="openSplitGroupModal()" title="ជ្រើសរើសសមាជិកដើម្បីបំបែកបង្កើតគ្រុប/វិក្កយបត្រថ្មី">
+                        <span>✂️ បំបែកគ្រុបថ្មី</span>
+                        <span id="gmmSelectedBadge" style="display: none; background: #ffffff; color: #0284c7; padding: 1px 7px; border-radius: 10px; font-size: 11.5px; font-weight: 900; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">0</span>
+                    </button>
+                    <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; padding: 8px 20px; font-size: 14px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(5,150,105,0.3);" id="btnGmmSave" onclick="saveGroupMembersChanges()">💾 កែប្រែ & រក្សាទុក (Update & Save)</button>
                     <button type="button" class="btn-sys btn-dark" style="padding: 8px 16px; font-size: 14px; font-weight: 700; border-radius: 6px;" onclick="closeGroupMembersModal()">❌ បិទផ្ទាំង (Close)</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Split Group Confirmation & Customization Modal Popup -->
+    <div id="splitGroupModal" class="modal-overlay" style="z-index: 1200; display: none;">
+        <div class="modal-card" style="max-width: 580px; width: 95%; background: #ffffff; border-radius: 12px; padding: 20px 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+            <div class="modal-toolbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1.5px solid #e2e8f0;">
+                <div style="font-weight: 800; font-size: 16px; color: #0284c7; display: flex; align-items: center; gap: 6px;">✂️ បំបែកសមាជិកបង្កើតគ្រុបថ្មី (Split to New Group)</div>
+                <button type="button" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer; padding: 2px 6px; border-radius: 4px;" onclick="closeSplitGroupModal()">✖</button>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Selected Count & Member Preview Box -->
+                <div style="background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 8px; padding: 10px 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 13px; font-weight: 800; color: #0369a1;">👥 សមាជិកដែលបានជ្រើសរើសដើម្បីបំបែក:</span>
+                        <span id="sgmSelectedCountBadge" style="font-size: 12px; font-weight: 800; background: #0284c7; color: #ffffff; padding: 2px 8px; border-radius: 12px;">0 នាក់</span>
+                    </div>
+                    <div id="sgmMembersListPreview" style="max-height: 100px; overflow-y: auto; font-size: 12px; color: #334155; font-weight: 600; line-height: 1.6; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 10px;">
+                        <!-- List of selected member names -->
+                    </div>
+                </div>
+
+                <!-- Form fields for the new group -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label style="display: block; font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 4px;">🧾 លេខវិក្កយបត្រថ្មី <span style="color:#ef4444;">*</span>:</label>
+                        <input type="text" id="sgmNewReceiptNo" class="form-input highlight-input" style="height: 32px; font-weight: 800; border: 1.5px solid #0284c7; border-radius: 6px; padding: 2px 8px; font-size: 13px; width: 100%; box-sizing: border-box; background: #e0f2fe; color: #0369a1; text-align: center;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 4px;">📅 ថ្ងៃដាក់/ធ្វើដំណើរ:</label>
+                        <input type="date" id="sgmTravelDate" class="form-input" style="height: 32px; font-weight: 700; border: 1.2px solid #38bdf8; border-radius: 6px; padding: 2px 8px; font-size: 12px; width: 100%; box-sizing: border-box; color-scheme: light; cursor: pointer; color: #0f172a;" onclick="this.showPicker()">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label style="display: block; font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 4px;">👤 ឈ្មោះអ្នកនាំ/បញ្ជូន <span style="color:#ef4444;">*</span>:</label>
+                        <input type="text" id="sgmSenderName" class="form-input" placeholder="បញ្ចូលឈ្មោះអ្នកនាំ..." style="height: 32px; font-weight: 700; border: 1.2px solid #0284c7; border-radius: 6px; padding: 2px 10px; font-size: 12.5px; width: 100%; box-sizing: border-box; color: #0f172a;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 4px;">🏢 ក្រុមហ៊ុន / Agency:</label>
+                        <input type="text" id="sgmAgencyCompany" class="form-input" placeholder="បញ្ចូលក្រុមហ៊ុន..." style="height: 32px; font-weight: 700; border: 1.2px solid #cbd5e1; border-radius: 6px; padding: 2px 10px; font-size: 12.5px; width: 100%; box-sizing: border-box; color: #0f172a;">
+                    </div>
+                </div>
+
+                <!-- Group Comparison Summary Notice -->
+                <div id="sgmComparisonNotice" style="font-size: 12px; font-weight: 700; color: #475569; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 8px 12px; text-align: center;">
+                </div>
+            </div>
+
+            <div style="margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+                <button type="button" class="btn-sys btn-dark" style="padding: 8px 16px; font-size: 13.5px; font-weight: 700; border-radius: 6px;" onclick="closeSplitGroupModal()">❌ បោះបង់ (Cancel)</button>
+                <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; padding: 8px 20px; font-size: 13.5px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" id="btnConfirmSplit" onclick="confirmExecuteSplitGroup()">✂️ បញ្ជាក់ការបំបែកគ្រុប (Confirm Split)</button>
             </div>
         </div>
     </div>
@@ -3052,8 +3116,9 @@ input[type="date"] {
             if (mode === 'visa') {
                 head.innerHTML = `
                     <tr style="background: #e2e8f0; color: #0f172a; font-size: 12px; font-weight: 800;">
-                        <th style="width: 32px; text-align: center; padding: 4px 2px; white-space: nowrap;">ល.រ</th>
-                        <th style="min-width: 220px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
+                        <th style="width: 30px; text-align: center; padding: 4px 2px; white-space: nowrap;">ល.រ</th>
+                        <th style="width: 34px; text-align: center; padding: 4px 2px; white-space: nowrap;"><input type="checkbox" id="gmmSelectAll" onchange="toggleGmmSelectAll(this)" style="cursor: pointer; width: 15px; height: 15px; vertical-align: middle; accent-color: #0284c7;" title="ជ្រើសរើសទាំងអស់"></th>
+                        <th style="min-width: 210px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
                         <th style="width: 65px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃ VISA ($)</th>
                         <th style="width: 58px; text-align: center; padding: 4px 2px; color: #0369a1; white-space: nowrap;">ចំនួនខែ</th>
                         <th style="width: 65px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃវើក ($)</th>
@@ -3067,8 +3132,9 @@ input[type="date"] {
             } else {
                 head.innerHTML = `
                     <tr style="background: #e2e8f0; color: #0f172a; font-size: 12px; font-weight: 800;">
-                        <th style="width: 32px; text-align: center; padding: 4px 2px; white-space: nowrap;">ល.រ</th>
-                        <th style="min-width: 240px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
+                        <th style="width: 30px; text-align: center; padding: 4px 2px; white-space: nowrap;">ល.រ</th>
+                        <th style="width: 34px; text-align: center; padding: 4px 2px; white-space: nowrap;"><input type="checkbox" id="gmmSelectAll" onchange="toggleGmmSelectAll(this)" style="cursor: pointer; width: 15px; height: 15px; vertical-align: middle; accent-color: #0284c7;" title="ជ្រើសរើសទាំងអស់"></th>
+                        <th style="min-width: 230px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
                         <th style="width: 68px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃ VIP ($)</th>
                         <th style="width: 72px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃក្លៀផ្លូវ ($)</th>
                         <th style="width: 68px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃឡាន ($)</th>
@@ -3105,6 +3171,7 @@ input[type="date"] {
                     tbody.innerHTML = `
                         <tr class="gmm-row" data-mode="visa">
                             <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">1</td>
+                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
                             <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${rawVisa ? formatNumNoZero(defVisa) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${rawMonths}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -3138,6 +3205,7 @@ input[type="date"] {
                     tbody.innerHTML = `
                         <tr class="gmm-row" data-mode="line">
                             <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">1</td>
+                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
                             <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${rawVip ? formatNumNoZero(defVip) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${rawClearance ? formatNumNoZero(defClearance) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -3171,6 +3239,7 @@ input[type="date"] {
                         return `
                         <tr class="gmm-row" data-mode="visa">
                             <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${idx + 1}</td>
+                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
                             <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(visa)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${monthsVal}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -3193,6 +3262,7 @@ input[type="date"] {
                         return `
                         <tr class="gmm-row" data-mode="line">
                             <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${idx + 1}</td>
+                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
                             <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(vip)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(clearance)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -3208,6 +3278,268 @@ input[type="date"] {
                 }).join('');
             }
             calculateGmmTotal();
+            updateGmmSelectionUI();
+        }
+
+        function toggleGmmSelectAll(masterCb) {
+            const isChecked = masterCb ? masterCb.checked : false;
+            const rows = document.querySelectorAll('#gmmMembersBody tr.gmm-row');
+            rows.forEach(r => {
+                if (r.style.display !== 'none') {
+                    const cb = r.querySelector('.gmm-row-select');
+                    if (cb) {
+                        cb.checked = isChecked;
+                        if (isChecked) {
+                            r.style.backgroundColor = '#f0f9ff';
+                        } else {
+                            r.style.backgroundColor = '';
+                        }
+                    }
+                }
+            });
+            updateGmmSelectionUI();
+        }
+
+        function onGmmRowSelectionChange(cb) {
+            const tr = cb ? cb.closest('tr') : null;
+            if (tr && cb) {
+                if (cb.checked) {
+                    tr.style.backgroundColor = '#f0f9ff';
+                } else {
+                    tr.style.backgroundColor = '';
+                }
+            }
+            const allCbs = document.querySelectorAll('#gmmMembersBody .gmm-row-select');
+            const checkedCbs = document.querySelectorAll('#gmmMembersBody .gmm-row-select:checked');
+            const master = document.getElementById('gmmSelectAll');
+            if (master) {
+                if (checkedCbs.length === 0) {
+                    master.checked = false;
+                    master.indeterminate = false;
+                } else if (checkedCbs.length === allCbs.length) {
+                    master.checked = true;
+                    master.indeterminate = false;
+                } else {
+                    master.checked = false;
+                    master.indeterminate = true;
+                }
+            }
+            updateGmmSelectionUI();
+        }
+
+        function updateGmmSelectionUI() {
+            const checkedRows = document.querySelectorAll('#gmmMembersBody .gmm-row-select:checked');
+            const count = checkedRows.length;
+            
+            const badge = document.getElementById('gmmSelectedBadge');
+            if (badge) {
+                badge.textContent = count;
+                badge.style.display = count > 0 ? 'inline-block' : 'none';
+            }
+
+            const summary = document.getElementById('gmmSelectedSummary');
+            const countSpan = document.getElementById('gmmSelectedCount');
+            if (summary && countSpan) {
+                countSpan.textContent = count;
+                summary.style.display = count > 0 ? 'inline-flex' : 'none';
+            }
+        }
+
+        let pendingSplitPayload = null;
+
+        function openSplitGroupModal() {
+            const checkedRows = Array.from(document.querySelectorAll('#gmmMembersBody tr.gmm-row')).filter(r => {
+                const cb = r.querySelector('.gmm-row-select');
+                return cb && cb.checked;
+            });
+
+            if (checkedRows.length === 0) {
+                alert('⚠️ សូមជ្រើសរើស (☑️) សមាជិកយ៉ាងហោចណាស់ 1 នាក់ ដើម្បីបំបែកគ្រុបថ្មី!');
+                return;
+            }
+
+            const allRows = document.querySelectorAll('#gmmMembersBody tr.gmm-row');
+            if (checkedRows.length === allRows.length) {
+                if (!confirm(`⚠️ អ្នកបានជ្រើសរើសសមាជិកទាំងអស់ (${checkedRows.length} នាក់)។ ប្រសិនបើបំបែកទាំងអស់ គ្រុបចាស់នឹងលែងមានសមាជិកឡើយ។ តើអ្នកពិតជាចង់បន្តមែនទេ?`)) {
+                    return;
+                }
+            }
+
+            const splitMembers = [];
+            checkedRows.forEach(r => {
+                const name = r.querySelector('.gmm-input-name')?.value?.trim() || '';
+                const evisa = parseFloat(r.querySelector('.gmm-input-evisa')?.value || 0);
+                const vip = parseFloat(r.querySelector('.gmm-input-vip')?.value || 0);
+                const clearance = parseFloat(r.querySelector('.gmm-input-clearance')?.value || 0);
+                const permit = parseFloat(r.querySelector('.gmm-input-permit')?.value || 0);
+                const car = parseFloat(r.querySelector('.gmm-input-car')?.value || 0);
+                const visa = parseFloat(r.querySelector('.gmm-input-visa')?.value || 0);
+                const months = r.querySelector('.gmm-input-months')?.value?.trim() || '';
+                const fine = parseFloat(r.querySelector('.gmm-input-fine')?.value || 0);
+                let usd = parseFloat(r.querySelector('.gmm-input-usd')?.value || 0);
+                if (usd === 0 && (evisa || vip || clearance || permit || car || visa || fine)) {
+                    usd = (currentGmmMode === 'visa') ? (visa + permit + vip + fine + evisa) : (vip + clearance + car + fine + evisa);
+                }
+                const isVisaIssued = r.querySelector('.gmm-input-visa-issued')?.checked || false;
+
+                if (name) {
+                    splitMembers.push({
+                        full_english_name: name,
+                        name: name,
+                        extension_months: months,
+                        months: months,
+                        visa_months: months,
+                        e_visa: evisa,
+                        vip: vip,
+                        clearance_fee: clearance,
+                        work_permit: permit,
+                        car_fee: car,
+                        visa_fee: visa,
+                        overstay: fine,
+                        fine_fee: fine,
+                        usd: usd,
+                        visa_issued: isVisaIssued,
+                        visa_status: isVisaIssued ? 'issued' : 'pending'
+                    });
+                }
+            });
+
+            if (splitMembers.length === 0) {
+                alert('⚠️ មិនមានឈ្មោះសមាជិកត្រឹមត្រូវក្នុងជួរដែលបានជ្រើសរើសឡើយ!');
+                return;
+            }
+
+            const curReceiptNo = document.getElementById('gmmReceiptNo')?.value?.trim() || currentGmmReceiptNo;
+            const curSender = document.getElementById('gmmSenderName')?.value?.trim() || '';
+            const curAgency = document.getElementById('gmmAgencyCompany')?.value?.trim() || '';
+            const curDate = document.getElementById('gmmTravelDate')?.value || '';
+            const curExchangeRate = parseFloat(document.getElementById('gmmExchangeRate')?.value || 33.90);
+            const category = currentGmmMode || 'visa';
+
+            // Auto fetch next receipt number
+            fetch(`/api/next_no?category=${category}`)
+                .then(r => r.json())
+                .then(res => {
+                    const nextNo = (res && res.next_no) ? res.next_no : (category === 'visa' ? 'VISA 00001' : 'INV 00001');
+                    const sgmReceiptInp = document.getElementById('sgmNewReceiptNo');
+                    if (sgmReceiptInp) sgmReceiptInp.value = nextNo;
+                })
+                .catch(() => {
+                    const sgmReceiptInp = document.getElementById('sgmNewReceiptNo');
+                    if (sgmReceiptInp && !sgmReceiptInp.value) {
+                        sgmReceiptInp.value = (category === 'visa' ? 'VISA 00001' : 'INV 00001');
+                    }
+                });
+
+            const sgmBadge = document.getElementById('sgmSelectedCountBadge');
+            if (sgmBadge) sgmBadge.textContent = `${splitMembers.length} នាក់`;
+
+            const previewElem = document.getElementById('sgmMembersListPreview');
+            if (previewElem) {
+                previewElem.innerHTML = splitMembers.map((m, i) => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f5f9; padding:2px 0;">
+                        <span>${i + 1}. <strong style="color:#0f172a;">${m.full_english_name}</strong></span>
+                        <span style="color:#059669; font-weight:800;">$${m.usd.toFixed(2)}</span>
+                    </div>
+                `).join('');
+            }
+
+            const senderInp = document.getElementById('sgmSenderName');
+            if (senderInp) senderInp.value = curSender;
+
+            const agencyInp = document.getElementById('sgmAgencyCompany');
+            if (agencyInp) agencyInp.value = curAgency;
+
+            const dateInp = document.getElementById('sgmTravelDate');
+            if (dateInp) dateInp.value = curDate || formatIsoDateForInput(new Date());
+
+            const remainingCount = allRows.length - splitMembers.length;
+            const noticeElem = document.getElementById('sgmComparisonNotice');
+            if (noticeElem) {
+                noticeElem.innerHTML = `💡 គ្រុបចាស់ [<strong>${curReceiptNo}</strong>] នឹងនៅសល់ <strong>${remainingCount} នាក់</strong> | គ្រុបថ្មីនឹងមាន <strong>${splitMembers.length} នាក់</strong>`;
+            }
+
+            pendingSplitPayload = {
+                source_receipt_no: curReceiptNo,
+                split_members: splitMembers,
+                service_category: category,
+                exchange_rate: curExchangeRate
+            };
+
+            const splitModal = document.getElementById('splitGroupModal');
+            if (splitModal) {
+                splitModal.classList.add('active');
+                splitModal.style.display = 'flex';
+            }
+        }
+
+        function closeSplitGroupModal() {
+            const splitModal = document.getElementById('splitGroupModal');
+            if (splitModal) {
+                splitModal.classList.remove('active');
+                splitModal.style.display = 'none';
+            }
+        }
+
+        function confirmExecuteSplitGroup() {
+            if (!pendingSplitPayload) return;
+
+            const newReceiptNo = document.getElementById('sgmNewReceiptNo')?.value?.trim();
+            const senderName = document.getElementById('sgmSenderName')?.value?.trim();
+            const travelDate = document.getElementById('sgmTravelDate')?.value || '';
+            const agencyCompany = document.getElementById('sgmAgencyCompany')?.value?.trim() || '';
+
+            if (!newReceiptNo) {
+                alert('⚠️ សូមបញ្ចូលលេខវិក្កយបត្រថ្មី!');
+                document.getElementById('sgmNewReceiptNo')?.focus();
+                return;
+            }
+
+            if (!senderName) {
+                alert('⚠️ សូមបញ្ចូលឈ្មោះអ្នកនាំ/បញ្ជូន!');
+                document.getElementById('sgmSenderName')?.focus();
+                return;
+            }
+
+            pendingSplitPayload.new_receipt_no = newReceiptNo;
+            pendingSplitPayload.new_sender_name = senderName;
+            pendingSplitPayload.new_travel_date = travelDate;
+            pendingSplitPayload.new_agency_company = agencyCompany;
+
+            const btnConfirm = document.getElementById('btnConfirmSplit');
+            if (btnConfirm) {
+                btnConfirm.disabled = true;
+                btnConfirm.textContent = '⏳ កំពុងបំបែកគ្រុប...';
+            }
+
+            fetch('/api/split_group', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(pendingSplitPayload)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (btnConfirm) {
+                    btnConfirm.disabled = false;
+                    btnConfirm.textContent = '✂️ បញ្ជាក់ការបំបែកគ្រុប (Confirm Split)';
+                }
+                if (res.success) {
+                    alert(`🎉 បានបំបែកគ្រុបថ្មី [${res.new_receipt_no}] ចំនួន ${res.new_count} នាក់ ដោយជោគជ័យ!\nគ្រុបចាស់ [${res.source_receipt_no}] នៅសល់ ${res.remaining_count} នាក់។`);
+                    closeSplitGroupModal();
+                    closeGroupMembersModal();
+                    loadDatabaseRecords();
+                    pendingSplitPayload = null;
+                } else {
+                    alert('បរាជ័យក្នុងការបំបែកគ្រុប៖ ' + (res.error || ''));
+                }
+            })
+            .catch(err => {
+                if (btnConfirm) {
+                    btnConfirm.disabled = false;
+                    btnConfirm.textContent = '✂️ បញ្ជាក់ការបំបែកគ្រុប (Confirm Split)';
+                }
+                alert('កំហុសក្នុងការផ្ញើទិន្នន័យ៖ ' + (err.message || err));
+            });
         }
 
         function onGmmVisaIssuedChange(cb) {
@@ -3269,6 +3601,13 @@ input[type="date"] {
                 const countElem = document.getElementById('gmmSearchCount');
                 if (countElem) countElem.textContent = `👥 សរុប ${members.length} នាក់`;
             }
+
+            const masterCb = document.getElementById('gmmSelectAll');
+            if (masterCb) {
+                masterCb.checked = false;
+                masterCb.indeterminate = false;
+            }
+            updateGmmSelectionUI();
 
             // Detect mode: Visa or Line
             let initialMode = 'line';
@@ -3697,6 +4036,7 @@ input[type="date"] {
                 tr.setAttribute('data-mode', 'visa');
                 tr.innerHTML = `
                     <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${currentCount + 1}</td>
+                    <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
                     <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${rawVisa ? formatNumNoZero(defVisa) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                     <td style="padding: 1.5px 2px;"><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${rawMonths}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -3729,6 +4069,7 @@ input[type="date"] {
                 tr.setAttribute('data-mode', 'line');
                 tr.innerHTML = `
                     <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${currentCount + 1}</td>
+                    <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
                     <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${rawVip ? formatNumNoZero(defVip) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${rawClearance ? formatNumNoZero(defClearance) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -3743,6 +4084,7 @@ input[type="date"] {
 
             tbody.appendChild(tr);
             calculateGmmTotal();
+            updateGmmSelectionUI();
             setTimeout(() => {
                 const nameInp = tr.querySelector('.gmm-input-name');
                 if (nameInp) nameInp.focus();
@@ -3755,6 +4097,7 @@ input[type="date"] {
             tr.remove();
             renumberGmmRows();
             calculateGmmTotal();
+            updateGmmSelectionUI();
         }
 
         function renumberGmmRows() {
