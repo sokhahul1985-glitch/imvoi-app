@@ -1349,6 +1349,38 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             })
             return
 
+        elif path == '/api/restore_database':
+            new_records = req_data.get('records', [])
+            if not isinstance(new_records, list) or len(new_records) == 0:
+                self.send_json_response({'success': False, 'error': 'No valid records provided'}, status=400)
+                return
+
+            save_json(SAVED_CUSTOMERS_FILE, new_records)
+
+            # Auto calculate and sync counter
+            max_inv = 0
+            max_visa = 0
+            for r in new_records:
+                r_no = str(r.get('receipt_no') or r.get('group_data', {}).get('receipt_no') or r.get('customer', {}).get('receipt_no') or '').strip().upper()
+                num_part = re.sub(r'[^0-9]', '', r_no)
+                if num_part.isdigit():
+                    num_val = int(num_part)
+                    if r_no.startswith('VISA'):
+                        if num_val > max_visa: max_visa = num_val
+                    elif r_no.startswith('INV'):
+                        if num_val > max_inv: max_inv = num_val
+
+            counter = {
+                'last_number': max_inv,
+                'prefix': 'INV ',
+                'last_visa_number': max_visa,
+                'visa_prefix': 'VISA '
+            }
+            save_json(INVOICE_COUNTER_FILE, counter)
+
+            self.send_json_response({'success': True, 'count': len(new_records), 'last_inv': max_inv, 'last_visa': max_visa})
+            return
+
         elif path == '/api/save_telegram_config':
             token = req_data.get('bot_token', '').strip()
             chat_id = req_data.get('chat_id', '').strip()

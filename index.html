@@ -1289,6 +1289,8 @@ input[type="date"] {
                 <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; font-size: 12.5px; padding: 6px 14px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; box-shadow: 0 2px 4px rgba(5,150,105,0.25);" onclick="openNewGroupModal()">➕ បង្កើតថ្មី (Create New)</button>
                 <button type="button" class="btn-sys btn-indigo btn-action-sm" style="font-size: 12.5px; padding: 6px 12px; font-weight: 700; background: linear-gradient(135deg, #0284c7, #2563eb); color: #ffffff;" onclick="exportCSV()">📥 Export CSV (Excel)</button>
                 <button type="button" class="btn-sys btn-dark btn-action-sm" style="font-size: 12.5px; padding: 6px 12px; font-weight: 700;" onclick="backupDatabaseJSON()">💾 Backup Data (JSON)</button>
+                <input type="file" id="jsonRestoreFileInput" accept=".json" style="display:none;" onchange="handleRestoreJSONFile(event)">
+                <button type="button" class="btn-sys btn-amber btn-action-sm" style="font-size: 12.5px; padding: 6px 12px; font-weight: 700; background: linear-gradient(135deg, #d97706, #f59e0b); color: #ffffff;" onclick="document.getElementById('jsonRestoreFileInput').click()">📤 Restore Data (JSON)</button>
                 <span id="totalRecordsLabel" style="font-size: 12.5px; font-weight: 700; color: #0284c7; white-space: nowrap; margin-left: auto; background: #e0f2fe; padding: 6px 12px; border-radius: 6px; border: 1px solid #bae6fd;"></span>
             </div>
         </div>
@@ -2746,6 +2748,61 @@ input[type="date"] {
             if (typeof showToast === 'function') {
                 showToast('🎉 បាន Backup Database JSON ដោយជោគជ័យ!');
             }
+        }
+
+        function handleRestoreJSONFile(event) {
+            const file = event.target?.files?.[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    let records = [];
+                    if (Array.isArray(data)) {
+                        records = data;
+                    } else if (data && Array.isArray(data.records)) {
+                        records = data.records;
+                    } else if (data && Array.isArray(data.invoices)) {
+                        records = data.invoices;
+                    }
+
+                    if (records.length === 0) {
+                        alert('⚠️ ឯកសារ JSON នេះមិនមានទិន្នន័យត្រឹមត្រូវឡើយ!');
+                        event.target.value = '';
+                        return;
+                    }
+
+                    if (!confirm(`⚠️ តើអ្នកពិតជាចង់បញ្ចូលទិន្នន័យ (Restore) ចំនួន ${records.length} ត្រា នេះចូលទៅក្នុងប្រព័ន្ធមែនទេ?`)) {
+                        event.target.value = '';
+                        return;
+                    }
+
+                    fetch('/api/restore_database', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ records: records })
+                    })
+                    .then(r => r.json())
+                    .then(res => {
+                        event.target.value = '';
+                        if (res.success) {
+                            alert(`🎉 បានបញ្ចូលទិន្នន័យ (Restore) ដោយជោគជ័យ៖ សរុប ${res.count} ត្រា!`);
+                            loadDatabaseRecords();
+                        } else {
+                            alert('បរាជ័យក្នុងការ Restore៖ ' + (res.error || ''));
+                        }
+                    })
+                    .catch(err => {
+                        event.target.value = '';
+                        alert('កំហុសក្នុងការតភ្ជាប់៖ ' + err.message);
+                    });
+                } catch (err) {
+                    event.target.value = '';
+                    alert('កំហុសក្នុងការអានឯកសារ JSON៖ ' + err.message);
+                }
+            };
+            reader.readAsText(file);
         }
 
         function formatNumNoZero(val) {
