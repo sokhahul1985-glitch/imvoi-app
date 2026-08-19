@@ -128,34 +128,54 @@ def format_group_customer_names(members):
 
 def get_next_invoice_no(category='car'):
     data = load_json(SAVED_CUSTOMERS_FILE, [])
-    counter = load_json(INVOICE_COUNTER_FILE, {"last_number": 63, "prefix": "INV ", "last_visa_number": 1, "visa_prefix": "VISA "})
+    counter = load_json(INVOICE_COUNTER_FILE, {"last_number": 0, "prefix": "INV ", "last_visa_number": 0, "visa_prefix": "VISA "})
     cat = (category or 'car').lower().strip()
     
     if cat == 'visa':
-        max_num = int(counter.get("last_visa_number", 0))
         prefix = counter.get("visa_prefix", "VISA ")
+        nums = []
         for item in data:
             r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
             if r_no.startswith('VISA'):
                 num_part = re.sub(r'[^0-9]', '', r_no)
                 if num_part.isdigit():
-                    max_num = max(max_num, int(num_part))
+                    nums.append(int(num_part))
+        if nums:
+            max_num = max(nums)
+        else:
+            max_num = int(counter.get("last_visa_number", 0))
+        
+        # Keep counter file in sync
+        if counter.get("last_visa_number") != max_num:
+            counter["last_visa_number"] = max_num
+            save_json(INVOICE_COUNTER_FILE, counter)
+            
         return f"{prefix}{(max_num + 1):05d}"
     else:
-        max_num = int(counter.get("last_number", 63))
         prefix = counter.get("prefix", "INV ")
+        nums = []
         for item in data:
             r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
             if r_no.startswith('INV'):
                 num_part = re.sub(r'[^0-9]', '', r_no)
                 if num_part.isdigit():
-                    max_num = max(max_num, int(num_part))
+                    nums.append(int(num_part))
+        if nums:
+            max_num = max(nums)
+        else:
+            max_num = int(counter.get("last_number", 0))
+            
+        # Keep counter file in sync
+        if counter.get("last_number") != max_num:
+            counter["last_number"] = max_num
+            save_json(INVOICE_COUNTER_FILE, counter)
+            
         return f"{prefix}{(max_num + 1):05d}"
 
 def increment_invoice_no(category='car'):
     next_no = get_next_invoice_no(category)
     cat = (category or 'car').lower().strip()
-    counter = load_json(INVOICE_COUNTER_FILE, {"last_number": 63, "prefix": "INV ", "last_visa_number": 1, "visa_prefix": "VISA "})
+    counter = load_json(INVOICE_COUNTER_FILE, {"last_number": 0, "prefix": "INV ", "last_visa_number": 0, "visa_prefix": "VISA "})
     num_part = int(re.sub(r'[^0-9]', '', next_no))
     if cat == 'visa':
         counter["last_visa_number"] = num_part
@@ -376,6 +396,19 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
         elif path == '/api/next_no':
             cat = query.get('category', ['car'])[0]
             self.send_json_response({'success': True, 'next_no': get_next_invoice_no(cat)})
+            return
+
+        elif path == '/api/set_counter':
+            cat = query.get('category', ['car'])[0].lower().strip()
+            num_str = query.get('number', ['0'])[0]
+            num = int(re.sub(r'[^0-9]', '', str(num_str)) or 0)
+            counter = load_json(INVOICE_COUNTER_FILE, {"last_number": 0, "prefix": "INV ", "last_visa_number": 0, "visa_prefix": "VISA "})
+            if cat == 'visa':
+                counter["last_visa_number"] = num
+            else:
+                counter["last_number"] = num
+            save_json(INVOICE_COUNTER_FILE, counter)
+            self.send_json_response({'success': True, 'category': cat, 'last_number': num, 'next_no': get_next_invoice_no(cat)})
             return
 
         elif path == '/api/invoice':
