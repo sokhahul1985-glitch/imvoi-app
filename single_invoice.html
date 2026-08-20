@@ -753,7 +753,19 @@ input[type="date"] {
             document.getElementById('totalUSD').value = total.toFixed(2);
         }
 
-        function handleFile(file) {
+        document.addEventListener('paste', function(e) {
+            const items = (e.clipboardData || window.clipboardData)?.items;
+            if (!items) return;
+            for (let item of items) {
+                if (item.kind === 'file' && item.type.startsWith('image/')) {
+                    e.preventDefault();
+                    scanSinglePassport(item.getAsFile());
+                    break;
+                }
+            }
+        });
+
+        function scanSinglePassport(file) {
             if (!file) return;
             document.getElementById('previewImg').src = URL.createObjectURL(file);
             document.getElementById('previewContainer').style.display = 'block';

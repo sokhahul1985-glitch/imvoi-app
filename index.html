@@ -709,7 +709,7 @@ input[type="date"] {
         body.mode-car .fee-col-work,
         body.mode-car .fee-col-evisa,
         body.mode-car #tabBtnVisa,
-        body.mode-car #tabBtnAll {
+        body.mode-car #tabBtnPassport {
             display: none !important;
         }
 
@@ -736,7 +736,31 @@ input[type="date"] {
         body.mode-visa .fee-col-clearance,
         body.mode-visa .fee-col-evisa,
         body.mode-visa #tabBtnCar,
-        body.mode-visa #tabBtnAll {
+        body.mode-visa #tabBtnPassport {
+            display: none !important;
+        }
+
+        /* Passport Mode: Hide Entire Top Workspace (Scanner & Batch Group Form) */
+        body.mode-passport .workspace-grid,
+        body.mode-passport #workspaceGrid {
+            display: none !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        body.mode-passport .passport-top-bar {
+            display: flex !important;
+        }
+
+        body.mode-passport #bottomDbPanel {
+            flex: 1 1 0% !important;
+            height: auto !important;
+            max-height: none !important;
+        }
+
+        body.mode-passport #tabBtnCar,
+        body.mode-passport #tabBtnVisa {
             display: none !important;
         }
 
@@ -768,7 +792,7 @@ input[type="date"] {
         }
 
         .portal-container {
-            max-width: 1060px;
+            max-width: 1080px;
             width: 100%;
             text-align: center;
             animation: portalFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -831,7 +855,7 @@ input[type="date"] {
             -webkit-backdrop-filter: blur(16px);
             border: 1.5px solid rgba(255, 255, 255, 0.12);
             border-radius: 18px;
-            padding: 26px 22px;
+            padding: 24px 20px;
             text-align: left;
             display: flex;
             flex-direction: column;
@@ -862,23 +886,31 @@ input[type="date"] {
             box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.35), 0 0 25px rgba(99, 102, 241, 0.2);
         }
 
-        .portal-card.card-all {
-            border-color: rgba(56, 189, 248, 0.35);
+        .portal-card.card-passport {
+            border-color: rgba(2, 132, 199, 0.35);
         }
-        .portal-card.card-all:hover {
-            border-color: #38bdf8;
+        .portal-card.card-passport:hover {
+            border-color: #0284c7;
             box-shadow: 0 20px 40px -10px rgba(2, 132, 199, 0.35), 0 0 25px rgba(56, 189, 248, 0.2);
         }
 
+        .portal-card.card-all {
+            border-color: rgba(148, 163, 184, 0.35);
+        }
+        .portal-card.card-all:hover {
+            border-color: #94a3b8;
+            box-shadow: 0 20px 40px -10px rgba(148, 163, 184, 0.35), 0 0 25px rgba(148, 163, 184, 0.2);
+        }
+
         .portal-card-icon {
-            width: 62px;
-            height: 62px;
+            width: 58px;
+            height: 58px;
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
-            margin-bottom: 16px;
+            font-size: 28px;
+            margin-bottom: 14px;
         }
 
         .icon-car {
@@ -893,65 +925,72 @@ input[type="date"] {
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
         }
 
-        .icon-all {
-            background: linear-gradient(135deg, rgba(2, 132, 199, 0.25), rgba(3, 105, 161, 0.45));
+        .icon-passport {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.25), rgba(14, 165, 233, 0.45));
             border: 1.5px solid rgba(56, 189, 248, 0.5);
             box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
         }
 
+        .icon-all {
+            background: linear-gradient(135deg, rgba(100, 116, 139, 0.25), rgba(71, 85, 105, 0.45));
+            border: 1.5px solid rgba(148, 163, 184, 0.5);
+            box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2);
+        }
+
         .portal-card-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 800;
             color: #ffffff;
             margin-bottom: 2px;
+            line-height: 1.3;
         }
 
         .portal-card-subtitle {
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 700;
             color: #94a3b8;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .portal-card-desc {
-            font-size: 13px;
+            font-size: 12.5px;
             color: #cbd5e1;
-            line-height: 1.55;
-            margin-bottom: 16px;
+            line-height: 1.5;
+            margin-bottom: 14px;
             flex-grow: 1;
         }
 
         .portal-feature-list {
             list-style: none;
             padding: 0;
-            margin: 0 0 20px 0;
-            font-size: 12.5px;
+            margin: 0 0 16px 0;
+            font-size: 12px;
             color: #94a3b8;
             display: flex;
             flex-direction: column;
-            gap: 7px;
+            gap: 6px;
         }
 
         .portal-feature-list li {
             display: flex;
             align-items: center;
-            gap: 7px;
+            gap: 6px;
         }
 
         .portal-btn {
             width: 100%;
-            padding: 12px 18px;
+            padding: 11px 14px;
             border-radius: 10px;
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 800;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             transition: all 0.2s ease;
         }
 
@@ -975,52 +1014,100 @@ input[type="date"] {
             transform: scale(1.02);
         }
 
-        .portal-btn-all {
-            background: linear-gradient(135deg, #0284c7, #2563eb);
+        .portal-btn-passport {
+            background: linear-gradient(135deg, #0284c7, #06b6d4);
             color: #ffffff;
             box-shadow: 0 4px 15px rgba(2, 132, 199, 0.35);
         }
-        .portal-btn-all:hover {
-            background: linear-gradient(135deg, #0369a1, #1d4ed8);
+        .portal-btn-passport:hover {
+            background: linear-gradient(135deg, #0369a1, #0891b2);
             transform: scale(1.02);
         }
 
-        /* Top Bar & Category Tabs in Main Workspace */
+        .portal-btn-all {
+            background: linear-gradient(135deg, #334155, #475569);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(51, 65, 85, 0.35);
+        }
+        .portal-btn-all:hover {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            transform: scale(1.02);
+        }
+
+        /* Top Bar & Category Tabs in Main Workspace (2x Bigger & Longer) */
         .cat-nav-tab {
-            background: #f1f5f9;
-            border: 1.5px solid #cbd5e1;
-            padding: 5px 14px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 12.5px;
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            padding: 11px 36px;
+            min-height: 48px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 15.5px;
             color: #334155;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            justify-content: center;
+            gap: 10px;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+            user-select: none;
+            letter-spacing: 0.3px;
         }
         .cat-nav-tab:hover {
-            background: #e2e8f0;
+            background: #f8fafc;
+            border-color: #94a3b8;
             color: #0f172a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
         }
-        .cat-nav-tab.active-tab-car {
-            background: #059669 !important;
-            color: #ffffff !important;
-            border-color: #059669 !important;
-            box-shadow: 0 2px 6px rgba(5, 150, 105, 0.3);
+        .cat-nav-tab:active {
+            transform: translateY(0);
         }
-        .cat-nav-tab.active-tab-visa {
-            background: #4f46e5 !important;
-            color: #ffffff !important;
-            border-color: #4f46e5 !important;
-            box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
-        }
-        .cat-nav-tab.active-tab-all {
-            background: #0284c7 !important;
+        .cat-nav-tab.home-nav-tab {
+            background: linear-gradient(135deg, #0284c7, #0369a1) !important;
             color: #ffffff !important;
             border-color: #0284c7 !important;
-            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35) !important;
+            padding: 11px 40px;
+            min-width: 170px;
+        }
+        .cat-nav-tab.home-nav-tab:hover {
+            background: linear-gradient(135deg, #0369a1, #075985) !important;
+            box-shadow: 0 6px 16px rgba(2, 132, 199, 0.45) !important;
+        }
+        .cat-nav-tab.active-tab-car {
+            background: linear-gradient(135deg, #059669, #10b981) !important;
+            color: #ffffff !important;
+            border-color: #059669 !important;
+            box-shadow: 0 4px 10px rgba(5, 150, 105, 0.35) !important;
+            padding: 11px 44px;
+            min-width: 220px;
+        }
+        .cat-nav-tab.active-tab-visa {
+            background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
+            color: #ffffff !important;
+            border-color: #4f46e5 !important;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.35) !important;
+            padding: 11px 44px;
+            min-width: 220px;
+        }
+        .cat-nav-tab.active-tab-passport {
+            background: linear-gradient(135deg, #0284c7, #0ea5e9) !important;
+            color: #ffffff !important;
+            border-color: #0284c7 !important;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35) !important;
+            padding: 11px 46px;
+            min-width: 270px;
+        }
+        .cat-nav-tab.active-tab-all {
+            background: linear-gradient(135deg, #334155, #475569) !important;
+            color: #ffffff !important;
+            border-color: #334155 !important;
+            box-shadow: 0 4px 10px rgba(51, 65, 85, 0.35) !important;
+            padding: 11px 44px;
+            min-width: 220px;
         }
         .cat-filter-btn {
             background: #ffffff;
@@ -1100,23 +1187,23 @@ input[type="date"] {
                     </button>
                 </div>
 
-                <!-- Card 3: 📊 ទិន្នន័យទាំងអស់ (All Services) -->
-                <div class="portal-card card-all" onclick="selectServiceCategory('all')">
+                <!-- Card 3: 📘 គ្រប់គ្រងប៉ាសស្ព័រ និងផ្សេងៗ (Passport & Other Services) -->
+                <div class="portal-card card-passport" onclick="selectServiceCategory('passport')">
                     <div>
-                        <div class="portal-card-icon icon-all">📊</div>
-                        <div class="portal-card-title">ទិន្នន័យទាំងអស់</div>
-                        <div class="portal-card-subtitle">All Services & Full System</div>
+                        <div class="portal-card-icon icon-passport">📘</div>
+                        <div class="portal-card-title">គ្រប់គ្រងប៉ាសស្ព័រ និងផ្សេងៗ</div>
+                        <div class="portal-card-subtitle">Passport & Other Services</div>
                         <div class="portal-card-desc">
-                            មើល និងគ្រប់គ្រងវិក្កយបត្រទាំងអស់គ្រប់ប្រភេទសេវាកម្ម ស្វែងរកទិន្នន័យទូទៅ និង Export របាយការណ៍។
+                            គ្រប់គ្រងការស្កេន Passport AI, រក្សាទុកទិន្នន័យលិខិតឆ្លងដែន និងចេញវិក្កយបត្រសេវាកម្មផ្សេងៗ។
                         </div>
                         <ul class="portal-feature-list">
-                            <li><span style="color: #38bdf8;">✓</span> បង្ហាញវិក្កយបត្រគ្រប់ប្រភេទសេវាកម្ម</li>
-                            <li><span style="color: #38bdf8;">✓</span> ស្វែងរក និងគ្រប់គ្រងទិន្នន័យរួម</li>
-                            <li><span style="color: #38bdf8;">✓</span> របាយការណ៍សរុប & Export CSV</li>
+                            <li><span style="color: #0284c7;">✓</span> ស្កេន Passport ដោយ AI OCR ស្វ័យប្រវត្តិ</li>
+                            <li><span style="color: #0284c7;">✓</span> គ្រប់គ្រងបញ្ជីឈ្មោះ & ទិន្នន័យ Passport</li>
+                            <li><span style="color: #0284c7;">✓</span> ចេញវិក្កយបត្រសេវាកម្មទូទៅ & ផ្សេងៗ</li>
                         </ul>
                     </div>
-                    <button type="button" class="portal-btn portal-btn-all" onclick="event.stopPropagation(); selectServiceCategory('all');">
-                        🚀 មើលទិន្នន័យទាំងអស់ (All Records) ➔
+                    <button type="button" class="portal-btn portal-btn-passport" onclick="event.stopPropagation(); selectServiceCategory('passport');">
+                        🚀 ចូលផ្នែកប៉ាសស្ព័រ & ផ្សេងៗ (Passport Service) ➔
                     </button>
                 </div>
             </div>
@@ -1161,12 +1248,12 @@ input[type="date"] {
 
         <!-- Right Panel: Group Customer Entry Form -->
         <div class="panel-box">
-            <div class="panel-title" style="display: flex; justify-content: flex-start; align-items: center; gap: 8px; padding: 2px 0 6px 0; flex-wrap: wrap;">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <button type="button" class="cat-nav-tab" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border-color: #0284c7;" onclick="showCategorySelectionModal()">🏠 ទំព័រដើម</button>
-                    <button type="button" id="tabBtnCar" class="cat-nav-tab" onclick="selectServiceCategory('car')">🚗 សេវាឡាន (Car)</button>
-                    <button type="button" id="tabBtnVisa" class="cat-nav-tab" onclick="selectServiceCategory('visa')">🛂 សេវាវីសា (Visa)</button>
-                    <button type="button" id="tabBtnAll" class="cat-nav-tab active-tab-all" onclick="selectServiceCategory('all')">📊 ទាំងអស់ (All)</button>
+            <div class="panel-title" style="display: flex; justify-content: flex-start; align-items: center; gap: 12px; padding: 2px 0 10px 0; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <button type="button" class="cat-nav-tab home-nav-tab" onclick="showCategorySelectionModal()">🏠 ទំព័រដើម</button>
+                    <button type="button" id="tabBtnCar" class="cat-nav-tab active-tab-car" onclick="selectServiceCategory('car')">🚗 សេវាឡាន (Car)</button>
+                    <button type="button" id="tabBtnVisa" class="cat-nav-tab active-tab-visa" onclick="selectServiceCategory('visa')">🛂 សេវាវីសា (Visa)</button>
+                    <button type="button" id="tabBtnPassport" class="cat-nav-tab active-tab-passport" onclick="selectServiceCategory('passport')">📘 ប៉ាសស្ព័រ & ផ្សេងៗ (Passport)</button>
                 </div>
             </div>
 
@@ -1175,72 +1262,72 @@ input[type="date"] {
 
             <!-- Single Unified Clean 1-Row Form Container -->
             <input type="hidden" id="custNamePassport" value="">
-            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; margin-bottom: 6px;">
-                <div id="topUnifiedFormRow" style="display: flex; gap: 6px; align-items: flex-end; flex-wrap: nowrap; width: 100%;">
+            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 4px 8px; margin-bottom: 5px;">
+                <div id="topUnifiedFormRow" style="display: flex; gap: 5px; align-items: flex-end; flex-wrap: nowrap; width: 100%;">
                     
-                    <div id="wrapSenderName" class="form-group-sm" style="flex: 2.2; min-width: 140px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ឈ្មោះអ្នកបញ្ជូន / អ្នកនាំ <span style="color: #f43f5e;">*</span>:</label>
-                        <input type="text" id="senderName" class="form-input" placeholder="ឧ. HR(CS)- សុខ..." required style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapSenderName" class="form-group-sm" style="flex: 2; min-width: 120px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ឈ្មោះអ្នកបញ្ជូន / អ្នកនាំ <span style="color: #f43f5e;">*</span>:</label>
+                        <input type="text" id="senderName" class="form-input" placeholder="ឧ. HR(CS)- សុខ..." required style="height: 27px; font-size: 11.5px; padding: 2px 6px;">
                     </div>
 
-                    <div id="wrapFeeVip" class="form-group-sm fee-col-vip" style="flex: 0.9; min-width: 65px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្លៃ VIP ($):</label>
-                        <input type="number" step="0.01" id="feeVip" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('vip')" style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapFeeVip" class="form-group-sm fee-col-vip" style="flex: 0.8; min-width: 50px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្លៃ VIP ($):</label>
+                        <input type="number" step="0.01" id="feeVip" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('vip')" style="height: 27px; font-size: 11.5px; padding: 2px 4px; text-align: center;">
                     </div>
 
-                    <div id="wrapFeeCar" class="form-group-sm fee-col-car" style="flex: 0.9; min-width: 65px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្លៃឡាន ($):</label>
-                        <input type="number" step="0.01" id="feeCar" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('car')" style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapFeeCar" class="form-group-sm fee-col-car" style="flex: 0.8; min-width: 50px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្លៃឡាន ($):</label>
+                        <input type="number" step="0.01" id="feeCar" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('car')" style="height: 27px; font-size: 11.5px; padding: 2px 4px; text-align: center;">
                     </div>
 
-                    <div id="wrapFeeClearance" class="form-group-sm fee-col-clearance" style="flex: 0.9; min-width: 70px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្លៃក្លៀផ្លូវ ($):</label>
-                        <input type="number" step="0.01" id="feeClearance" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('clearance')" style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapFeeClearance" class="form-group-sm fee-col-clearance" style="flex: 0.85; min-width: 55px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្លៃក្លៀផ្លូវ ($):</label>
+                        <input type="number" step="0.01" id="feeClearance" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('clearance')" style="height: 27px; font-size: 11.5px; padding: 2px 4px; text-align: center;">
                     </div>
 
-                    <div id="wrapFeeFine" class="form-group-sm fee-col-fine" style="flex: 0.9; min-width: 65px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្លៃពិន័យ ($):</label>
-                        <input type="number" step="0.01" id="feeFine" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('fine')" style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapFeeFine" class="form-group-sm fee-col-fine" style="flex: 0.8; min-width: 50px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្លៃពិន័យ ($):</label>
+                        <input type="number" step="0.01" id="feeFine" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('fine')" style="height: 27px; font-size: 11.5px; padding: 2px 4px; text-align: center;">
                     </div>
 
-                    <div id="wrapFeeVisa" class="form-group-sm fee-col-visa" style="flex: 0.9; min-width: 65px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្លៃ VISA ($):</label>
-                        <input type="number" step="0.01" id="feeVisa" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('visa')" style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapFeeVisa" class="form-group-sm fee-col-visa" style="flex: 0.8; min-width: 50px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្លៃ VISA ($):</label>
+                        <input type="number" step="0.01" id="feeVisa" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('visa')" style="height: 27px; font-size: 11.5px; padding: 2px 4px; text-align: center;">
                     </div>
 
-                    <div id="wrapFeeEvisa" class="form-group-sm fee-col-evisa" style="flex: 0.9; min-width: 65px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្លៃ E-VISA ($):</label>
-                        <input type="number" step="0.01" id="feeEvisa" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('evisa')" style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapFeeEvisa" class="form-group-sm fee-col-evisa" style="flex: 0.8; min-width: 50px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្លៃ E-VISA ($):</label>
+                        <input type="number" step="0.01" id="feeEvisa" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('evisa')" style="height: 27px; font-size: 11.5px; padding: 2px 4px; text-align: center;">
                     </div>
 
-                    <div id="wrapFeeWork" class="form-group-sm fee-col-work" style="flex: 0.9; min-width: 65px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្លៃ Work ($):</label>
-                        <input type="number" step="0.01" id="feeWork" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('work')" style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapFeeWork" class="form-group-sm fee-col-work" style="flex: 0.8; min-width: 50px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្លៃ Work ($):</label>
+                        <input type="number" step="0.01" id="feeWork" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('work')" style="height: 27px; font-size: 11.5px; padding: 2px 4px; text-align: center;">
                     </div>
 
-                    <div id="wrapTravelDate" class="form-group-sm" style="flex: 1.2; min-width: 105px;">
-                        <label id="lblTravelDate" style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្ងៃធ្វើដំណើរ:</label>
-                        <input type="date" id="travelDate" class="form-input" style="color-scheme: light; cursor: pointer; height: 32px; font-size: 12px; padding: 2px 6px;" onclick="this.showPicker()">
+                    <div id="wrapTravelDate" class="form-group-sm" style="flex: 1.1; min-width: 95px;">
+                        <label id="lblTravelDate" style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្ងៃធ្វើដំណើរ:</label>
+                        <input type="date" id="travelDate" class="form-input" style="color-scheme: light; cursor: pointer; height: 27px; font-size: 11px; padding: 1px 4px;" onclick="this.showPicker()">
                     </div>
 
-                    <div id="wrapReceiptNo" class="form-group-sm" style="flex: 1; min-width: 80px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">លេខវិក្កយបត្រ:</label>
-                        <input type="text" id="receiptNo" class="form-input highlight-input" readonly style="height: 32px; font-size: 12px; text-align: center; padding: 2px 6px;">
+                    <div id="wrapReceiptNo" class="form-group-sm" style="flex: 0.9; min-width: 72px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">លេខវិក្កយបត្រ:</label>
+                        <input type="text" id="receiptNo" class="form-input highlight-input" readonly style="height: 27px; font-size: 11.5px; text-align: center; padding: 1px 4px;">
                     </div>
 
-                    <div id="wrapExchangeRate" class="form-group-sm" style="flex: 0.8; min-width: 60px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">អត្រាប្តូរប្រាក់:</label>
-                        <input type="number" step="0.1" id="exchangeRate" class="form-input highlight-input" value="33.90" oninput="calcTotals()" style="height: 32px; font-size: 12px; text-align: center; padding: 2px 4px;">
+                    <div id="wrapExchangeRate" class="form-group-sm" style="flex: 0.7; min-width: 50px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">អត្រាប្តូរប្រាក់:</label>
+                        <input type="number" step="0.1" id="exchangeRate" class="form-input highlight-input" value="33.90" oninput="calcTotals()" style="height: 27px; font-size: 11.5px; text-align: center; padding: 1px 2px;">
                     </div>
 
-                    <div class="form-group-sm" style="flex: 0.6; min-width: 48px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">Pax:</label>
-                        <input type="number" id="paxInput" class="form-input" value="3" style="width: 100%; height: 32px; text-align: center; font-weight: 800; padding: 2px 2px; font-size: 13px;" min="1" max="50" onchange="setPaxRows()" oninput="setPaxRows()">
+                    <div class="form-group-sm" style="flex: 0.5; min-width: 38px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">Pax:</label>
+                        <input type="number" id="paxInput" class="form-input" value="3" style="width: 100%; height: 27px; text-align: center; font-weight: 800; padding: 1px 2px; font-size: 12px;" min="1" max="50" onchange="setPaxRows()" oninput="setPaxRows()">
                     </div>
 
-                    <button type="button" class="btn-sys btn-dark" style="font-size: 12px; padding: 0 9px; height: 32px; font-weight: 700; white-space: nowrap; display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0;" onclick="removeLastPaxRow()" title="បន្ថយសមាជិក 1 នាក់">➖</button>
+                    <button type="button" class="btn-sys btn-dark" style="font-size: 11px; padding: 0 7px; height: 27px; min-height: 27px; font-weight: 700; white-space: nowrap; display: inline-flex; align-items: center; gap: 1px; flex-shrink: 0;" onclick="removeLastPaxRow()" title="បន្ថយសមាជិក 1 នាក់">➖</button>
 
-                    <button type="button" class="btn-sys" style="flex: 0 0 auto; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; font-weight: 800; font-size: 12.5px; height: 32px; padding: 0 14px; border-radius: 6px; border: none; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 4px rgba(5, 150, 105, 0.25);" onclick="saveGroupRecord()">
+                    <button type="button" class="btn-sys" style="flex: 0 0 auto; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; font-weight: 800; font-size: 11.5px; height: 27px; min-height: 27px; padding: 0 10px; border-radius: 6px; border: none; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 4px rgba(5, 150, 105, 0.25);" onclick="saveGroupRecord()">
                         💾 រក្សាទុកក្រុម
                     </button>
                 </div>
@@ -1273,9 +1360,15 @@ input[type="date"] {
         </div>
 
     <!-- Top Navigation Bar for Visa Mode -->
-    <div id="topVisaBar" class="visa-top-bar" style="display: none; justify-content: flex-start; align-items: center; gap: 6px; padding: 6px 12px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); margin-bottom: 2px;">
-        <button type="button" class="cat-nav-tab" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border-color: #0284c7;" onclick="showCategorySelectionModal()">🏠 ទំព័រដើម</button>
-        <button type="button" class="cat-nav-tab active-tab-visa" style="background: #4f46e5; color: #ffffff; border-color: #4f46e5; box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);">🛂 សេវាវីសា (Visa)</button>
+    <div id="topVisaBar" class="visa-top-bar" style="display: none; justify-content: flex-start; align-items: center; gap: 12px; padding: 10px 16px; background: #ffffff; border: 1.5px solid var(--border-color); border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 6px;">
+        <button type="button" class="cat-nav-tab home-nav-tab" onclick="showCategorySelectionModal()">🏠 ទំព័រដើម</button>
+        <button type="button" class="cat-nav-tab active-tab-visa" onclick="selectServiceCategory('visa')">🛂 សេវាវីសា (Visa)</button>
+    </div>
+
+    <!-- Top Navigation Bar for Passport Mode -->
+    <div id="topPassportBar" class="passport-top-bar" style="display: none; justify-content: flex-start; align-items: center; gap: 12px; padding: 10px 16px; background: #ffffff; border: 1.5px solid var(--border-color); border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 6px;">
+        <button type="button" class="cat-nav-tab home-nav-tab" onclick="showCategorySelectionModal()">🏠 ទំព័រដើម</button>
+        <button type="button" class="cat-nav-tab active-tab-passport" onclick="selectServiceCategory('passport')">📘 គ្រប់គ្រងប៉ាសស្ព័រ & ផ្សេងៗ (Passport)</button>
     </div>
 
     <!-- Bottom Full Width Panel: Saved Customers Database -->
@@ -1345,9 +1438,12 @@ input[type="date"] {
                             <label style="font-weight: 700; font-size: 11.5px; color: #0f172a; white-space: nowrap;">🧾 លេខវិក្កយបត្រ:</label>
                             <input type="text" id="gmmReceiptNo" class="form-input highlight-input" placeholder="INV 00001" style="height: 28px; font-weight: 800; border: 1.5px solid #0284c7; border-radius: 5px; padding: 2px 8px; font-size: 12px; width: 95px; background: #e0f2fe; color: #0369a1; text-align: center;" onfocus="this.select()" onkeydown="handleGmmHeaderKeydown(event, this)">
                         </div>
-                        <div style="display: flex; align-items: center; gap: 4px;">
+                        <div id="gmmExRateContainer" style="display: flex; align-items: center; gap: 4px;">
                             <label style="font-weight: 700; font-size: 11.5px; color: #0f172a; white-space: nowrap;">💱 អត្រាប្តូរប្រាក់:</label>
                             <input type="number" step="0.1" id="gmmExchangeRate" class="form-input highlight-input" placeholder="33.90" value="33.90" style="height: 28px; font-weight: 800; border: 1.5px solid #eab308; border-radius: 5px; padding: 2px 6px; font-size: 12px; width: 62px; text-align: center; background: #fef9c3; color: #854d0e;" onfocus="this.select()" onkeydown="handleGmmHeaderKeydown(event, this)">
+                        </div>
+                        <div id="gmmCurrencyBadge" style="display: none; align-items: center; gap: 4px; background: #f0fdf4; border: 1.2px solid #86efac; border-radius: 5px; padding: 2px 8px; height: 28px; box-sizing: border-box;">
+                            <span style="font-weight: 800; font-size: 12px; color: #15803d; white-space: nowrap;">🪙 គិតជាប្រាក់បាត (฿ THB)</span>
                         </div>
                     </div>
 
@@ -1376,7 +1472,11 @@ input[type="date"] {
                         <input type="text" id="gmmSearchInput" class="form-input" placeholder="🔍 ស្វែងរកឈ្មោះសមាជិកក្នុងក្រុម (Passport Name)..." oninput="filterGmmMembers(this.value)" style="height: 36px; font-size: 13.5px; font-weight: 700; border: 2px solid #0284c7; border-radius: 6px; padding: 4px 12px; width: 100%; box-sizing: border-box; background: #ffffff; color: #0f172a;" onkeydown="if(event.key==='Escape'){clearGmmSearch();}">
                         <button type="button" class="btn-sys btn-dark btn-action-sm" onclick="clearGmmSearch()" style="height: 36px; padding: 0 14px; font-weight: 700; white-space: nowrap;">✖️ សម្អាត</button>
                     </div>
-                    <div id="gmmSearchCount" style="font-size: 13px; font-weight: 800; color: #0284c7; background: #e0f2fe; padding: 6px 14px; border-radius: 6px; border: 1.5px solid #bae6fd; white-space: nowrap;"></div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="file" id="gmmMultiPhotoInput" accept="image/*" multiple style="display:none;" onchange="handleGmmMultiPhotoUpload(event)">
+                        <button type="button" class="btn-sys" style="height: 36px; padding: 0 14px; font-size: 13px; font-weight: 800; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; box-shadow: 0 2px 5px rgba(2,132,199,0.25);" onclick="document.getElementById('gmmMultiPhotoInput').click()">📷 ដាក់រូបថត (Upload Photos)</button>
+                        <div id="gmmSearchCount" style="font-size: 13px; font-weight: 800; color: #0284c7; background: #e0f2fe; padding: 6px 14px; border-radius: 6px; border: 1.5px solid #bae6fd; white-space: nowrap;"></div>
+                    </div>
                 </div>
 
                 <div class="table-container" style="max-height: 400px; overflow-x: auto; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
@@ -1463,6 +1563,36 @@ input[type="date"] {
             <div style="margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
                 <button type="button" class="btn-sys btn-dark" style="padding: 8px 16px; font-size: 13.5px; font-weight: 700; border-radius: 6px;" onclick="closeSplitGroupModal()">❌ បោះបង់ (Cancel)</button>
                 <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; padding: 8px 20px; font-size: 13.5px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" id="btnConfirmSplit" onclick="confirmExecuteSplitGroup()">✂️ បញ្ជាក់ការបំបែកគ្រុប (Confirm Split)</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- High-Resolution Member Passport Photo Preview & Download Modal -->
+    <div id="memberPhotoModal" class="modal-overlay" style="z-index: 1300; display: none;">
+        <div class="modal-card" style="max-width: 750px; width: 95%; background: #0f172a; border-radius: 12px; padding: 18px 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); color: #f8fafc; border: 1.5px solid #334155;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #334155;">
+                <div style="font-weight: 800; font-size: 15px; color: #38bdf8; display: flex; align-items: center; gap: 6px;" id="mpmTitle">📷 រូបថតប៉ាសស្ព័រសមាជិក</div>
+                <button type="button" style="background: none; border: none; font-size: 22px; color: #94a3b8; cursor: pointer; padding: 2px 8px; border-radius: 4px;" onclick="closeMemberPhotoModal()">✖</button>
+            </div>
+
+            <!-- Image Viewport -->
+            <div style="display: flex; align-items: center; justify-content: center; background: #020617; border-radius: 8px; border: 1px solid #1e293b; min-height: 250px; max-height: 65vh; overflow: auto; padding: 8px;">
+                <img id="mpmPreviewImg" src="" alt="Passport Photo" style="max-width: 100%; max-height: 60vh; object-fit: contain; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+            </div>
+
+            <!-- Bottom Action Buttons -->
+            <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding-top: 10px; border-top: 1px solid #334155;">
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn-sys" style="background: #0284c7; color: #ffffff; padding: 7px 14px; font-weight: 700; font-size: 12.5px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px;" onclick="triggerReplacePhotoFromModal()">🔄 ប្តូររូបថ្មី (Change)</button>
+                    <button type="button" class="btn-sys btn-rose" style="background: #dc2626; color: #ffffff; padding: 7px 14px; font-weight: 700; font-size: 12.5px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px;" onclick="removePhotoFromModal()">🗑️ លុបរូប (Delete)</button>
+                    <input type="file" id="mpmReplaceFileInput" accept="image/*" style="display: none;" onchange="handleModalPhotoReplaced(event)">
+                </div>
+
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; padding: 8px 18px; font-size: 13.5px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(16,185,129,0.35);" onclick="downloadCurrentPhotoHD()">📥 ទាញយករូបច្បាស់ HD (Download)</button>
+                    <button type="button" class="btn-sys btn-dark" style="padding: 8px 14px; font-size: 13px; font-weight: 700; border-radius: 6px;" onclick="closeMemberPhotoModal()">✖ បិទ (Close)</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1578,16 +1708,21 @@ input[type="date"] {
             <div style="font-size:18px; font-weight:800; color:#0f172a; margin-bottom:6px;">ជ្រើសរើសផ្នែកសម្រាប់រក្សាទុក</div>
             <div style="font-size:13px; color:#64748b; margin-bottom:20px; line-height:1.4;">តើលោកអ្នកចង់រក្សាទុកវិក្កយបត្រនេះទៅក្នុងផ្នែកសេវាកម្មមួយណា?</div>
             
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:18px;">
-                <button type="button" id="btnSaveToCar" onclick="confirmSaveWithCategory('car')" style="background:linear-gradient(135deg, #10b981, #059669); color:#ffffff; border:none; padding:18px 12px; border-radius:10px; font-weight:800; font-size:14px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(16,185,129,0.3); transition:all 0.15s ease;">
-                    <span style="font-size:26px;">🚗</span>
-                    <span style="font-size:14px;">ផ្នែកឡាន (Car)</span>
-                    <span style="font-size:11px; opacity:0.9; font-weight:500;">សេវាកម្មឡាន & ឡាយ</span>
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:18px;">
+                <button type="button" id="btnSaveToCar" onclick="confirmSaveWithCategory('car')" style="background:linear-gradient(135deg, #10b981, #059669); color:#ffffff; border:none; padding:16px 8px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(16,185,129,0.3); transition:all 0.15s ease;">
+                    <span style="font-size:24px;">🚗</span>
+                    <span style="font-size:13px;">ផ្នែកឡាន (Car)</span>
+                    <span style="font-size:10.5px; opacity:0.9; font-weight:500;">សេវាកម្មឡាន & ឡាយ</span>
                 </button>
-                <button type="button" id="btnSaveToVisa" onclick="confirmSaveWithCategory('visa')" style="background:linear-gradient(135deg, #6366f1, #4f46e5); color:#ffffff; border:none; padding:18px 12px; border-radius:10px; font-weight:800; font-size:14px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(99,102,241,0.3); transition:all 0.15s ease;">
-                    <span style="font-size:26px;">🛂</span>
-                    <span style="font-size:14px;">ផ្នែកវីសា (Visa)</span>
-                    <span style="font-size:11px; opacity:0.9; font-weight:500;">សេវាកម្មវីសា & VIP</span>
+                <button type="button" id="btnSaveToVisa" onclick="confirmSaveWithCategory('visa')" style="background:linear-gradient(135deg, #6366f1, #4f46e5); color:#ffffff; border:none; padding:16px 8px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(99,102,241,0.3); transition:all 0.15s ease;">
+                    <span style="font-size:24px;">🛂</span>
+                    <span style="font-size:13px;">ផ្នែកវីសា (Visa)</span>
+                    <span style="font-size:10.5px; opacity:0.9; font-weight:500;">សេវាកម្មវីសា & VIP</span>
+                </button>
+                <button type="button" id="btnSaveToPassport" onclick="confirmSaveWithCategory('passport')" style="background:linear-gradient(135deg, #0284c7, #06b6d4); color:#ffffff; border:none; padding:16px 8px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(2,132,199,0.3); transition:all 0.15s ease;">
+                    <span style="font-size:24px;">📘</span>
+                    <span style="font-size:13px;">ប៉ាសស្ព័រ & ផ្សេងៗ</span>
+                    <span style="font-size:10.5px; opacity:0.9; font-weight:500;">Passport & ផ្សេងៗ</span>
                 </button>
             </div>
             
@@ -1599,8 +1734,8 @@ input[type="date"] {
     <script>
         let allDatabaseRecords = [];
         let currentModalReceiptData = null;
-        let currentServiceCategory = 'all'; // 'car', 'visa', 'all'
-        let currentTableFilterCategory = 'all'; // 'car', 'visa', 'all'
+        let currentServiceCategory = 'all'; // 'car', 'visa', 'passport', 'all'
+        let currentTableFilterCategory = 'all'; // 'car', 'visa', 'passport', 'all'
 
         function showCategorySelectionModal() {
             sessionStorage.removeItem('imvoi_selected_service');
@@ -1616,7 +1751,7 @@ input[type="date"] {
             sessionStorage.setItem('imvoi_selected_service', currentServiceCategory);
 
             // Update body class for automatic mode-based CSS display rules
-            document.body.classList.remove('mode-car', 'mode-visa', 'mode-all');
+            document.body.classList.remove('mode-car', 'mode-visa', 'mode-passport', 'mode-all');
             document.body.classList.add(`mode-${currentServiceCategory}`);
 
             const portal = document.getElementById('categorySelectionScreen');
@@ -1637,34 +1772,39 @@ input[type="date"] {
                     badge.style.background = '#eef2ff';
                     badge.style.color = '#3730a3';
                     badge.style.border = '2px solid #6366f1';
-                } else {
-                    badge.innerHTML = '📊 ទិន្នន័យទាំងអស់ (All Records & Services)';
+                } else if (currentServiceCategory === 'passport') {
+                    badge.innerHTML = '📘 គ្រប់គ្រងប៉ាសស្ព័រ និងផ្សេងៗ (Passport & Other Services)';
                     badge.style.background = '#e0f2fe';
                     badge.style.color = '#0369a1';
                     badge.style.border = '2px solid #0284c7';
+                } else {
+                    badge.innerHTML = '📊 ទិន្នន័យទាំងអស់ (All Records & Services)';
+                    badge.style.background = '#f1f5f9';
+                    badge.style.color = '#1e293b';
+                    badge.style.border = '2px solid #475569';
                 }
             }
 
             // Update Top Navigation Tabs
             const tabCar = document.getElementById('tabBtnCar');
             const tabVisa = document.getElementById('tabBtnVisa');
-            const tabAll = document.getElementById('tabBtnAll');
+            const tabPassport = document.getElementById('tabBtnPassport');
             if (tabCar) tabCar.className = 'cat-nav-tab' + (currentServiceCategory === 'car' ? ' active-tab-car' : '');
             if (tabVisa) tabVisa.className = 'cat-nav-tab' + (currentServiceCategory === 'visa' ? ' active-tab-visa' : '');
-            if (tabAll) tabAll.className = 'cat-nav-tab' + (currentServiceCategory === 'all' ? ' active-tab-all' : '');
+            if (tabPassport) tabPassport.className = 'cat-nav-tab' + (currentServiceCategory === 'passport' ? ' active-tab-passport' : '');
 
             // Update date labels based on active service category
             const lblDate = document.getElementById('lblTravelDate');
-            if (lblDate) lblDate.textContent = (currentServiceCategory === 'visa' ? 'ថ្ងៃដាក់វីសា:' : 'ថ្ងៃធ្វើដំណើរ:');
+            if (lblDate) lblDate.textContent = (currentServiceCategory === 'visa' ? 'ថ្ងៃដាក់វីសា:' : (currentServiceCategory === 'passport' ? 'កាលបរិច្ឆេទ:' : 'ថ្ងៃធ្វើដំណើរ:'));
             const thDate = document.getElementById('thTravelDate');
-            if (thDate) thDate.textContent = (currentServiceCategory === 'visa' ? 'ថ្ងៃដាក់វីសា' : 'ថ្ងៃធ្វើដំណើរ');
+            if (thDate) thDate.textContent = (currentServiceCategory === 'visa' ? 'ថ្ងៃដាក់វីសា' : (currentServiceCategory === 'passport' ? 'កាលបរិច្ឆេទ' : 'ថ្ងៃធ្វើដំណើរ'));
             const gmmLblDate = document.getElementById('gmmLblTravelDate');
-            if (gmmLblDate) gmmLblDate.textContent = (currentServiceCategory === 'visa' ? '📅 ថ្ងៃដាក់វីសា:' : '📅 ថ្ងៃធ្វើដំណើរ:');
+            if (gmmLblDate) gmmLblDate.textContent = (currentServiceCategory === 'visa' ? '📅 ថ្ងៃដាក់វីសា:' : (currentServiceCategory === 'passport' ? '📅 កាលបរិច្ឆេទ:' : '📅 ថ្ងៃធ្វើដំណើរ:'));
 
             // Highlight form fields based on service mode
             updateFormCategoryTheme();
 
-            fetchNextReceiptNo(currentServiceCategory === 'visa' ? 'visa' : 'car');
+            fetchNextReceiptNo(currentServiceCategory === 'visa' ? 'visa' : (currentServiceCategory === 'passport' ? 'passport' : 'car'));
 
             loadDatabaseRecords();
         }
@@ -1701,6 +1841,12 @@ input[type="date"] {
                     vipFeeInput.style.background = '#eef2ff';
                     vipFeeInput.style.boxShadow = '0 0 6px rgba(99, 102, 241, 0.3)';
                 }
+            } else if (currentServiceCategory === 'passport') {
+                if (vipFeeInput) {
+                    vipFeeInput.style.border = '2px solid #0284c7';
+                    vipFeeInput.style.background = '#f0f9ff';
+                    vipFeeInput.style.boxShadow = '0 0 6px rgba(2, 132, 199, 0.3)';
+                }
             }
         }
 
@@ -1716,16 +1862,16 @@ input[type="date"] {
             if (!item) return false;
             const cat = String(item.service_category || item.group_info?.service_category || item.service_type || item.group_info?.service_type || '').toLowerCase().trim();
             if (cat === 'car' || cat === 'line') return true;
-            if (cat === 'visa') return false;
+            if (cat === 'visa' || cat === 'passport' || cat === 'other' || cat === 'pass') return false;
 
             // Telegram bot data is ALWAYS strictly Car Service
             if (item.chat_id || item.sender === 'Telegram Booking' || String(item.sender_name || '').toLowerCase().includes('telegram') || String(item.sender || '').toLowerCase().includes('telegram')) return true;
 
             const rNo = String(item.receipt_no || item.group_info?.receipt_no || item.group_data?.receipt_no || '').toUpperCase();
-            if (rNo.startsWith('VISA')) return false;
+            if (rNo.startsWith('VISA') || rNo.startsWith('PASS')) return false;
 
             const sender = String(item.sender || item.sender_name || item.group_info?.sender_name || item.group_name || '').toLowerCase();
-            if (sender.includes('visa') || sender.includes('វីសា')) return false;
+            if (sender.includes('visa') || sender.includes('វីសា') || sender.includes('passport') || sender.includes('ប៉ាសស្ព័រ') || sender.includes('ផ្សេងៗ')) return false;
 
             const members = item.members || item.group_data?.items || [];
             if (Array.isArray(members) && members.some(m => (parseFloat(m.visa_fee || m.visa || 0) > 0 || parseFloat(m.work_permit || 0) > 0 || m.extension_months))) {
@@ -1739,21 +1885,38 @@ input[type="date"] {
             if (!item) return false;
             const cat = String(item.service_category || item.group_info?.service_category || item.service_type || item.group_info?.service_type || '').toLowerCase().trim();
             if (cat === 'visa') return true;
-            if (cat === 'car' || cat === 'line') return false;
+            if (cat === 'car' || cat === 'line' || cat === 'passport' || cat === 'other' || cat === 'pass') return false;
 
             // Telegram Bot scans belong exclusively to Car section, NEVER Visa
             if (item.chat_id || item.sender === 'Telegram Booking' || String(item.sender_name || '').toLowerCase().includes('telegram') || String(item.sender || '').toLowerCase().includes('telegram')) return false;
 
             const rNo = String(item.receipt_no || item.group_info?.receipt_no || item.group_data?.receipt_no || '').toUpperCase();
             if (rNo.startsWith('VISA')) return true;
+            if (rNo.startsWith('PASS')) return false;
 
             const sender = String(item.sender || item.sender_name || item.group_info?.sender_name || item.group_name || '').toLowerCase();
             if (sender.includes('visa') || sender.includes('វីសា')) return true;
+            if (sender.includes('passport') || sender.includes('ប៉ាសស្ព័រ') || sender.includes('ផ្សេងៗ')) return false;
 
             const members = item.members || item.group_data?.items || [];
             if (Array.isArray(members) && members.some(m => (parseFloat(m.visa_fee || m.visa || 0) > 0 || parseFloat(m.work_permit || 0) > 0 || m.extension_months))) {
                 return true;
             }
+
+            return false;
+        }
+
+        function isPassportRecord(item) {
+            if (!item) return false;
+            const cat = String(item.service_category || item.group_info?.service_category || item.service_type || item.group_info?.service_type || '').toLowerCase().trim();
+            if (cat === 'passport' || cat === 'other' || cat === 'pass') return true;
+            if (cat === 'car' || cat === 'line' || cat === 'visa') return false;
+
+            const rNo = String(item.receipt_no || item.group_info?.receipt_no || item.group_data?.receipt_no || '').toUpperCase();
+            if (rNo.startsWith('PASS')) return true;
+
+            const sender = String(item.sender || item.sender_name || item.group_info?.sender_name || item.group_name || '').toLowerCase();
+            if (sender.includes('passport') || sender.includes('ប៉ាសស្ព័រ') || sender.includes('ផ្សេងៗ')) return true;
 
             return false;
         }
@@ -1930,16 +2093,16 @@ input[type="date"] {
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td class="text-center font-bold" style="text-align:center;">${num}</td>
-                <td><input type="text" class="form-input input-m-name" value="${cleanName}" placeholder="${placeholderText}" oninput="calcTotals()" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
-                <td class="fee-col-vip"><input type="number" step="0.01" class="form-input input-m-vip num-input" value="${fmtVal(vip)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
-                <td class="fee-col-car"><input type="number" step="0.01" class="form-input input-m-car num-input" value="${fmtVal(car)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
-                <td class="fee-col-clearance"><input type="number" step="0.01" class="form-input input-m-clearance num-input" value="${fmtVal(clearance)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
-                <td class="fee-col-evisa"><input type="number" step="0.01" class="form-input input-m-evisa num-input" value="${fmtVal(evisa)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
-                <td class="fee-col-visa"><input type="number" step="0.01" class="form-input input-m-visa num-input" value="${fmtVal(visa)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
-                <td class="fee-col-work"><input type="number" step="0.01" class="form-input input-m-work num-input" value="${fmtVal(work)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
-                <td class="fee-col-fine"><input type="number" step="0.01" class="form-input input-m-fine num-input" value="${fmtVal(fine)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)"></td>
-                <td><input type="number" step="0.01" class="form-input input-m-total num-input" value="${fmtVal(rowSum)}" readonly></td>
+                <td class="text-center font-bold" style="text-align:center; padding: 2px 4px; font-size: 11.5px;">${num}</td>
+                <td style="padding: 2px 4px;"><input type="text" class="form-input input-m-name" value="${cleanName}" placeholder="${placeholderText}" oninput="calcTotals()" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)" style="height: 25px; font-size: 11.5px; padding: 1px 6px;"></td>
+                <td class="fee-col-vip" style="padding: 2px 4px;"><input type="number" step="0.01" class="form-input input-m-vip num-input" value="${fmtVal(vip)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)" style="height: 25px; font-size: 11.5px; padding: 1px 4px; text-align: center;"></td>
+                <td class="fee-col-car" style="padding: 2px 4px;"><input type="number" step="0.01" class="form-input input-m-car num-input" value="${fmtVal(car)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)" style="height: 25px; font-size: 11.5px; padding: 1px 4px; text-align: center;"></td>
+                <td class="fee-col-clearance" style="padding: 2px 4px;"><input type="number" step="0.01" class="form-input input-m-clearance num-input" value="${fmtVal(clearance)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)" style="height: 25px; font-size: 11.5px; padding: 1px 4px; text-align: center;"></td>
+                <td class="fee-col-evisa" style="padding: 2px 4px;"><input type="number" step="0.01" class="form-input input-m-evisa num-input" value="${fmtVal(evisa)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)" style="height: 25px; font-size: 11.5px; padding: 1px 4px; text-align: center;"></td>
+                <td class="fee-col-visa" style="padding: 2px 4px;"><input type="number" step="0.01" class="form-input input-m-visa num-input" value="${fmtVal(visa)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)" style="height: 25px; font-size: 11.5px; padding: 1px 4px; text-align: center;"></td>
+                <td class="fee-col-work" style="padding: 2px 4px;"><input type="number" step="0.01" class="form-input input-m-work num-input" value="${fmtVal(work)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)" style="height: 25px; font-size: 11.5px; padding: 1px 4px; text-align: center;"></td>
+                <td class="fee-col-fine" style="padding: 2px 4px;"><input type="number" step="0.01" class="form-input input-m-fine num-input" value="${fmtVal(fine)}" placeholder="" oninput="calcMemberTotal(this)" onfocus="this.select()" onkeydown="handleTableKeydown(event, this)" style="height: 25px; font-size: 11.5px; padding: 1px 4px; text-align: center;"></td>
+                <td style="padding: 2px 4px;"><input type="number" step="0.01" class="form-input input-m-total num-input" value="${fmtVal(rowSum)}" readonly style="height: 25px; font-size: 11.5px; padding: 1px 4px; text-align: center; font-weight: 800; color: #0284c7; background: #f0f9ff;"></td>
             `;
             tbody.appendChild(tr);
             const countLbl = document.getElementById('paxCountLabel');
@@ -2299,14 +2462,14 @@ input[type="date"] {
                     if (existing && existing.service_category) {
                         autoCategory = existing.service_category;
                     } else if (existing) {
-                        autoCategory = isCarRecord(existing) ? 'car' : 'visa';
+                        autoCategory = isCarRecord(existing) ? 'car' : (isPassportRecord(existing) ? 'passport' : 'visa');
                     }
                 }
                 if (!autoCategory || autoCategory === 'all') {
-                    autoCategory = isCarRecord(pendingSavePayload) ? 'car' : 'visa';
+                    autoCategory = isCarRecord(pendingSavePayload) ? 'car' : (isPassportRecord(pendingSavePayload) ? 'passport' : 'visa');
                 }
             }
-            confirmSaveWithCategory(autoCategory || 'visa');
+            confirmSaveWithCategory(autoCategory || 'passport');
         }
 
         function confirmSaveWithCategory(chosenCategory) {
@@ -2329,7 +2492,7 @@ input[type="date"] {
             .then(r => r.json())
             .then(res => {
                 if (res.success) {
-                    const catNameKh = chosenCategory === 'car' ? 'ផ្នែកឡាន (Car)' : 'ផ្នែកវីសា (Visa)';
+                    const catNameKh = chosenCategory === 'car' ? 'ផ្នែកឡាន (Car)' : (chosenCategory === 'passport' ? 'ផ្នែកប៉ាសស្ព័រ & ផ្សេងៗ (Passport)' : 'ផ្នែកវីសា (Visa)');
                     alert(currentEditingReceiptNo ? `🎉 បានធ្វើបច្ចុប្បន្នភាពទិន្នន័យវិក្កយបត្រ ${currentEditingReceiptNo} ក្នុង${catNameKh} បានជោគជ័យ!` : `🎉 រក្សាទុកទិន្នន័យក្រុមទៅក្នុង${catNameKh} បានជោគជ័យ!`);
                     currentEditingReceiptNo = null;
                     pendingSavePayload = null;
@@ -2461,6 +2624,8 @@ input[type="date"] {
                         if (!isCarRecord(item)) return false;
                     } else if (currentServiceCategory === 'visa') {
                         if (!isVisaRecord(item)) return false;
+                    } else if (currentServiceCategory === 'passport') {
+                        if (!isPassportRecord(item)) return false;
                     }
                     if (!search) return true;
                     try {
@@ -2475,11 +2640,12 @@ input[type="date"] {
                     let catSuffix = '';
                     if (currentServiceCategory === 'car') catSuffix = ' - សេវាឡាន';
                     else if (currentServiceCategory === 'visa') catSuffix = ' - សេវាវីសា';
+                    else if (currentServiceCategory === 'passport') catSuffix = ' - ប៉ាសស្ព័រ & ផ្សេងៗ';
                     totalLabel.textContent = `សរុប: ${filtered.length} ត្រា${catSuffix} (Total Records: ${filtered.length})`;
                 }
 
                 if (filtered.length === 0) {
-                    const emptyMsg = currentServiceCategory === 'car' ? 'មិនមានទិន្នន័យសេវាកម្មឡានឡើយ' : (currentServiceCategory === 'visa' ? 'មិនមានទិន្នន័យសេវាកម្មវីសាឡើយ' : 'មិនមានទិន្នន័យអតិថិជនឡើយ');
+                    const emptyMsg = currentServiceCategory === 'car' ? 'មិនមានទិន្នន័យសេវាកម្មឡានឡើយ' : (currentServiceCategory === 'visa' ? 'មិនមានទិន្នន័យសេវាកម្មវីសាឡើយ' : (currentServiceCategory === 'passport' ? 'មិនមានទិន្នន័យសេវាកម្មប៉ាសស្ព័រ & ផ្សេងៗឡើយ' : 'មិនមានទិន្នន័យអតិថិជនឡើយ'));
                     tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--text-sub);">${emptyMsg}</td></tr>`;
                     return;
                 }
@@ -2539,10 +2705,15 @@ input[type="date"] {
                             </div>
                             <div style="display:flex; gap:4px; align-items:center; flex-shrink:0;">
                                 <button type="button" class="btn-sys btn-indigo btn-action-sm" style="font-size:11.5px; padding:4px 8px; font-weight:700; line-height:1.4; white-space:nowrap; background: linear-gradient(135deg, #0284c7, #2563eb); border: 1px solid #38bdf8; color: #ffffff; min-height: 26px;" onclick="event.stopPropagation(); openGroupMembersModal('${encodeURIComponent(rNo)}', ${realIdx})">👁️ មើលលម្អិត (${paxCount})</button>
-                                <button type="button" class="btn-sys btn-amber btn-action-sm" style="font-size:11.5px; padding:4px 8px; font-weight:700; line-height:1.4; white-space:nowrap; min-height: 26px;" onclick="event.stopPropagation(); loadRecordIntoForm('${encodeURIComponent(rNo)}', ${realIdx})">✏️ កែប្រែ</button>
+                                <button type="button" class="btn-sys btn-amber btn-action-sm" style="font-size:11.5px; padding:4px 8px; font-weight:700; line-height:1.4; white-space:nowrap; min-height: 26px;" onclick="event.stopPropagation(); (currentServiceCategory === 'car' ? loadRecordIntoForm('${encodeURIComponent(rNo)}', ${realIdx}) : openGroupMembersModal('${encodeURIComponent(rNo)}', ${realIdx}))">✏️ កែប្រែ</button>
                             </div>
                         </div>
                     `;
+
+                    const isPassport = isPassportRecord(item);
+                    const totalDisplay = isPassport 
+                        ? `฿${(item.totals?.baht || item.totals?.usd || usdTotal).toLocaleString('en-US')}` 
+                        : `$${usdTotal.toFixed(2)}`;
 
                     html += `
                         <tr style="cursor:pointer; vertical-align:middle;" title="ចុចទីនេះដើម្បីមើលសមាជិកក្រុម" onclick="openGroupMembersModal('${encodeURIComponent(rNo)}', ${realIdx})">
@@ -2550,7 +2721,7 @@ input[type="date"] {
                             <td style="text-align:center; font-weight:800; color:#0284c7; padding:5px 4px;">${rNo}</td>
                             <td style="text-align:center; font-weight:700; color:#0f172a; padding:5px 4px; white-space:nowrap;">${travelDate}</td>
                             <td style="padding:5px 6px;"><strong style="color:#0f172a; font-weight:800;">${sender}</strong></td>
-                            <td style="text-align:right; font-weight:800; color:#059669; padding:5px 6px;">$${usdTotal.toFixed(2)}</td>
+                            <td style="text-align:right; font-weight:800; color:#059669; padding:5px 6px;">${totalDisplay}</td>
                             <td style="text-align:center; padding:5px 4px;" onclick="event.stopPropagation()">
                                 <span class="badge-status ${status==='PAID'?'badge-paid-st':'badge-unpaid-st'}" style="font-size:11.5px; padding:4px 8px; min-height:26px;" onclick="toggleStatus('${encodeURIComponent(rNo)}', '${status==='PAID'?'UNPAID':'PAID'}', ${realIdx})">
                                     ${status==='PAID'?'✅ បង់រួច':'❌ មិនទាន់បង់'}
@@ -2586,6 +2757,8 @@ input[type="date"] {
                 exportData = records.filter(item => isCarRecord(item));
             } else if (currentServiceCategory === 'visa') {
                 exportData = records.filter(item => isVisaRecord(item));
+            } else if (currentServiceCategory === 'passport') {
+                exportData = records.filter(item => isPassportRecord(item));
             }
 
             if (exportData.length === 0) {
@@ -2618,7 +2791,8 @@ input[type="date"] {
             exportData.forEach((item, idx) => {
                 const rNo = item.receipt_no || item.group_info?.receipt_no || item.group_data?.receipt_no || item.customer?.receipt_no || (item.passport_no ? ('PASSPORT: ' + item.passport_no) : `INV ${idx + 1}`);
                 const isVisa = isVisaRecord(item);
-                const category = isVisa ? 'VISA' : 'CAR';
+                const isPass = isPassportRecord(item);
+                const category = isVisa ? 'VISA' : (isPass ? 'PASSPORT' : 'CAR');
                 const travelDate = formatDisplayDate(item.group_info?.travel_date || item.group_data?.travel_date || item.travel_date || '-');
                 const sender = item.group_info?.sender_name || item.group_info?.group_name || item.group_data?.sender_name || item.sender_name || item.sender || '-';
                 const agency = item.group_info?.agency_company || item.group_data?.agency_company || item.agency_company || item.customer?.agency_company || '-';
@@ -2873,7 +3047,7 @@ input[type="date"] {
         }
 
         function openNewGroupModal() {
-            const cat = (currentServiceCategory === 'visa') ? 'visa' : 'car';
+            const cat = (currentServiceCategory === 'visa') ? 'visa' : (currentServiceCategory === 'passport' ? 'passport' : 'car');
             fetch('/api/next_no?category=' + cat)
                 .then(r => r.json())
                 .then(d => {
@@ -2910,12 +3084,12 @@ input[type="date"] {
                     if (tbody) tbody.innerHTML = '';
 
                     // Set mode based on active category with explicit empty list
-                    const initialMode = (currentServiceCategory === 'visa') ? 'visa' : 'line';
+                    const initialMode = (currentServiceCategory === 'visa') ? 'visa' : (currentServiceCategory === 'passport' ? 'passport' : 'line');
                     currentGmmCachedItem = null;
                     switchGmmMode(initialMode, []);
 
                     // Clear bulk fee inputs
-                    ['gmmFeeVip', 'gmmFeeCar', 'gmmFeeClearance', 'gmmFeeVisa', 'gmmFeeWork', 'gmmFeeFine'].forEach(id => {
+                    ['gmmFeePassport', 'gmmFeeNamelist', 'gmmFeeVisa', 'gmmFeeMissingDoc', 'gmmFeeStamping', 'gmmFeeVip', 'gmmFeeCar', 'gmmFeeClearance', 'gmmFeeWork', 'gmmFeeFine'].forEach(id => {
                         const el = document.getElementById(id);
                         if (el) el.value = '';
                     });
@@ -2960,15 +3134,27 @@ input[type="date"] {
                 });
         }
 
-        let currentGmmMode = 'line'; // 'visa' or 'line'
+        let currentGmmMode = 'line'; // 'visa', 'passport', or 'line'
         let currentGmmCachedItem = null;
 
         function switchGmmMode(newMode, explicitMembers) {
             currentGmmMode = newMode || 'line';
             
+            const exRateBox = document.getElementById('gmmExRateContainer');
+            const currBadge = document.getElementById('gmmCurrencyBadge');
+            if (exRateBox && currBadge) {
+                if (currentGmmMode === 'passport') {
+                    exRateBox.style.display = 'none';
+                    currBadge.style.display = 'inline-flex';
+                } else {
+                    exRateBox.style.display = 'flex';
+                    currBadge.style.display = 'none';
+                }
+            }
+            
             // Update GMM date label based on mode
             const gmmLblDate = document.getElementById('gmmLblTravelDate');
-            if (gmmLblDate) gmmLblDate.textContent = (currentGmmMode === 'visa' ? '📅 ថ្ងៃដាក់វីសា:' : '📅 ថ្ងៃធ្វើដំណើរ:');
+            if (gmmLblDate) gmmLblDate.textContent = (currentGmmMode === 'visa' ? '📅 ថ្ងៃដាក់វីសា:' : (currentGmmMode === 'passport' ? '📅 កាលបរិច្ឆេទ:' : '📅 ថ្ងៃធ្វើដំណើរ:'));
             
             // Update tab styles
             const tabVisa = document.getElementById('gmmTabVisa');
@@ -3008,6 +3194,10 @@ input[type="date"] {
                 if (currentRows.length > 0) {
                     currentRows.forEach(r => {
                         const name = r.querySelector('.gmm-input-name')?.value || '';
+                        const passport = parseFloat(r.querySelector('.gmm-input-passport')?.value || 0);
+                        const namelist = parseFloat(r.querySelector('.gmm-input-namelist')?.value || 0);
+                        const missingDoc = parseFloat(r.querySelector('.gmm-input-missing-doc')?.value || 0);
+                        const stamping = parseFloat(r.querySelector('.gmm-input-stamping')?.value || 0);
                         const visa = parseFloat(r.querySelector('.gmm-input-visa')?.value || 0);
                         const permit = parseFloat(r.querySelector('.gmm-input-permit')?.value || 0);
                         const vip = parseFloat(r.querySelector('.gmm-input-vip')?.value || 0);
@@ -3015,10 +3205,14 @@ input[type="date"] {
                         const car = parseFloat(r.querySelector('.gmm-input-car')?.value || 0);
                         const fine = parseFloat(r.querySelector('.gmm-input-fine')?.value || 0);
                         const usd = parseFloat(r.querySelector('.gmm-input-usd')?.value || 0);
-                        if (name || visa || permit || vip || clearance || car || fine || usd) {
+                        if (name || passport || namelist || missingDoc || stamping || visa || permit || vip || clearance || car || fine || usd) {
                             membersList.push({
                                 full_english_name: name,
                                 name: name,
+                                passport_fee: passport,
+                                namelist_fee: namelist,
+                                missing_doc_fee: missingDoc,
+                                visa_stamping_fee: stamping,
                                 visa_fee: visa,
                                 work_permit: permit,
                                 vip: vip,
@@ -3044,10 +3238,15 @@ input[type="date"] {
             const box = document.getElementById('gmmBulkFeeBox');
             if (!box) return;
 
-            const inputStyle = `height: 28px; width: 58px; font-weight: 800; border: 1.2px solid #0284c7; border-radius: 5px; padding: 2px 4px; font-size: 12px; text-align: right; color: #0f172a; background: #ffffff;`;
+            const inputStyle = `height: 28px; width: 62px; font-weight: 800; border: 1.2px solid #0284c7; border-radius: 5px; padding: 2px 4px; font-size: 12px; text-align: right; color: #0f172a; background: #ffffff;`;
             const lblStyle = `font-weight: 700; font-size: 11.5px; color: #0f172a; white-space: nowrap;`;
 
+            const defPassport = sampleMember ? formatNumNoZero(parseFloat(sampleMember.passport_fee || 0)) : '';
+            const defNamelist = sampleMember ? formatNumNoZero(parseFloat(sampleMember.namelist_fee || 0)) : '';
             const defVisa = sampleMember ? formatNumNoZero(parseFloat(sampleMember.visa_fee || 0)) : '';
+            const defMissingDoc = sampleMember ? formatNumNoZero(parseFloat(sampleMember.missing_doc_fee || sampleMember.doc_fee || 0)) : '';
+            const defStamping = sampleMember ? formatNumNoZero(parseFloat(sampleMember.visa_stamping_fee || sampleMember.stamping_fee || 0)) : '';
+
             const defMonths = sampleMember ? (sampleMember.extension_months || sampleMember.months || sampleMember.visa_months || '') : '';
             const defWork = sampleMember ? formatNumNoZero(parseFloat(sampleMember.work_permit || 0)) : '';
             const defVip = sampleMember ? formatNumNoZero(parseFloat(sampleMember.vip || 0)) : '';
@@ -3055,14 +3254,37 @@ input[type="date"] {
             const defCar = sampleMember ? formatNumNoZero(parseFloat(sampleMember.car_fee || sampleMember.car || 0)) : '';
             const defFine = sampleMember ? formatNumNoZero(parseFloat(sampleMember.overstay || sampleMember.fine_fee || 0)) : '';
 
-            if (mode === 'visa') {
+            if (mode === 'passport') {
+                box.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 3px;">
+                        <label style="${lblStyle}">ថ្លៃប៉ាស្ព័រ (฿):</label>
+                        <input type="number" step="1" id="gmmFeePassport" class="form-input num-input" placeholder="0" style="${inputStyle}" value="${defPassport}" oninput="updateGmmMemberFeesDefaults('passport')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 3px;">
+                        <label style="${lblStyle}">ថ្លៃនែមលិស (฿):</label>
+                        <input type="number" step="1" id="gmmFeeNamelist" class="form-input num-input" placeholder="0" style="${inputStyle}" value="${defNamelist}" oninput="updateGmmMemberFeesDefaults('namelist')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 3px;">
+                        <label style="${lblStyle}">ថ្លៃវីសា (฿):</label>
+                        <input type="number" step="1" id="gmmFeeVisa" class="form-input num-input" placeholder="0" style="${inputStyle}" value="${defVisa}" oninput="updateGmmMemberFeesDefaults('visa')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 3px;">
+                        <label style="${lblStyle}">ខ្វះឯកសារ (฿):</label>
+                        <input type="number" step="1" id="gmmFeeMissingDoc" class="form-input num-input" placeholder="0" style="${inputStyle}" value="${defMissingDoc}" oninput="updateGmmMemberFeesDefaults('missing_doc')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 3px;">
+                        <label style="${lblStyle}">ថ្លៃវាយបិទវីសា (฿):</label>
+                        <input type="number" step="1" id="gmmFeeStamping" class="form-input num-input" placeholder="0" style="${inputStyle}" value="${defStamping}" oninput="updateGmmMemberFeesDefaults('stamping')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
+                    </div>
+                `;
+            } else if (mode === 'visa') {
                 box.innerHTML = `
                     <div style="display: flex; align-items: center; gap: 3px;">
                         <label style="${lblStyle}">ថ្លៃ VISA ($):</label>
                         <input type="number" step="0.01" id="gmmFeeVisa" class="form-input num-input" placeholder="0" style="${inputStyle}" value="${defVisa}" oninput="updateGmmMemberFeesDefaults('visa')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
                     </div>
                     <div style="display: flex; align-items: center; gap: 3px;">
-                        <label style="${lblStyle}">ចំនួនខែត:</label>
+                        <label style="${lblStyle}">ចំនួនខែ:</label>
                         <input type="text" id="gmmFeeMonths" class="form-input" placeholder="1 ខែ" style="${inputStyle}; width: 50px; text-align: center;" value="${defMonths}" oninput="updateGmmMemberFeesDefaults('months')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
                     </div>
                     <div style="display: flex; align-items: center; gap: 3px;">
@@ -3166,16 +3388,208 @@ input[type="date"] {
             }
         }
 
+        function renderGmmPhotoCell(photoData) {
+            if (photoData && photoData.trim()) {
+                return `
+                    <div class="gmm-photo-wrapper" style="position:relative; display:inline-flex; align-items:center; justify-content:center;">
+                        <img src="${photoData}" class="gmm-photo-thumb" style="width:26px; height:26px; object-fit:cover; border-radius:4px; border:1.5px solid #0284c7; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,0.15);" onclick="openMemberPhotoPreview(this)" title="ចុចដើម្បីមើលរូបច្បាស់ HD / ទាញយក">
+                        <input type="hidden" class="gmm-input-photo" value="${photoData.replace(/"/g, '&quot;')}">
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="gmm-photo-wrapper" style="position:relative; display:inline-flex; align-items:center; justify-content:center;">
+                        <button type="button" class="btn-sys" style="font-size:10px; padding:1px 5px; height:24px; min-height:24px; background:#f0f9ff; color:#0284c7; font-weight:800; border-radius:4px; border:1.2px dashed #38bdf8; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; gap:2px;" onclick="triggerRowPhotoUpload(this)" title="ចុចដើម្បីដាក់រូបថត">📷 +</button>
+                        <input type="file" accept="image/*" style="display:none;" onchange="handleRowPhotoSelected(this, event)">
+                        <input type="hidden" class="gmm-input-photo" value="">
+                    </div>
+                `;
+            }
+        }
+
+        let currentPhotoRowElem = null;
+        let currentPreviewPhotoData = '';
+        let currentPreviewMemberName = '';
+
+        function triggerRowPhotoUpload(btn) {
+            const wrapper = btn.closest('.gmm-photo-wrapper');
+            const fileInput = wrapper ? wrapper.querySelector('input[type="file"]') : null;
+            if (fileInput) fileInput.click();
+        }
+
+        function handleRowPhotoSelected(input, event) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                const wrapper = input.closest('.gmm-photo-wrapper');
+                if (wrapper) {
+                    wrapper.innerHTML = `
+                        <img src="${dataUrl}" class="gmm-photo-thumb" style="width:26px; height:26px; object-fit:cover; border-radius:4px; border:1.5px solid #0284c7; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,0.15);" onclick="openMemberPhotoPreview(this)" title="ចុចដើម្បីមើលរូបច្បាស់ HD / ទាញយក">
+                        <input type="hidden" class="gmm-input-photo" value="${dataUrl.replace(/"/g, '&quot;')}">
+                    `;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function openMemberPhotoPreview(imgElem) {
+            const wrapper = imgElem.closest('.gmm-photo-wrapper');
+            const tr = imgElem.closest('tr');
+            const photoInput = wrapper ? wrapper.querySelector('.gmm-input-photo') : null;
+            const nameInput = tr ? tr.querySelector('.gmm-input-name') : null;
+            const photoData = (photoInput ? photoInput.value : '') || imgElem.src;
+            const memberName = (nameInput ? nameInput.value : '').trim() || 'Passport';
+            const rNo = document.getElementById('gmmReceiptNo')?.value?.trim() || currentGmmReceiptNo || 'INV';
+
+            currentPhotoRowElem = wrapper;
+            currentPreviewPhotoData = photoData;
+            currentPreviewMemberName = memberName;
+
+            const modal = document.getElementById('memberPhotoModal');
+            const previewImg = document.getElementById('mpmPreviewImg');
+            const titleElem = document.getElementById('mpmTitle');
+
+            if (previewImg) previewImg.src = photoData;
+            if (titleElem) titleElem.textContent = `📷 រូបថតប៉ាសស្ព័រ: ${memberName} (${rNo})`;
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.classList.add('active');
+            }
+        }
+
+        function closeMemberPhotoModal() {
+            const modal = document.getElementById('memberPhotoModal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('active');
+            }
+            currentPhotoRowElem = null;
+            currentPreviewPhotoData = '';
+        }
+
+        function downloadCurrentPhotoHD() {
+            if (!currentPreviewPhotoData) return;
+            const rNo = document.getElementById('gmmReceiptNo')?.value?.trim() || currentGmmReceiptNo || 'INV';
+            const cleanRNo = rNo.replace(/[^a-zA-Z0-9_-]/g, '_');
+            const cleanName = currentPreviewMemberName.replace(/[^a-zA-Z0-9_-]/g, '_') || 'Passport';
+
+            let ext = 'jpg';
+            if (currentPreviewPhotoData.startsWith('data:image/png')) ext = 'png';
+            else if (currentPreviewPhotoData.startsWith('data:image/webp')) ext = 'webp';
+
+            const filename = `${cleanRNo}_${cleanName}.${ext}`;
+
+            const a = document.createElement('a');
+            a.href = currentPreviewPhotoData;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function triggerReplacePhotoFromModal() {
+            const inp = document.getElementById('mpmReplaceFileInput');
+            if (inp) inp.click();
+        }
+
+        function handleModalPhotoReplaced(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                currentPreviewPhotoData = dataUrl;
+                const previewImg = document.getElementById('mpmPreviewImg');
+                if (previewImg) previewImg.src = dataUrl;
+
+                if (currentPhotoRowElem) {
+                    currentPhotoRowElem.innerHTML = `
+                        <img src="${dataUrl}" class="gmm-photo-thumb" style="width:26px; height:26px; object-fit:cover; border-radius:4px; border:1.5px solid #0284c7; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,0.15);" onclick="openMemberPhotoPreview(this)" title="ចុចដើម្បីមើលរូបច្បាស់ HD / ទាញយក">
+                        <input type="hidden" class="gmm-input-photo" value="${dataUrl.replace(/"/g, '&quot;')}">
+                    `;
+                }
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        function removePhotoFromModal() {
+            if (confirm('តើអ្នកពិតជាចង់លុបរូបថតនេះមែនទេ?')) {
+                if (currentPhotoRowElem) {
+                    currentPhotoRowElem.innerHTML = `
+                        <button type="button" class="btn-sys" style="font-size:10px; padding:1px 5px; height:24px; min-height:24px; background:#f0f9ff; color:#0284c7; font-weight:800; border-radius:4px; border:1.2px dashed #38bdf8; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; gap:2px;" onclick="triggerRowPhotoUpload(this)" title="ចុចដើម្បីដាក់រូបថត">📷 +</button>
+                        <input type="file" accept="image/*" style="display:none;" onchange="handleRowPhotoSelected(this, event)">
+                        <input type="hidden" class="gmm-input-photo" value="">
+                    `;
+                }
+                closeMemberPhotoModal();
+            }
+        }
+
+        function handleGmmMultiPhotoUpload(event) {
+            const files = Array.from(event.target.files || []);
+            if (files.length === 0) return;
+
+            const tbody = document.getElementById('gmmMembersBody');
+            if (!tbody) return;
+
+            let rows = Array.from(tbody.querySelectorAll('.gmm-row'));
+
+            files.forEach((file, fIdx) => {
+                let targetRow = rows[fIdx];
+                if (!targetRow) {
+                    addNewGmmMemberRow();
+                    rows = Array.from(tbody.querySelectorAll('.gmm-row'));
+                    targetRow = rows[rows.length - 1];
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const dataUrl = e.target.result;
+                    if (targetRow) {
+                        const wrapper = targetRow.querySelector('.gmm-photo-wrapper');
+                        if (wrapper) {
+                            wrapper.innerHTML = `
+                                <img src="${dataUrl}" class="gmm-photo-thumb" style="width:26px; height:26px; object-fit:cover; border-radius:4px; border:1.5px solid #0284c7; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,0.15);" onclick="openMemberPhotoPreview(this)" title="ចុចដើម្បីមើលរូបច្បាស់ HD / ទាញយក">
+                                <input type="hidden" class="gmm-input-photo" value="${dataUrl.replace(/"/g, '&quot;')}">
+                            `;
+                        }
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+            event.target.value = '';
+        }
+
         function renderGmmTableHeader(mode) {
             const head = document.getElementById('gmmTableHead');
             if (!head) return;
 
-            if (mode === 'visa') {
+            if (mode === 'passport') {
                 head.innerHTML = `
                     <tr style="background: #e2e8f0; color: #0f172a; font-size: 12px; font-weight: 800;">
                         <th style="width: 30px; text-align: center; padding: 4px 2px; white-space: nowrap;">ល.រ</th>
                         <th style="width: 34px; text-align: center; padding: 4px 2px; white-space: nowrap;"><input type="checkbox" id="gmmSelectAll" onchange="toggleGmmSelectAll(this)" style="cursor: pointer; width: 15px; height: 15px; vertical-align: middle; accent-color: #0284c7;" title="ជ្រើសរើសទាំងអស់"></th>
-                        <th style="min-width: 210px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
+                        <th style="min-width: 170px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
+                        <th style="width: 48px; text-align: center; padding: 4px 2px; white-space: nowrap;">📷 រូបថត</th>
+                        <th style="width: 75px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃប៉ាស្ព័រ (฿)</th>
+                        <th style="width: 75px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃនែមលិស (฿)</th>
+                        <th style="width: 75px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃវីសា (฿)</th>
+                        <th style="width: 75px; text-align: center; padding: 4px 2px; white-space: nowrap;">ខ្វះឯកសារ (฿)</th>
+                        <th style="width: 82px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃវាយបិទវីសា (฿)</th>
+                        <th style="width: 75px; text-align: center; padding: 4px 2px; white-space: nowrap;">សរុប (฿)</th>
+                        <th style="width: 58px; text-align: center; padding: 4px 2px; white-space: nowrap;">សកម្មភាព</th>
+                    </tr>
+                `;
+            } else if (mode === 'visa') {
+                head.innerHTML = `
+                    <tr style="background: #e2e8f0; color: #0f172a; font-size: 12px; font-weight: 800;">
+                        <th style="width: 30px; text-align: center; padding: 4px 2px; white-space: nowrap;">ល.រ</th>
+                        <th style="width: 34px; text-align: center; padding: 4px 2px; white-space: nowrap;"><input type="checkbox" id="gmmSelectAll" onchange="toggleGmmSelectAll(this)" style="cursor: pointer; width: 15px; height: 15px; vertical-align: middle; accent-color: #0284c7;" title="ជ្រើសរើសទាំងអស់"></th>
+                        <th style="min-width: 190px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
+                        <th style="width: 48px; text-align: center; padding: 4px 2px; white-space: nowrap;">📷 រូបថត</th>
                         <th style="width: 65px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃ VISA ($)</th>
                         <th style="width: 58px; text-align: center; padding: 4px 2px; color: #0369a1; white-space: nowrap;">ចំនួនខែ</th>
                         <th style="width: 65px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃវើក ($)</th>
@@ -3191,7 +3605,8 @@ input[type="date"] {
                     <tr style="background: #e2e8f0; color: #0f172a; font-size: 12px; font-weight: 800;">
                         <th style="width: 30px; text-align: center; padding: 4px 2px; white-space: nowrap;">ល.រ</th>
                         <th style="width: 34px; text-align: center; padding: 4px 2px; white-space: nowrap;"><input type="checkbox" id="gmmSelectAll" onchange="toggleGmmSelectAll(this)" style="cursor: pointer; width: 15px; height: 15px; vertical-align: middle; accent-color: #0284c7;" title="ជ្រើសរើសទាំងអស់"></th>
-                        <th style="min-width: 230px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
+                        <th style="min-width: 200px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
+                        <th style="width: 48px; text-align: center; padding: 4px 2px; white-space: nowrap;">📷 រូបថត</th>
                         <th style="width: 68px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃ VIP ($)</th>
                         <th style="width: 72px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃក្លៀផ្លូវ ($)</th>
                         <th style="width: 68px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃឡាន ($)</th>
@@ -3212,7 +3627,38 @@ input[type="date"] {
             const inputStyleUsd = `width:100%; height:26px; padding:1px 2px; font-size:12px; background:#ecfdf5; border:1px solid #10b981; color:#047857; font-weight:800; text-align:center; border-radius:4px; box-sizing:border-box;`;
 
             if (!members || members.length === 0) {
-                if (mode === 'visa') {
+                if (mode === 'passport') {
+                    const rawPassport = document.getElementById('gmmFeePassport')?.value?.trim();
+                    const rawNamelist = document.getElementById('gmmFeeNamelist')?.value?.trim();
+                    const rawVisa = document.getElementById('gmmFeeVisa')?.value?.trim();
+                    const rawMissingDoc = document.getElementById('gmmFeeMissingDoc')?.value?.trim();
+                    const rawStamping = document.getElementById('gmmFeeStamping')?.value?.trim();
+
+                    const defPassport = rawPassport ? parseFloat(rawPassport) : 0;
+                    const defNamelist = rawNamelist ? parseFloat(rawNamelist) : 0;
+                    const defVisa = rawVisa ? parseFloat(rawVisa) : 0;
+                    const defMissingDoc = rawMissingDoc ? parseFloat(rawMissingDoc) : 0;
+                    const defStamping = rawStamping ? parseFloat(rawStamping) : 0;
+                    const defUsd = (rawPassport || rawNamelist || rawVisa || rawMissingDoc || rawStamping) ? (defPassport + defNamelist + defVisa + defMissingDoc + defStamping) : 0;
+
+                    tbody.innerHTML = `
+                        <tr class="gmm-row" data-mode="passport">
+                            <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">1</td>
+                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
+                            <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell('')}</td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-passport" placeholder="" style="${inputStyleFee}" value="${rawPassport ? formatNumNoZero(defPassport) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-namelist" placeholder="" style="${inputStyleFee}" value="${rawNamelist ? formatNumNoZero(defNamelist) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${rawVisa ? formatNumNoZero(defVisa) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-missing-doc" placeholder="" style="${inputStyleFee}" value="${rawMissingDoc ? formatNumNoZero(defMissingDoc) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-stamping" placeholder="" style="${inputStyleFee}" value="${rawStamping ? formatNumNoZero(defStamping) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${defUsd > 0 ? formatNumNoZero(defUsd) : ''}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="text-align:center; padding: 1.5px 2px;">
+                                <button type="button" class="btn-sys btn-rose" style="font-size:10.5px; padding:1px 6px; height:24px; min-height:24px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; gap:2px; box-sizing:border-box;" onclick="removeGmmRow(this)">🗑️ លុប</button>
+                            </td>
+                        </tr>
+                    `;
+                } else if (mode === 'visa') {
                     const rawVisa = document.getElementById('gmmFeeVisa')?.value?.trim();
                     const rawMonths = document.getElementById('gmmFeeMonths')?.value?.trim() || '';
                     const rawWork = document.getElementById('gmmFeeWork')?.value?.trim();
@@ -3230,6 +3676,7 @@ input[type="date"] {
                             <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">1</td>
                             <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
                             <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell('')}</td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${rawVisa ? formatNumNoZero(defVisa) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${rawMonths}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-permit" placeholder="" style="${inputStyleFee}" value="${rawWork ? formatNumNoZero(defWork) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -3264,6 +3711,7 @@ input[type="date"] {
                             <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">1</td>
                             <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
                             <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell('')}</td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${rawVip ? formatNumNoZero(defVip) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${rawClearance ? formatNumNoZero(defClearance) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-car" placeholder="" style="${inputStyleFee}" value="${rawCar ? formatNumNoZero(defCar) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -3278,6 +3726,11 @@ input[type="date"] {
             } else {
                 tbody.innerHTML = members.map((m, idx) => {
                     const safeName = (m.full_english_name || m.english_name || m.name || '').replace(/"/g, '&quot;');
+                    const photoData = m.photo_data || m.photo || m.image_url || '';
+                    const passportFee = parseFloat(m.passport_fee || 0);
+                    const namelistFee = parseFloat(m.namelist_fee || 0);
+                    const missingDoc = parseFloat(m.missing_doc_fee || m.doc_fee || 0);
+                    const stamping = parseFloat(m.visa_stamping_fee || m.stamping_fee || 0);
                     const visa = parseFloat(m.visa_fee || 0);
                     const monthsVal = (m.extension_months || m.months || m.visa_months || '').replace(/"/g, '&quot;');
                     const permit = parseFloat(m.work_permit || 0);
@@ -3289,15 +3742,40 @@ input[type="date"] {
                     
                     let usd = parseFloat(m.usd || 0);
                     if (usd === 0) {
-                        usd = (mode === 'visa') ? (visa + permit + vip + fine) : (vip + clearance + car + fine);
+                        if (mode === 'passport') {
+                            usd = passportFee + namelistFee + visa + missingDoc + stamping;
+                        } else if (mode === 'visa') {
+                            usd = visa + permit + vip + fine;
+                        } else {
+                            usd = vip + clearance + car + fine;
+                        }
                     }
 
-                    if (mode === 'visa') {
+                    if (mode === 'passport') {
+                        return `
+                        <tr class="gmm-row" data-mode="passport">
+                            <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${idx + 1}</td>
+                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
+                            <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell(photoData)}</td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-passport" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(passportFee)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-namelist" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(namelistFee)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(visa)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-missing-doc" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(missingDoc)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-stamping" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(stamping)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${formatNumNoZero(usd)}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                            <td style="text-align:center; padding: 1.5px 2px;">
+                                <button type="button" class="btn-sys btn-rose" style="font-size:10.5px; padding:1px 6px; height:24px; min-height:24px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; gap:2px; box-sizing:border-box;" onclick="removeGmmRow(this)">🗑️ លុប</button>
+                            </td>
+                        </tr>
+                        `;
+                    } else if (mode === 'visa') {
                         return `
                         <tr class="gmm-row" data-mode="visa">
                             <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${idx + 1}</td>
                             <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
                             <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell(photoData)}</td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(visa)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${monthsVal}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-permit" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(permit)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -3321,6 +3799,7 @@ input[type="date"] {
                             <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${idx + 1}</td>
                             <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
                             <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell(photoData)}</td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(vip)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(clearance)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-car" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(car)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -3425,6 +3904,10 @@ input[type="date"] {
             const splitMembers = [];
             checkedRows.forEach(r => {
                 const name = r.querySelector('.gmm-input-name')?.value?.trim() || '';
+                const passport = parseFloat(r.querySelector('.gmm-input-passport')?.value || 0);
+                const namelist = parseFloat(r.querySelector('.gmm-input-namelist')?.value || 0);
+                const missingDoc = parseFloat(r.querySelector('.gmm-input-missing-doc')?.value || 0);
+                const stamping = parseFloat(r.querySelector('.gmm-input-stamping')?.value || 0);
                 const evisa = parseFloat(r.querySelector('.gmm-input-evisa')?.value || 0);
                 const vip = parseFloat(r.querySelector('.gmm-input-vip')?.value || 0);
                 const clearance = parseFloat(r.querySelector('.gmm-input-clearance')?.value || 0);
@@ -3434,8 +3917,14 @@ input[type="date"] {
                 const months = r.querySelector('.gmm-input-months')?.value?.trim() || '';
                 const fine = parseFloat(r.querySelector('.gmm-input-fine')?.value || 0);
                 let usd = parseFloat(r.querySelector('.gmm-input-usd')?.value || 0);
-                if (usd === 0 && (evisa || vip || clearance || permit || car || visa || fine)) {
-                    usd = (currentGmmMode === 'visa') ? (visa + permit + vip + fine + evisa) : (vip + clearance + car + fine + evisa);
+                if (usd === 0) {
+                    if (currentGmmMode === 'passport') {
+                        usd = passport + namelist + visa + missingDoc + stamping;
+                    } else if (currentGmmMode === 'visa') {
+                        usd = visa + permit + vip + fine + evisa;
+                    } else {
+                        usd = vip + clearance + car + fine + evisa;
+                    }
                 }
                 const isVisaIssued = r.querySelector('.gmm-input-visa-issued')?.checked || false;
 
@@ -3443,6 +3932,10 @@ input[type="date"] {
                     splitMembers.push({
                         full_english_name: name,
                         name: name,
+                        passport_fee: passport,
+                        namelist_fee: namelist,
+                        missing_doc_fee: missingDoc,
+                        visa_stamping_fee: stamping,
                         extension_months: months,
                         months: months,
                         visa_months: months,
@@ -3666,22 +4159,26 @@ input[type="date"] {
             }
             updateGmmSelectionUI();
 
-            // Detect mode: Visa or Line
+            // Detect mode: Visa, Line (Car), or Passport
             let initialMode = 'line';
             if (item) {
-                if (item.service_category === 'visa' || item.group_info?.service_category === 'visa') {
+                if (item.service_category === 'passport' || item.group_info?.service_category === 'passport' || isPassportRecord(item)) {
+                    initialMode = 'passport';
+                } else if (item.service_category === 'visa' || item.group_info?.service_category === 'visa') {
                     initialMode = 'visa';
                 } else if (item.service_category === 'car' || item.group_info?.service_category === 'car') {
                     initialMode = 'line';
+                } else if (currentServiceCategory === 'passport') {
+                    initialMode = 'passport';
                 } else if (currentServiceCategory === 'visa') {
                     initialMode = 'visa';
                 } else if (currentServiceCategory === 'car') {
                     initialMode = 'line';
                 } else {
-                    initialMode = isVisaRecord(item) ? 'visa' : 'line';
+                    initialMode = isPassportRecord(item) ? 'passport' : (isVisaRecord(item) ? 'visa' : 'line');
                 }
             } else {
-                initialMode = (currentServiceCategory === 'visa') ? 'visa' : 'line';
+                initialMode = (currentServiceCategory === 'passport') ? 'passport' : ((currentServiceCategory === 'visa') ? 'visa' : 'line');
             }
 
             // Clear table body before loading new record
@@ -3798,11 +4295,15 @@ input[type="date"] {
             const mode = currentGmmMode;
             const colSelectors = (mode === 'visa')
                 ? ['.gmm-input-name', '.gmm-input-visa', '.gmm-input-permit', '.gmm-input-vip', '.gmm-input-fine']
-                : ['.gmm-input-name', '.gmm-input-vip', '.gmm-input-clearance', '.gmm-input-car', '.gmm-input-fine'];
+                : (mode === 'passport'
+                    ? ['.gmm-input-name', '.gmm-input-passport', '.gmm-input-namelist', '.gmm-input-visa', '.gmm-input-missing-doc', '.gmm-input-stamping']
+                    : ['.gmm-input-name', '.gmm-input-vip', '.gmm-input-clearance', '.gmm-input-car', '.gmm-input-fine']);
 
             const bulkIds = (mode === 'visa')
                 ? ['gmmSenderName', 'gmmFeeVisa', 'gmmFeeWork', 'gmmFeeVip', 'gmmFeeFine']
-                : ['gmmSenderName', 'gmmFeeVip', 'gmmFeeClearance', 'gmmFeeCar', 'gmmFeeFine'];
+                : (mode === 'passport'
+                    ? ['gmmSenderName', 'gmmFeePassport', 'gmmFeeNamelist', 'gmmFeeVisa', 'gmmFeeMissingDoc', 'gmmFeeStamping']
+                    : ['gmmSenderName', 'gmmFeeVip', 'gmmFeeClearance', 'gmmFeeCar', 'gmmFeeFine']);
 
             const currentClass = Array.from(input.classList).find(c => c.startsWith('gmm-input-'));
             const colIndex = colSelectors.findIndex(s => s === '.' + currentClass);
@@ -3985,6 +4486,10 @@ input[type="date"] {
         }
 
         function updateGmmMemberFeesDefaults(targetField) {
+            const passport = parseFloat(document.getElementById('gmmFeePassport')?.value || 0);
+            const namelist = parseFloat(document.getElementById('gmmFeeNamelist')?.value || 0);
+            const missingDoc = parseFloat(document.getElementById('gmmFeeMissingDoc')?.value || 0);
+            const stamping = parseFloat(document.getElementById('gmmFeeStamping')?.value || 0);
             const vip = parseFloat(document.getElementById('gmmFeeVip')?.value || 0);
             const car = parseFloat(document.getElementById('gmmFeeCar')?.value || 0);
             const clearance = parseFloat(document.getElementById('gmmFeeClearance')?.value || 0);
@@ -3995,6 +4500,22 @@ input[type="date"] {
             const fmtVal = v => (v > 0 ? (v % 1 === 0 ? v : v.toFixed(2)) : '');
 
             document.querySelectorAll('#gmmMembersBody tr.gmm-row').forEach(r => {
+                if (!targetField || targetField === 'passport') {
+                    const inp = r.querySelector('.gmm-input-passport');
+                    if (inp) inp.value = fmtVal(passport);
+                }
+                if (!targetField || targetField === 'namelist') {
+                    const inp = r.querySelector('.gmm-input-namelist');
+                    if (inp) inp.value = fmtVal(namelist);
+                }
+                if (!targetField || targetField === 'missing_doc') {
+                    const inp = r.querySelector('.gmm-input-missing-doc');
+                    if (inp) inp.value = fmtVal(missingDoc);
+                }
+                if (!targetField || targetField === 'stamping') {
+                    const inp = r.querySelector('.gmm-input-stamping');
+                    if (inp) inp.value = fmtVal(stamping);
+                }
                 if (!targetField || targetField === 'vip') {
                     const inp = r.querySelector('.gmm-input-vip');
                     if (inp) inp.value = fmtVal(vip);
@@ -4033,6 +4554,10 @@ input[type="date"] {
             const tr = elem.closest('tr');
             if (!tr) return;
 
+            const passport = parseFloat(tr.querySelector('.gmm-input-passport')?.value || 0);
+            const namelist = parseFloat(tr.querySelector('.gmm-input-namelist')?.value || 0);
+            const missingDoc = parseFloat(tr.querySelector('.gmm-input-missing-doc')?.value || 0);
+            const stamping = parseFloat(tr.querySelector('.gmm-input-stamping')?.value || 0);
             const visa = parseFloat(tr.querySelector('.gmm-input-visa')?.value || 0);
             const permit = parseFloat(tr.querySelector('.gmm-input-permit')?.value || 0);
             const vip = parseFloat(tr.querySelector('.gmm-input-vip')?.value || 0);
@@ -4041,9 +4566,14 @@ input[type="date"] {
             const fine = parseFloat(tr.querySelector('.gmm-input-fine')?.value || 0);
             const evisa = parseFloat(tr.querySelector('.gmm-input-evisa')?.value || 0);
 
-            const rowSum = (currentGmmMode === 'visa') 
-                ? (visa + permit + vip + fine + evisa)
-                : (vip + clearance + car + fine + evisa);
+            let rowSum = 0;
+            if (currentGmmMode === 'passport') {
+                rowSum = passport + namelist + visa + missingDoc + stamping;
+            } else if (currentGmmMode === 'visa') {
+                rowSum = visa + permit + vip + fine + evisa;
+            } else {
+                rowSum = vip + clearance + car + fine + evisa;
+            }
 
             const usdInput = tr.querySelector('.gmm-input-usd');
             if (usdInput) {
@@ -4061,7 +4591,12 @@ input[type="date"] {
             });
             const ft = document.getElementById('gmmGrandTotalDisplay') || document.getElementById('gmmTotalFooter');
             if (ft) {
-                ft.innerHTML = `💵 សរុបទឹកប្រាក់ក្នុងក្រុម (${rows.length} នាក់)៖ <span style="font-size: 16px; font-weight: 800; color: #059669;">$${sum.toFixed(2)}</span>`;
+                if (currentGmmMode === 'passport') {
+                    const formattedBaht = (sum % 1 === 0) ? sum.toLocaleString('en-US') : sum.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    ft.innerHTML = `💵 សរុបទឹកប្រាក់ក្នុងក្រុម (${rows.length} នាក់)៖ <span style="font-size: 16px; font-weight: 800; color: #059669;">฿${formattedBaht}</span>`;
+                } else {
+                    ft.innerHTML = `💵 សរុបទឹកប្រាក់ក្នុងក្រុម (${rows.length} នាក់)៖ <span style="font-size: 16px; font-weight: 800; color: #059669;">$${sum.toFixed(2)}</span>`;
+                }
             }
         }
 
@@ -4077,7 +4612,37 @@ input[type="date"] {
             const tr = document.createElement('tr');
             tr.className = 'gmm-row';
 
-            if (currentGmmMode === 'visa') {
+            if (currentGmmMode === 'passport') {
+                const rawPassport = document.getElementById('gmmFeePassport')?.value?.trim();
+                const rawNamelist = document.getElementById('gmmFeeNamelist')?.value?.trim();
+                const rawVisa = document.getElementById('gmmFeeVisa')?.value?.trim();
+                const rawMissingDoc = document.getElementById('gmmFeeMissingDoc')?.value?.trim();
+                const rawStamping = document.getElementById('gmmFeeStamping')?.value?.trim();
+
+                const defPassport = rawPassport ? parseFloat(rawPassport) : 0;
+                const defNamelist = rawNamelist ? parseFloat(rawNamelist) : 0;
+                const defVisa = rawVisa ? parseFloat(rawVisa) : 0;
+                const defMissingDoc = rawMissingDoc ? parseFloat(rawMissingDoc) : 0;
+                const defStamping = rawStamping ? parseFloat(rawStamping) : 0;
+                const defUsd = (rawPassport || rawNamelist || rawVisa || rawMissingDoc || rawStamping) ? (defPassport + defNamelist + defVisa + defMissingDoc + defStamping) : 0;
+
+                tr.setAttribute('data-mode', 'passport');
+                tr.innerHTML = `
+                    <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${currentCount + 1}</td>
+                    <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
+                    <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                    <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell('')}</td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-passport" placeholder="" style="${inputStyleFee}" value="${rawPassport ? formatNumNoZero(defPassport) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-namelist" placeholder="" style="${inputStyleFee}" value="${rawNamelist ? formatNumNoZero(defNamelist) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${rawVisa ? formatNumNoZero(defVisa) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-missing-doc" placeholder="" style="${inputStyleFee}" value="${rawMissingDoc ? formatNumNoZero(defMissingDoc) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-stamping" placeholder="" style="${inputStyleFee}" value="${rawStamping ? formatNumNoZero(defStamping) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-usd" placeholder="" style="${inputStyleUsd}" value="${defUsd > 0 ? formatNumNoZero(defUsd) : ''}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
+                    <td style="text-align:center; padding: 1.5px 2px;">
+                        <button type="button" class="btn-sys btn-rose" style="font-size:10.5px; padding:1px 6px; height:24px; min-height:24px; background:#dc2626; color:#ffffff; font-weight:bold; border-radius:4px; border:none; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; gap:2px; box-sizing:border-box;" onclick="removeGmmRow(this)">🗑️ លុប</button>
+                    </td>
+                `;
+            } else if (currentGmmMode === 'visa') {
                 const rawVisa = document.getElementById('gmmFeeVisa')?.value?.trim();
                 const rawMonths = document.getElementById('gmmFeeMonths')?.value?.trim() || '';
                 const rawWork = document.getElementById('gmmFeeWork')?.value?.trim();
@@ -4095,6 +4660,7 @@ input[type="date"] {
                     <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${currentCount + 1}</td>
                     <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
                     <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                    <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell('')}</td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${rawVisa ? formatNumNoZero(defVisa) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                     <td style="padding: 1.5px 2px;"><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${rawMonths}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-permit" placeholder="" style="${inputStyleFee}" value="${rawWork ? formatNumNoZero(defWork) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -4128,6 +4694,7 @@ input[type="date"] {
                     <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${currentCount + 1}</td>
                     <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
                     <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
+                    <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell('')}</td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${rawVip ? formatNumNoZero(defVip) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${rawClearance ? formatNumNoZero(defClearance) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-car" placeholder="" style="${inputStyleFee}" value="${rawCar ? formatNumNoZero(defCar) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -4197,6 +4764,10 @@ input[type="date"] {
             const members = [];
             rows.forEach(r => {
                 const name = r.querySelector('.gmm-input-name')?.value?.trim() || '';
+                const passport = parseFloat(r.querySelector('.gmm-input-passport')?.value || 0);
+                const namelist = parseFloat(r.querySelector('.gmm-input-namelist')?.value || 0);
+                const missingDoc = parseFloat(r.querySelector('.gmm-input-missing-doc')?.value || 0);
+                const stamping = parseFloat(r.querySelector('.gmm-input-stamping')?.value || 0);
                 const evisa = parseFloat(r.querySelector('.gmm-input-evisa')?.value || 0);
                 const vip = parseFloat(r.querySelector('.gmm-input-vip')?.value || 0);
                 const clearance = parseFloat(r.querySelector('.gmm-input-clearance')?.value || 0);
@@ -4207,16 +4778,30 @@ input[type="date"] {
                 const fine = parseFloat(r.querySelector('.gmm-input-fine')?.value || 0);
                 let usd = parseFloat(r.querySelector('.gmm-input-usd')?.value || 0);
 
-                if (usd === 0 && (evisa || vip || clearance || permit || car || visa || fine)) {
-                    usd = (currentGmmMode === 'visa') ? (visa + permit + vip + fine + evisa) : (vip + clearance + car + fine + evisa);
+                if (usd === 0) {
+                    if (currentGmmMode === 'passport') {
+                        usd = passport + namelist + visa + missingDoc + stamping;
+                    } else if (currentGmmMode === 'visa') {
+                        usd = visa + permit + vip + fine + evisa;
+                    } else {
+                        usd = vip + clearance + car + fine + evisa;
+                    }
                 }
 
                 const isVisaIssued = r.querySelector('.gmm-input-visa-issued')?.checked || false;
+                const photoData = r.querySelector('.gmm-input-photo')?.value || '';
 
-                if (name) {
+                if (name || photoData || usd > 0 || passport > 0 || namelist > 0 || missingDoc > 0 || stamping > 0 || evisa > 0 || vip > 0 || clearance > 0 || permit > 0 || car > 0 || visa > 0 || fine > 0) {
+                    const finalName = name || `Pax ${members.length + 1}`;
                     members.push({
-                        full_english_name: name,
-                        name: name,
+                        full_english_name: finalName,
+                        name: finalName,
+                        photo: photoData,
+                        photo_data: photoData,
+                        passport_fee: passport,
+                        namelist_fee: namelist,
+                        missing_doc_fee: missingDoc,
+                        visa_stamping_fee: stamping,
                         extension_months: months,
                         months: months,
                         visa_months: months,
@@ -4235,6 +4820,11 @@ input[type="date"] {
                 }
             });
 
+            if (members.length === 0) {
+                alert('⚠️ សូមបញ្ចូលឈ្មោះ ឬព័ត៌មានសមាជិកយ៉ាងហោចណាស់ 1 នាក់!');
+                return;
+            }
+
             pendingGmmSavePayload = {
                 receipt_no: editedReceiptNo,
                 exchange_rate: exchangeRate,
@@ -4250,12 +4840,13 @@ input[type="date"] {
                 if (currentModalReceiptData && currentModalReceiptData.service_category) {
                     autoCategory = currentModalReceiptData.service_category;
                 } else if (currentModalReceiptData) {
-                    autoCategory = isCarRecord(currentModalReceiptData) ? 'car' : 'visa';
+                    autoCategory = isCarRecord(currentModalReceiptData) ? 'car' : (isPassportRecord(currentModalReceiptData) ? 'passport' : 'visa');
                 } else {
-                    autoCategory = 'visa';
+                    autoCategory = (currentServiceCategory && currentServiceCategory !== 'all') ? currentServiceCategory : 'passport';
                 }
             }
-            executeGroupMembersModalSave(autoCategory || 'visa');
+            if (autoCategory === 'line') autoCategory = 'car';
+            executeGroupMembersModalSave(autoCategory || 'passport');
         }
 
         function executeGroupMembersModalSave(chosenCategory) {
@@ -4280,8 +4871,8 @@ input[type="date"] {
                     btnSave.textContent = '💾 កែប្រែ & រក្សាទុក (Update & Save)';
                 }
                 if (res.success) {
-                    const catNameKh = chosenCategory === 'car' ? 'ផ្នែកឡាន (Car)' : 'ផ្នែកវីសា (Visa)';
-                    alert(`🎉 បានរក្សាទុកការកែប្រែទៅក្នុង${catNameKh} បានជោគជ័យ!`);
+                    const catNameKh = chosenCategory === 'car' ? 'ផ្នែកឡាន (Car)' : (chosenCategory === 'passport' ? 'ផ្នែកប៉ាសស្ព័រ & ផ្សេងៗ (Passport)' : 'ផ្នែកវីសា (Visa)');
+                    alert(`🎉 បានរក្សាទុកទិន្នន័យទៅក្នុង${catNameKh} បានជោគជ័យ!`);
                     pendingGmmSavePayload = null;
                     closeGroupMembersModal();
                     loadDatabaseRecords();
@@ -4535,7 +5126,8 @@ input[type="date"] {
             if (mAgency) mAgency.textContent = agency;
 
             const isVisa = isVisaRecord(item);
-            const dateLabel = isVisa ? 'Visa Date:' : 'Travel Date:';
+            const isPassport = isPassportRecord(item);
+            const dateLabel = isVisa ? 'Visa Date:' : (isPassport ? 'Date:' : 'Travel Date:');
             const mDateLbl = document.getElementById('mReceiptDateLabel');
             if (mDateLbl) mDateLbl.textContent = dateLabel;
 
@@ -4560,17 +5152,21 @@ input[type="date"] {
                     const car = parseFloat(m.car_fee || m.car || 0);
                     const clear = parseFloat(m.clearance_fee || m.clearance || 0);
                     const work = parseFloat(m.work_permit || m.work || 0);
-                    return sum + (parseFloat(m.usd) || (visa + evisa + vip + car + clear + work));
+                    const pass = parseFloat(m.passport_fee || 0);
+                    const nameFee = parseFloat(m.namelist_fee || 0);
+                    const missFee = parseFloat(m.missing_doc_fee || m.doc_fee || 0);
+                    const stampFee = parseFloat(m.visa_stamping_fee || m.stamping_fee || 0);
+                    return sum + (parseFloat(m.usd) || (visa + evisa + vip + car + clear + work + pass + nameFee + missFee + stampFee));
                 }, 0);
             }
             if ((!grandUSD || isNaN(grandUSD)) && item.fees) {
                 const f = item.fees;
                 grandUSD = (parseFloat(f.visa_fee || f.visa || 0) + parseFloat(f.e_visa || f.evisa || 0) + parseFloat(f.vip_fee || f.vip || 0) + parseFloat(f.car_fee || f.car || 0) + parseFloat(f.clearance_fee || f.clearance || 0) + parseFloat(f.work_permit || f.work || 0));
             }
-            const grandTHB = parseFloat(item.group_data?.totals?.baht || item.totals?.baht || (grandUSD * rate));
+            const grandTHB = parseFloat(item.group_data?.totals?.baht || item.totals?.baht || (isPassport ? grandUSD : (grandUSD * rate)));
 
             const mGUSD = document.getElementById('mGrandUSD');
-            if (mGUSD) mGUSD.textContent = '$' + grandUSD.toFixed(2);
+            if (mGUSD) mGUSD.textContent = isPassport ? ('฿' + grandTHB.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})) : ('$' + grandUSD.toFixed(2));
 
             const mGTHB = document.getElementById('mGrandTHB');
             if (mGTHB) mGTHB.textContent = '฿' + grandTHB.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
@@ -4590,6 +5186,10 @@ input[type="date"] {
                     e_visa: it.e_visa,
                     overstay: it.overstay,
                     fine_fee: it.fine_fee || it.fine,
+                    passport_fee: it.passport_fee,
+                    namelist_fee: it.namelist_fee,
+                    missing_doc_fee: it.missing_doc_fee,
+                    visa_stamping_fee: it.visa_stamping_fee,
                     usd: it.usd
                 }));
             }
@@ -4617,29 +5217,33 @@ input[type="date"] {
             const hasCar = membersList.some(m => getFeeNum(m.car_fee || m.car) > 0);
             const hasWork = membersList.some(m => getFeeNum(m.work_permit || m.work) > 0);
             const hasFine = membersList.some(m => getFeeNum(m.overstay || m.fine_fee || m.fine) > 0);
+            const hasPassport = membersList.some(m => getFeeNum(m.passport_fee) > 0);
+            const hasNamelist = membersList.some(m => getFeeNum(m.namelist_fee) > 0);
+            const hasMissingDoc = membersList.some(m => getFeeNum(m.missing_doc_fee || m.doc_fee) > 0);
+            const hasStamping = membersList.some(m => getFeeNum(m.visa_stamping_fee || m.stamping_fee) > 0);
 
             // Define dynamic active columns - only show columns that have values!
             const cols = [];
-            if (isVisa) {
+            if (isPassport) {
+                if (hasPassport) cols.push({ key: 'passport', title: 'Passport', width: '65px' });
+                if (hasNamelist) cols.push({ key: 'namelist', title: 'Namelist', width: '65px' });
+                if (hasVisa) cols.push({ key: 'visa', title: 'Visa', width: '60px' });
+                if (hasMissingDoc) cols.push({ key: 'missing_doc', title: 'Doc Fee', width: '65px' });
+                if (hasStamping) cols.push({ key: 'stamping', title: 'Stamping', width: '65px' });
+                if (cols.length === 0) cols.push({ key: 'passport', title: 'Passport', width: '65px' });
+            } else if (isVisa) {
                 if (hasVisa) cols.push({ key: 'visa', title: 'VISA', width: '60px' });
                 if (hasEvisa) cols.push({ key: 'evisa', title: 'E-VISA', width: '65px' });
                 if (hasVip) cols.push({ key: 'vip', title: 'VIP', width: '55px' });
                 if (hasWork) cols.push({ key: 'work', title: 'Work', width: '60px' });
                 if (hasFine) cols.push({ key: 'fine', title: 'Fine', width: '55px' });
+                if (cols.length === 0) cols.push({ key: 'visa', title: 'VISA', width: '60px' });
             } else {
                 if (hasVip) cols.push({ key: 'vip', title: 'VIP', width: '60px' });
                 if (hasClear) cols.push({ key: 'clear', title: 'Clearance', width: '75px' });
                 if (hasCar) cols.push({ key: 'car', title: 'Car Fee', width: '65px' });
                 if (hasFine) cols.push({ key: 'fine', title: 'Fine', width: '55px' });
-            }
-
-            // Fallback: If no specific fee was entered, show the primary fee column
-            if (cols.length === 0) {
-                if (isVisa) {
-                    cols.push({ key: 'visa', title: 'VISA', width: '60px' });
-                } else {
-                    cols.push({ key: 'car', title: 'Car Fee', width: '65px' });
-                }
+                if (cols.length === 0) cols.push({ key: 'car', title: 'Car Fee', width: '65px' });
             }
 
             const headerColor = isVisa ? 'linear-gradient(135deg, #4f46e5, #6366f1)' : 'linear-gradient(135deg, #0284c7, #0369a1)';
@@ -4658,12 +5262,22 @@ input[type="date"] {
             }
 
             let html = '';
-            const fmtUsd = v => (v > 0 ? ('$' + (v % 1 === 0 ? v.toFixed(0) : v.toFixed(2))) : '-');
-            const fmtTotUsd = v => ('$' + (v % 1 === 0 ? v.toFixed(0) : v.toFixed(2)));
+            const fmtVal = v => {
+                if (isPassport) return v > 0 ? ('฿' + (v % 1 === 0 ? v.toFixed(0) : v.toFixed(2))) : '-';
+                return v > 0 ? ('$' + (v % 1 === 0 ? v.toFixed(0) : v.toFixed(2))) : '-';
+            };
+            const fmtTot = v => {
+                if (isPassport) return '฿' + (v % 1 === 0 ? v.toFixed(0) : v.toFixed(2));
+                return '$' + (v % 1 === 0 ? v.toFixed(0) : v.toFixed(2));
+            };
 
             membersList.forEach((m, mIdx) => {
                 const custDisplay = m.full_english_name || m.english_name || m.name || m.passport_no || `Pax #${mIdx + 1}`;
                 const valMap = {
+                    passport: getFeeNum(m.passport_fee),
+                    namelist: getFeeNum(m.namelist_fee),
+                    missing_doc: getFeeNum(m.missing_doc_fee || m.doc_fee),
+                    stamping: getFeeNum(m.visa_stamping_fee || m.stamping_fee),
                     visa: getFeeNum(m.visa_fee || m.visa || m.price),
                     evisa: getFeeNum(m.e_visa || m.evisa),
                     vip: getFeeNum(m.vip),
@@ -4673,17 +5287,17 @@ input[type="date"] {
                     fine: getFeeNum(m.overstay || m.fine_fee || m.fine)
                 };
 
-                const tot = getFeeNum(m.usd) || (valMap.visa + valMap.evisa + valMap.vip + valMap.clear + valMap.car + valMap.work + valMap.fine);
+                const tot = getFeeNum(m.usd) || (valMap.passport + valMap.namelist + valMap.missing_doc + valMap.stamping + valMap.visa + valMap.evisa + valMap.vip + valMap.clear + valMap.car + valMap.work + valMap.fine);
                 const totColor = isVisa ? '#4f46e5' : '#0284c7';
 
-                let tds = cols.map(c => `<td style="padding:5px 4px; border:1px solid #cbd5e1; text-align:right; white-space:nowrap;">${fmtUsd(valMap[c.key])}</td>`).join('');
+                let tds = cols.map(c => `<td style="padding:5px 4px; border:1px solid #cbd5e1; text-align:right; white-space:nowrap;">${fmtVal(valMap[c.key])}</td>`).join('');
 
                 html += `
                     <tr style="border-bottom:1px solid #cbd5e1;">
                         <td style="padding:5px 3px; text-align:center; border:1px solid #cbd5e1;">${mIdx + 1}</td>
                         <td style="padding:5px 8px; border:1px solid #cbd5e1; font-weight:600;">${custDisplay}</td>
                         ${tds}
-                        <td style="padding:5px 6px; border:1px solid #cbd5e1; text-align:right; font-weight:bold; color:${totColor}; white-space:nowrap;">${fmtTotUsd(tot)}</td>
+                        <td style="padding:5px 6px; border:1px solid #cbd5e1; text-align:right; font-weight:bold; color:${totColor}; white-space:nowrap;">${fmtTot(tot)}</td>
                     </tr>
                 `;
             });
@@ -4964,9 +5578,40 @@ function checkTelegramBotStatus() {
     .catch(() => {});
 }
 
-setInterval(pollTelegramScans, 3000);
-setInterval(checkTelegramBotStatus, 10000);
-checkTelegramBotStatus();
+// Global Clipboard Image Paste Listener for Group Members
+document.addEventListener('paste', function(e) {
+    const modal = document.getElementById('groupMembersModal');
+    if (!modal || modal.style.display === 'none') return;
+    const items = (e.clipboardData || e.originalEvent?.clipboardData)?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+            const blob = items[i].getAsFile();
+            if (!blob) continue;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const dataUrl = evt.target.result;
+                const activeElem = document.activeElement;
+                let targetTr = activeElem ? activeElem.closest('tr.gmm-row') : null;
+                if (!targetTr) {
+                    const emptyWrapper = Array.from(document.querySelectorAll('#gmmMembersBody .gmm-photo-wrapper')).find(w => !w.querySelector('.gmm-input-photo')?.value);
+                    targetTr = emptyWrapper ? emptyWrapper.closest('tr') : document.querySelector('#gmmMembersBody tr.gmm-row:last-child');
+                }
+                if (targetTr) {
+                    const wrapper = targetTr.querySelector('.gmm-photo-wrapper');
+                    if (wrapper) {
+                        wrapper.innerHTML = `
+                            <img src="${dataUrl}" class="gmm-photo-thumb" style="width:26px; height:26px; object-fit:cover; border-radius:4px; border:1.5px solid #0284c7; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,0.15);" onclick="openMemberPhotoPreview(this)" title="ចុចដើម្បីមើលរូបច្បាស់ HD / ទាញយក">
+                            <input type="hidden" class="gmm-input-photo" value="${dataUrl.replace(/"/g, '&quot;')}">
+                        `;
+                    }
+                }
+            };
+            reader.readAsDataURL(blob);
+            break;
+        }
+    }
+});
 
     </script>
 </body>

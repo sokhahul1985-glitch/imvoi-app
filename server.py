@@ -128,18 +128,23 @@ def format_group_customer_names(members):
 
 def get_next_invoice_no(category='car'):
     data = load_json(SAVED_CUSTOMERS_FILE, [])
-    counter = load_json(INVOICE_COUNTER_FILE, {"last_number": 0, "prefix": "INV ", "last_visa_number": 0, "visa_prefix": "VISA "})
+    counter = load_json(INVOICE_COUNTER_FILE, {
+        "last_number": 0, "prefix": "INV ",
+        "last_visa_number": 0, "visa_prefix": "VISA ",
+        "last_passport_number": 0, "passport_prefix": "INV "
+    })
     cat = (category or 'car').lower().strip()
     
     if cat == 'visa':
         prefix = counter.get("visa_prefix", "VISA ")
         nums = []
         for item in data:
-            r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
-            if r_no.startswith('VISA'):
-                num_part = re.sub(r'[^0-9]', '', r_no)
-                if num_part.isdigit():
-                    nums.append(int(num_part))
+            if item.get('service_category') == 'visa' or item.get('group_info', {}).get('service_category') == 'visa':
+                r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
+                if r_no.startswith('VISA'):
+                    num_part = re.sub(r'[^0-9]', '', r_no)
+                    if num_part.isdigit():
+                        nums.append(int(num_part))
         if nums:
             max_num = max(nums)
         else:
@@ -151,15 +156,38 @@ def get_next_invoice_no(category='car'):
             save_json(INVOICE_COUNTER_FILE, counter)
             
         return f"{prefix}{(max_num + 1):05d}"
+
+    elif cat == 'passport':
+        prefix = counter.get("passport_prefix", "INV ")
+        nums = []
+        for item in data:
+            if item.get('service_category') == 'passport' or item.get('group_info', {}).get('service_category') == 'passport':
+                r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
+                num_part = re.sub(r'[^0-9]', '', r_no)
+                if num_part.isdigit():
+                    nums.append(int(num_part))
+        if nums:
+            max_num = max(nums)
+        else:
+            max_num = int(counter.get("last_passport_number", 0))
+            
+        # Keep counter file in sync
+        if counter.get("last_passport_number") != max_num:
+            counter["last_passport_number"] = max_num
+            save_json(INVOICE_COUNTER_FILE, counter)
+            
+        return f"{prefix}{(max_num + 1):05d}"
+
     else:
         prefix = counter.get("prefix", "INV ")
         nums = []
         for item in data:
-            r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
-            if r_no.startswith('INV'):
-                num_part = re.sub(r'[^0-9]', '', r_no)
-                if num_part.isdigit():
-                    nums.append(int(num_part))
+            if item.get('service_category') in ['car', 'line'] or (not item.get('service_category') and not item.get('group_info', {}).get('service_category')):
+                r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
+                if r_no.startswith('INV'):
+                    num_part = re.sub(r'[^0-9]', '', r_no)
+                    if num_part.isdigit():
+                        nums.append(int(num_part))
         if nums:
             max_num = max(nums)
         else:
@@ -175,10 +203,16 @@ def get_next_invoice_no(category='car'):
 def increment_invoice_no(category='car'):
     next_no = get_next_invoice_no(category)
     cat = (category or 'car').lower().strip()
-    counter = load_json(INVOICE_COUNTER_FILE, {"last_number": 0, "prefix": "INV ", "last_visa_number": 0, "visa_prefix": "VISA "})
+    counter = load_json(INVOICE_COUNTER_FILE, {
+        "last_number": 0, "prefix": "INV ",
+        "last_visa_number": 0, "visa_prefix": "VISA ",
+        "last_passport_number": 0, "passport_prefix": "INV "
+    })
     num_part = int(re.sub(r'[^0-9]', '', next_no))
     if cat == 'visa':
         counter["last_visa_number"] = num_part
+    elif cat == 'passport':
+        counter["last_passport_number"] = num_part
     else:
         counter["last_number"] = num_part
     save_json(INVOICE_COUNTER_FILE, counter)
@@ -402,9 +436,15 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             cat = query.get('category', ['car'])[0].lower().strip()
             num_str = query.get('number', ['0'])[0]
             num = int(re.sub(r'[^0-9]', '', str(num_str)) or 0)
-            counter = load_json(INVOICE_COUNTER_FILE, {"last_number": 0, "prefix": "INV ", "last_visa_number": 0, "visa_prefix": "VISA "})
+            counter = load_json(INVOICE_COUNTER_FILE, {
+                "last_number": 0, "prefix": "INV ",
+                "last_visa_number": 0, "visa_prefix": "VISA ",
+                "last_passport_number": 0, "passport_prefix": "INV "
+            })
             if cat == 'visa':
                 counter["last_visa_number"] = num
+            elif cat == 'passport':
+                counter["last_passport_number"] = num
             else:
                 counter["last_number"] = num
             save_json(INVOICE_COUNTER_FILE, counter)
@@ -653,10 +693,9 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             grand_usd = 0.0
 
             for idx, m in enumerate(members_raw, 1):
-                name = m.get('name', '').strip()
-                if not name: continue
-                pass_no = m.get('passport', '').strip()
-                nat = m.get('nationality', 'THAI').strip()
+                name = (m.get('full_english_name') or m.get('name') or m.get('english_name') or '').strip()
+                pass_no = (m.get('passport_no') or m.get('passport') or '-').strip()
+                nat = (m.get('nationality') or 'THAI').strip()
                 vip = float(m.get('vip', 0))
                 clearance = float(m.get('clearance_fee', m.get('clearance', 0)))
                 permit = float(m.get('work_permit', 0))
@@ -664,11 +703,25 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 visa = float(m.get('visa_fee', m.get('visa', 0)))
                 evisa = float(m.get('evisa', m.get('e_visa', 0)))
                 overstay = float(m.get('overstay', m.get('fine_fee', m.get('fine', 0))))
+                passport_fee = float(m.get('passport_fee', 0.0))
+                namelist_fee = float(m.get('namelist_fee', 0.0))
+                missing_doc_fee = float(m.get('missing_doc_fee', 0.0) or m.get('doc_fee', 0.0))
+                visa_stamping_fee = float(m.get('visa_stamping_fee', 0.0) or m.get('stamping_fee', 0.0))
                 months = str(m.get('extension_months') or m.get('months') or m.get('visa_months') or '').strip()
                 is_issued = m.get('visa_issued') in [True, 'true', 'True', 1, '1'] or m.get('visa_status') == 'issued' or m.get('status') == 'issued'
                 visa_status = 'issued' if is_issued else 'pending'
+                photo_data = str(m.get('photo_data') or m.get('photo') or m.get('image_url') or '')
 
-                row_usd = vip + clearance + permit + car + visa + evisa + overstay
+                row_usd = float(m.get('usd', 0.0))
+                if row_usd == 0:
+                    row_usd = vip + clearance + permit + car + visa + evisa + overstay + passport_fee + namelist_fee + missing_doc_fee + visa_stamping_fee
+
+                if not name:
+                    if row_usd > 0 or photo_data:
+                        name = f"Pax {idx}"
+                    else:
+                        continue
+
                 grand_usd += row_usd
 
                 members.append({
@@ -676,6 +729,12 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                     'english_name': name,
                     'passport_no': pass_no,
                     'nationality': nat,
+                    'photo': photo_data,
+                    'photo_data': photo_data,
+                    'passport_fee': passport_fee,
+                    'namelist_fee': namelist_fee,
+                    'missing_doc_fee': missing_doc_fee,
+                    'visa_stamping_fee': visa_stamping_fee,
                     'car_fee': car,
                     'visa_fee': visa,
                     'extension_months': months,
@@ -698,6 +757,10 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                     'no': idx,
                     'description': name,
                     'qty': '1',
+                    'passport_fee': f"${passport_fee:.0f}" if passport_fee > 0 else '',
+                    'namelist_fee': f"${namelist_fee:.0f}" if namelist_fee > 0 else '',
+                    'missing_doc_fee': f"${missing_doc_fee:.0f}" if missing_doc_fee > 0 else '',
+                    'visa_stamping_fee': f"${visa_stamping_fee:.0f}" if visa_stamping_fee > 0 else '',
                     'extension_months': months,
                     'months': months,
                     'visa_months': months,
@@ -714,9 +777,9 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 })
 
             pax_count = len(members)
-            grand_thb = grand_usd * exchange_rate
-            formatted_cust_name = format_group_customer_names(members) or customer_name or (members[0]['full_english_name'] if members else group_name)
             service_category = req_data.get('service_category', 'car')
+            grand_thb = grand_usd if service_category == 'passport' else (grand_usd * exchange_rate)
+            formatted_cust_name = format_group_customer_names(members) or customer_name or (members[0]['full_english_name'] if members else group_name)
 
             all_invoices = load_json(SAVED_CUSTOMERS_FILE, [])
             date_saved_str = urllib.parse.unquote(req_data.get('date_saved', ''))
@@ -845,6 +908,7 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             sender_name = req_data.get('sender_name', '').strip()
             agency_company = req_data.get('agency_company', '').strip()
             group_name_input = req_data.get('group_name', '').strip()
+            req_service_category = str(req_data.get('service_category', '')).strip().lower()
 
             if not receipt_no:
                 self.send_json_response({'success': False, 'error': 'Missing receipt_no'}, status=400)
@@ -895,6 +959,13 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                         if 'customer' in item:
                             item['customer']['agency_company'] = agency_company
 
+                    if req_service_category:
+                        item['service_category'] = req_service_category
+                        if 'group_info' in item:
+                            item['group_info']['service_category'] = req_service_category
+                        if 'customer' in item:
+                            item['customer']['service_category'] = req_service_category
+
                     exchange_rate = float(item.get('group_data', {}).get('exchange_rate', 33.90))
                     new_members = []
                     new_items = []
@@ -902,8 +973,6 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
 
                     for idx, m in enumerate(members_data, 1):
                         name = (m.get('full_english_name') or m.get('name') or m.get('english_name') or '').strip()
-                        if not name:
-                            continue
                         pass_no = (m.get('passport_no') or m.get('passport') or '-').strip()
                         nat = (m.get('nationality') or 'THAI').strip()
                         usd = float(m.get('usd', 0.0))
@@ -914,12 +983,24 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                         visa = float(m.get('visa_fee', 0.0) or m.get('visa', 0.0))
                         evisa = float(m.get('e_visa', 0.0) or m.get('evisa', 0.0))
                         overstay = float(m.get('overstay', 0.0) or m.get('fine_fee', 0.0) or m.get('fine', 0.0))
+                        passport_fee = float(m.get('passport_fee', 0.0))
+                        namelist_fee = float(m.get('namelist_fee', 0.0))
+                        missing_doc_fee = float(m.get('missing_doc_fee', 0.0) or m.get('doc_fee', 0.0))
+                        visa_stamping_fee = float(m.get('visa_stamping_fee', 0.0) or m.get('stamping_fee', 0.0))
                         months = str(m.get('extension_months') or m.get('months') or m.get('visa_months') or '').strip()
                         is_issued = m.get('visa_issued') in [True, 'true', 'True', 1, '1'] or m.get('visa_status') == 'issued' or m.get('status') == 'issued'
                         visa_status = 'issued' if is_issued else 'pending'
 
-                        if usd == 0 and (vip or clearance or permit or car or visa or evisa or overstay):
-                            usd = vip + clearance + permit + car + visa + evisa + overstay
+                        if usd == 0 and (vip or clearance or permit or car or visa or evisa or overstay or passport_fee or namelist_fee or missing_doc_fee or visa_stamping_fee):
+                            usd = vip + clearance + permit + car + visa + evisa + overstay + passport_fee + namelist_fee + missing_doc_fee + visa_stamping_fee
+
+                        photo_data = str(m.get('photo_data') or m.get('photo') or m.get('image_url') or '')
+
+                        if not name:
+                            if usd > 0 or photo_data:
+                                name = f"Pax {idx}"
+                            else:
+                                continue
 
                         grand_usd += usd
 
@@ -928,6 +1009,12 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                             'english_name': name,
                             'passport_no': pass_no,
                             'nationality': nat,
+                            'photo': photo_data,
+                            'photo_data': photo_data,
+                            'passport_fee': passport_fee,
+                            'namelist_fee': namelist_fee,
+                            'missing_doc_fee': missing_doc_fee,
+                            'visa_stamping_fee': visa_stamping_fee,
                             'car_fee': car,
                             'visa_fee': visa,
                             'extension_months': months,
@@ -950,6 +1037,10 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                             'no': idx,
                             'description': name,
                             'qty': '1',
+                            'passport_fee': f"${passport_fee:.0f}" if passport_fee > 0 else '',
+                            'namelist_fee': f"${namelist_fee:.0f}" if namelist_fee > 0 else '',
+                            'missing_doc_fee': f"${missing_doc_fee:.0f}" if missing_doc_fee > 0 else '',
+                            'visa_stamping_fee': f"${visa_stamping_fee:.0f}" if visa_stamping_fee > 0 else '',
                             'extension_months': months,
                             'months': months,
                             'visa_months': months,
@@ -965,7 +1056,8 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                             'visa_status': visa_status
                         })
 
-                    grand_thb = grand_usd * exchange_rate
+                    service_cat = req_service_category or item.get('service_category') or item.get('group_info', {}).get('service_category') or 'car'
+                    grand_thb = grand_usd if service_cat == 'passport' else (grand_usd * exchange_rate)
                     pax_count = len(new_members)
                     first_cust_name = new_members[0]['full_english_name'] if new_members else 'N/A'
                     group_name = group_name_input or sender_name or item.get('group_info', {}).get('group_name') or item.get('group_data', {}).get('customer_name') or 'VIP Group'
@@ -977,6 +1069,7 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                         item['customer']['sex'] = f"{pax_count} Pax"
                     if 'group_info' in item:
                         item['group_info']['customer_name'] = first_cust_name
+                        item['group_info']['pax_count'] = pax_count
                     if 'group_data' in item:
                         item['group_data']['items'] = new_items
                         item['group_data']['totals'] = {'usd': grand_usd, 'baht': grand_thb}
@@ -991,15 +1084,20 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 # Create brand new group record
                 formatted_tdate = format_display_date(travel_date) if travel_date else datetime.datetime.now().strftime("%d-%m-%Y")
                 exchange_rate = float(req_data.get('exchange_rate', 33.90))
-                service_category = req_data.get('service_category', 'car')
+                service_category = req_service_category or 'passport'
                 new_members = []
                 new_items = []
                 grand_usd = 0.0
 
-                for idx_m, m in enumerate(members_data):
-                    m_name = m.get('full_english_name') or m.get('name', '')
-                    if not m_name:
-                        continue
+                for idx_m, m in enumerate(members_data, 1):
+                    m_name = (m.get('full_english_name') or m.get('name') or m.get('english_name') or '').strip()
+                    pass_no = (m.get('passport_no') or m.get('passport') or '-').strip()
+                    nat = (m.get('nationality') or 'THAI').strip()
+                    photo_data = str(m.get('photo_data') or m.get('photo') or m.get('image_url') or '')
+                    passport_fee = float(m.get('passport_fee', 0.0))
+                    namelist_fee = float(m.get('namelist_fee', 0.0))
+                    missing_doc_fee = float(m.get('missing_doc_fee', 0.0) or m.get('doc_fee', 0.0))
+                    visa_stamping_fee = float(m.get('visa_stamping_fee', 0.0) or m.get('stamping_fee', 0.0))
                     evisa = float(m.get('e_visa') or m.get('evisa') or 0)
                     vip = float(m.get('vip') or 0)
                     clearance = float(m.get('clearance_fee') or m.get('clearance') or 0)
@@ -1011,22 +1109,37 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                     is_issued = m.get('visa_issued') in [True, 'true', 'True', 1, '1'] or m.get('visa_status') == 'issued' or m.get('status') == 'issued'
                     visa_status = 'issued' if is_issued else 'pending'
                     usd = float(m.get('usd') or 0)
-                    if usd == 0:
-                        usd = evisa + vip + clearance + permit + car + visa + overstay
+                    if usd == 0 and (evisa or vip or clearance or permit or car or visa or overstay or passport_fee or namelist_fee or missing_doc_fee or visa_stamping_fee):
+                        usd = evisa + vip + clearance + permit + car + visa + overstay + passport_fee + namelist_fee + missing_doc_fee + visa_stamping_fee
+
+                    if not m_name:
+                        if usd > 0 or photo_data:
+                            m_name = f"Pax {idx_m}"
+                        else:
+                            continue
 
                     grand_usd += usd
                     new_members.append({
                         'full_english_name': m_name,
                         'name': m_name,
+                        'passport_no': pass_no,
+                        'nationality': nat,
+                        'photo': photo_data,
+                        'photo_data': photo_data,
+                        'passport_fee': passport_fee,
+                        'namelist_fee': namelist_fee,
+                        'missing_doc_fee': missing_doc_fee,
+                        'visa_stamping_fee': visa_stamping_fee,
+                        'car_fee': car,
+                        'visa_fee': visa,
                         'extension_months': months,
                         'months': months,
                         'visa_months': months,
+                        'price': 0.0,
                         'e_visa': evisa,
                         'vip': vip,
                         'clearance_fee': clearance,
                         'work_permit': permit,
-                        'car_fee': car,
-                        'visa_fee': visa,
                         'overstay': overstay,
                         'fine_fee': overstay,
                         'usd': usd,
@@ -1035,9 +1148,13 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                         'visa_status': visa_status
                     })
                     new_items.append({
-                        'no': idx_m + 1,
+                        'no': idx_m,
                         'description': m_name,
                         'qty': '1',
+                        'passport_fee': f"${passport_fee:.0f}" if passport_fee > 0 else '',
+                        'namelist_fee': f"${namelist_fee:.0f}" if namelist_fee > 0 else '',
+                        'missing_doc_fee': f"${missing_doc_fee:.0f}" if missing_doc_fee > 0 else '',
+                        'visa_stamping_fee': f"${visa_stamping_fee:.0f}" if visa_stamping_fee > 0 else '',
                         'extension_months': months,
                         'months': months,
                         'visa_months': months,
@@ -1053,7 +1170,7 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                         'visa_status': visa_status
                     })
 
-                grand_thb = grand_usd * exchange_rate
+                grand_thb = grand_usd if service_category == 'passport' else (grand_usd * exchange_rate)
                 pax_count = len(new_members)
                 first_cust_name = new_members[0]['full_english_name'] if new_members else 'N/A'
                 group_name = group_name_input or sender_name or 'VIP Group'
@@ -1083,7 +1200,8 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                         'full_english_name': f"GROUP: {group_name} ({pax_count} នាក់)",
                         'agency_company': agency_company,
                         'travel_date': formatted_tdate,
-                        'sex': f"{pax_count} Pax"
+                        'sex': f"{pax_count} Pax",
+                        'service_category': service_category
                     },
                     'group_info': {
                         'receipt_no': clean_r_no,
@@ -1100,6 +1218,8 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                         'customer_name': group_name,
                         'sender_name': sender_name,
                         'date_str': formatted_tdate,
+                        'travel_date': formatted_tdate,
+                        'agency_company': agency_company,
                         'exchange_rate': exchange_rate,
                         'items': new_items,
                         'totals': {'usd': grand_usd, 'baht': grand_thb},
@@ -1111,6 +1231,28 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 all_invoices.insert(0, new_record)
                 found = True
                 updated_item = new_record
+
+                # Synchronize invoice counter
+                num_part = re.sub(r'[^0-9]', '', clean_r_no)
+                if num_part.isdigit():
+                    num_val = int(num_part)
+                    counter = load_json(INVOICE_COUNTER_FILE, {
+                        "last_number": 0, "prefix": "INV ",
+                        "last_visa_number": 0, "visa_prefix": "VISA ",
+                        "last_passport_number": 0, "passport_prefix": "INV "
+                    })
+                    if service_category == 'visa':
+                        if num_val > counter.get("last_visa_number", 0):
+                            counter["last_visa_number"] = num_val
+                            save_json(INVOICE_COUNTER_FILE, counter)
+                    elif service_category == 'passport':
+                        if num_val > counter.get("last_passport_number", 0):
+                            counter["last_passport_number"] = num_val
+                            save_json(INVOICE_COUNTER_FILE, counter)
+                    else:
+                        if num_val > counter.get("last_number", 0):
+                            counter["last_number"] = num_val
+                            save_json(INVOICE_COUNTER_FILE, counter)
 
             save_json(SAVED_CUSTOMERS_FILE, all_invoices)
             self.send_json_response({'success': True, 'invoice': updated_item})
