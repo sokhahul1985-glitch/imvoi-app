@@ -252,6 +252,30 @@ body {
         width: 36px !important;
         height: 36px !important;
     }
+
+    /* Official Receipt Modal on Mobile */
+    #receiptModal .modal-card {
+        width: 98% !important;
+        max-width: 100% !important;
+        padding: 10px 8px !important;
+    }
+
+    #receiptModal .modal-toolbar {
+        padding: 6px 4px !important;
+        gap: 6px !important;
+        flex-wrap: wrap !important;
+    }
+
+    #receiptModal .modal-toolbar .btn-sys {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+        min-height: 32px !important;
+    }
+
+    .receipt-paper-wrapper {
+        justify-content: flex-start !important;
+        padding: 8px 4px !important;
+    }
 }
 
 /* Cards & Panel Boxes */
@@ -626,15 +650,29 @@ input[type="date"] {
 
 /* Official Golden Mekong CMP Invoice Exact Layout Styles */
 .cmp-receipt-paper, #printableReceiptArea {
-    background: #ffffff;
-    color: #000000;
-    max-width: 850px;
-    margin: 0 auto;
-    padding: 40px 48px;
+    background: #ffffff !important;
+    color: #000000 !important;
+    width: 720px !important;
+    min-width: 720px !important;
+    max-width: 720px !important;
+    margin: 0 auto !important;
+    padding: 36px 42px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+    font-family: 'Kantumruy Pro', 'Noto Sans Khmer', Arial, sans-serif !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+}
+
+.receipt-paper-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 4px;
+    display: flex;
+    justify-content: center;
+    background: #e2e8f0;
     border-radius: 8px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-    font-family: 'Kantumruy Pro', 'Noto Sans Khmer', Arial, sans-serif;
-    position: relative;
     box-sizing: border-box;
 }
 
@@ -1675,42 +1713,7 @@ input[type="date"] {
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div>
-                        <label style="display: block; font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 4px;">👤 ឈ្មោះអ្នកនាំ/បញ្ជូន <span style="color:#ef4444;">*</span>:</label>
-                        <input type="text" id="sgmSenderName" class="form-input" placeholder="បញ្ចូលឈ្មោះអ្នកនាំ..." style="height: 32px; font-weight: 700; border: 1.2px solid #0284c7; border-radius: 6px; padding: 2px 10px; font-size: 12.5px; width: 100%; box-sizing: border-box; color: #0f172a;">
-                    </div>
-                    <div>
-                        <label style="display: block; font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 4px;">🏢 ក្រុមហ៊ុន / Agency:</label>
-                        <input type="text" id="sgmAgencyCompany" class="form-input" placeholder="បញ្ចូលក្រុមហ៊ុន..." style="height: 32px; font-weight: 700; border: 1.2px solid #cbd5e1; border-radius: 6px; padding: 2px 10px; font-size: 12.5px; width: 100%; box-sizing: border-box; color: #0f172a;">
-                    </div>
-                </div>
-
-                <!-- Group Comparison Summary Notice -->
-                <div id="sgmComparisonNotice" style="font-size: 12px; font-weight: 700; color: #475569; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 8px 12px; text-align: center;">
-                </div>
-            </div>
-
-            <div style="margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
-                <button type="button" class="btn-sys btn-dark" style="padding: 8px 16px; font-size: 13.5px; font-weight: 700; border-radius: 6px;" onclick="closeSplitGroupModal()">❌ បោះបង់ (Cancel)</button>
-                <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; padding: 8px 20px; font-size: 13.5px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" id="btnConfirmSplit" onclick="confirmExecuteSplitGroup()">✂️ បញ្ជាក់ការបំបែកគ្រុប (Confirm Split)</button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- High-Resolution Member Passport Photo Preview & Download Modal -->
-    <div id="memberPhotoModal" class="modal-overlay" style="z-index: 1300; display: none;">
-        <div class="modal-card" style="max-width: 750px; width: 95%; background: #0f172a; border-radius: 12px; padding: 18px 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); color: #f8fafc; border: 1.5px solid #334155;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #334155;">
-                <div style="font-weight: 800; font-size: 15px; color: #38bdf8; display: flex; align-items: center; gap: 6px;" id="mpmTitle">📷 រូបថតប៉ាសស្ព័រសមាជិក</div>
-                <button type="button" style="background: none; border: none; font-size: 22px; color: #94a3b8; cursor: pointer; padding: 2px 8px; border-radius: 4px;" onclick="closeMemberPhotoModal()">✖</button>
-            </div>
-
-            <!-- Image Viewport -->
-            <div style="display: flex; align-items: center; justify-content: center; background: #020617; border-radius: 8px; border: 1px solid #1e293b; min-height: 250px; max-height: 65vh; overflow: auto; padding: 8px;">
-                <img id="mpmPreviewImg" src="" alt="Passport Photo" style="max-width: 100%; max-height: 60vh; object-fit: contain; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
-            </div>
-
-            <!-- Bottom Action Buttons -->
+                        <label style="display: block; font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 4px;">👤 ឈ្មោះអ្នកនាំ/បញ្ជូន <span style="color:#ef4444;">*</span            <!-- Bottom Action Buttons -->
             <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding-top: 10px; border-top: 1px solid #334155;">
                 <div style="display: flex; gap: 8px;">
                     <button type="button" class="btn-sys" style="background: #0284c7; color: #ffffff; padding: 7px 14px; font-weight: 700; font-size: 12.5px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px;" onclick="triggerReplacePhotoFromModal()">🔄 ប្តូររូបថ្មី (Change)</button>
@@ -1741,45 +1744,45 @@ input[type="date"] {
             </div>
 
             <!-- Receipt Document Content -->
-            <div id="printableReceiptArea" style="background: #ffffff; color: #0f172a; padding: 40px 48px; border-radius: 12px; box-sizing: border-box; width: 100%; max-width: 850px; margin: 0 auto;">
-                <div style="border-bottom: 2px double #cbd5e1; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between;">
+            <div class="receipt-paper-wrapper">
+                <div id="printableReceiptArea" class="cmp-receipt-paper">
+                    <div style="border-bottom: 2px double #cbd5e1; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between;">
 
-                    <div>
-                        <div style="font-size: 0.85rem; font-weight: 700; color: #0284c7;">ក្រុមហ៊ុន ហ្គោលដិន មេគង្គ ខមមើសល សឺវីស</div>
-                        <div style="font-size: 0.92rem; font-weight: 700; color: #0f172a;">GOLDEN MEKONG COMMERCIAL SERVICE CO., LTD.</div>
+                        <div>
+                            <div style="font-size: 0.85rem; font-weight: 700; color: #0284c7;">ក្រុមហ៊ុន ហ្គោលដិន មេគង្គ ខមមើសល សឺវីស</div>
+                            <div style="font-size: 0.92rem; font-weight: 700; color: #0f172a;">GOLDEN MEKONG COMMERCIAL SERVICE CO., LTD.</div>
 
-                        <div style="font-size: 0.75rem; color: #475569; margin-top: 4px;">
-                            📍 ចំការដូង ខណ្ឌដង្កោ រាជធានីភ្នំពេញ (Chamkar Dong, Dangkao, Phnom Penh)<br>
-                            📞 Tel: 0888022656 / 081662083
+                            <div style="font-size: 0.75rem; color: #475569; margin-top: 4px;">
+                                📍 ចំការដូង ខណ្ឌដង្កោ រាជធានីភ្នំពេញ (Chamkar Dong, Dangkao, Phnom Penh)<br>
+                                📞 Tel: 0888022656 / 081662083
+                            </div>
                         </div>
 
-                    </div>
-
-                    <div style="text-align: right;">
-                        <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">INVOICE</div>
-                        <div style="font-size: 1.05rem; font-weight: 800; color: #0f172a;">OFFICIAL INVOICE</div>
-                        <div style="font-size: 0.88rem; font-weight: 800; color: #0284c7; margin-top: 4px;">
-                            No: <span id="mReceiptNo">INV ...</span>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">INVOICE</div>
+                            <div style="font-size: 1.05rem; font-weight: 800; color: #0f172a;">OFFICIAL INVOICE</div>
+                            <div style="font-size: 0.88rem; font-weight: 800; color: #0284c7; margin-top: 4px;">
+                                No: <span id="mReceiptNo">INV ...</span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 0.85rem;">
-                    <div>
-                        <div><strong>Customer / Group Name:</strong> <span id="mSenderName">-</span></div>
-                        <div><strong>Agency / Company:</strong> <span id="mAgencyName">-</span></div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 0.85rem;">
+                        <div>
+                            <div><strong>Customer / Group Name:</strong> <span id="mSenderName">-</span></div>
+                            <div><strong>Agency / Company:</strong> <span id="mAgencyName">-</span></div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div><strong id="mReceiptDateLabel">Travel Date:</strong> <span id="mTravelDate">-</span></div>
+                            <div><strong>Exchange Rate:</strong> <span id="mRate">1 USD = 33.90 THB</span></div>
+                            <div><strong>Date Issued:</strong> <span id="mDateSaved">-</span></div>
+                        </div>
                     </div>
-                    <div style="text-align: right;">
-                        <div><strong id="mReceiptDateLabel">Travel Date:</strong> <span id="mTravelDate">-</span></div>
-                        <div><strong>Exchange Rate:</strong> <span id="mRate">1 USD = 33.90 THB</span></div>
-                        <div><strong>Date Issued:</strong> <span id="mDateSaved">-</span></div>
-                    </div>
-                </div>
 
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 0.8rem;">
-                    <thead id="mReceiptItemsHead">
-                        <tr style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; font-size: 0.78rem;">
-                            <th style="padding: 5px 2px; border: 1px solid #0284c7; width: 28px; text-align: center; white-space: nowrap;">No</th>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 0.8rem;">
+                        <thead id="mReceiptItemsHead">
+                            <tr style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; font-size: 0.78rem;">
+                                <th style="padding: 5px 2px; border: 1px solid #0284c7; width: 28px; text-align: center; white-space: nowrap;">No</th>
                             <th style="padding: 5px 6px; border: 1px solid #0284c7; text-align: left;">Customer Name</th>
                             <th style="padding: 5px 3px; border: 1px solid #0284c7; width: 34px; text-align: right; white-space: nowrap;">VIP</th>
                             <th style="padding: 5px 3px; border: 1px solid #0284c7; width: 64px; text-align: right; white-space: nowrap;">Clearance</th>
@@ -1822,11 +1825,7 @@ input[type="date"] {
                         </div>
                     </div>
                 </div>
-
-
-
             </div>
-
         </div>
     </div>
 
