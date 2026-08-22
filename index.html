@@ -1713,7 +1713,42 @@ input[type="date"] {
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div>
-                        <label style="display: block; font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 4px;">👤 ឈ្មោះអ្នកនាំ/បញ្ជូន <span style="color:#ef4444;">*</span            <!-- Bottom Action Buttons -->
+                        <label style="display: block; font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 4px;">👤 ឈ្មោះអ្នកនាំ/បញ្ជូន <span style="color:#ef4444;">*</span>:</label>
+                        <input type="text" id="sgmSenderName" class="form-input" placeholder="បញ្ចូលឈ្មោះអ្នកនាំ..." style="height: 32px; font-weight: 700; border: 1.2px solid #0284c7; border-radius: 6px; padding: 2px 10px; font-size: 12.5px; width: 100%; box-sizing: border-box; color: #0f172a;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 4px;">🏢 ក្រុមហ៊ុន / Agency:</label>
+                        <input type="text" id="sgmAgencyCompany" class="form-input" placeholder="បញ្ចូលក្រុមហ៊ុន..." style="height: 32px; font-weight: 700; border: 1.2px solid #cbd5e1; border-radius: 6px; padding: 2px 10px; font-size: 12.5px; width: 100%; box-sizing: border-box; color: #0f172a;">
+                    </div>
+                </div>
+
+                <!-- Group Comparison Summary Notice -->
+                <div id="sgmComparisonNotice" style="font-size: 12px; font-weight: 700; color: #475569; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 8px 12px; text-align: center;">
+                </div>
+            </div>
+
+            <div style="margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+                <button type="button" class="btn-sys btn-dark" style="padding: 8px 16px; font-size: 13.5px; font-weight: 700; border-radius: 6px;" onclick="closeSplitGroupModal()">❌ បោះបង់ (Cancel)</button>
+                <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; padding: 8px 20px; font-size: 13.5px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" id="btnConfirmSplit" onclick="confirmExecuteSplitGroup()">✂️ បញ្ជាក់ការបំបែកគ្រុប (Confirm Split)</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- High-Resolution Member Passport Photo Preview & Download Modal -->
+    <div id="memberPhotoModal" class="modal-overlay" style="z-index: 1300; display: none;">
+        <div class="modal-card" style="max-width: 750px; width: 95%; background: #0f172a; border-radius: 12px; padding: 18px 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); color: #f8fafc; border: 1.5px solid #334155;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #334155;">
+                <div style="font-weight: 800; font-size: 15px; color: #38bdf8; display: flex; align-items: center; gap: 6px;" id="mpmTitle">📷 រូបថតប៉ាសស្ព័រសមាជិក</div>
+                <button type="button" style="background: none; border: none; font-size: 22px; color: #94a3b8; cursor: pointer; padding: 2px 8px; border-radius: 4px;" onclick="closeMemberPhotoModal()">✖</button>
+            </div>
+
+            <!-- Image Viewport -->
+            <div style="display: flex; align-items: center; justify-content: center; background: #020617; border-radius: 8px; border: 1px solid #1e293b; min-height: 250px; max-height: 65vh; overflow: auto; padding: 8px;">
+                <img id="mpmPreviewImg" src="" alt="Passport Photo" style="max-width: 100%; max-height: 60vh; object-fit: contain; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+            </div>
+
+            <!-- Bottom Action Buttons -->
             <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding-top: 10px; border-top: 1px solid #334155;">
                 <div style="display: flex; gap: 8px;">
                     <button type="button" class="btn-sys" style="background: #0284c7; color: #ffffff; padding: 7px 14px; font-weight: 700; font-size: 12.5px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px;" onclick="triggerReplacePhotoFromModal()">🔄 ប្តូររូបថ្មី (Change)</button>
@@ -5457,10 +5492,12 @@ input[type="date"] {
 
         function openShareAction(rNoEnc, idx) {
             openReceiptModal(rNoEnc, idx);
-            // After opening the receipt preview, trigger Telegram sharing smoothly
+            if (typeof showToast === 'function') {
+                showToast('🚀 កំពុងរៀបចំការចែករំលែកទៅកាន់ Telegram...', true);
+            }
             setTimeout(() => {
                 shareReceiptTelegram();
-            }, 300);
+            }, 350);
         }
 
         function closeReceiptModal() {
@@ -5533,7 +5570,7 @@ input[type="date"] {
                 }
             }
 
-            // 2. Fallback for older browsers
+            // 2. Fallback for older browsers & mobile
             try {
                 const canvas = await html2canvas(receiptEl, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
                 const link = document.createElement('a');
@@ -5555,50 +5592,67 @@ input[type="date"] {
             return `tg://msg_url?text=${encoded}`;
         }
 
-        function shareReceiptTelegram() {
+        async function shareReceiptTelegram() {
             const rNo = document.getElementById('mReceiptNo')?.textContent || 'INV';
             const sender = document.getElementById('mSenderName')?.textContent || '';
             const total = document.getElementById('mGrandUSD')?.textContent || '';
             const receiptEl = document.getElementById('printableReceiptArea');
 
+            if (typeof showToast === 'function') {
+                showToast('⏳ កំពុងរៀបចំរូបភាពវិក្កយបត្រ...', true);
+            }
+
             if (receiptEl && typeof html2canvas !== 'undefined') {
-                html2canvas(receiptEl, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
-                    canvas.toBlob(blob => {
-                        if (!blob) {
-                            downloadAndOpenTgFallback(canvas, rNo, sender, total);
-                            return;
-                        }
+                try {
+                    const canvas = await html2canvas(receiptEl, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
 
-                        // 1. Android & Mobile Native Share
-                        const file = new File([blob], `Receipt_${rNo}.png`, { type: 'image/png' });
-                        const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-                        if (isMobileDevice && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                            navigator.share({
-                                files: [file],
-                                title: `Receipt ${rNo}`,
-                                text: `🧾 VIP Border Receipt: ${rNo}\n👤 Customer/Group: ${sender}\n💰 Total: ${total}`
-                            }).catch(err => {
-                                console.log('Mobile share canceled/failed:', err);
-                            });
-                            return;
-                        }
+                    if (!blob) {
+                        downloadAndOpenTgFallback(canvas, rNo, sender, total);
+                        return;
+                    }
 
-                        // 2. Desktop PC Clipboard Copy
-                        if (navigator.clipboard && window.ClipboardItem) {
+                    const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+                    // 1. Android & Mobile Native Share
+                    if (isMobileDevice && navigator.share && navigator.canShare) {
+                        try {
+                            const file = new File([blob], `Receipt_${rNo.replace(/[^a-zA-Z0-9_-]/g, '_')}.png`, { type: 'image/png' });
+                            if (navigator.canShare({ files: [file] })) {
+                                await navigator.share({
+                                    files: [file],
+                                    title: `Receipt ${rNo}`,
+                                    text: `🧾 VIP Border Receipt: ${rNo}\n👤 Customer/Group: ${sender}\n💰 Total: ${total}`
+                                });
+                                if (typeof showToast === 'function') showToast('✅ បាន Share វិក្កយបត្ររួចរាល់!');
+                                return;
+                            }
+                        } catch (err) {
+                            console.log('Mobile share canceled or rejected, using fallback:', err);
+                        }
+                    }
+
+                    // 2. Desktop PC Clipboard Copy
+                    if (!isMobileDevice && navigator.clipboard && window.ClipboardItem) {
+                        try {
                             const item = new ClipboardItem({ 'image/png': blob });
-                            navigator.clipboard.write([item]).then(() => {
-                                alert(`🚀 បាន Copy រូបភាពវិក្កយបត្រ (${rNo}) ចូល Clipboard រួចរាល់!\n\nសូមចុច Ctrl + V ក្នុង Telegram Chat ដើម្បី Paste ផ្ញើរូបភាព!`);
-                                window.location.href = 'tg://msg';
-                            }).catch(() => {
-                                downloadAndOpenTgFallback(canvas, rNo, sender, total);
-                            });
-                        } else {
-                            downloadAndOpenTgFallback(canvas, rNo, sender, total);
+                            await navigator.clipboard.write([item]);
+                            alert(`🚀 បាន Copy រូបភាពវិក្កយបត្រ (${rNo}) ចូល Clipboard រួចរាល់!\n\nសូមចុច Ctrl + V ក្នុង Telegram Chat ដើម្បី Paste ផ្ញើរូបភាព!`);
+                            window.location.href = 'tg://msg';
+                            return;
+                        } catch (err) {
+                            console.warn('Clipboard write failed, using download fallback:', err);
                         }
-                    }, 'image/png');
-                });
+                    }
+
+                    // 3. Fallback for all devices
+                    downloadAndOpenTgFallback(canvas, rNo, sender, total);
+                } catch (err) {
+                    console.error("html2canvas share error:", err);
+                    downloadAndOpenTgFallback(null, rNo, sender, total);
+                }
             } else {
-                const text = `🧾 VIP Border Receipt: ${rNo}\n👤 Customer/Group: ${sender}\n💰 Total USD: ${total}\n🏢 Golden Mekong Commercial Service`;
+                const text = `🧾 VIP Border Receipt: ${rNo}\n👤 Customer/Group: ${sender}\n💰 Total: ${total}\n🏢 Golden Mekong Commercial Service`;
                 window.location.href = getTelegramShareUrl(text);
             }
         }
@@ -5613,10 +5667,12 @@ input[type="date"] {
                 const yyyy = today.getFullYear();
                 tDate = `${dd}-${mm}-${yyyy}`;
             }
-            const link = document.createElement('a');
-            link.download = `Receipt_${tDate}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = `Receipt_${tDate}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
             alert(`📥 បានទាញយករូបភាពវិក្កយបត្រ (${tDate})!\n\nលោកអ្នកអាច Drag/Upload រូបភាព PNG នេះចូល Telegram Chat បាន!`);
             window.location.href = 'tg://msg';
         }
