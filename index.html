@@ -125,8 +125,132 @@ body {
 }
 
 @media (max-width: 1024px) {
+    html, body {
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    #mainWorkspaceContainer {
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow: visible !important;
+    }
+
     .workspace-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
+        position: static !important;
+        margin-bottom: 12px;
+    }
+
+    .dropzone-box {
+        min-height: 120px !important;
+        padding: 16px 10px !important;
+    }
+
+    #bottomDbPanel {
+        flex: none !important;
+        min-height: 450px !important;
+        overflow: visible !important;
+    }
+
+    #dbTableContainer {
+        max-height: 480px !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #groupMembersTableContainer {
+        max-height: 320px !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #topUnifiedFormRow {
+        flex-wrap: wrap !important;
+        gap: 8px 6px !important;
+    }
+
+    /* Group Members Modal on Mobile - Large, spacious & easy to read/tap */
+    #groupMembersModal .modal-card {
+        width: 98% !important;
+        max-width: 100% !important;
+        padding: 6px 8px !important;
+        border-radius: 12px !important;
+    }
+
+    #groupMembersModal .modal-toolbar {
+        padding: 8px 10px !important;
+    }
+
+    #groupMembersModal .modal-toolbar input,
+    #groupMembersModal .modal-toolbar select {
+        height: 34px !important;
+        font-size: 13px !important;
+    }
+
+    #groupMembersModal .table-container {
+        max-height: 52vh !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #groupMembersModal table.app-table {
+        min-width: 820px !important;
+    }
+
+    #groupMembersModal table.app-table th {
+        height: 38px !important;
+        font-size: 13.5px !important;
+        padding: 6px 6px !important;
+    }
+
+    #groupMembersModal table.app-table td {
+        height: 44px !important;
+        padding: 4px 4px !important;
+    }
+
+    #groupMembersModal .gmm-row {
+        height: 44px !important;
+    }
+
+    #groupMembersModal .gmm-input-name {
+        height: 40px !important;
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        min-width: 230px !important;
+        padding: 4px 10px !important;
+        border: 1.5px solid #64748b !important;
+        border-radius: 6px !important;
+    }
+
+    #groupMembersModal .input-sys,
+    #groupMembersModal input[type="number"],
+    #groupMembersModal .gmm-input-months {
+        height: 40px !important;
+        font-size: 14.5px !important;
+        font-weight: 800 !important;
+        border-radius: 6px !important;
+    }
+
+    #groupMembersModal .gmm-row-select,
+    #groupMembersModal #gmmSelectAll {
+        width: 22px !important;
+        height: 22px !important;
+    }
+
+    #groupMembersModal .gmm-row-num {
+        font-size: 14px !important;
+        font-weight: 800 !important;
+    }
+
+    #groupMembersModal .btn-sys {
+        min-height: 40px !important;
+        font-size: 13.5px !important;
+        padding: 8px 14px !important;
+    }
+
+    #groupMembersModal .gmm-photo-thumb {
+        width: 36px !important;
+        height: 36px !important;
     }
 }
 
@@ -338,7 +462,7 @@ input[type="date"] {
     background: #f8fafc;
 }
 
-/* Group Members Modal Compact Table Styling */
+/* Group Members Modal Table Styling */
 #groupMembersModal .table-container {
     max-height: 480px;
     overflow-x: auto;
@@ -346,6 +470,7 @@ input[type="date"] {
     border: 1.5px solid #cbd5e1;
     border-radius: 8px;
     background: #ffffff;
+    -webkit-overflow-scrolling: touch;
 }
 
 #groupMembersModal table.app-table {
@@ -356,26 +481,26 @@ input[type="date"] {
 }
 
 #groupMembersModal table.app-table th {
-    padding: 5px 4px !important;
-    font-size: 12px !important;
+    padding: 6px 5px !important;
+    font-size: 13px !important;
     line-height: 1.2 !important;
     white-space: nowrap !important;
     vertical-align: middle !important;
     background: #e2e8f0 !important;
     border: 1px solid #cbd5e1 !important;
-    height: 28px !important;
+    height: 32px !important;
+    font-weight: 800 !important;
 }
 
 #groupMembersModal table.app-table td {
-    padding: 1.5px 2px !important;
+    padding: 2px 3px !important;
     border: 1px solid #e2e8f0 !important;
     vertical-align: middle !important;
-    height: 28px !important;
-    line-height: 1 !important;
+    height: 32px !important;
 }
 
 #groupMembersModal .gmm-row {
-    height: 28px !important;
+    height: 32px !important;
 }
 
 #groupMembersModal .gmm-row:hover td {
@@ -1217,32 +1342,36 @@ input[type="date"] {
         <div id="workspaceGrid" class="workspace-grid">
         
         <!-- Left Panel: Passport Scanner -->
-        <div class="panel-box">
+        <div class="panel-box" id="scannerPanelBox">
             <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center;">
-                <span>📷 PASSPORT / ID IMAGE SCANNER</span>
-                <span id="tgBotStatusBadge" style="font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #e0f2fe; border: 1px solid #0284c7; color: #0369a1; font-weight: 700;">🤖 Bot: Connecting...</span>
+                <span>📷 PASSPORT / ID SCANNER</span>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span id="tgBotStatusBadge" style="font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #e0f2fe; border: 1px solid #0284c7; color: #0369a1; font-weight: 700;">🤖 Bot</span>
+                    <button type="button" id="btnToggleScanner" class="btn-sys btn-dark" style="font-size: 11px; padding: 2px 8px; height: 24px; min-height: 24px;" onclick="toggleScannerCollapse()">🔼 បង្រួម</button>
+                </div>
             </div>
 
-            <div id="dropZone" class="dropzone-box">
-                <div style="font-size: 2.5rem; margin-bottom: 8px;">📁</div>
-                <div style="font-weight: 700; color: #0f172a; margin-bottom: 4px;">Drag & Drop / Paste (Ctrl+V) Passport Image(s) Here</div>
-                <div style="font-size: 11.5px; color: var(--text-sub); margin-bottom: 12px; font-weight: 600;">(អាច Drag & Drop ឬ Paste (Ctrl+V) រូបភាព Passport 1 ឬច្រើនក្នុងពេលតែមួយ)</div>
-                <div style="font-size: 11.5px; color: #64748b; font-weight: 600;">ឬចុចប៊ូតុងខាងក្រោមដើម្បី Upload / ថតកាមេរ៉ា</div>
-                <input type="file" id="fileInput" accept="image/*" multiple style="display: none;" onchange="handleImageFiles(this.files)">
-            </div>
+            <div id="scannerContentBody">
+                <div id="dropZone" class="dropzone-box">
+                    <div style="font-size: 2.2rem; margin-bottom: 6px;">📁</div>
+                    <div style="font-weight: 700; color: #0f172a; margin-bottom: 4px;">Drag & Drop / Paste (Ctrl+V) Passport Image(s)</div>
+                    <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 8px; font-weight: 600;">(ស្កេនរូបភាព Passport 1 ឬច្រើនក្នុងពេលតែមួយ)</div>
+                    <input type="file" id="fileInput" accept="image/*" multiple style="display: none;" onchange="handleImageFiles(this.files)">
+                </div>
 
-            <div id="ocrSpinner" style="margin-top: 8px; font-size: 11px; color: var(--accent-cyan); text-align: center; display: none;">
-                ⏳ AI Document AI កំពុងស្កេនរូបភាព (Processing Batch OCR...)...
-            </div>
+                <div id="ocrSpinner" style="margin-top: 8px; font-size: 11px; color: var(--accent-cyan); text-align: center; display: none;">
+                    ⏳ AI Document AI កំពុងស្កេនរូបភាព (Processing Batch OCR...)...
+                </div>
 
-            <div id="imagePreviewBox" style="margin-top: 8px; text-align: center; display: none;">
-                <img id="previewImage" src="" alt="Passport Preview" style="max-width: 100%; max-height: 180px; border-radius: 6px; border: 1px solid var(--border-color);">
-                <div id="batchScanCountLabel" style="font-size: 11px; color: var(--accent-emerald); margin-top: 4px; font-weight: 700;"></div>
-            </div>
+                <div id="imagePreviewBox" style="margin-top: 8px; text-align: center; display: none;">
+                    <img id="previewImage" src="" alt="Passport Preview" style="max-width: 100%; max-height: 180px; border-radius: 6px; border: 1px solid var(--border-color);">
+                    <div id="batchScanCountLabel" style="font-size: 11px; color: var(--accent-emerald); margin-top: 4px; font-weight: 700;"></div>
+                </div>
 
-            <div class="scanner-btn-row">
-                <button type="button" class="btn-sys btn-indigo" onclick="document.getElementById('fileInput').click()">📁 Select Image File(s)</button>
-                <button type="button" class="btn-sys btn-dark" onclick="alert('📹 WebCam System is Ready!')">📹 WebCam Snap</button>
+                <div class="scanner-btn-row">
+                    <button type="button" class="btn-sys btn-indigo" onclick="document.getElementById('fileInput').click()">📁 Select Image</button>
+                    <button type="button" class="btn-sys btn-dark" onclick="alert('📹 WebCam System is Ready!')">📹 WebCam</button>
+                </div>
             </div>
         </div>
 
@@ -1736,6 +1865,19 @@ input[type="date"] {
         let currentModalReceiptData = null;
         let currentServiceCategory = 'all'; // 'car', 'visa', 'passport', 'all'
         let currentTableFilterCategory = 'all'; // 'car', 'visa', 'passport', 'all'
+
+        function toggleScannerCollapse() {
+            const body = document.getElementById('scannerContentBody');
+            const btn = document.getElementById('btnToggleScanner');
+            if (!body) return;
+            if (body.style.display === 'none') {
+                body.style.display = 'block';
+                if (btn) btn.textContent = '🔼 បង្រួម';
+            } else {
+                body.style.display = 'none';
+                if (btn) btn.textContent = '🔽 បង្ហាញ';
+            }
+        }
 
         function showCategorySelectionModal() {
             sessionStorage.removeItem('imvoi_selected_service');
