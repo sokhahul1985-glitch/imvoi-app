@@ -33,8 +33,10 @@
 }
 
 html, body {
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    height: auto;
+    overflow-y: auto !important;
+    overflow-x: hidden;
 }
 
 body {
@@ -116,12 +118,10 @@ body {
 /* Main Splitter Layout */
 .workspace-grid {
     display: grid;
-    grid-template-columns: 380px 1fr;
-    gap: 10px;
-    margin-bottom: 10px;
-    position: sticky;
-    top: 0;
-    z-index: 90;
+    grid-template-columns: 360px 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+    align-items: start;
 }
 
 @media (max-width: 1024px) {
@@ -305,17 +305,17 @@ body {
     border: 2px dashed #94a3b8;
     border-radius: 10px;
     background: #f8fafc;
-    padding: 30px 14px;
+    padding: 10px 8px;
     text-align: center;
     color: #475569;
-    min-height: 240px;
+    min-height: 105px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    flex: 1;
+    flex: none;
 }
 
 .dropzone-box:hover {
@@ -326,8 +326,8 @@ body {
 .scanner-btn-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 10px;
+    gap: 6px;
+    margin-top: 6px;
 }
 
 /* Inputs & Form Controls */
@@ -1316,9 +1316,9 @@ input[type="date"] {
             background: #ffffff !important;
             border: 1.5px solid var(--border-color) !important;
             border-radius: 12px !important;
-            padding: 14px !important;
+            padding: 8px 12px !important;
             box-shadow: 0 4px 16px rgba(0,0,0,0.05) !important;
-            margin-top: 4px !important;
+            margin-top: 2px !important;
             min-height: 480px !important;
             height: auto !important;
             flex: none !important;
@@ -1326,6 +1326,17 @@ input[type="date"] {
 
         body.mode-quote #bottomDbPanel {
             display: none !important;
+        }
+
+        body.mode-car #quoteStudioContainer,
+        body.mode-visa #quoteStudioContainer,
+        body.mode-passport #quoteStudioContainer,
+        body.mode-all #quoteStudioContainer {
+            display: none !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
         }
 
         body.mode-visa #workspaceGrid,
@@ -1337,8 +1348,14 @@ input[type="date"] {
             display: grid !important;
         }
 
-        body.mode-passport #bottomDbPanel,
         body.mode-visa #bottomDbPanel,
+        body.mode-passport #bottomDbPanel {
+            display: flex !important;
+            min-height: calc(100vh - 85px) !important;
+            height: auto !important;
+            flex: 1 1 auto !important;
+        }
+
         body.mode-car #bottomDbPanel,
         body.mode-all #bottomDbPanel {
             display: flex !important;
@@ -1349,12 +1366,19 @@ input[type="date"] {
 
         #dbTableContainer {
             width: 100% !important;
-            max-height: 540px !important;
-            min-height: 260px !important;
+            max-height: 650px !important;
+            min-height: 280px !important;
             overflow-y: auto !important;
             border: 1px solid var(--border-color) !important;
             border-radius: 8px !important;
             margin-top: 6px !important;
+        }
+
+        body.mode-visa #dbTableContainer,
+        body.mode-passport #dbTableContainer {
+            max-height: calc(100vh - 145px) !important;
+            min-height: calc(100vh - 145px) !important;
+            height: calc(100vh - 145px) !important;
         }
 
     </style>
@@ -1780,48 +1804,82 @@ input[type="date"] {
         .cat-nav-tab:active {
             transform: translateY(0);
         }
-        .cat-nav-tab.home-nav-tab {
+        .cat-nav-tab.home-nav-tab,
+        .btn-top-home {
             background: linear-gradient(135deg, #0284c7, #0369a1) !important;
             color: #ffffff !important;
             border-color: #0284c7 !important;
             box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35) !important;
-            padding: 11px 40px;
-            min-width: 170px;
+            padding: 10px 24px !important;
+            min-width: 220px !important;
+            height: 42px !important;
+            font-size: 15px !important;
+            font-weight: 800 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
-        .cat-nav-tab.home-nav-tab:hover {
+        .cat-nav-tab.home-nav-tab:hover,
+        .btn-top-home:hover {
             background: linear-gradient(135deg, #0369a1, #075985) !important;
             box-shadow: 0 6px 16px rgba(2, 132, 199, 0.45) !important;
         }
-        .cat-nav-tab.active-tab-car {
+        .cat-nav-tab.active-tab-car,
+        #mainActiveCategoryTabBtn {
             background: linear-gradient(135deg, #059669, #10b981) !important;
             color: #ffffff !important;
             border-color: #059669 !important;
             box-shadow: 0 4px 10px rgba(5, 150, 105, 0.35) !important;
-            padding: 11px 44px;
-            min-width: 220px;
+            padding: 10px 24px !important;
+            min-width: 220px !important;
+            height: 42px !important;
+            font-size: 15px !important;
+            font-weight: 800 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
         .cat-nav-tab.active-tab-visa {
             background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
             color: #ffffff !important;
             border-color: #4f46e5 !important;
             box-shadow: 0 4px 10px rgba(79, 70, 229, 0.35) !important;
-            padding: 11px 44px;
-            min-width: 220px;
+            padding: 10px 24px !important;
+            min-width: 220px !important;
+            height: 42px !important;
+            font-size: 15px !important;
+            font-weight: 800 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
         .cat-nav-tab.active-tab-passport {
             background: linear-gradient(135deg, #0284c7, #0ea5e9) !important;
             color: #ffffff !important;
             border-color: #0284c7 !important;
             box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35) !important;
-            padding: 11px 46px;
-            min-width: 270px;
+            padding: 10px 24px !important;
+            min-width: 220px !important;
+            height: 42px !important;
+            font-size: 15px !important;
+            font-weight: 800 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
         .cat-nav-tab.active-tab-all {
             background: linear-gradient(135deg, #334155, #475569) !important;
             color: #ffffff !important;
             border-color: #334155 !important;
             box-shadow: 0 4px 10px rgba(51, 65, 85, 0.35) !important;
-            padding: 11px 44px;
+            padding: 10px 24px !important;
+            min-width: 220px !important;
+            height: 42px !important;
+            font-size: 15px !important;
+            font-weight: 800 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             min-width: 220px;
         }
         .cat-filter-btn {
@@ -2415,17 +2473,14 @@ input[type="date"] {
     </div>
 
     <!-- 🖥️ Main Workspace Container (Shown after Category Selection) -->
-    <div id="mainWorkspaceContainer" style="display: none; min-height: 100vh; height: auto; flex-direction: column; gap: 10px; box-sizing: border-box; overflow-y: auto; padding: 10px 16px 50px 16px;">
+    <div id="mainWorkspaceContainer" style="display: none; min-height: 100vh; height: auto; flex-direction: column; gap: 4px; box-sizing: border-box; overflow-y: auto; padding: 4px 12px 24px 12px;">
         <!-- Top Category Navigation Bar (Matching Deployed Screenshot - Large & Prominent) -->
-        <div id="topCategoryNavBar" style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; padding: 4px 0; flex-wrap: wrap; flex-shrink: 0;">
-            <button type="button" class="btn-sys btn-top-home" onclick="showCategorySelectionModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 24px; border-radius: 8px; font-size: 14px; font-weight: 800; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border: none; cursor: pointer; box-shadow: 0 3px 10px rgba(2, 132, 199, 0.35); height: 38px;">
+        <div id="topCategoryNavBar" style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px; padding: 2px 0; flex-wrap: wrap; flex-shrink: 0;">
+            <button type="button" class="btn-sys btn-top-home cat-nav-tab home-nav-tab" onclick="showCategorySelectionModal()" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 220px; height: 42px; border-radius: 9px; font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border: none; cursor: pointer; box-shadow: 0 3px 10px rgba(2, 132, 199, 0.35);">
                 🏠 ផ្ទាំងដើម
             </button>
-            <button type="button" id="mainActiveCategoryTabBtn" class="cat-nav-tab" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 26px; border-radius: 8px; font-size: 14px; font-weight: 800; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: none; cursor: pointer; box-shadow: 0 3px 10px rgba(5, 150, 105, 0.35); height: 38px;">
+            <button type="button" id="mainActiveCategoryTabBtn" class="cat-nav-tab active-tab-car" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 220px; height: 42px; border-radius: 9px; font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: none; cursor: pointer; box-shadow: 0 3px 10px rgba(5, 150, 105, 0.35);">
                 🚗 សេវាឡាន (Car)
-            </button>
-            <button type="button" class="cat-nav-tab" onclick="selectServiceCategory('quote')" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 24px; border-radius: 8px; font-size: 14px; font-weight: 800; background: linear-gradient(135deg, #d97706, #f59e0b); color: #ffffff; border: none; cursor: pointer; height: 38px; box-shadow: 0 3px 10px rgba(245, 158, 11, 0.35);">
-                💰 ផ្ទាំងស្នើតម្លៃ (Quotation)
             </button>
         </div>
 
@@ -2439,11 +2494,10 @@ input[type="date"] {
                 <span id="tgBotStatusBadge" style="font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #e0f2fe; border: 1px solid #0284c7; color: #0369a1; font-weight: 700;">🤖 Bot: Connecting...</span>
             </div>
 
-            <div id="dropZone" class="dropzone-box">
-                <div style="font-size: 2.5rem; margin-bottom: 8px;">📁</div>
-                <div style="font-weight: 700; color: #0f172a; margin-bottom: 4px;">Drag & Drop / Paste (Ctrl+V) Passport Image(s) Here</div>
-                <div style="font-size: 11.5px; color: var(--text-sub); margin-bottom: 12px; font-weight: 600;">(អាច Drag & Drop ឬ Paste (Ctrl+V) រូបភាព Passport 1 ឬច្រើនក្នុងពេលតែមួយ)</div>
-                <div style="font-size: 11.5px; color: #64748b; font-weight: 600;">ឬចុចប៊ូតុងខាងក្រោមដើម្បី Upload / ថតកាមេរ៉ា</div>
+            <div id="dropZone" class="dropzone-box" style="padding: 10px 8px; min-height: 100px;">
+                <div style="font-size: 1.8rem; margin-bottom: 2px;">📁</div>
+                <div style="font-weight: 700; color: #0f172a; font-size: 12px; margin-bottom: 2px;">Drag & Drop / Paste (Ctrl+V) Passport Image(s) Here</div>
+                <div style="font-size: 11px; color: var(--text-sub); font-weight: 600;">(អាច Drag & Drop ឬ Paste រូបភាព Passport ទីនេះ)</div>
                 <input type="file" id="fileInput" accept="image/*" multiple style="display: none;" onchange="handleImageFiles(this.files)">
             </div>
 
@@ -2464,17 +2518,8 @@ input[type="date"] {
 
         <!-- Right Panel: Group Customer Entry Form -->
         <div class="panel-box">
-            <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 2px 0 6px 0; flex-wrap: wrap;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-weight: 800; color: #0f172a; font-size: 13px;">📋 BATCH / GROUP CUSTOMERS DATA</span>
-                    <span id="activeCategoryBadge" style="font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: 800; background: #e0f2fe; color: #0369a1; border: 1.5px solid #0284c7;">📊 ទិន្នន័យទាំងអស់ (All)</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <button type="button" id="tabBtnCar" class="cat-nav-tab" onclick="selectServiceCategory('car')">🚗 សេវាឡាន (Car)</button>
-                    <button type="button" id="tabBtnVisa" class="cat-nav-tab" onclick="selectServiceCategory('visa')">🛂 សេវាវីសា (Visa)</button>
-                    <button type="button" id="tabBtnQuote" class="cat-nav-tab" onclick="selectServiceCategory('quote')" style="background: linear-gradient(135deg, #d97706, #f59e0b); color: #ffffff; font-weight: 800;">💰 ស្នើតម្លៃ (Quote)</button>
-                    <button type="button" id="tabBtnAll" class="cat-nav-tab active-tab-all" onclick="selectServiceCategory('all')">📊 ទាំងអស់ (All)</button>
-                </div>
+            <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 2px 0 6px 0;">
+                <span style="font-weight: 800; color: #0f172a; font-size: 13px;">📋 BATCH / GROUP CUSTOMERS DATA</span>
             </div>
 
             <!-- Form Fields Grid (Exactly 2 Rows) -->
@@ -2482,72 +2527,72 @@ input[type="date"] {
 
             <!-- Single Unified Clean 1-Row Form Container -->
             <input type="hidden" id="custNamePassport" value="">
-            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; margin-bottom: 6px;">
-                <div id="topUnifiedFormRow" style="display: flex; gap: 6px; align-items: flex-end; flex-wrap: nowrap; width: 100%;">
+            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 4px 8px; margin-bottom: 4px;">
+                <div id="topUnifiedFormRow" style="display: flex; gap: 5px; align-items: flex-end; flex-wrap: nowrap; width: 100%;">
                     
-                    <div id="wrapSenderName" class="form-group-sm" style="flex: 2.2; min-width: 140px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ឈ្មោះអ្នកបញ្ជូន / អ្នកនាំ <span style="color: #f43f5e;">*</span>:</label>
-                        <input type="text" id="senderName" class="form-input" placeholder="ឧ. HR(CS)- សុខ..." required style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapSenderName" class="form-group-sm" style="flex: 1.4; min-width: 110px; max-width: 155px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ឈ្មោះអ្នកបញ្ជូន / អ្នកនាំ <span style="color: #f43f5e;">*</span>:</label>
+                        <input type="text" id="senderName" class="form-input" placeholder="ឧ. HR(CS)- សុខ..." required style="height: 27px; font-size: 11.5px; padding: 2px 6px;">
                     </div>
 
-                    <div id="wrapFeeVip" class="form-group-sm fee-col-vip" style="flex: 0.9; min-width: 65px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្លៃ VIP ($):</label>
-                        <input type="number" step="0.01" id="feeVip" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('vip')" style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapFeeVip" class="form-group-sm fee-col-vip" style="flex: 0.6; min-width: 50px; max-width: 68px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្លៃ VIP ($):</label>
+                        <input type="number" step="0.01" id="feeVip" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('vip')" style="height: 27px; font-size: 11.5px; text-align: center; padding: 2px 4px;">
                     </div>
 
-                    <div id="wrapFeeCar" class="form-group-sm fee-col-car" style="flex: 0.9; min-width: 65px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្លៃឡាន ($):</label>
-                        <input type="number" step="0.01" id="feeCar" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('car')" style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapFeeCar" class="form-group-sm fee-col-car" style="flex: 0.6; min-width: 50px; max-width: 68px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្លៃឡាន ($):</label>
+                        <input type="number" step="0.01" id="feeCar" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('car')" style="height: 27px; font-size: 11.5px; text-align: center; padding: 2px 4px;">
                     </div>
 
-                    <div id="wrapFeeClearance" class="form-group-sm fee-col-clearance" style="flex: 0.9; min-width: 70px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្លៃក្លៀផ្លូវ ($):</label>
-                        <input type="number" step="0.01" id="feeClearance" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('clearance')" style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapFeeClearance" class="form-group-sm fee-col-clearance" style="flex: 0.6; min-width: 50px; max-width: 68px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្លៃក្លៀផ្លូវ ($):</label>
+                        <input type="number" step="0.01" id="feeClearance" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('clearance')" style="height: 27px; font-size: 11.5px; text-align: center; padding: 2px 4px;">
                     </div>
 
-                    <div id="wrapFeeFine" class="form-group-sm fee-col-fine" style="flex: 0.9; min-width: 65px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្លៃពិន័យ ($):</label>
-                        <input type="number" step="0.01" id="feeFine" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('fine')" style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapFeeFine" class="form-group-sm fee-col-fine" style="flex: 0.6; min-width: 50px; max-width: 68px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្លៃពិន័យ ($):</label>
+                        <input type="number" step="0.01" id="feeFine" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('fine')" style="height: 27px; font-size: 11.5px; text-align: center; padding: 2px 4px;">
                     </div>
 
-                    <div id="wrapFeeVisa" class="form-group-sm fee-col-visa" style="flex: 0.9; min-width: 65px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្លៃ VISA ($):</label>
-                        <input type="number" step="0.01" id="feeVisa" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('visa')" style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapFeeVisa" class="form-group-sm fee-col-visa" style="flex: 0.6; min-width: 50px; max-width: 68px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្លៃ VISA ($):</label>
+                        <input type="number" step="0.01" id="feeVisa" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('visa')" style="height: 27px; font-size: 11.5px; text-align: center; padding: 2px 4px;">
                     </div>
 
-                    <div id="wrapFeeEvisa" class="form-group-sm fee-col-evisa" style="flex: 0.9; min-width: 65px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្លៃ E-VISA ($):</label>
-                        <input type="number" step="0.01" id="feeEvisa" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('evisa')" style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapFeeEvisa" class="form-group-sm fee-col-evisa" style="flex: 0.6; min-width: 50px; max-width: 68px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្លៃ E-VISA ($):</label>
+                        <input type="number" step="0.01" id="feeEvisa" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('evisa')" style="height: 27px; font-size: 11.5px; text-align: center; padding: 2px 4px;">
                     </div>
 
-                    <div id="wrapFeeWork" class="form-group-sm fee-col-work" style="flex: 0.9; min-width: 65px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្លៃ Work ($):</label>
-                        <input type="number" step="0.01" id="feeWork" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('work')" style="height: 32px; font-size: 12.5px;">
+                    <div id="wrapFeeWork" class="form-group-sm fee-col-work" style="flex: 0.6; min-width: 50px; max-width: 68px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្លៃ Work ($):</label>
+                        <input type="number" step="0.01" id="feeWork" class="form-input num-input" value="" placeholder="" oninput="updateMemberFeesDefaults('work')" style="height: 27px; font-size: 11.5px; text-align: center; padding: 2px 4px;">
                     </div>
 
-                    <div id="wrapTravelDate" class="form-group-sm" style="flex: 1.2; min-width: 105px;">
-                        <label id="lblTravelDate" style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">ថ្ងៃធ្វើដំណើរ:</label>
-                        <input type="date" id="travelDate" class="form-input" style="color-scheme: light; cursor: pointer; height: 32px; font-size: 12px; padding: 2px 6px;" onclick="this.showPicker()">
+                    <div id="wrapTravelDate" class="form-group-sm" style="flex: 1; min-width: 95px; max-width: 115px;">
+                        <label id="lblTravelDate" style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">ថ្ងៃធ្វើដំណើរ:</label>
+                        <input type="date" id="travelDate" class="form-input" style="color-scheme: light; cursor: pointer; height: 27px; font-size: 11.5px; padding: 1px 4px;" onclick="this.showPicker()">
                     </div>
 
-                    <div id="wrapReceiptNo" class="form-group-sm" style="flex: 1; min-width: 80px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">លេខវិក្កយបត្រ:</label>
-                        <input type="text" id="receiptNo" class="form-input highlight-input" readonly style="height: 32px; font-size: 12px; text-align: center; padding: 2px 6px;">
+                    <div id="wrapReceiptNo" class="form-group-sm" style="flex: 0.8; min-width: 70px; max-width: 85px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">លេខវិក្កយបត្រ:</label>
+                        <input type="text" id="receiptNo" class="form-input highlight-input" readonly style="height: 27px; font-size: 11.5px; text-align: center; padding: 1px 4px;">
                     </div>
 
-                    <div id="wrapExchangeRate" class="form-group-sm" style="flex: 0.8; min-width: 60px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">អត្រាប្តូរប្រាក់:</label>
-                        <input type="number" step="0.1" id="exchangeRate" class="form-input highlight-input" value="33.90" oninput="calcTotals()" style="height: 32px; font-size: 12px; text-align: center; padding: 2px 4px;">
+                    <div id="wrapExchangeRate" class="form-group-sm" style="flex: 0.6; min-width: 50px; max-width: 62px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">អត្រាប្តូរប្រាក់:</label>
+                        <input type="number" step="0.1" id="exchangeRate" class="form-input highlight-input" value="33.90" oninput="saveLatestExchangeRate(this.value); calcTotals();" onchange="saveLatestExchangeRate(this.value); calcTotals();" style="height: 27px; font-size: 11.5px; text-align: center; padding: 1px 2px;">
                     </div>
 
-                    <div class="form-group-sm" style="flex: 0.6; min-width: 48px;">
-                        <label style="white-space: nowrap; font-size: 11.5px; font-weight: 700;">Pax:</label>
-                        <input type="number" id="paxInput" class="form-input" value="3" style="width: 100%; height: 32px; text-align: center; font-weight: 800; padding: 2px 2px; font-size: 13px;" min="1" max="50" onchange="setPaxRows()" oninput="setPaxRows()">
+                    <div class="form-group-sm" style="flex: 0.5; min-width: 42px; max-width: 48px;">
+                        <label style="white-space: nowrap; font-size: 10.5px; font-weight: 700; margin-bottom: 2px;">Pax:</label>
+                        <input type="number" id="paxInput" class="form-input" value="3" style="width: 100%; height: 27px; text-align: center; font-weight: 800; padding: 1px 2px; font-size: 12px;" min="1" max="50" onchange="setPaxRows()" oninput="setPaxRows()">
                     </div>
 
-                    <button type="button" class="btn-sys btn-dark" style="font-size: 12px; padding: 0 9px; height: 32px; font-weight: 700; white-space: nowrap; display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0;" onclick="removeLastPaxRow()" title="បន្ថយសមាជិក 1 នាក់">➖</button>
+                    <button type="button" class="btn-sys btn-dark" style="font-size: 11px; padding: 0 7px; height: 27px; font-weight: 700; white-space: nowrap; display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0;" onclick="removeLastPaxRow()" title="បន្ថយសមាជិក 1 នាក់">➖</button>
 
-                    <button type="button" class="btn-sys" style="flex: 0 0 auto; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; font-weight: 800; font-size: 12.5px; height: 32px; padding: 0 14px; border-radius: 6px; border: none; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 4px rgba(5, 150, 105, 0.25);" onclick="saveGroupRecord()">
+                    <button type="button" class="btn-sys" style="flex: 0 0 auto; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; font-weight: 800; font-size: 11.5px; height: 27px; padding: 0 10px; border-radius: 6px; border: none; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 4px rgba(5, 150, 105, 0.25);" onclick="saveGroupRecord()">
                         💾 រក្សាទុកក្រុម
                     </button>
                 </div>
@@ -2952,29 +2997,28 @@ input[type="date"] {
                 </div>
 
             </div>
-        </div>
 
         
 
-        <div id="bottomDbPanel" style="display: flex; flex-direction: column; background: #ffffff; border: 1.5px solid var(--border-color); border-radius: 12px; padding: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); margin-top: 4px; min-height: 450px;">
+        <div id="bottomDbPanel" style="display: flex; flex-direction: column; background: #ffffff; border: 1.5px solid var(--border-color); border-radius: 12px; padding: 8px 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); margin-top: 2px; min-height: 450px;">
         <!-- Search Bar Row (Fixed Header Controls) -->
-        <div id="dbSearchHeader" style="background: #ffffff; padding-bottom: 6px; margin-bottom: 4px; flex-shrink: 0;">
-            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                <button type="button" class="btn-sys btn-back-home-visa" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; font-size: 12.5px; padding: 6px 14px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: none; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(2,132,199,0.25);" onclick="showCategorySelectionModal()">🏠 ត្រឡប់ទៅទំព័រដើម</button>
-                <input type="text" id="searchInput" class="form-input" placeholder="🔍 ស្វែងរក៖ ឈ្មោះអ្នកផ្ញើ, លេខវិក្កយបត្រ, ថ្ងៃធ្វើដំណើរ, ឈ្មោះអតិថិជន, ស្ថានភាព (បង់រួច/មិនទាន់បង់)..." onkeyup="renderDatabaseTable()" style="flex: 1; min-width: 200px;">
-                <button type="button" class="btn-sys btn-indigo" onclick="renderDatabaseTable()">🔍 ស្វែងរក (Search)</button>
-                <button type="button" class="btn-sys btn-dark" onclick="resetSearch()">✖️ សម្អាត (Reset)</button>
-                <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; font-size: 12.5px; padding: 6px 14px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; box-shadow: 0 2px 4px rgba(5,150,105,0.25);" onclick="openNewGroupModal()">➕ បង្កើតថ្មី (Create New)</button>
-                <button type="button" class="btn-sys btn-indigo btn-action-sm" style="font-size: 12.5px; padding: 6px 12px; font-weight: 700;" onclick="exportCSV()">📥 Export CSV (Excel)</button>
-                <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #64748b, #475569); color: #ffffff; font-size: 12px; padding: 6px 12px; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="backupDataJSON()">💾 Backup Data (JSON)</button>
-                <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #d97706, #f59e0b); color: #ffffff; font-size: 12px; padding: 6px 12px; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="document.getElementById('restoreJsonInput').click()">📤 Restore Data (JSON)</button>
+        <div id="dbSearchHeader" style="background: #ffffff; padding-bottom: 4px; margin-bottom: 2px; flex-shrink: 0;">
+            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                <button type="button" class="btn-sys btn-back-home-visa" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; font-size: 12px; padding: 5px 10px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: none; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(2,132,199,0.25); height: 32px;" onclick="showCategorySelectionModal()">🏠 ត្រឡប់ទៅទំព័រដើម</button>
+                <input type="text" id="searchInput" class="form-input" placeholder="🔍 ស្វែងរក (ឈ្មោះ, លេខ, ថ្ងៃ...)" onkeyup="renderDatabaseTable()" style="width: 200px; padding: 5px 10px; font-size: 12px; height: 32px; box-sizing: border-box;">
+                <button type="button" class="btn-sys btn-indigo" onclick="renderDatabaseTable()" style="font-size: 12px; padding: 5px 10px; font-weight: 700; height: 32px;">🔍 ស្វែងរក</button>
+                <button type="button" class="btn-sys btn-dark" onclick="resetSearch()" style="font-size: 12px; padding: 5px 10px; font-weight: 700; height: 32px;">✖️ សម្អាត</button>
+                <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; font-size: 12px; padding: 5px 10px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; box-shadow: 0 2px 4px rgba(5,150,105,0.25); height: 32px;" onclick="openNewGroupModal()">➕ បង្កើតថ្មី</button>
+                <button type="button" class="btn-sys btn-indigo btn-action-sm" style="font-size: 12px; padding: 5px 10px; font-weight: 700; height: 32px;" onclick="exportCSV()">📥 Export CSV</button>
+                <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #64748b, #475569); color: #ffffff; font-size: 12px; padding: 5px 10px; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; height: 32px;" onclick="backupDataJSON()">💾 Backup</button>
+                <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #d97706, #f59e0b); color: #ffffff; font-size: 12px; padding: 5px 10px; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; height: 32px;" onclick="document.getElementById('restoreJsonInput').click()">📤 Restore</button>
                 <input type="file" id="restoreJsonInput" accept=".json" style="display:none;" onchange="restoreDataJSON(event)">
-                <span id="totalRecordsLabel" style="font-size: 12.5px; font-weight: 700; color: #0284c7; white-space: nowrap; margin-left: auto; background: #e0f2fe; padding: 6px 12px; border-radius: 6px; border: 1px solid #bae6fd;"></span>
+                <span id="totalRecordsLabel" style="display: none;"></span>
             </div>
         </div>
 
         <!-- Database Records Table (Scrollable Data Rows Only - Yellow Scrollbar Area) -->
-        <div id="dbTableContainer" class="table-container" style="max-height: 520px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; margin-top: 6px;">
+        <div id="dbTableContainer" class="table-container" style="overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; margin-top: 6px;">
             <table class="app-table" style="width: 100%; border-collapse: separate; border-spacing: 0;">
                 <thead>
                     <tr style="position: sticky; top: 0; z-index: 20;">
@@ -3022,7 +3066,7 @@ input[type="date"] {
                         </div>
                         <div style="display: flex; align-items: center; gap: 5px;">
                             <label style="font-weight: 800; font-size: 13.5px; color: #0f172a; white-space: nowrap;">💱 អត្រាប្តូរប្រាក់:</label>
-                            <input type="number" step="0.1" id="gmmExchangeRate" class="form-input highlight-input" placeholder="33.90" value="33.90" style="height: 34px; font-weight: 800; border: 2px solid #eab308; border-radius: 6px; padding: 3px 8px; font-size: 14px; width: 75px; text-align: center; background: #fef9c3; color: #854d0e;" onfocus="this.select()" onkeydown="handleGmmHeaderKeydown(event, this)">
+                            <input type="number" step="0.1" id="gmmExchangeRate" class="form-input highlight-input" placeholder="33.90" value="33.90" oninput="saveLatestExchangeRate(this.value); if(typeof gmmCalcTotals==='function') gmmCalcTotals();" onchange="saveLatestExchangeRate(this.value); if(typeof gmmCalcTotals==='function') gmmCalcTotals();" style="height: 34px; font-weight: 800; border: 2px solid #eab308; border-radius: 6px; padding: 3px 8px; font-size: 14px; width: 75px; text-align: center; background: #fef9c3; color: #854d0e;" onfocus="this.select()" onkeydown="handleGmmHeaderKeydown(event, this)">
                         </div>
                         <div style="display: flex; align-items: center; gap: 5px; flex: 1; min-width: 230px;">
                             <label style="font-weight: 800; font-size: 13.5px; color: #0f172a; white-space: nowrap;">👤 អ្នកនាំ/បញ្ជូន <span style="color: #ef4444; font-size: 15px;">*</span>:</label>
@@ -3203,6 +3247,36 @@ input[type="date"] {
         let currentModalReceiptData = null;
         let currentServiceCategory = 'all'; // 'car', 'visa', 'passport', 'all'
         let currentTableFilterCategory = 'all'; // 'car', 'visa', 'passport', 'all'
+
+        function getLatestSavedExchangeRate() {
+            try {
+                const saved = localStorage.getItem('imvoi_last_exchange_rate');
+                if (saved && !isNaN(parseFloat(saved)) && parseFloat(saved) > 0) {
+                    const num = parseFloat(saved);
+                    return (num % 1 === 0) ? num.toFixed(2) : String(num);
+                }
+            } catch(e) {}
+            return '33.90';
+        }
+
+        function saveLatestExchangeRate(val) {
+            if (!val || isNaN(parseFloat(val)) || parseFloat(val) <= 0) return;
+            try {
+                const num = parseFloat(val);
+                const strVal = (num % 1 === 0) ? num.toFixed(2) : String(num);
+                localStorage.setItem('imvoi_last_exchange_rate', strVal);
+                
+                // Keep both inputs synchronized in real-time
+                const r1 = document.getElementById('exchangeRate');
+                if (r1 && r1.value !== strVal && document.activeElement !== r1) {
+                    r1.value = strVal;
+                }
+                const r2 = document.getElementById('gmmExchangeRate');
+                if (r2 && r2.value !== strVal && document.activeElement !== r2) {
+                    r2.value = strVal;
+                }
+            } catch(e) {}
+        }
 
         function toggleScannerCollapse() {
             const body = document.getElementById('scannerContentBody');
@@ -3863,7 +3937,7 @@ input[type="date"] {
             const agencyInp = document.getElementById('agencyCompany');
             if (agencyInp) agencyInp.value = '';
             const rateInp = document.getElementById('exchangeRate');
-            if (rateInp) rateInp.value = '33.90';
+            if (rateInp) rateInp.value = getLatestSavedExchangeRate();
 
             ['feeVip', 'feeCar', 'feeClearance', 'feeFine', 'feeVisa', 'feeEvisa', 'feeWork'].forEach(id => {
                 const el = document.getElementById(id);
@@ -3911,7 +3985,8 @@ input[type="date"] {
                 }
             }
             const agency = document.getElementById('agencyCompany').value.trim();
-            const rate = parseFloat(document.getElementById('exchangeRate').value || 33.90);
+            const rate = parseFloat(document.getElementById('exchangeRate').value || getLatestSavedExchangeRate());
+            saveLatestExchangeRate(rate);
 
             const members = [];
             document.querySelectorAll('#groupMembersBody tr').forEach(r => {
@@ -4219,6 +4294,30 @@ input[type="date"] {
                         return false;
                     }
                 });
+
+                // Safe descending sort: highest invoice number or newest record first
+                try {
+                    filtered.sort(function(a, b) {
+                        function extractNum(item) {
+                            if (!item) return 0;
+                            var rNo = '';
+                            if (item.receipt_no) rNo = String(item.receipt_no);
+                            else if (item.group_data && item.group_data.receipt_no) rNo = String(item.group_data.receipt_no);
+                            else if (item.customer && item.customer.receipt_no) rNo = String(item.customer.receipt_no);
+                            else if (item.group_info && item.group_info.receipt_no) rNo = String(item.group_info.receipt_no);
+                            var digits = rNo.replace(/[^0-9]/g, '');
+                            return digits ? parseInt(digits, 10) : 0;
+                        }
+                        var na = extractNum(a);
+                        var nb = extractNum(b);
+                        if (nb !== na) return nb - na;
+                        var da = String(a.saved_at || a.date_saved || a.created_at || '');
+                        var db = String(b.saved_at || b.date_saved || b.created_at || '');
+                        return db.localeCompare(da);
+                    });
+                } catch (sortErr) {
+                    console.warn("Sort note:", sortErr);
+                }
 
                 const totalLabel = document.getElementById('totalRecordsLabel');
                 if (totalLabel) {
@@ -4709,7 +4808,7 @@ input[type="date"] {
                     if (rNoInput) rNoInput.value = nextNo;
 
                     const rateInput = document.getElementById('gmmExchangeRate');
-                    if (rateInput) rateInput.value = '33.90';
+                    if (rateInput) rateInput.value = getLatestSavedExchangeRate();
 
                     // Clear sender & agency
                     const senderInp = document.getElementById('gmmSenderName');
@@ -6395,7 +6494,8 @@ input[type="date"] {
 
             const rawTravelDate = document.getElementById('gmmTravelDate')?.value || '';
             const travelDate = formatDisplayDate(rawTravelDate);
-            const exchangeRate = parseFloat(document.getElementById('gmmExchangeRate')?.value || 33.90);
+            const exchangeRate = parseFloat(document.getElementById('gmmExchangeRate')?.value || getLatestSavedExchangeRate());
+            saveLatestExchangeRate(exchangeRate);
             const agencyCompany = document.getElementById('gmmAgencyCompany')?.value || '';
 
             const rows = document.querySelectorAll('#gmmMembersBody .gmm-row');
@@ -7819,6 +7919,15 @@ document.addEventListener('paste', function(e) {
             window.selectQuoteCategoryTab(savedCat, false);
             if (getPriceHistoryList().length === 0) recordCurrentPriceLog('តម្លៃដំបូង');
             renderPriceHistoryTable();
+
+            // Auto-restore persistent exchange rate
+            try {
+                const initRate = getLatestSavedExchangeRate();
+                const mainRateEl = document.getElementById('exchangeRate');
+                if (mainRateEl) mainRateEl.value = initRate;
+                const gmmRateEl = document.getElementById('gmmExchangeRate');
+                if (gmmRateEl) gmmRateEl.value = initRate;
+            } catch(e) {}
         });
     </script>
 </body>

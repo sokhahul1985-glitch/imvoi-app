@@ -787,8 +787,20 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                     self.wfile.write(f.read())
                 return
 
-        if path == '/' or path == '':
-            self.path = '/index.html'
+        if path == '/' or path == '' or path == '/index.html':
+            try:
+                with open('index.html', 'rb') as f:
+                    content = f.read()
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html; charset=utf-8')
+                self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                self.send_header('Pragma', 'no-cache')
+                self.send_header('Expires', '0')
+                self.end_headers()
+                self.wfile.write(content)
+                return
+            except Exception as e:
+                pass
 
         return super().do_GET()
 
