@@ -4220,22 +4220,6 @@ input[type="date"] {
                     }
                 });
 
-                // Sort descending: highest invoice number or newest record first
-                filtered.sort((a, b) => {
-                    const getNum = (item) => {
-                        const rNo = String(item.receipt_no || item.group_data?.receipt_no || item.customer?.receipt_no || item.group_info?.receipt_no || '').trim().toUpperCase();
-                        const num = parseInt(rNo.replace(/[^0-9]/g, ''), 10);
-                        return isNaN(num) ? 0 : num;
-                    };
-                    const numA = getNum(a);
-                    const numB = getNum(b);
-                    if (numB !== numA) return numB - numA;
-
-                    const dateA = a.saved_at || a.date_saved || a.created_at || '';
-                    const dateB = b.saved_at || b.date_saved || b.created_at || '';
-                    return String(dateB).localeCompare(String(dateA));
-                });
-
                 const totalLabel = document.getElementById('totalRecordsLabel');
                 if (totalLabel) {
                     let catSuffix = '';
