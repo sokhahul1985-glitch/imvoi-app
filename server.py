@@ -17,7 +17,13 @@ import io
 import re
 import datetime
 import uuid
+import threading
 from PIL import Image
+
+try:
+    import supabase_db
+except Exception:
+    supabase_db = None
 
 class SafeThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     allow_reuse_address = False
@@ -73,6 +79,120 @@ SAVED_CUSTOMERS_FILE = os.path.join(DATA_DIR, 'saved_customers.json')
 INVOICE_COUNTER_FILE = os.path.join(DATA_DIR, 'invoice_counter.json')
 WEB_DIR = BASE_DIR
 
+# ===========================================================================
+# STARTUP AUTO-RESTORE: If saved_customers.json is missing/empty on server
+# start (e.g. after Render.com restart), restore from best available backup.
+# ===========================================================================
+def _startup_restore_if_needed():
+    """Auto-restore customer data from backup or Supabase Cloud if main file is missing or empty."""
+    try:
+        # 0. Check Supabase Cloud DB first if configured
+        if supabase_db and supabase_db.is_configured():
+            try:
+                print("[Supabase] Querying Supabase Cloud Database on startup...")
+                cloud_recs = supabase_db.fetch_all_invoices()
+                if cloud_recs and len(cloud_recs) > 0:
+                    os.makedirs(DATA_DIR, exist_ok=True)
+                    with open(SAVED_CUSTOMERS_FILE, 'w', encoding='utf-8') as f:
+                        json.dump(cloud_recs, f, ensure_ascii=False, indent=2)
+                    print(f"[Supabase] ✅ Successfully restored {len(cloud_recs)} records from Cloud DB!")
+                    
+                    cloud_counters = supabase_db.fetch_counters()
+                    if cloud_counters and isinstance(cloud_counters, dict):
+                        with open(INVOICE_COUNTER_FILE, 'w', encoding='utf-8') as fc:
+                            json.dump(cloud_counters, fc, ensure_ascii=False, indent=2)
+                    return
+                else:
+                    print("[Supabase] Cloud database is empty. Will seed from local file if available.")
+            except Exception as se:
+                print(f"[Supabase] Startup load warning: {se}")
+
+        # Check if main data file is missing or empty
+        main_ok = False
+        if os.path.exists(SAVED_CUSTOMERS_FILE):
+            try:
+                with open(SAVED_CUSTOMERS_FILE, 'r', encoding='utf-8') as f:
+                    existing = json.load(f)
+                if isinstance(existing, list) and len(existing) > 0:
+                    main_ok = True
+                    print(f"[DataRestore] Main file OK: {len(existing)} records found.")
+            except Exception:
+                pass
+
+        if main_ok:
+            if supabase_db and supabase_db.is_configured():
+                try:
+                    threading.Thread(target=supabase_db.upsert_invoices, args=(existing,), daemon=True).start()
+                except Exception:
+                    pass
+            return  # Data is intact, nothing to do
+
+        print("[DataRestore] Main data file missing or empty. Searching backups...")
+
+        # Candidate backup paths in priority order
+        backup_candidates = [
+            os.path.join(DATA_DIR, 'backups', 'saved_customers_latest_vault.json'),
+            os.path.join(BASE_DIR, 'backups', 'saved_customers_latest_vault.json'),
+            os.path.join(BASE_DIR, 'saved_customers_live_backup.json'),
+            os.path.join(BASE_DIR, 'saved_customers.json'),
+        ]
+
+        # Also scan backups/ folder for any timestamped auto-backup files
+        for scan_dir in [os.path.join(DATA_DIR, 'backups'), os.path.join(BASE_DIR, 'backups')]:
+            if os.path.isdir(scan_dir):
+                try:
+                    bak_files = sorted(
+                        [os.path.join(scan_dir, f) for f in os.listdir(scan_dir)
+                         if f.endswith('.json') and 'customers' in f.lower()],
+                        key=os.path.getmtime, reverse=True
+                    )
+                    backup_candidates.extend(bak_files)
+                except Exception:
+                    pass
+
+        best_data = None
+        best_path = None
+        best_count = 0
+
+        for bak_path in backup_candidates:
+            if not os.path.exists(bak_path):
+                continue
+            # Skip restoring from itself
+            try:
+                if os.path.abspath(bak_path) == os.path.abspath(SAVED_CUSTOMERS_FILE):
+                    continue
+            except Exception:
+                pass
+            try:
+                with open(bak_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                if isinstance(data, list) and len(data) > best_count:
+                    best_data = data
+                    best_count = len(data)
+                    best_path = bak_path
+            except Exception as e:
+                print(f"[DataRestore] Could not read backup {bak_path}: {e}")
+
+        if best_data and best_count > 0:
+            # Ensure DATA_DIR exists
+            os.makedirs(DATA_DIR, exist_ok=True)
+            with open(SAVED_CUSTOMERS_FILE, 'w', encoding='utf-8') as f:
+                json.dump(best_data, f, ensure_ascii=False, indent=2)
+            print(f"[DataRestore] ✅ Restored {best_count} records from: {best_path}")
+            
+            # Seed to Supabase if configured
+            if supabase_db and supabase_db.is_configured():
+                try:
+                    threading.Thread(target=supabase_db.upsert_invoices, args=(best_data,), daemon=True).start()
+                except Exception:
+                    pass
+        else:
+            print("[DataRestore] No backup found. Starting with empty database.")
+    except Exception as e:
+        print(f"[DataRestore] Restore error (non-fatal): {e}")
+
+_startup_restore_if_needed()
+
 def load_json(filepath, default):
     if not os.path.exists(filepath):
         return default
@@ -84,8 +204,45 @@ def load_json(filepath, default):
 
 def save_json(filepath, data):
     try:
+        # 1. Main write
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
+            
+        # 2. Supabase Cloud Auto-Sync
+        if supabase_db and supabase_db.is_configured():
+            if 'saved_customers' in filepath and isinstance(data, list) and len(data) > 0:
+                threading.Thread(target=supabase_db.upsert_invoices, args=(data,), daemon=True).start()
+            elif 'invoice_counter' in filepath and isinstance(data, dict):
+                threading.Thread(target=supabase_db.save_counters, args=(data,), daemon=True).start()
+
+        # 3. Auto-backup if saving customer database
+        if 'saved_customers' in filepath and isinstance(data, list) and len(data) > 0:
+            backup_dir = os.path.join(os.path.dirname(filepath), 'backups')
+            os.makedirs(backup_dir, exist_ok=True)
+            # Latest snapshot backup
+            latest_bak = os.path.join(backup_dir, 'saved_customers_latest_vault.json')
+            with open(latest_bak, 'w', encoding='utf-8') as fb:
+                json.dump(data, fb, ensure_ascii=False, indent=2)
+            # Hourly/Daily rolling backup
+            hour_tag = datetime.datetime.now().strftime('%Y%m%d_%H')
+            hourly_bak = os.path.join(backup_dir, f'customers_auto_{hour_tag}.json')
+            if not os.path.exists(hourly_bak):
+                with open(hourly_bak, 'w', encoding='utf-8') as fh:
+                    json.dump(data, fh, ensure_ascii=False, indent=2)
+
+            # Cross-backup to BASE_DIR when DATA_DIR differs (e.g. /var/data vs repo dir)
+            if os.path.abspath(DATA_DIR) != os.path.abspath(BASE_DIR):
+                try:
+                    base_live_bak = os.path.join(BASE_DIR, 'saved_customers_live_backup.json')
+                    with open(base_live_bak, 'w', encoding='utf-8') as fbase:
+                        json.dump(data, fbase, ensure_ascii=False, indent=2)
+                    base_bak_dir = os.path.join(BASE_DIR, 'backups')
+                    os.makedirs(base_bak_dir, exist_ok=True)
+                    base_vault = os.path.join(base_bak_dir, 'saved_customers_latest_vault.json')
+                    with open(base_vault, 'w', encoding='utf-8') as fv:
+                        json.dump(data, fv, ensure_ascii=False, indent=2)
+                except Exception as ce:
+                    print(f"[CrossBackup] Warning (non-fatal): {ce}")
         return True
     except Exception as e:
         print("Save JSON Error:", e)
@@ -178,6 +335,28 @@ def get_next_invoice_no(category='car'):
             
         return f"{prefix}{(max_num + 1):05d}"
 
+    elif cat in ['quote', 'quotation']:
+        prefix = counter.get("quote_prefix", "QT ")
+        nums = []
+        for item in data:
+            if item.get('service_category') in ['quote', 'quotation'] or item.get('group_info', {}).get('service_category') in ['quote', 'quotation']:
+                r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
+                if r_no.startswith('QT') or r_no.startswith('QUO'):
+                    num_part = re.sub(r'[^0-9]', '', r_no)
+                    if num_part.isdigit():
+                        nums.append(int(num_part))
+        if nums:
+            max_num = max(nums)
+        else:
+            max_num = int(counter.get("last_quote_number", 0))
+            
+        # Keep counter file in sync
+        if counter.get("last_quote_number") != max_num:
+            counter["last_quote_number"] = max_num
+            save_json(INVOICE_COUNTER_FILE, counter)
+            
+        return f"{prefix}{(max_num + 1):05d}"
+
     else:
         prefix = counter.get("prefix", "INV ")
         nums = []
@@ -206,13 +385,16 @@ def increment_invoice_no(category='car'):
     counter = load_json(INVOICE_COUNTER_FILE, {
         "last_number": 0, "prefix": "INV ",
         "last_visa_number": 0, "visa_prefix": "VISA ",
-        "last_passport_number": 0, "passport_prefix": "INV "
+        "last_passport_number": 0, "passport_prefix": "INV ",
+        "last_quote_number": 0, "quote_prefix": "QT "
     })
     num_part = int(re.sub(r'[^0-9]', '', next_no))
     if cat == 'visa':
         counter["last_visa_number"] = num_part
     elif cat == 'passport':
         counter["last_passport_number"] = num_part
+    elif cat in ['quote', 'quotation']:
+        counter["last_quote_number"] = num_part
     else:
         counter["last_number"] = num_part
     save_json(INVOICE_COUNTER_FILE, counter)
@@ -324,14 +506,19 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
         if idx_str != '' and idx_str.isdigit():
             idx = int(idx_str)
             if 0 <= idx < len(data):
-                data.pop(idx)
+                popped = data.pop(idx)
                 save_json(SAVED_CUSTOMERS_FILE, data)
+                if supabase_db and supabase_db.is_configured():
+                    del_rno = popped.get('receipt_no') or (popped.get('group_data') or {}).get('receipt_no') or (popped.get('customer') or {}).get('receipt_no')
+                    if del_rno:
+                        threading.Thread(target=supabase_db.delete_invoice, args=(del_rno,), daemon=True).start()
                 self.send_json_response({'success': True})
                 return
 
         # 2. Match by id, receipt_no, passport_no, or customer_name
         filtered = []
         found = False
+        matched_item = None
         for item in data:
             if found:
                 filtered.append(item)
@@ -352,11 +539,16 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
 
             if match:
                 found = True
+                matched_item = item
                 continue
             filtered.append(item)
 
         if found:
             save_json(SAVED_CUSTOMERS_FILE, filtered)
+            if supabase_db and supabase_db.is_configured() and matched_item:
+                del_rno = matched_item.get('receipt_no') or (matched_item.get('group_data') or {}).get('receipt_no') or (matched_item.get('customer') or {}).get('receipt_no')
+                if del_rno:
+                    threading.Thread(target=supabase_db.delete_invoice, args=(del_rno,), daemon=True).start()
             self.send_json_response({'success': True})
             return
 
@@ -364,8 +556,12 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
         if receipt_no.isdigit():
             idx = int(receipt_no)
             if 0 <= idx < len(data):
-                data.pop(idx)
+                popped = data.pop(idx)
                 save_json(SAVED_CUSTOMERS_FILE, data)
+                if supabase_db and supabase_db.is_configured():
+                    del_rno = popped.get('receipt_no') or (popped.get('group_data') or {}).get('receipt_no') or (popped.get('customer') or {}).get('receipt_no')
+                    if del_rno:
+                        threading.Thread(target=supabase_db.delete_invoice, args=(del_rno,), daemon=True).start()
                 self.send_json_response({'success': True})
                 return
 
@@ -565,6 +761,18 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             since_id = query_params.get('since', [None])[0]
             scans = telegram_bot_listener.get_latest_scans(since_id) if telegram_bot_listener else []
             self.send_json_response({'success': True, 'scans': scans})
+            return
+
+        elif path == '/api/supabase_status':
+            configured = supabase_db.is_configured() if supabase_db else False
+            url, key = supabase_db.get_supabase_credentials() if supabase_db else ('', '')
+            masked_key = (key[:6] + '...' + key[-4:]) if len(key) > 10 else ('***' if key else '')
+            self.send_json_response({
+                'success': True,
+                'configured': configured,
+                'url': url,
+                'key_preview': masked_key
+            })
             return
 
 
@@ -1181,7 +1389,9 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     if service_category == 'visa' and not (clean_r_no.upper().startswith('VISA') or clean_r_no.upper().startswith('INV')):
                         clean_r_no = f"VISA {clean_r_no.lstrip('#').strip()}"
-                    elif service_category != 'visa' and not (clean_r_no.upper().startswith('INV') or clean_r_no.upper().startswith('CAR')):
+                    elif service_category in ['quote', 'quotation'] and not (clean_r_no.upper().startswith('QT') or clean_r_no.upper().startswith('QUO')):
+                        clean_r_no = f"QT {clean_r_no.lstrip('#').strip()}"
+                    elif service_category not in ['visa', 'quote', 'quotation'] and not (clean_r_no.upper().startswith('INV') or clean_r_no.upper().startswith('CAR')):
                         clean_r_no = f"INV {clean_r_no.lstrip('#').strip()}"
 
                 new_record = {
@@ -1239,7 +1449,8 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                     counter = load_json(INVOICE_COUNTER_FILE, {
                         "last_number": 0, "prefix": "INV ",
                         "last_visa_number": 0, "visa_prefix": "VISA ",
-                        "last_passport_number": 0, "passport_prefix": "INV "
+                        "last_passport_number": 0, "passport_prefix": "INV ",
+                        "last_quote_number": 0, "quote_prefix": "QT "
                     })
                     if service_category == 'visa':
                         if num_val > counter.get("last_visa_number", 0):
@@ -1248,6 +1459,10 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                     elif service_category == 'passport':
                         if num_val > counter.get("last_passport_number", 0):
                             counter["last_passport_number"] = num_val
+                            save_json(INVOICE_COUNTER_FILE, counter)
+                    elif service_category in ['quote', 'quotation']:
+                        if num_val > counter.get("last_quote_number", 0):
+                            counter["last_quote_number"] = num_val
                             save_json(INVOICE_COUNTER_FILE, counter)
                     else:
                         if num_val > counter.get("last_number", 0):
@@ -1491,8 +1706,12 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             })
             return
 
-        elif path == '/api/restore_database':
-            new_records = req_data.get('records', [])
+        elif path in ['/api/restore_database', '/api/restore']:
+            if isinstance(req_data, list):
+                new_records = req_data
+            else:
+                new_records = req_data.get('records') or req_data.get('invoices') or []
+
             if not isinstance(new_records, list) or len(new_records) == 0:
                 self.send_json_response({'success': False, 'error': 'No valid records provided'}, status=400)
                 return
@@ -1521,6 +1740,34 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             save_json(INVOICE_COUNTER_FILE, counter)
 
             self.send_json_response({'success': True, 'count': len(new_records), 'last_inv': max_inv, 'last_visa': max_visa})
+            return
+
+        elif path == '/api/save_supabase_config':
+            new_url = req_data.get('supabase_url', '').strip()
+            new_key = req_data.get('supabase_key', '').strip()
+            cfg_path = os.path.join(BASE_DIR, 'supabase_config.json')
+            try:
+                with open(cfg_path, 'w', encoding='utf-8') as fcfg:
+                    json.dump({'supabase_url': new_url, 'supabase_key': new_key}, fcfg, indent=2)
+                # Seed current database to Supabase if configured
+                all_recs = load_json(SAVED_CUSTOMERS_FILE, [])
+                if supabase_db and supabase_db.is_configured() and all_recs:
+                    threading.Thread(target=supabase_db.upsert_invoices, args=(all_recs,), daemon=True).start()
+                self.send_json_response({'success': True, 'message': 'Supabase configuration saved!'})
+            except Exception as se:
+                self.send_json_response({'success': False, 'error': str(se)}, status=500)
+            return
+
+        elif path == '/api/sync_supabase':
+            if not supabase_db or not supabase_db.is_configured():
+                self.send_json_response({'success': False, 'error': 'Supabase is not configured'}, status=400)
+                return
+            all_recs = load_json(SAVED_CUSTOMERS_FILE, [])
+            success = supabase_db.upsert_invoices(all_recs)
+            cur_counter = load_json(INVOICE_COUNTER_FILE, {})
+            if cur_counter:
+                supabase_db.save_counters(cur_counter)
+            self.send_json_response({'success': success, 'count': len(all_recs)})
             return
 
         elif path == '/api/save_telegram_config':
