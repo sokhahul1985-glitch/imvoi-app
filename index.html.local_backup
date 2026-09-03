@@ -2417,15 +2417,12 @@ input[type="date"] {
     <!-- 🖥️ Main Workspace Container (Shown after Category Selection) -->
     <div id="mainWorkspaceContainer" style="display: none; min-height: 100vh; height: auto; flex-direction: column; gap: 10px; box-sizing: border-box; overflow-y: auto; padding: 10px 16px 50px 16px;">
         <!-- Top Category Navigation Bar (Matching Deployed Screenshot - Large & Prominent) -->
-        <div id="topCategoryNavBar" style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; padding: 4px 0; flex-wrap: wrap; flex-shrink: 0;">
-            <button type="button" class="btn-sys btn-top-home" onclick="showCategorySelectionModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 24px; border-radius: 8px; font-size: 14px; font-weight: 800; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border: none; cursor: pointer; box-shadow: 0 3px 10px rgba(2, 132, 199, 0.35); height: 38px;">
-                🏠 ផ្ទាំងដើម
+        <div id="topCategoryNavBar" style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px; padding: 6px 0 4px 0; flex-shrink: 0;">
+            <button type="button" class="btn-sys btn-top-home" onclick="showCategorySelectionModal()" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 34px; border-radius: 10px; font-size: 14.5px; font-weight: 800; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4); height: 42px; letter-spacing: 0.3px;">
+                🏠 ទំព័រដើម
             </button>
-            <button type="button" id="mainActiveCategoryTabBtn" class="cat-nav-tab" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 26px; border-radius: 8px; font-size: 14px; font-weight: 800; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: none; cursor: pointer; box-shadow: 0 3px 10px rgba(5, 150, 105, 0.35); height: 38px;">
+            <button type="button" id="mainActiveCategoryTabBtn" class="cat-nav-tab" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 38px; border-radius: 10px; font-size: 14.5px; font-weight: 800; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(5, 150, 105, 0.4); height: 42px; letter-spacing: 0.3px;">
                 🚗 សេវាឡាន (Car)
-            </button>
-            <button type="button" class="cat-nav-tab" onclick="selectServiceCategory('quote')" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 24px; border-radius: 8px; font-size: 14px; font-weight: 800; background: linear-gradient(135deg, #d97706, #f59e0b); color: #ffffff; border: none; cursor: pointer; height: 38px; box-shadow: 0 3px 10px rgba(245, 158, 11, 0.35);">
-                💰 ផ្ទាំងស្នើតម្លៃ (Quotation)
             </button>
         </div>
 
@@ -2472,7 +2469,6 @@ input[type="date"] {
                 <div style="display: flex; align-items: center; gap: 6px;">
                     <button type="button" id="tabBtnCar" class="cat-nav-tab" onclick="selectServiceCategory('car')">🚗 សេវាឡាន (Car)</button>
                     <button type="button" id="tabBtnVisa" class="cat-nav-tab" onclick="selectServiceCategory('visa')">🛂 សេវាវីសា (Visa)</button>
-                    <button type="button" id="tabBtnQuote" class="cat-nav-tab" onclick="selectServiceCategory('quote')" style="background: linear-gradient(135deg, #d97706, #f59e0b); color: #ffffff; font-weight: 800;">💰 ស្នើតម្លៃ (Quote)</button>
                     <button type="button" id="tabBtnAll" class="cat-nav-tab active-tab-all" onclick="selectServiceCategory('all')">📊 ទាំងអស់ (All)</button>
                 </div>
             </div>
@@ -2965,10 +2961,7 @@ input[type="date"] {
                 <button type="button" class="btn-sys btn-indigo" onclick="renderDatabaseTable()">🔍 ស្វែងរក (Search)</button>
                 <button type="button" class="btn-sys btn-dark" onclick="resetSearch()">✖️ សម្អាត (Reset)</button>
                 <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; font-size: 12.5px; padding: 6px 14px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; box-shadow: 0 2px 4px rgba(5,150,105,0.25);" onclick="openNewGroupModal()">➕ បង្កើតថ្មី (Create New)</button>
-                <button type="button" class="btn-sys btn-indigo btn-action-sm" style="font-size: 12.5px; padding: 6px 12px; font-weight: 700;" onclick="exportCSV()">📥 Export CSV (Excel)</button>
-                <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #64748b, #475569); color: #ffffff; font-size: 12px; padding: 6px 12px; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="backupDataJSON()">💾 Backup Data (JSON)</button>
-                <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #d97706, #f59e0b); color: #ffffff; font-size: 12px; padding: 6px 12px; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="document.getElementById('restoreJsonInput').click()">📤 Restore Data (JSON)</button>
-                <input type="file" id="restoreJsonInput" accept=".json" style="display:none;" onchange="restoreDataJSON(event)">
+                <button type="button" class="btn-sys btn-indigo btn-action-sm" style="font-size: 12.5px; padding: 6px 12px; font-weight: 700;" onclick="exportCSV()">📥 Export CSV</button>
                 <span id="totalRecordsLabel" style="font-size: 12.5px; font-weight: 700; color: #0284c7; white-space: nowrap; margin-left: auto; background: #e0f2fe; padding: 6px 12px; border-radius: 6px; border: 1px solid #bae6fd;"></span>
             </div>
         </div>
@@ -4007,109 +4000,22 @@ input[type="date"] {
         }
 
         /* Database Records Loader & Table Renderer */
-        /* ============================================================
-           AUTO-BACKUP & SELF-HEALING DATABASE SYSTEM (100% BULLETPROOF)
-           ============================================================ */
-        const AUTO_BACKUP_STORAGE_KEY = 'imvoi_auto_backup_vault_v2';
-
-        function saveLocalVaultSnapshot(records) {
-            if (!Array.isArray(records) || records.length === 0) return;
-            try {
-                const payload = {
-                    timestamp: new Date().toISOString(),
-                    count: records.length,
-                    records: records
-                };
-                localStorage.setItem(AUTO_BACKUP_STORAGE_KEY, JSON.stringify(payload));
-            } catch (e) {
-                console.warn("Local vault snapshot warning:", e);
-            }
-        }
-
-        function getLocalVaultSnapshot() {
-            try {
-                const raw = localStorage.getItem(AUTO_BACKUP_STORAGE_KEY);
-                if (!raw) return null;
-                const parsed = JSON.parse(raw);
-                if (parsed && Array.isArray(parsed.records) && parsed.records.length > 0) {
-                    return parsed;
-                }
-            } catch (e) {
-                console.warn("Read local vault warning:", e);
-            }
-            return null;
-        }
-
-        function autoHealServerIfEmpty(serverRecords, callback) {
-            const vault = getLocalVaultSnapshot();
-            if (!vault || !Array.isArray(vault.records) || vault.records.length === 0) return false;
-
-            // If server has fewer than 10 records and local vault has significantly more
-            if ((!serverRecords || serverRecords.length < 5) && vault.records.length > (serverRecords ? serverRecords.length : 0)) {
-                console.log(`[Auto-Heal] Server has ${serverRecords ? serverRecords.length : 0} records, but local vault has ${vault.records.length}. Auto-Restoring to server...`);
-                
-                fetch('/api/restore_database', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ records: vault.records })
-                })
-                .then(r => r.json())
-                .then(res => {
-                    console.log('[Auto-Heal] Successfully auto-restored database to server:', res);
-                    allDatabaseRecords = vault.records;
-                    renderDatabaseTable();
-                    if (typeof callback === 'function') callback();
-                })
-                .catch(err => {
-                    console.error('[Auto-Heal] Error pushing vault to server:', err);
-                    allDatabaseRecords = vault.records;
-                    renderDatabaseTable();
-                    if (typeof callback === 'function') callback();
-                });
-                return true;
-            }
-            return false;
-        }
-
-        /* Database Records Loader & Table Renderer */
         function loadDatabaseRecords(callback) {
             fetch('/api/invoices?t=' + Date.now())
                 .then(r => r.json())
                 .then(d => {
-                    let serverList = [];
                     if (d && d.success) {
-                        serverList = d.invoices || d.records || [];
+                        allDatabaseRecords = d.invoices || d.records || [];
                     } else if (Array.isArray(d)) {
-                        serverList = d;
-                    }
-
-                    // Check if server lost data and we can auto-heal it
-                    const healed = autoHealServerIfEmpty(serverList, callback);
-                    if (healed) {
-                        return; // Auto-heal is restoring and will render
-                    }
-
-                    allDatabaseRecords = serverList;
-                    if (allDatabaseRecords.length > 0) {
-                        // Update local vault snapshot
-                        saveLocalVaultSnapshot(allDatabaseRecords);
+                        allDatabaseRecords = d;
                     } else {
-                        // If server returned empty, fallback to local vault
-                        const vault = getLocalVaultSnapshot();
-                        if (vault && vault.records.length > 0) {
-                            allDatabaseRecords = vault.records;
-                        }
+                        allDatabaseRecords = [];
                     }
-
                     renderDatabaseTable();
                     if (typeof callback === 'function') callback();
                 })
                 .catch(err => {
                     console.log("Database load fallback:", err);
-                    const vault = getLocalVaultSnapshot();
-                    if (vault && vault.records.length > 0) {
-                        allDatabaseRecords = vault.records;
-                    }
                     renderDatabaseTable();
                     if (typeof callback === 'function') callback();
                 });
@@ -4218,22 +4124,6 @@ input[type="date"] {
                     } catch (e) {
                         return false;
                     }
-                });
-
-                // Sort descending: highest invoice number or newest record first
-                filtered.sort((a, b) => {
-                    const getNum = (item) => {
-                        const rNo = String(item.receipt_no || item.group_data?.receipt_no || item.customer?.receipt_no || item.group_info?.receipt_no || '').trim().toUpperCase();
-                        const num = parseInt(rNo.replace(/[^0-9]/g, ''), 10);
-                        return isNaN(num) ? 0 : num;
-                    };
-                    const numA = getNum(a);
-                    const numB = getNum(b);
-                    if (numB !== numA) return numB - numA;
-
-                    const dateA = a.saved_at || a.date_saved || a.created_at || '';
-                    const dateB = b.saved_at || b.date_saved || b.created_at || '';
-                    return String(dateB).localeCompare(String(dateA));
                 });
 
                 const totalLabel = document.getElementById('totalRecordsLabel');
@@ -4470,64 +4360,11 @@ input[type="date"] {
             link.setAttribute('download', fileName);
             document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
             if (typeof showToast === 'function') {
                 showToast('🎉 បាន Export CSV ដោយជោគជ័យ!');
             }
-        }
-
-        function backupDataJSON() {
-            try {
-                const recs = (typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) ? allDatabaseRecords : [];
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(recs, null, 2));
-                const today = new Date();
-                const dateStr = `${String(today.getDate()).padStart(2,'0')}-${String(today.getMonth()+1).padStart(2,'0')}-${today.getFullYear()}`;
-                const dlAnchor = document.createElement('a');
-                dlAnchor.setAttribute("href", dataStr);
-                dlAnchor.setAttribute("download", `Imvoi_Backup_${dateStr}.json`);
-                document.body.appendChild(dlAnchor);
-                dlAnchor.click();
-                document.body.removeChild(dlAnchor);
-                if (typeof showToast === 'function') showToast('💾 បាន Backup ទិន្នន័យ JSON ដោយជោគជ័យ!');
-            } catch (err) {
-                alert("❌ បរាជ័យក្នុងការ Backup: " + err.message);
-            }
-        }
-
-        function restoreDataJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    const recs = Array.isArray(data) ? data : (data.invoices || data.records || []);
-                    if (!Array.isArray(recs) || recs.length === 0) {
-                        alert("❌ ឯកសារ JSON មិនមានទិន្នន័យត្រឹមត្រូវឡើយ!");
-                        return;
-                    }
-                    if (confirm(`តើអ្នកពិតជាចង់ Restore ទិន្នន័យចំនួន ${recs.length} វិក្កយបត្រមែនទេ?`)) {
-                        fetch('/api/restore', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(recs)
-                        })
-                        .then(r => r.json())
-                        .then(res => {
-                            alert("🎉 បាន Restore ទិន្នន័យដោយជោគជ័យ!");
-                            loadDatabaseRecords();
-                        })
-                        .catch(err => {
-                            allDatabaseRecords = recs;
-                            renderDatabaseTable();
-                            alert("✅ បានផ្ទុកទិន្នន័យចូលក្នុងតារាងរួចរាល់!");
-                        });
-                    }
-                } catch (err) {
-                    alert("❌ បរាជ័យក្នុងការអានឯកសារ JSON: " + err.message);
-                }
-            };
-            reader.readAsText(file);
-            event.target.value = '';
         }
 
         async function backupDatabaseJSON() {

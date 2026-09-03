@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMP Golden Mekong Commercial Service - Dashboard</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="app-header">
+        <div class="brand-container">
+            <div class="brand-logo">🧾</div>
+            <div>
+                <div class="brand-title">CMP GOLDEN MEKONG COMMERCIAL SERVICE CO., LTD.</div>
+                <div class="brand-subtitle">ក្រុមហ៊ុន ស៊ី អឹម ភី ហ្គោលដិន មេគង្គ ខមមើសល សឺវីស</div>
+            </div>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn active">📊 ផ្ទាំងគ្រប់គ្រង (Dashboard)</a>
+            <a href="group_invoice.html" class="nav-btn btn-emerald">👥 + បង្កើតក្រុម (Group Invoice)</a>
+            <a href="single_invoice.html" class="nav-btn">👤 + វិក្កយបត្រទោល (Single)</a>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- KPI Metrics Grid -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon icon-blue">📋</div>
+                <div>
+                    <div class="metric-val" id="totalInvoicesVal">0</div>
+                    <div class="metric-lbl">វិក្កយបត្រសរុប (Total Invoices)</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon icon-emerald">💵</div>
+                <div>
+                    <div class="metric-val" id="totalRevenueVal">$0.00</div>
+                    <div class="metric-lbl">ចំណូលបង់រួចសរុប (Paid Revenue)</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon icon-rose">⚠️</div>
+                <div>
+                    <div class="metric-val" id="unpaidCountVal">0</div>
+                    <div class="metric-lbl">មិនទាន់បង់ (Unpaid Invoices)</div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-icon icon-amber">✅</div>
+                <div>
+                    <div class="metric-val" id="paidCountVal">0</div>
+                    <div class="metric-lbl">បង់រួចហើយ (Paid Invoices)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Invoice Management Table Panel -->
+        <div class="panel-card">
+            <div class="panel-header">
+                <h2 class="panel-title">📑 បញ្ជីវិក្កយបត្រ និងអតិថិជន (Invoice Records)</h2>
+                
+                <div class="filter-bar" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                    <div style="display:flex; gap:6px;">
+                        <button class="nav-btn filter-tab active" onclick="filterStatus('ALL')">ទាំងអស់ (All)</button>
+                        <button class="nav-btn filter-tab" onclick="filterStatus('PAID')">✅ បង់រួច</button>
+                        <button class="nav-btn filter-tab" onclick="filterStatus('UNPAID')">❌ មិនទាន់បង់</button>
+                    </div>
+                    <input type="text" id="searchInput" class="search-input" placeholder="🔍 ស្វែងរកតាមឈ្មោះ, លេខវិក្កយបត្រ..." onkeyup="renderTable()">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>ថ្ងៃខែរក្សាទុក</th>
+                            <th>លេខវិក្កយបត្រ</th>
+                            <th>ឈ្មោះអតិថិជន / ក្រុម</th>
+                            <th>ប្រភេទ</th>
+                            <th>កាលបរិច្ឆេទធ្វើដំណើរ</th>
+                            <th>សរុប (USD)</th>
+                            <th>ស្ថានភាពបង់ប្រាក់</th>
+                            <th style="text-align: center;">សកម្មភាព</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceTableBody">
+                        <tr><td colspan="9" style="text-align:center; padding:24px; color:var(--text-muted);">⏳ កំពុងទាញយកទិន្នន័យ (Loading invoices...)...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let allInvoices = [];
+        let currentFilter = 'ALL';
+
+        document.addEventListener('DOMContentLoaded', loadInvoices);
+
+        function loadInvoices() {
+            fetch('/api/invoices')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        allInvoices = data.invoices || [];
+                        updateMetrics();
+                        renderTable();
+                    }
+                });
+        }
+
+        function updateMetrics() {
+            let totalRev = 0, paid = 0, unpaid = 0;
+            allInvoices.forEach(inv => {
+                const status = (inv.payment_status || 'UNPAID').toUpperCase();
+                const usd = parseFloat(inv.group_data?.totals?.usd || inv.totals?.usd || 0);
+                if (status === 'PAID') {
+                    paid++;
+                    totalRev += usd;
+                } else {
+                    unpaid++;
+                }
+            });
+
+            document.getElementById('totalInvoicesVal').textContent = allInvoices.length;
+            document.getElementById('totalRevenueVal').textContent = '$' + totalRev.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+            document.getElementById('paidCountVal').textContent = paid;
+            document.getElementById('unpaidCountVal').textContent = unpaid;
+        }
+
+        function filterStatus(status) {
+            currentFilter = status;
+            document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('invoiceTableBody');
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            let filtered = allInvoices.filter(inv => {
+                const status = (inv.payment_status || 'UNPAID').toUpperCase();
+                if (currentFilter !== 'ALL' && status !== currentFilter) return false;
+
+                if (search) {
+                    const str = JSON.stringify(inv).toLowerCase();
+                    return str.includes(search);
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:24px; color:var(--text-muted);">មិនមានទិន្នន័យត្រូវស្វែងរកឡើយ</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach((item, idx) => {
+                const isGroup = item.group_info || item.group_data;
+                const rNo = item.group_data?.receipt_no || item.customer?.receipt_no || 'N/A';
+                const custName = item.group_info?.group_name || item.customer?.full_english_name || 'N/A';
+                const paxStr = isGroup ? (item.customer?.sex || (item.members?.length + ' Pax')) : '1 Pax';
+                const travelDate = item.group_info?.travel_date || item.group_data?.date_str || item.customer?.date_saved || '-';
+                const dateSaved = item.date_saved || '-';
+                const status = (item.payment_status || 'UNPAID').toUpperCase();
+                const usdTotal = parseFloat(item.group_data?.totals?.usd || item.totals?.usd || 0);
+
+                html += `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td style="font-size:0.85rem; color:var(--text-muted);">${dateSaved}</td>
+                        <td style="font-weight:700; color:var(--accent-cyan);">${rNo}</td>
+                        <td>
+                            <strong style="color:#fff;">${custName}</strong>
+                            <div style="font-size:0.78rem; color:var(--text-muted);">${paxStr}</div>
+                        </td>
+                        <td>
+                            ${isGroup ? '<span class="badge badge-group">👥 ក្រុម</span>' : '<span class="badge" style="background:rgba(2,132,199,0.2); color:#38bdf8;">👤 ទោល</span>'}
+                        </td>
+                        <td>${travelDate}</td>
+                        <td style="font-weight:700; color:var(--accent-emerald);">$${usdTotal.toFixed(2)}</td>
+                        <td>
+                            ${status === 'PAID' ? '<span class="badge badge-paid">✅ បង់រួច</span>' : '<span class="badge badge-unpaid">❌ មិនទាន់បង់</span>'}
+                        </td>
+                        <td style="text-align:center; white-space:nowrap;">
+                            <a href="view_receipt.html?no=${encodeURIComponent(rNo)}" class="btn btn-primary btn-sm">👁️ មើល</a>
+                            <button onclick="togglePayment('${encodeURIComponent(rNo)}', '${status === 'PAID' ? 'UNPAID' : 'PAID'}')" class="btn btn-secondary btn-sm">
+                                ${status === 'PAID' ? '🔄 មិនទាន់បង់' : '✅ បង់រួច'}
+                            </button>
+                            <button onclick="deleteInvoice('${encodeURIComponent(rNo)}')" class="btn btn-danger btn-sm">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function togglePayment(rNo, newStatus) {
+            fetch(`/api/toggle_status?no=${rNo}&status=${newStatus}`)
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) loadInvoices();
+                });
+        }
+
+        function deleteInvoice(rNo) {
+            if (confirm(`តើអ្នកពិតជាចង់លុបវិក្កយបត្រ ${decodeURIComponent(rNo)} នេះមែនទេ?`)) {
+                fetch(`/api/delete?no=${rNo}`)
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.success) loadInvoices();
+                    });
+            }
+        }
+    </script>
+</body>
+</html>

@@ -620,7 +620,12 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
         # API Routes
         if path in ['/api/invoices', '/api/get_database']:
             data = load_json(SAVED_CUSTOMERS_FILE, [])
-            self.send_json_response({'success': True, 'records': data, 'invoices': data})
+            def get_inv_num(r):
+                r_no = str(r.get('receipt_no') or (r.get('group_data') or {}).get('receipt_no') or (r.get('customer') or {}).get('receipt_no') or '').strip().upper()
+                digits = re.sub(r'[^0-9]', '', r_no)
+                return int(digits) if digits.isdigit() else 0
+            sorted_data = sorted(data, key=get_inv_num, reverse=True)
+            self.send_json_response({'success': True, 'records': sorted_data, 'invoices': sorted_data})
             return
 
         elif path == '/api/next_no':
