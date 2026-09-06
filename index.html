@@ -4145,9 +4145,12 @@ input[type="date"] {
                                 <button type="button" class="filter-tab" data-dash-filter="upcoming" onclick="setDashboardScheduleFilter('upcoming')">កក់ទុកមុន (<span id="dashCountUpcoming">0</span>)</button>
                                 <button type="button" class="filter-tab" data-dash-filter="completed" onclick="setDashboardScheduleFilter('completed')">បានបញ្ចប់ (<span id="dashCountCompleted">0</span>)</button>
                             </div>
-                            <div class="filter-search-box">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                                <input type="text" id="dashScheduleSearch" oninput="renderDashboard()" placeholder="ស្វែងរកក្នុងតារាងកក់...">
+                            <div class="filter-search-box" style="position: relative; display: flex; align-items: center; min-width: 280px; max-width: 440px;">
+                                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; color: #0284c7;"></i>
+                                <input type="text" id="dashScheduleSearch" oninput="renderDashboard()" placeholder="🔍 ស្វែងរក (ឈ្មោះ, ម៉ោង, ឡាន, ផ្លូវ, Telegram, VIP...)" style="padding-left: 32px; padding-right: 28px; width: 100%;">
+                                <button type="button" id="dashScheduleSearchClearBtn" onclick="clearDashScheduleSearch()" style="position: absolute; right: 8px; background: none; border: none; color: #94a3b8; font-size: 13px; cursor: pointer; display: none; padding: 2px;" title="សម្អាតការស្វែងរក">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
                             </div>
                         </div>
 
@@ -4196,9 +4199,9 @@ input[type="date"] {
                             <button type="button" class="filter-tab" data-filter="upcoming" onclick="setBookingFilter('upcoming')">កក់ទុកមុន (<span id="countFilterUpcoming">0</span>)</button>
                             <button type="button" class="filter-tab" data-filter="completed" onclick="setBookingFilter('completed')">បានបញ្ចប់ (<span id="countFilterCompleted">0</span>)</button>
                         </div>
-                        <div class="filter-search-box">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" id="bookingFilterSearch" placeholder="ស្វែងរកក្នុងតារាងកក់...">
+                        <div class="filter-search-box" style="position: relative; display: flex; align-items: center; min-width: 280px; max-width: 440px;">
+                            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; color: #0284c7;"></i>
+                            <input type="text" id="bookingFilterSearch" placeholder="🔍 ស្វែងរក (ឈ្មោះ, ម៉ោង, ឡាន, ផ្លូវ, Telegram, VIP...)" style="padding-left: 32px; padding-right: 28px; width: 100%;">
                         </div>
                     </div>
 
@@ -10429,6 +10432,161 @@ document.addEventListener('paste', function(e) {
         else if (currentTab === 'calendar') renderCalendar();
     };
 
+    // =========================================================================
+    // Universal Booking Deep Search (Matches ANY column in table:
+    // Time, Date, Customer Name, Phone, Car Model/Plate, Route, Telegram,
+    // Driver, VIP, Border Clearance, Notes, Flight, Status, Photos count)
+    // =========================================================================
+    function matchBookingSearch(b, query) {
+        if (!query) return true;
+        const qTrimmed = String(query).trim();
+        if (!qTrimmed) return true;
+
+        const terms = qTrimmed.toLowerCase().split(/\s+/).filter(Boolean);
+        if (terms.length === 0) return true;
+
+        const chunks = [];
+
+        // 1. ID & Code
+        if (b.id) chunks.push(b.id);
+        if (b.code) chunks.push(b.code);
+
+        // 2. Time & Date (e.g. 08:00, 8:00, 2026-09-07, 09-07)
+        if (b.time) {
+            chunks.push(b.time);
+            if (b.time.startsWith('0')) chunks.push(b.time.substring(1));
+            else if (b.time.length === 4 && b.time.indexOf(':') === 1) chunks.push('0' + b.time);
+        }
+        if (b.date) {
+            chunks.push(b.date);
+            const p = b.date.split('-');
+            if (p.length === 3) {
+                chunks.push(`${p[2]}/${p[1]}/${p[0]}`);
+                chunks.push(`${p[2]}-${p[1]}-${p[0]}`);
+                chunks.push(`${p[1]}-${p[2]}`);
+                chunks.push(`${p[2]}-${p[1]}`);
+            }
+        }
+
+        // 3. Customer Info (Name, Phone, Telegram username)
+        if (b.customerName) chunks.push(b.customerName);
+        if (b.customerPhone) {
+            chunks.push(b.customerPhone);
+            chunks.push(b.customerPhone.replace(/\D/g, ''));
+        }
+        if (b.customerTelegram) {
+            chunks.push(b.customerTelegram);
+            chunks.push(b.customerTelegram.replace(/^@/, ''));
+        }
+
+        // 4. Driver & Dispatch Info (Telegram, Name, Phone)
+        if (b.driverTelegram) {
+            chunks.push(b.driverTelegram);
+            chunks.push(b.driverTelegram.replace(/^@/, ''));
+        }
+        if (b.driverName) chunks.push(b.driverName);
+        if (b.driver) chunks.push(b.driver);
+        if (b.driverPhone) chunks.push(b.driverPhone);
+
+        // Match against driver database if loaded
+        try {
+            const dList = typeof getDrivers === 'function' ? getDrivers() : [];
+            if (Array.isArray(dList)) {
+                const md = dList.find(d => 
+                    (b.driverTelegram && d.telegram && (d.telegram.toLowerCase() === b.driverTelegram.toLowerCase() || `@${d.telegram.toLowerCase()}` === b.driverTelegram.toLowerCase() || d.telegram.toLowerCase().replace(/^@/,'') === b.driverTelegram.toLowerCase().replace(/^@/,''))) ||
+                    (b.driverName && d.name && d.name.toLowerCase() === b.driverName.toLowerCase()) ||
+                    (b.driverId && String(d.id) === String(b.driverId))
+                );
+                if (md) {
+                    if (md.name) chunks.push(md.name);
+                    if (md.phone) chunks.push(md.phone);
+                    if (md.telegram) chunks.push(md.telegram);
+                }
+            }
+        } catch(e) {}
+
+        // 5. Cars Fleet Info (Models, Brand, Plate, No car)
+        if (Array.isArray(b.cars)) {
+            b.cars.forEach(c => {
+                if (!c) return;
+                chunks.push(c);
+                if (c === 'no_car' || String(c).includes('មិនយកឡាន')) {
+                    chunks.push('មិនយកឡាន no car no_car');
+                }
+            });
+        } else if (b.cars) {
+            chunks.push(String(b.cars));
+        }
+        if (b.carPlate) chunks.push(b.carPlate);
+        if (b.carModel) chunks.push(b.carModel);
+        if (b.carName) chunks.push(b.carName);
+
+        try {
+            const cList = typeof getCars === 'function' ? getCars() : [];
+            if (Array.isArray(cList) && Array.isArray(b.cars)) {
+                b.cars.forEach(carStr => {
+                    const fc = cList.find(c => c.name === carStr || `${c.brand || ''} ${c.model || ''}`.includes(carStr));
+                    if (fc) {
+                        if (fc.plate) chunks.push(fc.plate);
+                        if (fc.model) chunks.push(fc.model);
+                        if (fc.brand) chunks.push(fc.brand);
+                    }
+                });
+            }
+        } catch(e) {}
+
+        // 6. VIP & Service Badges
+        if (b.vipService) {
+            chunks.push(b.vipService);
+            chunks.push('vip យក vip ⭐');
+        }
+        if (b.borderClear) {
+            chunks.push(b.borderClear);
+            chunks.push('border យកភ្ញៀវ ជូនភ្ញៀវ ផ្ញើភ្ញៀវ 🚀');
+        }
+
+        // 7. Route & Locations
+        if (b.pickupLoc) chunks.push(b.pickupLoc);
+        if (b.dropoffLoc) chunks.push(b.dropoffLoc);
+        if (b.pickupLoc && b.dropoffLoc) {
+            chunks.push(`${b.pickupLoc} -> ${b.dropoffLoc}`);
+            chunks.push(`${b.pickupLoc} ទៅ ${b.dropoffLoc}`);
+            chunks.push(`${b.pickupLoc} - ${b.dropoffLoc}`);
+        }
+
+        // 8. Notes, Flights, Map links
+        if (b.notes) chunks.push(b.notes);
+        if (b.note) chunks.push(b.note);
+        if (b.flight) chunks.push(b.flight);
+        if (b.flightNumber) chunks.push(b.flightNumber);
+        if (b.pax) chunks.push(b.pax);
+        if (b.rawMessage) chunks.push(b.rawMessage);
+
+        // 9. Status & Photos
+        if (b.status) chunks.push(b.status);
+        if (b.images && Array.isArray(b.images) && b.images.length > 0) {
+            chunks.push(`រូបភាព ${b.images.length} photo camera`);
+        }
+
+        const fullHaystack = chunks.join(' ').toLowerCase();
+
+        return terms.every(t => {
+            const cleanT = t.startsWith('@') ? t.substring(1) : t;
+            return fullHaystack.includes(t) || (cleanT && fullHaystack.includes(cleanT));
+        });
+    }
+
+    window.clearDashScheduleSearch = function() {
+        const sInput = document.getElementById('dashScheduleSearch');
+        if (sInput) {
+            sInput.value = '';
+            sInput.focus();
+        }
+        const btn = document.getElementById('dashScheduleSearchClearBtn');
+        if (btn) btn.style.display = 'none';
+        renderDashboard();
+    };
+
     // Dashboard Schedule Filtering (ទាំងអស់, 🕒 ថ្ងៃនេះ, 🌅 ថ្ងៃស្អែក, កក់ទុកមុន, បានបញ្ចប់)
     let currentDashScheduleFilter = 'dueToday';
 
@@ -10507,6 +10665,8 @@ document.addEventListener('paste', function(e) {
         // Filter list for dashboard table
         const sInput = document.getElementById('dashScheduleSearch');
         const q = (sInput ? sInput.value : '').toLowerCase().trim();
+        const clearBtn = document.getElementById('dashScheduleSearchClearBtn');
+        if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
 
         let filteredTrips = bookings.filter(b => {
             if (currentDashScheduleFilter === 'dueToday' || currentDashScheduleFilter === 'today') {
@@ -10525,20 +10685,25 @@ document.addEventListener('paste', function(e) {
         });
 
         if (q) {
-            filteredTrips = filteredTrips.filter(b => 
-                (b.customerName || '').toLowerCase().includes(q) ||
-                (b.customerPhone || '').toLowerCase().includes(q) ||
-                (b.pickupLoc || '').toLowerCase().includes(q) ||
-                (b.dropoffLoc || '').toLowerCase().includes(q) ||
-                (b.cars || []).join(' ').toLowerCase().includes(q)
-            );
+            // First check matches in currently selected tab
+            const inTabMatches = filteredTrips.filter(b => matchBookingSearch(b, q));
+            if (inTabMatches.length > 0 || currentDashScheduleFilter === 'all') {
+                filteredTrips = inTabMatches;
+            } else {
+                // If 0 matches in current tab, search across ALL bookings so user doesn't miss what they seek!
+                const allMatches = bookings.filter(b => matchBookingSearch(b, q));
+                filteredTrips = allMatches;
+            }
         }
 
         // Update Card Title & Subtitle dynamically
         const cardTitleEl = document.getElementById('dashScheduleCardTitle');
         const cardSubEl = document.getElementById('dashScheduleCardSub');
         if (cardTitleEl) {
-            if (currentDashScheduleFilter === 'dueToday' || currentDashScheduleFilter === 'today') {
+            if (q) {
+                cardTitleEl.innerHTML = `<i class="fa-solid fa-magnifying-glass text-primary"></i> លទ្ធផលស្វែងរក៖ "${escapeHtml(q)}"`;
+                if (cardSubEl) cardSubEl.textContent = `រកឃើញការកក់សរុប ${filteredTrips.length} ជើង ដែលត្រូវគ្នានឹងពាក្យគន្លឹះគ្រប់ជួរឈរ`;
+            } else if (currentDashScheduleFilter === 'dueToday' || currentDashScheduleFilter === 'today') {
                 cardTitleEl.textContent = 'កាលវិភាគចេញដំណើរថ្ងៃនេះ (Today\'s Trips)';
                 if (cardSubEl) cardSubEl.textContent = 'ជើងឡានដែលត្រូវចេញដំណើរ និងទទួលភ្ញៀវទាំងអស់ក្នុងថ្ងៃនេះ';
             } else if (currentDashScheduleFilter === 'tomorrow') {
@@ -10557,7 +10722,7 @@ document.addEventListener('paste', function(e) {
         }
 
         const schedCount = document.getElementById('todayScheduleCount');
-        if (schedCount) schedCount.textContent = filteredTrips.length + ' ជើង';
+        if (schedCount) schedCount.textContent = (q ? `រកឃើញ ${filteredTrips.length}` : filteredTrips.length) + ' ជើង';
 
         // Render Action List
         const tbody = document.getElementById('todayActionList');
@@ -10565,10 +10730,15 @@ document.addEventListener('paste', function(e) {
 
         if (filteredTrips.length === 0) {
             let emptyMsg = 'គ្មានជើងឡានក្នុងផ្នែកនេះទេ';
-            if (currentDashScheduleFilter === 'dueToday' || currentDashScheduleFilter === 'today') emptyMsg = 'គ្មានជើងឡានត្រូវចេញដំណើរក្នុងថ្ងៃនេះទេ';
-            else if (currentDashScheduleFilter === 'tomorrow') emptyMsg = 'គ្មានជើងឡានត្រូវចេញដំណើរនៅថ្ងៃស្អែកទេ';
+            if (q) {
+                emptyMsg = `🔍 រកមិនឃើញទិន្នន័យការកក់ណាដែលត្រូវនឹង "<b>${escapeHtml(q)}</b>" ឡើយ`;
+            } else if (currentDashScheduleFilter === 'dueToday' || currentDashScheduleFilter === 'today') {
+                emptyMsg = 'គ្មានជើងឡានត្រូវចេញដំណើរក្នុងថ្ងៃនេះទេ';
+            } else if (currentDashScheduleFilter === 'tomorrow') {
+                emptyMsg = 'គ្មានជើងឡានត្រូវចេញដំណើរនៅថ្ងៃស្អែកទេ';
+            }
             tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 28px; color: #64748b;">
-                <i class="fa-solid fa-calendar-check" style="font-size: 1.8rem; opacity: 0.4; margin-bottom: 6px;"></i><br>
+                <i class="fa-solid fa-magnifying-glass" style="font-size: 1.8rem; opacity: 0.4; margin-bottom: 6px;"></i><br>
                 ${emptyMsg}
             </td></tr>`;
             return;
@@ -10680,13 +10850,7 @@ document.addEventListener('paste', function(e) {
         const sInput = document.getElementById('bookingFilterSearch');
         const q = (searchQuery || (sInput ? sInput.value : '')).toLowerCase().trim();
         if (q) {
-            filtered = filtered.filter(b => 
-                (b.customerName || '').toLowerCase().includes(q) ||
-                (b.customerPhone || '').toLowerCase().includes(q) ||
-                (b.pickupLoc || '').toLowerCase().includes(q) ||
-                (b.dropoffLoc || '').toLowerCase().includes(q) ||
-                (b.cars || []).join(' ').toLowerCase().includes(q)
-            );
+            filtered = filtered.filter(b => matchBookingSearch(b, q));
         }
 
         const tbody = document.getElementById('bookingsGrid');
@@ -10831,15 +10995,7 @@ document.addEventListener('paste', function(e) {
             if (filter === 'past' && t !== 'past') return false;
 
             if (q) {
-                const combined = (
-                    (b.customerName || '') + ' ' +
-                    (b.customerPhone || '') + ' ' +
-                    (b.pickupLoc || '') + ' ' +
-                    (b.dropoffLoc || '') + ' ' +
-                    (b.cars || []).join(' ') + ' ' +
-                    (b.driverTelegram || '')
-                ).toLowerCase();
-                if (!combined.includes(q)) return false;
+                if (!matchBookingSearch(b, q)) return false;
             }
             return true;
         });
@@ -12036,12 +12192,12 @@ document.addEventListener('paste', function(e) {
         closeModal('bookingModal');
         showToast('រក្សាទុកការកក់ជោគជ័យ! ✅');
 
-        // Persist booking with images to server database as well
+        // Persist full bookings array to server database for immediate cross-device sync (PC & Mobile)
         try {
             fetch('/api/bookings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ booking: newBooking })
+                body: JSON.stringify({ bookings: bookings })
             }).catch(e => console.warn('Could not sync booking to server:', e));
         } catch (e) {}
 
@@ -12488,12 +12644,12 @@ document.addEventListener('paste', function(e) {
             saveDriversList(savedDrivers);
         }
 
-        // Persist booking to server
+        // Persist full bookings array to server
         try {
             fetch('/api/bookings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ booking: b })
+                body: JSON.stringify({ bookings: bookings })
             }).catch(e => {});
         } catch (e) {}
 
@@ -14035,6 +14191,10 @@ document.addEventListener('paste', function(e) {
             }
 
             pollCount++;
+            // Auto-sync bookings from server every 5 seconds so Phone and PC stay 100% identical in real-time
+            if (pollCount % 2 === 0 && typeof window.syncBookingsWithServer === 'function') {
+                window.syncBookingsWithServer();
+            }
             setTimeout(poll, 2500); // Check every 2.5 seconds
         }
 
@@ -14201,32 +14361,61 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
         switchTab(currentTab || 'dashboard');
         startTelegramBotLiveListener();
 
-        // Sync bookings from server database if available
-        try {
-            fetch('/api/bookings')
-                .then(r => r.json())
-                .then(d => {
-                    if (d && d.success && Array.isArray(d.bookings) && d.bookings.length > 0) {
-                        const localBks = getBookings();
-                        let merged = [...localBks];
-                        d.bookings.forEach(sb => {
-                            const exIdx = merged.findIndex(m => m.id === sb.id);
-                            if (exIdx >= 0) {
-                                if ((!merged[exIdx].images || merged[exIdx].images.length === 0) && (sb.images && sb.images.length > 0)) {
-                                    merged[exIdx] = sb;
-                                }
-                            } else {
-                                merged.push(sb);
-                            }
-                        });
-                        setBookings(merged);
-                        if (currentTab === 'bookings' || currentTab === 'dashboard') {
-                            switchTab(currentTab);
-                        }
-                    }
-                }).catch(e => {});
-        } catch(e) {}
+        // Initial instant sync with server database
+        if (typeof window.syncBookingsWithServer === 'function') {
+            window.syncBookingsWithServer();
+        }
     };
+
+    // Global Server Synchronization Function (Syncs PC & Phone in real-time)
+    window.syncBookingsWithServer = async function() {
+        try {
+            const resp = await fetch('/api/bookings');
+            if (!resp.ok) return;
+            const data = await resp.json();
+            if (data && data.success && Array.isArray(data.bookings)) {
+                if (data.bookings.length > 0) {
+                    const localBks = getBookings();
+                    const sStr = JSON.stringify(data.bookings);
+                    const lStr = JSON.stringify(localBks);
+                    if (sStr !== lStr) {
+                        setBookings(data.bookings);
+                        renderCurrentTabQuietly();
+                    }
+                } else {
+                    // If server database is empty but local has bookings, upload to populate server
+                    const localBks = getBookings();
+                    if (localBks.length > 0) {
+                        fetch('/api/bookings', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ bookings: localBks })
+                        }).catch(e => {});
+                    }
+                }
+            }
+        } catch (e) {}
+    };
+
+    function renderCurrentTabQuietly() {
+        try {
+            if (currentTab === 'dashboard') renderDashboard();
+            else if (currentTab === 'bookings') renderBookings(currentBookingFilter);
+            else if (currentTab === 'calendar') renderCalendar();
+        } catch(e) {}
+    }
+
+    // Auto-sync whenever user returns to browser tab on Phone or PC
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden && typeof window.syncBookingsWithServer === 'function') {
+            window.syncBookingsWithServer();
+        }
+    });
+    window.addEventListener('focus', function() {
+        if (typeof window.syncBookingsWithServer === 'function') {
+            window.syncBookingsWithServer();
+        }
+    });
 
     // Auto initialize if DOM is already loaded or when ready
     if (document.readyState === 'loading') {
