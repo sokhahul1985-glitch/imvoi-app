@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="km">
 <head>
+    <!-- FontAwesome 6 & AutoRent Pro Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/autorent.css?v=20260905_1">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI OCR Passport Scanner & VIP Border Service Receipt System</title>
@@ -1331,7 +1334,11 @@ input[type="date"] {
         body.mode-car #quoteStudioContainer,
         body.mode-visa #quoteStudioContainer,
         body.mode-passport #quoteStudioContainer,
-        body.mode-all #quoteStudioContainer {
+        body.mode-all #quoteStudioContainer,
+        body.mode-car #autoRentManagementContainer,
+        body.mode-visa #autoRentManagementContainer,
+        body.mode-passport #autoRentManagementContainer,
+        body.mode-all #autoRentManagementContainer {
             display: none !important;
             height: 0 !important;
             margin: 0 !important;
@@ -2449,12 +2456,12 @@ input[type="date"] {
                     </button>
                 </div>
 
-                <!-- Card 4: 📄 ផ្នែកស្នើតម្លៃ (Quotation Studio) -->
+                <!-- Card 4: 📄 ការគ្រប់គ្រងការកក់ឡាន (Car Booking Management) -->
                 <div class="portal-card card-quote" onclick="selectServiceCategory('quote')">
                     <div>
                         <div class="portal-card-icon icon-quote">📄</div>
-                        <div class="portal-card-title">ផ្នែកស្នើតម្លៃ</div>
-                        <div class="portal-card-subtitle">Quotation & VIP Studio</div>
+                        <div class="portal-card-title">ការគ្រប់គ្រងការកក់ឡាន</div>
+                        <div class="portal-card-subtitle">Car Booking Management</div>
                         <div class="portal-card-desc">
                             គ្រប់គ្រងសម្រង់តម្លៃ VIP Transfers, តម្លៃឡាន Alphard, HiAce, Staria & Bus តាមផ្លូវភ្នំពេញ-ប៉ោយប៉ែត និងសៀមរាប-ប៉ោយប៉ែត។
                         </div>
@@ -2465,7 +2472,7 @@ input[type="date"] {
                         </ul>
                     </div>
                     <button type="button" class="portal-btn portal-btn-quote" onclick="event.stopPropagation(); selectServiceCategory('quote');">
-                        🚀 ចូលផ្នែកស្នើតម្លៃ (Quotation Studio) ➔
+                        🚀 ចូលការគ្រប់គ្រងការកក់ឡាន (Car Booking) ➔
                     </button>
                 </div>
             </div>
@@ -2628,22 +2635,27 @@ input[type="date"] {
     
 
         <!-- Top Studio Container for Quotation Mode (Car | VIP | Visa Posters) -->
-        <div id="quoteStudioContainer" style="display: none; flex-direction: column; gap: 14px; margin-bottom: 24px; padding: 6px 4px; align-items: center; width: 100%;">
+        <div id="quoteStudioContainer" style="display: none; flex-direction: column; gap: 14px; margin-bottom: 24px; padding: 6px 4px; align-items: stretch; width: 100%;">
             
                         <!-- Top Action Toolbar with Quotation Categories -->
-            <div class="quote-top-bar" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 18px; background: #ffffff; border: 1.5px solid var(--border-color); border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); width: 100%; max-width: 1100px; box-sizing: border-box; flex-wrap: wrap;">
+            <div class="quote-top-bar" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 18px; background: #ffffff; border: 1.5px solid var(--border-color); border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); width: 100%; max-width: 100%; box-sizing: border-box; flex-wrap: wrap;">
                 
                 <!-- Main Category Tabs: Home | Car Quotation | VIP Quotation | Visa Quotation -->
                 <!-- Main Category Tabs: Home | Car Quotation | VIP Quotation | Visa Quotation -->
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                     <button type="button" class="cat-nav-tab home-nav-tab" onclick="showCategorySelectionModal()" style="padding: 8px 16px; font-weight: 800; border-radius: 9px; cursor: pointer; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b;">🏠 ទំព័រដើម</button>
-                    <button type="button" class="cat-nav-tab" id="btnTabQuoteCar" onclick="window.selectQuoteCategoryTab('car', true)" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: #fbbf24; border: 2px solid #f59e0b; font-weight: 900; border-radius: 9px; padding: 8px 18px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35); font-size: 13.5px;">🚗 ស្នើថ្លៃឡាន</button>
-                    <button type="button" class="cat-nav-tab" id="btnTabQuoteVip" onclick="window.selectQuoteCategoryTab('vip', true)" style="background: #ffffff; color: #334155; border: 1.5px solid #cbd5e1; font-weight: 800; border-radius: 9px; padding: 8px 18px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13.5px;">👑 ស្នើ VIP</button>
-                    <button type="button" class="cat-nav-tab" id="btnTabQuoteVisa" onclick="window.selectQuoteCategoryTab('visa', true)" style="background: #ffffff; color: #334155; border: 1.5px solid #cbd5e1; font-weight: 800; border-radius: 9px; padding: 8px 18px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13.5px;">🛂 ស្នើថ្លៃវីសា</button>
+                    <button type="button" class="cat-nav-tab" id="btnTabQuoteAutorent" onclick="window.selectQuoteCategoryTab('autorent', true)" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: #38bdf8; border: 2px solid #0284c7; font-weight: 900; border-radius: 9px; padding: 8px 18px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35); font-size: 13.5px;"><i class="fa-solid fa-car-side" style="color: #38bdf8;"></i> 📋 គ្រប់គ្រងការកក់ឡាន</button>
+                    
+                    <div style="width: 1.5px; height: 26px; background: #cbd5e1; margin: 0 4px;"></div>
+
+                    <!-- ស្ទីកឃើស្នើតម្លៃផ្សេងៗ (ដាក់ខាងក្រោយ) -->
+                    <button type="button" class="cat-nav-tab" id="btnTabQuoteCar" onclick="window.selectQuoteCategoryTab('car', true)" style="background: #ffffff; color: #334155; border: 1.5px solid #cbd5e1; font-weight: 800; border-radius: 9px; padding: 8px 18px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13.5px;">🚗 ស្នើថ្លៃឡាន (Poster)</button>
+                    <button type="button" class="cat-nav-tab" id="btnTabQuoteVip" onclick="window.selectQuoteCategoryTab('vip', true)" style="background: #ffffff; color: #334155; border: 1.5px solid #cbd5e1; font-weight: 800; border-radius: 9px; padding: 8px 18px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13.5px;">👑 ស្នើ VIP (Poster)</button>
+                    <button type="button" class="cat-nav-tab" id="btnTabQuoteVisa" onclick="window.selectQuoteCategoryTab('visa', true)" style="background: #ffffff; color: #334155; border: 1.5px solid #cbd5e1; font-weight: 800; border-radius: 9px; padding: 8px 18px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13.5px;">🛂 ស្នើថ្លៃវីសា (Poster)</button>
                 </div>
 
                 <!-- Right Action Buttons -->
-                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <div id="quoteRightActionsBar" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                     <button type="button" class="btn-sys btn-dark" style="font-size: 12.5px; padding: 8px 14px; font-weight: 800; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="openQuoteSettingsModal()">⚙️ កែប្រែតម្លៃ</button>
                     <button type="button" class="btn-sys btn-indigo" style="font-size: 12.5px; padding: 8px 14px; font-weight: 800; background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(37,99,235,0.3); cursor: pointer;" onclick="copyPosterToClipboard()">📋 Copy រូបភាព</button>
                     <button type="button" class="btn-sys btn-emerald" style="font-size: 12.5px; padding: 8px 14px; font-weight: 800; background: linear-gradient(135deg, #059669, #10b981); color: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(16,185,129,0.3); cursor: pointer;" onclick="downloadPosterImage()">🖼️ ទាញយក PNG</button>
@@ -2651,7 +2663,7 @@ input[type="date"] {
             </div>
 
             <!-- Studio Main 2-Column Split: Poster (Left) & Price Change History Table (Right) -->
-            <div style="display: flex; justify-content: center; align-items: flex-start; gap: 24px; width: 100%; max-width: 1100px; box-sizing: border-box; flex-wrap: wrap; padding: 6px 0;">
+            <div id="quoteStudioSplitRow" style="display: flex; justify-content: center; align-items: flex-start; gap: 24px; width: 100%; max-width: 1100px; box-sizing: border-box; flex-wrap: wrap; padding: 6px 0;">
                 
                                                 <!-- Left Column: 3 Dedicated Quotation Studios (Car | VIP | Visa) -->
                 <!-- 1. Car Transfers Poster Card -->
@@ -2963,11 +2975,9 @@ input[type="date"] {
                 <div style="flex: 1; min-width: 380px; max-width: 540px; background: #ffffff; border: 1.5px solid var(--border-color); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); padding: 18px 20px; box-sizing: border-box;">
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 14px;">
-                        
-                            <div>
-                                <div style="font-size: 14px; font-weight: 800; color: #1e293b;">តារាងកំណត់ត្រាប្រវត្តិប្តូរតម្លៃ</div>
-                                <div style="font-size: 11px; font-weight: 600; color: #64748b;">Price Update & Revision History Log</div>
-                            </div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 800; color: #1e293b;">តារាងកំណត់ត្រាប្រវត្តិប្តូរតម្លៃ</div>
+                            <div style="font-size: 11px; font-weight: 600; color: #64748b;">Price Update & Revision History Log</div>
                         </div>
                         <button type="button" onclick="recordCurrentPriceLog()" style="font-size: 11.5px; font-weight: 800; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; box-shadow: 0 2px 6px rgba(16,185,129,0.3);">💾 កត់ត្រាតម្លៃឥឡូវ</button>
                     </div>
@@ -2997,6 +3007,1144 @@ input[type="date"] {
                 </div>
 
             </div>
+            <!-- =========================================================
+                 AutoRent Pro - Car Rental & Booking Management Workspace
+                 ========================================================= -->
+            <div id="autoRentManagementContainer" style="display: none; width: 100%; max-width: 100%; margin-top: 6px;">
+                <!-- AutoRent Header Bar with Tabs, Search, & Actions -->
+                <div class="ar-header-bar">
+                    <div class="ar-logo-wrap">
+                        <div class="ar-logo-icon"><i class="fa-solid fa-car-side"></i></div>
+                        <div class="ar-logo-text">
+                            <h2>AutoRent <span>Pro</span></h2>
+                            <p>ប្រព័ន្ធគ្រប់គ្រងការជួល និងកក់រថយន្តឆ្លាតវៃ</p>
+                        </div>
+                    </div>
+
+                    <!-- Inner Navigation Tabs -->
+                    <div class="ar-nav-menu">
+                        <button type="button" class="ar-nav-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
+                            <i class="fa-solid fa-chart-pie"></i> <span>ផ្ទាំងសង្ខេប</span>
+                            <span class="badge-count" id="dueTodayBadge" style="display: none;">0</span>
+                        </button>
+                        <button type="button" class="ar-nav-item" data-tab="bookings" onclick="switchTab('bookings')" style="display: none;">
+                            <i class="fa-solid fa-calendar-check"></i> <span>ការកក់/ជួលឡាន</span>
+                            <span class="badge-count" id="activeBookingsCount">0</span>
+                        </button>
+                        <button type="button" class="ar-nav-item" data-tab="cars" onclick="switchTab('cars')" style="display: none;">
+                            <i class="fa-solid fa-car"></i> <span>គ្រប់គ្រងរថយន្ត</span>
+                            <span class="badge-count" id="totalCarsCount" style="background:#0284c7;">0</span>
+                        </button>
+                        <button type="button" class="ar-nav-item" data-tab="customers" onclick="switchTab('customers')">
+                            <i class="fa-solid fa-users"></i> <span>បញ្ជីអតិថិជន</span>
+                        </button>
+                        <button type="button" class="ar-nav-item" data-tab="calendar" onclick="switchTab('calendar')">
+                            <i class="fa-solid fa-calendar-days"></i> <span>ប្រតិទិនជួល</span>
+                        </button>
+                        <button type="button" class="ar-nav-item" data-tab="settings" onclick="switchTab('settings')">
+                            <i class="fa-solid fa-sliders"></i> <span>កំណត់ & Backup</span>
+                        </button>
+                        <button type="button" class="ar-nav-item" onclick="window.selectQuoteCategoryTab('car', true)" style="display: none; background: #fef3c7; color: #b45309; border: 1px solid #fde68a;">
+                            <i class="fa-solid fa-image"></i> <span>ស្ទីកឃើស្នើតម្លៃ (Posters)</span>
+                        </button>
+                    </div>
+
+                    <!-- Top Right Quick Actions -->
+                    <div class="ar-top-actions">
+                        <button type="button" class="btn-ar btn-ar-primary" onclick="openNewBookingModal()">
+                            <i class="fa-solid fa-plus"></i> កក់ឡានថ្មី
+                        </button>
+                        <button type="button" class="btn-ar btn-ar-telegram" style="font-weight: 800; display: inline-flex; align-items: center; gap: 6px;" onclick="fetchAndFillLatestTelegramMessage()">
+                            <i class="fa-brands fa-telegram"></i> <span>ទាញសារពី Bot ចូលបង្កើតថ្មី</span>
+                        </button>
+                        <button type="button" class="btn-ar btn-ar-outline" onclick="openModal('telegramInboxModal'); renderTelegramInboxList();" style="position: relative;">
+                            <i class="fa-brands fa-telegram text-info"></i> Telegram Inbox
+                            <span id="topBarTgCountBadge" class="badge" style="display: none; background: #0284c7; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 800; margin-left: 4px;">0</span>
+                        </button>
+                        <a href="https://t.me/car_rent_sokha88_bot" target="_blank" class="btn-ar btn-ar-outline" style="color:#0088cc; font-weight:700;">
+                            <i class="fa-solid fa-robot"></i> @car_rent_sokha88_bot
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 1. DASHBOARD TAB VIEW -->
+                <div class="tab-view active" id="ar-view-dashboard">
+                    <!-- 4 Quick Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card total-cars" onclick="switchTab('bookings')">
+                            <div class="stat-icon"><i class="fa-solid fa-car-side"></i></div>
+                            <div class="stat-meta">
+                                <p>ឡានចេញថ្ងៃនេះ</p>
+                                <h3 id="statTodayDepartCars">0</h3>
+                                <span class="stat-sub text-primary" id="statTodayDepartSub">0 គ្រឿង</span>
+                            </div>
+                        </div>
+                        <div class="stat-card active-rentals" onclick="switchTab('bookings')">
+                            <div class="stat-icon"><i class="fa-solid fa-car"></i></div>
+                            <div class="stat-meta">
+                                <p>ឡានចូលថ្ងៃនេះ</p>
+                                <h3 id="statTodayArriveCars">0</h3>
+                                <span class="stat-sub text-success" id="statTodayArriveSub">0 គ្រឿង</span>
+                            </div>
+                        </div>
+                        <div class="stat-card due-today" onclick="switchTab('bookings')">
+                            <div class="stat-icon"><i class="fa-solid fa-plane-departure"></i></div>
+                            <div class="stat-meta">
+                                <p>ជើងចេញថ្ងៃនេះ</p>
+                                <h3 id="statDueToday">0</h3>
+                                <span class="stat-sub text-warning" id="statOverdueText">ជើងទទួលភ្ញៀវ</span>
+                            </div>
+                        </div>
+                        <div class="stat-card available-cars" onclick="switchTab('cars')">
+                            <div class="stat-icon"><i class="fa-solid fa-square-parking"></i></div>
+                            <div class="stat-meta">
+                                <p>ឡានទំនេរក្នុងស្តុក</p>
+                                <h3 id="statAvailableCars">0</h3>
+                                <span class="stat-sub text-info">ត្រៀមចេញដំណើរ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Today's Trips Card -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-calendar-day text-primary" style="font-size: 1.3rem;"></i>
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <h3 id="dashScheduleCardTitle">កាលវិភាគចេញដំណើរថ្ងៃនេះ (Today's Trips)</h3>
+                                        <button type="button" class="btn-ar btn-ar-primary" style="padding: 4px 10px; font-size: 11.5px;" onclick="openNewBookingModal()">
+                                            <i class="fa-solid fa-plus"></i> កក់ឡានថ្មី
+                                        </button>
+                                    </div>
+                                    <p style="margin: 0; font-size: 11px; color: #64748b;" id="dashScheduleCardSub">ជើងឡានដែលត្រូវចេញដំណើរ និងទទួលភ្ញៀវទាំងអស់ក្នុងថ្ងៃនេះ</p>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="badge-pill bg-primary" id="todayScheduleCount" style="padding: 4px 10px; border-radius: 12px; background: #e0f2fe; color: #0369a1; font-weight: 800; font-size: 12px;">0 ជើង</span>
+                                <button type="button" class="btn-ar btn-ar-outline" onclick="switchTab('bookings')">
+                                    មើលការកក់ទាំងអស់ <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filter Tabs in Dashboard (ផ្ទាំងសង្ខេប) -->
+                        <div class="filter-toolbar" style="margin: 8px 14px 4px 14px; padding-bottom: 6px; border-bottom: 1px solid #f1f5f9;">
+                            <div class="filter-tabs" id="dashScheduleTabs">
+                                <button type="button" class="filter-tab" data-dash-filter="all" onclick="setDashboardScheduleFilter('all')">ទាំងអស់ (<span id="dashCountAll">0</span>)</button>
+                                <button type="button" class="filter-tab active" data-dash-filter="dueToday" onclick="setDashboardScheduleFilter('dueToday')">🕒 ថ្ងៃនេះ (<span id="dashCountToday">0</span>)</button>
+                                <button type="button" class="filter-tab" data-dash-filter="tomorrow" onclick="setDashboardScheduleFilter('tomorrow')">🌅 ថ្ងៃស្អែក (<span id="dashCountTomorrow">0</span>)</button>
+                                <button type="button" class="filter-tab" data-dash-filter="upcoming" onclick="setDashboardScheduleFilter('upcoming')">កក់ទុកមុន (<span id="dashCountUpcoming">0</span>)</button>
+                                <button type="button" class="filter-tab" data-dash-filter="completed" onclick="setDashboardScheduleFilter('completed')">បានបញ្ចប់ (<span id="dashCountCompleted">0</span>)</button>
+                            </div>
+                            <div class="filter-search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="dashScheduleSearch" oninput="renderDashboard()" placeholder="ស្វែងរកក្នុងតារាងកក់...">
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th style="min-width: 140px;"><i class="fa-regular fa-clock text-primary"></i> ម៉ោង / កាលបរិច្ឆេទ</th>
+                                        <th style="min-width: 160px;"><i class="fa-solid fa-user text-primary"></i> ភ្ញៀវ / អ្នកកក់</th>
+                                        <th style="min-width: 180px;"><i class="fa-solid fa-car text-primary"></i> ប្រភេទរថយន្ត</th>
+                                        <th style="min-width: 200px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅធ្វើដំណើរ (Route)</th>
+                                        <th style="width: 130px; text-align: center;"><i class="fa-brands fa-telegram text-info"></i> តេលេក្រាមភ្ញៀវ</th>
+                                        <th style="width: 130px; text-align: center;"><i class="fa-brands fa-telegram text-primary"></i> តេលេក្រាមតៃកុង</th>
+                                        <th style="width: 120px; text-align: center;"><i class="fa-solid fa-sliders text-primary"></i> សកម្មភាព</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="todayActionList"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. BOOKINGS TAB VIEW -->
+                <div class="tab-view" id="ar-view-bookings">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #0f172a;">គ្រប់គ្រងការកក់ និងជួលឡាន (Bookings)</h3>
+                            <p style="margin: 0; font-size: 12px; color: #64748b;">តាមដានកិច្ចសន្យាជួល រូបថតឯកសារភ្ញៀវ ស្ថានភាពឡាន និងកាលបរិច្ឆេទ</p>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" class="btn-ar btn-ar-outline" onclick="handleExportBookingsCsv()">
+                                <i class="fa-solid fa-file-excel text-success"></i> Export Excel
+                            </button>
+                            <button type="button" class="btn-ar btn-ar-primary" onclick="openNewBookingModal()">
+                                <i class="fa-solid fa-plus"></i> បង្កើតការកក់ថ្មី
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Toolbar -->
+                    <div class="filter-toolbar">
+                        <div class="filter-tabs">
+                            <button type="button" class="filter-tab active" data-filter="all" onclick="setBookingFilter('all')">ទាំងអស់ (<span id="countFilterAll">0</span>)</button>
+                            <button type="button" class="filter-tab" data-filter="dueToday" onclick="setBookingFilter('dueToday')">🕒 ថ្ងៃនេះ (<span id="countFilterDueToday">0</span>)</button>
+                            <button type="button" class="filter-tab" data-filter="tomorrow" onclick="setBookingFilter('tomorrow')">🌅 ថ្ងៃស្អែក (<span id="countFilterTomorrow">0</span>)</button>
+                            <button type="button" class="filter-tab" data-filter="upcoming" onclick="setBookingFilter('upcoming')">កក់ទុកមុន (<span id="countFilterUpcoming">0</span>)</button>
+                            <button type="button" class="filter-tab" data-filter="completed" onclick="setBookingFilter('completed')">បានបញ្ចប់ (<span id="countFilterCompleted">0</span>)</button>
+                        </div>
+                        <div class="filter-search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="bookingFilterSearch" placeholder="ស្វែងរកក្នុងតារាងកក់...">
+                        </div>
+                    </div>
+
+                    <!-- Bookings Table -->
+                    <div class="dashboard-card">
+                        <div class="table-responsive">
+                            <table class="schedule-table" id="bookingsTable">
+                                <thead>
+                                    <tr>
+                                        <th style="min-width: 140px;"><i class="fa-regular fa-clock text-primary"></i> ម៉ោង / កាលបរិច្ឆេទ</th>
+                                        <th style="min-width: 160px;"><i class="fa-solid fa-user text-primary"></i> ភ្ញៀវ / អ្នកកក់</th>
+                                        <th style="min-width: 180px;"><i class="fa-solid fa-car text-primary"></i> ប្រភេទរថយន្ត</th>
+                                        <th style="min-width: 200px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅធ្វើដំណើរ (Route)</th>
+                                        <th style="width: 130px; text-align: center;"><i class="fa-brands fa-telegram text-info"></i> តេលេក្រាមភ្ញៀវ</th>
+                                        <th style="width: 130px; text-align: center;"><i class="fa-brands fa-telegram text-primary"></i> តេលេក្រាមតៃកុង</th>
+                                        <th style="width: 120px; text-align: center;"><i class="fa-solid fa-sliders text-primary"></i> សកម្មភាព</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bookingsGrid"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. CARS FLEET TAB VIEW -->
+                <div class="tab-view" id="ar-view-cars">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.25rem; font-weight: 900; color: #0f172a;">គ្រប់គ្រងរថយន្ត និងកាលវិភាគជួល (Cars Fleet & Schedule)</h3>
+                            <p style="margin: 0; font-size: 12.5px; color: #64748b;">ព័ត៌មានឡាន រូបភាព តម្លៃជួល និងកាលវិភាគកក់ឡាន (ទាំងមុន ពេលនេះ និងក្រោយ)</p>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <div style="background: #e2e8f0; padding: 3px; border-radius: 8px; display: inline-flex; border: 1px solid #cbd5e1;">
+                                <button type="button" class="btn-ar" id="carViewToggleCards" onclick="setCarFleetViewMode('cards')" style="padding: 6px 13px; font-size: 12px; font-weight: 800; border-radius: 6px; background: #0284c7; color: #fff; border: none; cursor: pointer; transition: all 0.15s ease;">
+                                    <i class="fa-solid fa-grip"></i> ប្លង់កាតរថយន្ត
+                                </button>
+                                <button type="button" class="btn-ar" id="carViewToggleSchedule" onclick="setCarFleetViewMode('schedule')" style="padding: 6px 13px; font-size: 12px; font-weight: 800; border-radius: 6px; background: transparent; color: #475569; border: none; cursor: pointer; transition: all 0.15s ease;">
+                                    <i class="fa-solid fa-table-list"></i> តារាងកាលវិភាគកក់ឡាន
+                                </button>
+                            </div>
+                            <button type="button" class="btn-ar btn-ar-primary" onclick="openNewCarModal()" style="font-weight: 800;">
+                                <i class="fa-solid fa-plus"></i> បញ្ចូលរថយន្តថ្មី
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3.1 CARD VIEW CONTAINER -->
+                    <div id="carCardsViewContainer">
+                        <!-- Car Filters -->
+                        <div class="filter-toolbar">
+                            <div class="filter-tabs">
+                                <button type="button" class="filter-tab active" data-car-filter="all" onclick="setCarFilter('all')">ឡានទាំងអស់</button>
+                                <button type="button" class="filter-tab" data-car-filter="suv" onclick="setCarFilter('suv')">🚙 ឡានអេសយូវី</button>
+                                <button type="button" class="filter-tab" data-car-filter="alphard" onclick="setCarFilter('alphard')">👑 អាល់ផាត</button>
+                                <button type="button" class="filter-tab" data-car-filter="starex" onclick="setCarFilter('starex')">🚐 ស្តារេច</button>
+                                <button type="button" class="filter-tab" data-car-filter="hiace" onclick="setCarFilter('hiace')">🚌 ហៃយាស់</button>
+                                <button type="button" class="filter-tab" data-car-filter="bus" onclick="setCarFilter('bus')">🚍 ឡានក្រុង</button>
+                                <button type="button" class="filter-tab" data-car-filter="available" onclick="setCarFilter('available')">ទំនេរស្រាប់</button>
+                                <button type="button" class="filter-tab" data-car-filter="rented" onclick="setCarFilter('rented')">កំពុងជួល</button>
+                                <button type="button" class="filter-tab" data-car-filter="maintenance" onclick="setCarFilter('maintenance')">ជួសជុល</button>
+                            </div>
+                            <div class="filter-search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="carFilterSearch" placeholder="ស្វែងរកតាម ម៉ាក ឬស្លាកលេខ...">
+                            </div>
+                        </div>
+
+                        <!-- Cars Grid -->
+                        <div class="cars-grid" id="carsGrid"></div>
+                    </div>
+
+                    <!-- 3.2 SCHEDULE TABLE VIEW CONTAINER (HIDDEN BY DEFAULT) -->
+                    <div id="carScheduleViewContainer" style="display: none;">
+                        <div class="filter-toolbar">
+                            <div class="filter-tabs" id="fleetScheduleTabs">
+                                <button type="button" class="filter-tab active" id="fleetSchedTabAll" onclick="setFleetScheduleFilter('all')">ការកក់ទាំងអស់ (<span id="fleetSchedCntAll">0</span>)</button>
+                                <button type="button" class="filter-tab" id="fleetSchedTabToday" onclick="setFleetScheduleFilter('today')" style="color: #0369a1; font-weight: 800;">🕒 ពេលនេះ / ថ្ងៃនេះ (<span id="fleetSchedCntToday">0</span>)</button>
+                                <button type="button" class="filter-tab" id="fleetSchedTabUpcoming" onclick="setFleetScheduleFilter('upcoming')" style="color: #15803d; font-weight: 800;">⏩ ពេលក្រោយ / ខាងមុខ (<span id="fleetSchedCntUpcoming">0</span>)</button>
+                                <button type="button" class="filter-tab" id="fleetSchedTabPast" onclick="setFleetScheduleFilter('past')" style="color: #64748b; font-weight: 800;">⏪ ពីមុន / បានបញ្ចប់ (<span id="fleetSchedCntPast">0</span>)</button>
+                            </div>
+                            <div class="filter-search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="fleetScheduleSearch" oninput="renderCarScheduleTable()" placeholder="ស្វែងរកតាម ម៉ាកឡាន ស្លាកលេខ ឬឈ្មោះភ្ញៀវ...">
+                            </div>
+                        </div>
+                        <div class="dashboard-card" style="margin-top: 10px;">
+                            <div class="table-responsive">
+                                <table class="schedule-table" id="fleetScheduleTable">
+                                    <thead>
+                                        <tr>
+                                            <th style="min-width: 140px;"><i class="fa-regular fa-clock text-primary"></i> ម៉ោង / កាលបរិច្ឆេទ</th>
+                                            <th style="min-width: 160px;"><i class="fa-solid fa-car text-primary"></i> រថយន្ត & ស្លាកលេខ</th>
+                                            <th style="min-width: 120px; text-align: center;"><i class="fa-solid fa-hourglass-half text-primary"></i> កាលកំណត់</th>
+                                            <th style="min-width: 160px;"><i class="fa-solid fa-user text-primary"></i> ភ្ញៀវ / អ្នកកក់</th>
+                                            <th style="min-width: 200px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅ (Route)</th>
+                                            <th style="min-width: 140px;"><i class="fa-solid fa-star text-warning"></i> សេវាបន្ថែម</th>
+                                            <th style="min-width: 130px; text-align: center;"><i class="fa-brands fa-telegram text-primary"></i> តៃកុង</th>
+                                            <th style="width: 120px; text-align: center;"><i class="fa-solid fa-sliders text-primary"></i> សកម្មភាព</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="fleetScheduleTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. CUSTOMERS DIRECTORY TAB VIEW -->
+                <div class="tab-view" id="ar-view-customers">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #0f172a;">បញ្ជីអតិថិជន (Customers Directory)</h3>
+                            <p style="margin: 0; font-size: 12px; color: #64748b;">ប្រវត្តិភ្ញៀវ រូបថតអត្តសញ្ញាណប័ណ្ណ លិខិតឆ្លងដែន និងលេខទំនាក់ទំនង</p>
+                        </div>
+                        <button type="button" class="btn-ar btn-ar-primary" onclick="openNewCustomerModal()">
+                            <i class="fa-solid fa-user-plus"></i> បន្ថែមអតិថិជនថ្មី
+                        </button>
+                    </div>
+
+                    <div class="filter-toolbar">
+                        <div class="filter-search-box" style="max-width: 100%;">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="customerSearchInput" placeholder="ស្វែងរកតាមឈ្មោះភ្ញៀវ ឬលេខទូរស័ព្ទ...">
+                        </div>
+                    </div>
+
+                    <div class="customers-grid" id="customersGrid"></div>
+                </div>
+
+                <!-- 5. CALENDAR TAB VIEW -->
+                <div class="tab-view" id="ar-view-calendar">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #0f172a;">ប្រតិទិនជួលឡាន (Booking Calendar)</h3>
+                            <p style="margin: 0; font-size: 12px; color: #64748b;">ពិនិត្យកាលវិភាគការកក់ប្រចាំខែ ងាយស្រួលដឹងថ្ងៃចេញ និងថ្ងៃចូល</p>
+                        </div>
+                        <div class="calendar-controls">
+                            <button type="button" class="btn-ar btn-ar-outline" onclick="calPrevMonth()"><i class="fa-solid fa-chevron-left"></i></button>
+                            <h3 id="calMonthTitle" style="margin: 0; font-size: 1.1rem; font-weight: 800;">ខែ កញ្ញា ២០២៦</h3>
+                            <button type="button" class="btn-ar btn-ar-outline" onclick="calNextMonth()"><i class="fa-solid fa-chevron-right"></i></button>
+                            <button type="button" class="btn-ar btn-ar-outline" onclick="calGoToday()">ថ្ងៃនេះ</button>
+                        </div>
+                    </div>
+
+                    <div class="calendar-wrapper">
+                        <div class="calendar-legend">
+                            <span class="legend-item"><span class="legend-dot bg-success"></span> កំពុងជួល</span>
+                            <span class="legend-item"><span class="legend-dot bg-warning"></span> ត្រូវប្រគល់</span>
+                            <span class="legend-item"><span class="legend-dot bg-danger"></span> ហួសថ្ងៃ</span>
+                            <span class="legend-item"><span class="legend-dot bg-info"></span> កក់ទុកមុន</span>
+                        </div>
+                        <div class="calendar-grid-header">
+                            <div>អាទិត្យ</div><div>ច័ន្ទ</div><div>អង្គារ</div><div>ពុធ</div><div>ព្រហស្បតិ៍</div><div>សុក្រ</div><div>សៅរ៍</div>
+                        </div>
+                        <div class="calendar-days-grid" id="calendarDaysGrid"></div>
+                    </div>
+                </div>
+
+                <!-- 6. SETTINGS & BACKUP TAB VIEW -->
+                <div class="tab-view" id="ar-view-settings">
+                    <div style="margin-bottom: 14px;">
+                        <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #0f172a;">ការកំណត់ និងទិន្នន័យបម្រុង (Data Backup & Settings)</h3>
+                        <p style="margin: 0; font-size: 12px; color: #64748b;">ការពារទិន្នន័យរបស់អ្នកកុំឱ្យបាត់បង់ Export/Import និងការប្រើប្រាស់</p>
+                    </div>
+
+                    <div class="settings-grid">
+                        <!-- Backup Card -->
+                        <div class="ar-card">
+                            <div class="ar-card-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-database text-primary"></i>
+                                    <h3>រក្សាទុក និងការពារទិន្នន័យ (Data Backup & Restore)</h3>
+                                </div>
+                            </div>
+                            <div style="padding: 16px;">
+                                <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">អ្នកអាចទាញយកទិន្នន័យទាំងអស់ទុកក្នុងកុំព្យូទ័រ ដើម្បីសុវត្ថិភាពខ្ពស់បំផុត។</p>
+                                <div class="backup-actions-row">
+                                    <button type="button" class="btn-ar btn-ar-primary" onclick="handleExportBackup()">
+                                        <i class="fa-solid fa-download"></i> ទាញយក Backup ទាំងអស់ (JSON)
+                                    </button>
+                                    <button type="button" class="btn-ar btn-ar-outline" onclick="handleExportBookingsCsv()">
+                                        <i class="fa-solid fa-file-csv text-success"></i> Export CSV
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Telegram Bot Integration -->
+                        <div class="ar-card" style="border-color: #0088cc;">
+                            <div class="ar-card-header" style="background: rgba(0, 136, 204, 0.08);">
+                                <div class="card-title">
+                                    <i class="fa-brands fa-telegram" style="color: #0088cc; font-size: 1.4rem;"></i>
+                                    <h3>ការភ្ជាប់ Telegram Bot</h3>
+                                </div>
+                                <span class="badge-pill bg-success" style="padding: 2px 8px; border-radius: 10px; font-size: 11px; color: #ffffff;">Bot Online</span>
+                            </div>
+                            <div style="padding: 16px;">
+                                <p style="font-size: 12px; color: #64748b; margin-bottom: 10px;">
+                                    Bot ទទួលសារ និងរូបភាពពីភ្ញៀវ ឬ Forward សារចូល៖
+                                </p>
+                                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                                    <input type="text" class="form-control" value="8884318593:AAEipEVki9o1YFL0_8IYoUeSn3Xif4dlVOk" readonly style="background: #f1f5f9; font-weight: bold;">
+                                    <a href="https://t.me/car_rent_sokha88_bot" target="_blank" class="btn-ar btn-ar-telegram text-nowrap"><i class="fa-brands fa-telegram"></i> បើក Bot</a>
+                                </div>
+                                <div style="font-size: 11.5px; color: #15803d; font-weight: 700;">
+                                    <i class="fa-solid fa-circle-check"></i> កំពុងដំណើរការ ៖ @car_rent_sokha88_bot
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Demo & Reset Card -->
+                        <div class="ar-card">
+                            <div class="ar-card-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-arrows-rotate text-warning"></i>
+                                    <h3>ទិន្នន័យគំរូ និងការសម្អាត (Demo Data & Reset)</h3>
+                                </div>
+                            </div>
+                            <div style="padding: 16px;">
+                                <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">អ្នកអាចផ្ទុកទិន្នន័យគំរូដើម្បីសាកល្បង ឬសម្អាតដើម្បីចាប់ផ្តើមថ្មី។</p>
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                    <button type="button" class="btn-ar btn-ar-outline" onclick="handleResetDemo()"><i class="fa-solid fa-wand-magic-sparkles text-primary"></i> ផ្ទុកទិន្នន័យគំរូ</button>
+                                    <button type="button" class="btn-ar btn-ar-outline text-danger" onclick="handleClearAll()"><i class="fa-solid fa-trash-can"></i> សម្អាតទិន្នន័យទាំងអស់</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 AutoRent Modals (New Booking, Details, Car, Customer, etc.)
+                 ========================================================= -->
+
+            <!-- 1. NEW / EDIT BOOKING MODAL -->
+            <div class="modal-backdrop" id="bookingModal">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-header">
+                        <h3 id="bookingModalTitle"><i class="fa-solid fa-calendar-plus text-primary"></i> បង្កើតការកក់ និងជួលឡានថ្មី</h3>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button type="button" class="btn-ar btn-ar-primary" onclick="handleSaveBookingDirect()"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុក</button>
+                            <button type="button" class="modal-close-btn" onclick="closeModal('bookingModal')"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <form id="bookingForm" onsubmit="handleSaveBooking(event); return false;">
+                        <input type="hidden" id="bookingId">
+                        <div class="modal-body">
+                            <div class="booking-modal-grid">
+                                <!-- Left Column: Form -->
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <b style="color: #0f172a; font-size: 13px;"><i class="fa-solid fa-car-side text-primary"></i> ១. ជ្រើសរើសរថយន្ត</b>
+                                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 3px 8px; font-size: 11px;" onclick="addBookingModalExtraCarSlot()">
+                                            <i class="fa-solid fa-plus text-primary"></i> ថែមឡាន
+                                        </button>
+                                    </div>
+
+                                    <!-- 4 Initial Slots -->
+                                    <div class="form-row-4 mb-2">
+                                        <div class="form-group">
+                                            <label>🚗 ឡានទី ១ <span class="text-danger">*</span></label>
+                                            <select id="bookingCarSelect" required class="form-control font-weight-bold"></select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>🚗 ឡានទី ២</label>
+                                            <select id="bookingCarSelect2" class="form-control font-weight-bold"></select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>🚗 ឡានទី ៣</label>
+                                            <select id="bookingCarSelect3" class="form-control font-weight-bold"></select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>🚗 ឡានទី ៤</label>
+                                            <select id="bookingCarSelect4" class="form-control font-weight-bold"></select>
+                                        </div>
+                                    </div>
+
+                                    <div id="bookingExtraCarSlotsContainer"></div>
+
+                                    <!-- Customer & Service Bar -->
+                                    <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 9px; padding: 10px; margin-bottom: 12px;">
+                                        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
+                                            <div style="flex: 1.2; min-width: 150px;">
+                                                <label style="font-size: 11px; font-weight: 700; color: #0284c7;">👤 ឈ្មោះភ្ញៀវ * :</label>
+                                                <input type="text" id="bookingCustomerName" required class="form-control font-weight-bold" placeholder="ឈ្មោះភ្ញៀវ..." oninput="if(typeof validateBookingCustomerName==='function') validateBookingCustomerName();">
+                                                <div id="bookingCustomerNameError" style="display: none; color: #dc2626; font-size: 11px; font-weight: 800; margin-top: 3px;">
+                                                    <i class="fa-solid fa-triangle-exclamation"></i> សូមបញ្ចូលឈ្មោះភ្ញៀវជាមុនសិន! មិនអាចសេវបានទេ។
+                                                </div>
+                                            </div>
+                                            <div style="flex: 1.1; min-width: 145px;">
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                                                    <label style="font-size: 11px; font-weight: 700; margin: 0;">ភ្ញៀវចាស់ :</label>
+                                                    <button type="button" class="btn-ar" style="padding: 1px 7px; font-size: 10px; font-weight: 800; background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;" onclick="openQuickAddCustomerModal()" title="ចុចដើម្បីបញ្ចូលភ្ញៀវថ្មី">
+                                                        <i class="fa-solid fa-user-plus text-primary"></i> + ភ្ញៀវថ្មី
+                                                    </button>
+                                                </div>
+                                                <select id="bookingCustomerSelect" class="form-control font-weight-bold" onchange="handleCustomerDropdownChange(this)"></select>
+                                            </div>
+                                            <div style="flex: 1; min-width: 125px;">
+                                                <label style="font-size: 11px; font-weight: 700; color: #0f172a;"><i class="fa-solid fa-phone text-primary"></i> លេខទូរស័ព្ទ :</label>
+                                                <input type="text" id="bookingCustomerPhone" class="form-control font-weight-bold" placeholder="012 345 678">
+                                            </div>
+                                            <div style="flex: 1; min-width: 130px;">
+                                                <label style="font-size: 11px; font-weight: 700;"><i class="fa-brands fa-telegram text-info"></i> Telegram ភ្ញៀវ :</label>
+                                                <input type="text" id="bookingTelegramLink" class="form-control" placeholder="@username">
+                                            </div>
+                                            <div style="flex: 1; min-width: 130px;">
+                                                <label style="font-size: 11px; font-weight: 700;"><i class="fa-brands fa-telegram text-primary"></i> ឆាតតៃកុង :</label>
+                                                <input type="text" id="bookingDriverTelegram" class="form-control" placeholder="@driver">
+                                            </div>
+                                            <div style="min-width: 95px;">
+                                                <label style="font-size: 11px; font-weight: 700; color: #d97706;">⭐ VIP :</label>
+                                                <select id="bookingVipService" class="form-control font-weight-bold">
+                                                    <option value="">-- មិនយក --</option>
+                                                    <option value="យក VIP">⭐ យក VIP</option>
+                                                </select>
+                                            </div>
+                                            <div style="min-width: 95px;">
+                                                <label style="font-size: 11px; font-weight: 700; color: #16a34a;">🚀 ក្លៀដាន :</label>
+                                                <select id="bookingBorderClear" class="form-control font-weight-bold">
+                                                    <option value="">-- មិនយក --</option>
+                                                    <option value="យកក្លៀដាន">🚀 យកក្លៀដាន</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Route & Date / Time -->
+                                    <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 9px; padding: 10px;">
+                                        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
+                                            <div style="flex: 1; min-width: 110px;">
+                                                <label style="font-size: 11px; font-weight: 700; color: #0284c7;">📍 យកពី :</label>
+                                                <select id="bookingPickupLoc" class="form-control font-weight-bold" style="background:#0284c7;color:#fff;">
+                                                    <option value="ប៉ោយប៉ែត" selected>📍 ប៉ោយប៉ែត</option>
+                                                    <option value="ភ្នំពេញ">📍 ភ្នំពេញ</option>
+                                                    <option value="សៀមរាប">📍 សៀមរាប</option>
+                                                    <option value="តេជោ">📍 តេជោ</option>
+                                                </select>
+                                            </div>
+                                            <button type="button" class="btn-ar btn-ar-outline" style="height: 34px; padding: 0 10px;" onclick="swapFormLocations()" title="ផ្លាស់ប្តូរទីតាំង (Swap)">
+                                                <i class="fa-solid fa-arrows-rotate"></i>
+                                            </button>
+                                            <div style="flex: 1; min-width: 110px;">
+                                                <label style="font-size: 11px; font-weight: 700; color: #dc2626;">🏁 ជូនទៅ :</label>
+                                                <select id="bookingDropoffLoc" class="form-control font-weight-bold" style="background:#dc2626;color:#fff;">
+                                                    <option value="ភ្នំពេញ" selected>📍 ភ្នំពេញ</option>
+                                                    <option value="ប៉ោយប៉ែត">📍 ប៉ោយប៉ែត</option>
+                                                    <option value="សៀមរាប">📍 សៀមរាប</option>
+                                                    <option value="តេជោ">📍 តេជោ</option>
+                                                </select>
+                                            </div>
+                                            <div style="flex: 1; min-width: 120px;">
+                                                <label style="font-size: 11px; font-weight: 700;">📅 ថ្ងៃចេញ :</label>
+                                                <input type="date" id="bookingDate" required class="form-control font-weight-bold">
+                                            </div>
+                                            <div style="flex: 1; min-width: 120px;">
+                                                <label style="font-size: 11px; font-weight: 700;">⏰ ម៉ោង :</label>
+                                                <select id="bookingTime" required class="form-control font-weight-bold text-primary">
+                                                    <option value="01:00">01:00 (១ យប់)</option>
+                                                    <option value="02:00">02:00 (២ យប់)</option>
+                                                    <option value="03:00">03:00 (៣ យប់)</option>
+                                                    <option value="04:00">04:00 (៤ ភ្លឺ)</option>
+                                                    <option value="05:00">05:00 (៥ ព្រឹក)</option>
+                                                    <option value="06:00">06:00 (៦ ព្រឹក)</option>
+                                                    <option value="07:00">07:00 (៧ ព្រឹក)</option>
+                                                    <option value="08:00" selected>08:00 (៨ ព្រឹក)</option>
+                                                    <option value="09:00">09:00 (៩ ព្រឹក)</option>
+                                                    <option value="10:00">10:00 (១០ ព្រឹក)</option>
+                                                    <option value="11:00">11:00 (១១ ព្រឹក)</option>
+                                                    <option value="12:00">12:00 (១២ ថ្ងៃត្រង់)</option>
+                                                    <option value="13:00">13:00 (១ រសៀល)</option>
+                                                    <option value="14:00">14:00 (២ រសៀល)</option>
+                                                    <option value="15:00">15:00 (៣ រសៀល)</option>
+                                                    <option value="16:00">16:00 (៤ ល្ងាច)</option>
+                                                    <option value="17:00">17:00 (៥ ល្ងាច)</option>
+                                                    <option value="18:00">18:00 (៦ ល្ងាច)</option>
+                                                    <option value="19:00">19:00 (៧ យប់)</option>
+                                                    <option value="20:00">20:00 (៨ យប់)</option>
+                                                    <option value="21:00">21:00 (៩ យប់)</option>
+                                                    <option value="22:00">22:00 (១០ យប់)</option>
+                                                    <option value="23:00">23:00 (១១ យប់)</option>
+                                                    <option value="24:00">24:00 (១២ អធ្រាត្រ)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 8px;">
+                                        <label style="font-size: 11px; font-weight: 700; color: #475569;">📝 ចំណាំបន្ថែម (Flight / Map / Dropoff Note) :</label>
+                                        <input type="text" id="bookingNotes" class="form-control font-weight-bold" placeholder="ព័ត៌មានជើងហោះហើរ ទីតាំងទម្លាក់ជាក់ស្តែង ឬ Link Google Maps...">
+                                    </div>
+
+                                    <!-- Document & Photo Attachments (Passport, Flight Ticket, Car, Other) -->
+                                    <div id="bookingPhotosSection" style="margin-top: 10px; background: #ffffff; border: 1.5px dashed #93c5fd; border-radius: 9px; padding: 10px; transition: all 0.2s ease;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 6px;">
+                                                <b style="color: #0369a1; font-size: 11.5px; display: flex; align-items: center; gap: 5px;">
+                                                    <i class="fa-solid fa-camera-retro text-primary"></i> ឯកសារ & រូបភាព (ប៉ាស្ព័រ, សំបុត្រហោះហើរ, ឡាន...) :
+                                                </b>
+                                                <span id="bookingPhotoCountBadge" class="badge" style="display: none; background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; font-size: 10px; font-weight: 800; padding: 2px 6px;">0 រូប</span>
+                                            </div>
+                                            <div style="display: flex; gap: 5px; align-items: center;">
+                                                <label class="btn-ar btn-ar-outline" style="font-size: 11px; padding: 3px 8px; margin: 0; cursor: pointer; background: #f0f9ff; border-color: #38bdf8; color: #0284c7; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">
+                                                    <i class="fa-solid fa-cloud-arrow-up"></i> ជ្រើសរើសរូប
+                                                    <input type="file" id="bookingImageFileInput" multiple accept="image/*" style="display: none;" onchange="handleBookingImageUpload(event)">
+                                                </label>
+                                                <button type="button" class="btn-ar btn-ar-outline" style="font-size: 11px; padding: 3px 8px; background: #fff; border-color: #cbd5e1; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" onclick="handlePasteImageFromClipboard()" title="Paste រូបភាពពី Clipboard ឬចុច Ctrl+V">
+                                                    <i class="fa-solid fa-clipboard"></i> Paste រូប
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Quick category pills -->
+                                        <div style="display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; align-items: center;">
+                                            <span style="font-size: 10px; color: #64748b; font-weight: 700;">ប្រភេទរូប៖</span>
+                                            <button type="button" class="photo-cat-btn" data-cat="ប៉ាស្ព័រ" onclick="setActivePhotoCategory('ប៉ាស្ព័រ', this)" style="border: 1px solid #3b82f6; background: #eff6ff; color: #1d4ed8; font-size: 10.5px; padding: 2px 7px; cursor: pointer; border-radius: 4px; font-weight: 800;">
+                                                🛂 ប៉ាស្ព័រ
+                                            </button>
+                                            <button type="button" class="photo-cat-btn" data-cat="សំបុត្រយន្តហោះ" onclick="setActivePhotoCategory('សំបុត្រយន្តហោះ', this)" style="border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-size: 10.5px; padding: 2px 7px; cursor: pointer; border-radius: 4px; font-weight: 700;">
+                                                ✈️ សំបុត្រហោះហើរ
+                                            </button>
+                                            <button type="button" class="photo-cat-btn" data-cat="រូបឡាន" onclick="setActivePhotoCategory('រូបឡាន', this)" style="border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-size: 10.5px; padding: 2px 7px; cursor: pointer; border-radius: 4px; font-weight: 700;">
+                                                🚗 រូបឡាន
+                                            </button>
+                                            <button type="button" class="photo-cat-btn" data-cat="ផ្សេងៗ" onclick="setActivePhotoCategory('ផ្សេងៗ', this)" style="border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-size: 10.5px; padding: 2px 7px; cursor: pointer; border-radius: 4px; font-weight: 700;">
+                                                📄 ផ្សេងៗ
+                                            </button>
+                                        </div>
+
+                                        <!-- Drag & Drop Zone / Preview Container -->
+                                        <div id="bookingImageDropZone" style="border: 1.5px dashed #cbd5e1; border-radius: 8px; padding: 10px; min-height: 120px; background: #f8fafc; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; transition: all 0.2s ease;" ondragover="handleBookingImageDragOver(event)" ondragleave="handleBookingImageDragLeave(event)" ondrop="handleBookingImageDrop(event)">
+                                            <!-- Empty Placeholder State -->
+                                            <div id="bookingImagePlaceholder" style="text-align: center; color: #94a3b8; padding: 8px; pointer-events: none;">
+                                                <div style="font-size: 26px; color: #93c5fd; margin-bottom: 4px;">
+                                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                                </div>
+                                                <div style="font-size: 11.5px; font-weight: 800; color: #334155;">ចុច «ជ្រើសរើសរូប» ឬ អូសទម្លាក់រូប (Drag & Drop) ចូលទីនេះ</div>
+                                                <div style="font-size: 10.5px; color: #64748b; margin-top: 3px;">
+                                                    💡 អាចចុច <b>Ctrl + V</b> ដើម្បី Paste រូបប៉ាស្ព័រ ឬសំបុត្រយន្តហោះភ្លាមៗ!
+                                                </div>
+                                            </div>
+
+                                            <!-- Thumbnails Grid -->
+                                            <div id="bookingImageThumbnailsGrid" style="display: none; width: 100%; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 10px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column: Telegram Bot Live Receiver & Auto-Fill -->
+                                <div class="telegram-paste-box d-flex flex-column" style="background: #f0f9ff; border: 2px solid #38bdf8; border-radius: 10px; padding: 12px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <div style="display: flex; align-items: center; gap: 6px;">
+                                            <i class="fa-brands fa-telegram" style="color: #0088cc; font-size: 1.3rem;"></i>
+                                            <b style="color: #0369a1; font-size: 13px;">ទទួលសារពី Telegram Bot</b>
+                                        </div>
+                                        <span class="badge" id="tgBotLiveStatusPill" style="background: #dcfce7; color: #166534; border: 1px solid #86efac; font-size: 10.5px; padding: 3px 8px; border-radius: 12px; font-weight: 800; display: inline-flex; align-items: center; gap: 5px;">
+                                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #22c55e; display: inline-block;"></span> Bot ភ្ជាប់រួច
+                                        </span>
+                                    </div>
+
+                                    <!-- Direct Telegram Bot Action Button -->
+                                    <div style="background: #ffffff; border: 1.5px solid #bae6fd; border-radius: 8px; padding: 8px; margin-bottom: 8px;">
+                                        <div style="font-size: 11.5px; color: #0369a1; font-weight: 800; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                                            <span>🤖 Bot: <a href="https://t.me/car_rent_sokha88_bot" target="_blank" style="color:#0088cc; text-decoration: underline;">@car_rent_sokha88_bot</a></span>
+                                            <span id="tgBotSyncIndicator" style="font-size: 10px; color: #64748b; font-weight: 700;">កំពុងស្តាប់សារស្វ័យប្រវត្ត...</span>
+                                        </div>
+                                        <button type="button" class="btn-ar" style="width: 100%; background: linear-gradient(135deg, #0088cc, #0284c7); color: #ffffff; font-weight: 900; font-size: 12px; border: none; padding: 7px 10px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,136,204,0.3); display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="fetchAndFillLatestTelegramMessage()">
+                                            <i class="fa-solid fa-rotate"></i> <span>ទាញសារចុងក្រោយពី Bot មកបំពេញ</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Recent Messages / Booking Sets Hub -->
+                                    <div id="tgBotRecentMsgsWrap" style="display: none; margin-bottom: 10px; background: #f8fafc; border: 1.5px solid #bae6fd; border-radius: 10px; padding: 8px 10px;">
+                                        <!-- Header Row -->
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                            <div style="display: flex; align-items: center; gap: 6px;">
+                                                <input type="checkbox" id="tgSelectAllCheckbox" style="cursor: pointer; width: 15px; height: 15px; accent-color: #0284c7; margin: 0;" onchange="window.toggleTgSelectAll(this.checked)" title="ធិចជ្រើសរើសទាំងអស់ / ដោះធិច">
+                                                <label for="tgSelectAllCheckbox" style="font-size: 11px; font-weight: 800; color: #0369a1; margin: 0; cursor: pointer;">
+                                                    <i class="fa-brands fa-telegram text-primary"></i> ឈុតកក់ពី Bot ៖
+                                                </label>
+                                                <span id="tgBotRecentCountBadge" class="badge" style="background: #0284c7; color: #ffffff; font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 800;">0 ឈុត</span>
+                                            </div>
+                                            <div style="display: flex; gap: 4px; align-items: center;">
+                                                <button type="button" id="btnTgSelectAllText" class="btn-ar" style="font-size: 10px; padding: 2px 7px; background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; border-radius: 5px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="window.toggleTgSelectAllClick()" title="ធិចជ្រើសរើសទាំងអស់ / ដោះធិច">
+                                                    <i class="fa-solid fa-check-double"></i> <span id="btnTgSelectAllLabel">ធិចទាំងអស់</span>
+                                                </button>
+                                                <button type="button" class="btn-ar" style="font-size: 10.5px; padding: 2px 7px; background: #ffffff; color: #0284c7; border: 1px solid #7dd3fc; border-radius: 5px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="openFullTgInboxModal()" title="បើកផ្ទាំងធំមើលគ្រប់ឈុតទាំងអស់">
+                                                    <i class="fa-solid fa-table-cells-large"></i> ផ្ទាំងធំ
+                                                </button>
+                                                <button type="button" class="btn-ar" style="font-size: 10.5px; padding: 2px 7px; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 5px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="window.deleteCurrentSelectedTgBotMessage(event)" title="លុបឈុតដែលបានជ្រើស">
+                                                    <i class="fa-solid fa-trash-can" style="pointer-events: none;"></i> លុប
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Search within recent sets -->
+                                        <div style="margin-bottom: 6px;">
+                                            <input type="text" id="tgSetsSearchInput" placeholder="🔍 ស្វែងរកតាមឈ្មោះ, ជើងហោះហើរ, ផ្លូវ..." style="width: 100%; font-size: 11px; padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; background: #ffffff; box-sizing: border-box;" oninput="filterTgRecentCards(this.value)">
+                                        </div>
+
+                                        <!-- Multi-select Merge Action Toolbar -->
+                                        <div id="tgMergeActionToolbar" style="display: none; background: #e0f2fe; border: 1.5px solid #0284c7; border-radius: 8px; padding: 6px 10px; margin-bottom: 6px; justify-content: space-between; align-items: center;">
+                                            <div style="font-size: 11px; font-weight: 800; color: #0369a1; display: flex; align-items: center; gap: 5px;">
+                                                <i class="fa-solid fa-square-check text-primary"></i>
+                                                <span>បានធិច <b id="tgCheckedCount">0</b> ឈុត</span>
+                                            </div>
+                                            <div style="display: flex; gap: 4px;">
+                                                <button type="button" class="btn-ar btn-ar-success" style="padding: 3px 8px; font-size: 10.5px; font-weight: 900; border-radius: 5px; box-shadow: 0 1px 4px rgba(22,163,74,0.3); display: inline-flex; align-items: center; gap: 4px;" onclick="mergeAndFillSelectedTgMessages()">
+                                                    <i class="fa-solid fa-code-merge"></i> ផ្គុំ & ទាញយក
+                                                </button>
+                                                <button type="button" class="btn-ar" style="padding: 3px 8px; font-size: 10.5px; font-weight: 800; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 5px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;" onclick="window.deleteSelectedTgCardCheckboxes(event)" title="លុបឈុតដែលបានធិចទាំងអស់">
+                                                    <i class="fa-solid fa-trash-can" style="pointer-events: none;"></i> លុបដែលបានធិច
+                                                </button>
+                                                <button type="button" class="btn-ar btn-ar-outline" style="padding: 3px 6px; font-size: 10px; background: #ffffff; border-radius: 5px;" onclick="clearSelectedTgCardCheckboxes()">
+                                                    ដោះធិច
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Hidden compatibility select for existing code -->
+                                        <select id="tgBotRecentSelect" style="display: none;" onchange="handleSelectTgBotHistoryMessage(this.value)">
+                                            <option value="">-- ជ្រើសរើសសារ --</option>
+                                        </select>
+
+                                        <!-- Select All Toolbar directly above Cards -->
+                                        <div id="tgSelectAllBar" style="display: flex; align-items: center; justify-content: space-between; padding: 4px 8px; margin-bottom: 5px; background: #f1f5f9; border-radius: 6px; border: 1px dashed #cbd5e1;">
+                                            <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; margin: 0; font-size: 11px; font-weight: 800; color: #0369a1;">
+                                                <input type="checkbox" id="tgSelectAllCheckboxCards" style="cursor: pointer; width: 15px; height: 15px; accent-color: #0284c7; margin: 0;" onchange="window.toggleTgSelectAll(this.checked)">
+                                                <span>ធិចទាំងអស់ (Select All)</span>
+                                            </label>
+                                            <span id="tgSelectAllCounterText" style="font-size: 10px; color: #64748b; font-weight: 700;">ជ្រើសរើស 0 ឈុត</span>
+                                        </div>
+
+                                        <!-- Visual Cards List (Scrollable) -->
+                                        <div id="tgBotRecentCardsList" style="display: flex; flex-direction: column; gap: 6px; max-height: 240px; overflow-y: auto; padding-right: 2px;">
+                                        </div>
+                                    </div>
+
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                        <label style="font-size: 11px; font-weight: 800; color: #334155; margin: 0;">📝 ខ្លឹមសារសារ Telegram ៖</label>
+                                        <button type="button" class="btn-ar btn-ar-outline" style="font-size: 10.5px; padding: 2px 6px; background: #fff;" onclick="loadDemoTelegramMessageToForm()">
+                                            <i class="fa-solid fa-lightbulb text-warning"></i> សារគំរូ
+                                        </button>
+                                    </div>
+                                    <textarea id="telegramPasteInput" rows="6" class="form-control font-weight-bold" style="resize: vertical; min-height: 120px; font-size: 12px; margin-bottom: 8px; font-family: monospace, inherit; color: #0f172a; line-height: 1.4;" placeholder="ពេលអ្នកផ្ញើសារចូល @car_rent_sokha88_bot សារនឹងរត់មកបំពេញទីនេះភ្លាមៗ... ឬអាចចុច Ctrl+V ដើម្បី Paste ផ្ទាល់"></textarea>
+
+                                    <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px;">
+                                        <button type="button" class="btn-ar btn-ar-telegram font-weight-bold" onclick="parseAndAutoFillTelegramText()">
+                                            <i class="fa-solid fa-wand-magic-sparkles"></i> វិភាគ & បំពេញទម្រង់ឡើងវិញ
+                                        </button>
+                                        <div style="display: flex; gap: 6px;">
+                                            <button type="button" class="btn-ar btn-ar-outline" style="flex: 1; font-size: 11px; background: #fff;" onclick="pasteFromClipboardToTelegramInput()">
+                                                <i class="fa-solid fa-paste"></i> Paste ពី Clipboard
+                                            </button>
+                                            <button type="button" class="btn-ar btn-ar-outline" style="font-size: 11px; background: #fff;" onclick="clearTelegramPasteInput()">
+                                                <i class="fa-solid fa-trash-can"></i> សម្អាត
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div style="font-size: 11px; color: #0369a1; line-height: 1.4; margin-top: auto; font-weight: 700; background: #e0f2fe; padding: 6px 8px; border-radius: 6px;">
+                                        <i class="fa-solid fa-bolt text-warning"></i> សារផ្ញើចូល Bot នឹងរត់មកបំពេញឈ្មោះ, លេខ, ឡាន, ផ្លូវ, ម៉ោង និង VIP ក្នុងទម្រង់បង្កើតថ្មីស្វ័យប្រវត្តិ!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('bookingModal')">បោះបង់</button>
+                            <button type="submit" class="btn-ar btn-ar-primary"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកការកក់</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 2. BOOKING DETAILS MODAL -->
+            <div class="modal-backdrop" id="bookingDetailsModal">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-header">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <h3 id="detailBookingCode">BK-1001</h3>
+                            <span class="badge" id="detailBookingStatusBadge">កំពុងជួល</span>
+                        </div>
+                        <button type="button" class="modal-close-btn" onclick="closeModal('bookingDetailsModal')"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="modal-body" id="bookingDetailsBody"></div>
+                    <div class="modal-footer justify-content-between" id="bookingDetailsFooter"></div>
+                </div>
+            </div>
+
+            <!-- 2.02 DISPATCH DRIVER MODAL (ចាត់ចែង & បញ្ជូនទិន្នន័យទៅអ្នកបើកបរ) -->
+            <div class="modal-backdrop" id="dispatchDriverModal" style="display: none;">
+                <div class="modal-dialog modal-lg" style="max-width: 720px;">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; padding: 14px 20px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 38px; height: 38px; border-radius: 8px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+                                <i class="fa-brands fa-telegram text-white"></i>
+                            </div>
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #fff;">ជ្រើសរើស & បញ្ជូនទិន្នន័យអោយអ្នកបើកបរ (Driver Dispatch)</h3>
+                                <p style="margin: 0; font-size: 11.5px; color: #e0f2fe;" id="dispatchBookingSubtitle">កូដកក់៖ BK-000</p>
+                            </div>
+                        </div>
+                        <button type="button" class="modal-close-btn" style="color: #fff; background: rgba(255,255,255,0.15); border: none; border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="closeModal('dispatchDriverModal')"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="modal-body" style="padding: 18px 20px; max-height: 75vh; overflow-y: auto;">
+                        <!-- Step 1: Select Driver -->
+                        <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 14px;">
+                            <label style="display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 13.5px; color: #0f172a; margin-bottom: 8px;">
+                                <i class="fa-solid fa-id-card text-primary"></i> ១. ជ្រើសរើសអ្នកបើកបរ (Select Driver)
+                            </label>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                                <div style="flex: 1; min-width: 220px;">
+                                    <select id="dispatchDriverSelect" class="form-control" style="font-weight: 700; border: 1.5px solid #cbd5e1; height: 38px;" onchange="onDispatchDriverSelected(this.value)">
+                                        <option value="">-- ជ្រើសរើសតៃកុងក្នុងបញ្ជី --</option>
+                                    </select>
+                                </div>
+                                <div style="flex: 1; min-width: 220px; position: relative;">
+                                    <input type="text" id="dispatchDriverCustomInput" class="form-control" placeholder="@username ឬ លេខតេលេក្រាម" style="font-weight: 700; padding-left: 32px; height: 38px; border: 1.5px solid #cbd5e1;" oninput="onDispatchDriverInputChange()">
+                                    <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #0284c7;"><i class="fa-brands fa-telegram"></i></span>
+                                </div>
+                            </div>
+                            <div style="margin-top: 8px;">
+                                <span style="font-size: 11.5px; font-weight: 700; color: #64748b; margin-right: 6px;">ចុចជ្រើសរើសរហ័ស៖</span>
+                                <span id="dispatchQuickDriverChips" style="display: inline-flex; gap: 6px; flex-wrap: wrap; vertical-align: middle;"></span>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Trip Message Preview -->
+                        <div style="margin-bottom: 14px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <label style="font-weight: 800; font-size: 13.5px; color: #0f172a; margin: 0;">
+                                    <i class="fa-solid fa-file-lines text-primary"></i> ២. ខ្លឹមសារបញ្ជូនការងារ (Trip Details & Route)
+                                </label>
+                                <button type="button" class="btn-ar btn-ar-outline" style="padding: 2px 8px; font-size: 11px; border: 1px solid #cbd5e1;" onclick="resetDispatchMessageText()">
+                                    <i class="fa-solid fa-rotate-right"></i> សរសេរឡើងវិញ
+                                </button>
+                            </div>
+                            <textarea id="dispatchMessageText" class="form-control" rows="8" style="font-family: 'Khmer OS Siemreap', 'Segoe UI', sans-serif; font-size: 12.5px; line-height: 1.6; border: 1.5px solid #cbd5e1; border-radius: 8px; resize: vertical; background: #fff;"></textarea>
+                        </div>
+
+                        <!-- Step 3: Attached Photos & Location Images -->
+                        <div id="dispatchImagesSection">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                                <label style="font-weight: 800; font-size: 13.5px; color: #0f172a; margin: 0;">
+                                    <i class="fa-solid fa-image text-primary"></i> ៣. រូបភាពទីតាំង & ឯកសារភ្ជាប់ (Location & Photos)
+                                </label>
+                                <div style="display: flex; gap: 6px; align-items: center;">
+                                    <button type="button" class="btn-ar btn-ar-outline" style="padding: 3px 10px; font-size: 11px; font-weight: 700; border: 1.5px solid #0284c7; color: #0284c7; background: #f0f9ff; cursor: pointer;" onclick="openSelectedImagesFolder()" title="បើកមើលទីតាំងផ្ទុកឯកសាររូបភាពក្នុងកុំព្យូទ័រ ដើម្បីងាយស្រួលទាញដាក់ចូល Telegram">
+                                        <i class="fa-solid fa-folder-open"></i> បើកថតរូបភាពលើ PC
+                                    </button>
+                                    <span id="dispatchImagesCountBadge" style="font-size: 11.5px; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 2px 8px; border-radius: 6px;">0 រូបភាព</span>
+                                </div>
+                            </div>
+                            <div id="dispatchImagesList" style="display: flex; gap: 10px; flex-wrap: wrap; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1.5px dashed #cbd5e1; min-height: 60px;"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="background: #f8fafc; border-top: 1.5px solid #e2e8f0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 8px 14px; font-weight: 700; font-size: 12.5px;" onclick="copyDispatchTextOnly()">
+                            <i class="fa-solid fa-copy text-primary"></i> ចម្លងទិន្នន័យ (Copy Text)
+                        </button>
+                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <button type="button" class="btn-ar btn-ar-outline" style="padding: 8px 14px; font-weight: 700; font-size: 12.5px; border: 1.5px solid #cbd5e1;" onclick="closeModal('dispatchDriverModal')">
+                                បោះបង់
+                            </button>
+                            <button type="button" class="btn-ar btn-ar-primary" id="btnDispatchSendTelegram" style="padding: 9px 22px; font-weight: 800; font-size: 13.5px; background: #0284c7; border: none; box-shadow: 0 4px 14px rgba(2,132,199,0.4); display: inline-flex; align-items: center; gap: 8px;" onclick="handleSendDispatchToTelegram('send_now')" title="ចុចដើម្បីបញ្ជូនទិន្នន័យ និងរូបភាពទៅកាន់ Telegram">
+                                <i class="fa-brands fa-telegram" style="font-size: 1.25rem;"></i> បញ្ជូនទិន្នន័យទៅ Telegram ➔
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2.05 INDIVIDUAL CAR SCHEDULE MODAL -->
+            <div class="modal-backdrop" id="carScheduleModal">
+                <div class="modal-dialog modal-lg" style="max-width: 900px;">
+                    <div class="modal-header">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 42px; height: 42px; border-radius: 10px; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+                                <i class="fa-solid fa-car"></i>
+                            </div>
+                            <div>
+                                <h3 id="carScheduleModalTitle" style="margin: 0; font-size: 1.2rem; font-weight: 900; color: #0f172a;">កាលវិភាគកក់ឡាន</h3>
+                                <div id="carScheduleModalSub" style="font-size: 12.5px; color: #64748b; font-weight: 700; margin-top: 2px;">--</div>
+                            </div>
+                        </div>
+                        <button type="button" class="modal-close-btn" onclick="closeModal('carScheduleModal')"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="modal-body" style="padding: 18px;">
+                        <!-- Filter sub-tabs -->
+                        <div class="filter-toolbar mb-3">
+                            <div class="filter-tabs" id="carSchedSubTabs">
+                                <button type="button" class="filter-tab active" id="modalSchedTabAll" onclick="setCarModalScheduleFilter('all')">ទាំងអស់ (<span id="modalSchedCntAll">0</span>)</button>
+                                <button type="button" class="filter-tab" id="modalSchedTabToday" onclick="setCarModalScheduleFilter('today')" style="color: #0369a1; font-weight: 800;">🕒 ពេលនេះ / ថ្ងៃនេះ (<span id="modalSchedCntToday">0</span>)</button>
+                                <button type="button" class="filter-tab" id="modalSchedTabUpcoming" onclick="setCarModalScheduleFilter('upcoming')" style="color: #15803d; font-weight: 800;">⏩ ពេលក្រោយ / ខាងមុខ (<span id="modalSchedCntUpcoming">0</span>)</button>
+                                <button type="button" class="filter-tab" id="modalSchedTabPast" onclick="setCarModalScheduleFilter('past')" style="color: #64748b; font-weight: 800;">⏪ ពីមុន / បានបញ្ចប់ (<span id="modalSchedCntPast">0</span>)</button>
+                            </div>
+                        </div>
+                        <div id="carScheduleModalList" style="max-height: 60vh; overflow-y: auto;"></div>
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('carScheduleModal')">បិទ</button>
+                        <button type="button" class="btn-ar btn-ar-primary" id="carScheduleQuickBookBtn"><i class="fa-solid fa-calendar-plus"></i> កក់ឡាននេះថ្មី</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2.1 IMAGE LIGHTBOX MODAL (ULTRA-HIGH Z-INDEX & FULL GALLERY CONTROLS) -->
+            <div class="modal-backdrop" id="imageLightboxModal" onclick="if(event.target===this) closeModal('imageLightboxModal')" style="z-index: 100000 !important; background: rgba(5, 10, 20, 0.94); backdrop-filter: blur(8px);">
+                <div class="modal-dialog modal-xl" style="max-width: 96vw; width: 1050px; margin: 15px auto; display: flex; flex-direction: column; max-height: 94vh; box-shadow: 0 25px 60px rgba(0,0,0,0.8); border: 1.5px solid rgba(255,255,255,0.12); border-radius: 14px; overflow: hidden;">
+                    <!-- Header -->
+                    <div class="modal-header" style="background: #090e17; color: #fff; border-bottom: 1px solid #1e293b; padding: 10px 16px; flex-shrink: 0;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0;">
+                            <span id="lightboxCategoryBadge" class="badge" style="background: #2563eb; color: #fff; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px;">📘 ប៉ាស្ព័រ</span>
+                            <h4 id="lightboxTitle" style="margin: 0; font-size: 13.5px; color: #f8fafc; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 380px;">មើលរូបភាពពេញ</h4>
+                            <span id="lightboxCounter" style="background: rgba(255,255,255,0.14); color: #94a3b8; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 800;">1 / 1</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                            <!-- Nav Buttons -->
+                            <button type="button" class="btn-ar btn-ar-outline" id="lightboxPrevBtn" onclick="lightboxNav(-1)" style="background: #1e293b; color: #fff; border-color: #475569; font-size: 11px; padding: 5px 10px;" title="រូបមុន (Left Arrow)">
+                                <i class="fa-solid fa-chevron-left"></i> មុន
+                            </button>
+                            <button type="button" class="btn-ar btn-ar-outline" id="lightboxNextBtn" onclick="lightboxNav(1)" style="background: #1e293b; color: #fff; border-color: #475569; font-size: 11px; padding: 5px 10px;" title="រូបបន្ទាប់ (Right Arrow)">
+                                បន្ទាប់ <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                            <!-- Zoom & Rotate Controls -->
+                            <button type="button" class="btn-ar btn-ar-outline" onclick="lightboxZoom(0.2)" style="background: #1e293b; color: #fff; border-color: #475569; font-size: 11px; padding: 5px 8px;" title="ពង្រីករូប (Zoom In)">
+                                <i class="fa-solid fa-magnifying-glass-plus"></i>
+                            </button>
+                            <button type="button" class="btn-ar btn-ar-outline" onclick="lightboxZoom(-0.2)" style="background: #1e293b; color: #fff; border-color: #475569; font-size: 11px; padding: 5px 8px;" title="បង្រួមរូប (Zoom Out)">
+                                <i class="fa-solid fa-magnifying-glass-minus"></i>
+                            </button>
+                            <button type="button" class="btn-ar btn-ar-outline" onclick="rotateLightboxImage()" style="background: #1e293b; color: #fff; border-color: #475569; font-size: 11px; padding: 5px 10px;" title="បង្វិលរូប 90 ដឺក្រេ (Rotate)">
+                                <i class="fa-solid fa-rotate-right"></i> បង្វិល
+                            </button>
+                            <a id="lightboxDownloadBtn" href="#" download="booking_document.jpg" class="btn-ar btn-ar-primary" style="font-size: 11px; padding: 5px 10px; text-decoration: none;" title="ទាញយករូបភាពកម្រិតច្បាស់">
+                                <i class="fa-solid fa-download"></i> ទាញយក
+                            </a>
+                            <button type="button" class="modal-close-btn" onclick="closeModal('imageLightboxModal')" style="color: #fff; font-size: 16px; margin-left: 4px;" title="បិទ (Esc)"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <!-- Body with Viewer -->
+                    <div class="modal-body" style="position: relative; flex: 1; padding: 0; background: #020617; overflow: hidden; display: flex; justify-content: center; align-items: center; min-height: 480px; max-height: 82vh;">
+                        <!-- Side Navigation Arrows -->
+                        <button type="button" onclick="lightboxNav(-1)" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(15, 23, 42, 0.85); color: #fff; border: 1.5px solid rgba(255,255,255,0.25); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; transition: all 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.5);" title="រូបមុន (Left Arrow)">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button type="button" onclick="lightboxNav(1)" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(15, 23, 42, 0.85); color: #fff; border: 1.5px solid rgba(255,255,255,0.25); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; transition: all 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.5);" title="រូបបន្ទាប់ (Right Arrow)">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                        <!-- Main Zoomable Image -->
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 16px; overflow: auto;">
+                            <img id="lightboxImage" src="" alt="Full Preview" style="max-width: 100%; max-height: 76vh; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 35px rgba(0,0,0,0.8); transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1); cursor: zoom-in;" onclick="lightboxToggleZoom()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. NEW / EDIT CAR MODAL -->
+            <div class="modal-backdrop" id="carModal">
+                <div class="modal-dialog">
+                    <div class="modal-header">
+                        <h3 id="carModalTitle"><i class="fa-solid fa-car text-primary"></i> បញ្ចូលរថយន្តថ្មី</h3>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button type="button" class="btn-ar btn-ar-primary" onclick="handleSaveCarDirect()"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុក</button>
+                            <button type="button" class="modal-close-btn" onclick="closeModal('carModal')"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <form id="carForm" onsubmit="handleSaveCar(event); return false;">
+                        <input type="hidden" id="carId">
+                        <div class="modal-body">
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label>ប្រភេទរថយន្ត *</label>
+                                    <select id="carCategory" required class="form-control font-weight-bold text-primary">
+                                        <option value="suv">🚙 ឡានអេសយូវី (SUV / Crossover)</option>
+                                        <option value="alphard">👑 អាល់ផាត (Alphard / VIP Van)</option>
+                                        <option value="starex">🚐 ស្តារេច (Starex / Staria)</option>
+                                        <option value="hiace">🚌 ហៃយាស់ (Hiace Commuter)</option>
+                                        <option value="bus">🚍 ឡានក្រុង (Bus / Minibus)</option>
+                                        <option value="vip_poipet">🚀 វីអាយភី និងប៉ោយប៉ែត</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>ចំនួនកៅអី</label>
+                                    <input type="text" id="carSeats" placeholder="ឧ. 7 កៅអី, 15 កៅអី" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label>ម៉ាកឡាន (Make) *</label>
+                                    <input type="text" id="carMake" required placeholder="ឧ. Toyota, Lexus" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>ម៉ូឌែល (Model) *</label>
+                                    <input type="text" id="carModel" required placeholder="ឧ. Alphard 2023" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-row-3">
+                                <div class="form-group">
+                                    <label>ឆ្នាំផលិត</label>
+                                    <input type="number" id="carYear" placeholder="2023" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>ស្លាកលេខ *</label>
+                                    <input type="text" id="carPlate" required placeholder="ឧ. ភ្នំពេញ 2BP-8899" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>តម្លៃជួល/ថ្ងៃ ($) *</label>
+                                    <input type="number" id="carDailyPrice" required placeholder="120" class="form-control font-weight-bold text-primary">
+                                </div>
+                            </div>
+                            <div class="form-row-3">
+                                <div class="form-group">
+                                    <label>ពណ៌សម្បុរ</label>
+                                    <input type="text" id="carColor" placeholder="ស, ខ្មៅ" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>ប្រអប់លេខ</label>
+                                    <select id="carTransmission" class="form-control">
+                                        <option value="អូតូ (Auto)">អូតូ (Auto)</option>
+                                        <option value="លេខដៃ (Manual)">លេខដៃ (Manual)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>ស្ថានភាពឡាន</label>
+                                    <select id="carStatus" class="form-control">
+                                        <option value="available">ទំនេរស្រាប់ (Available)</option>
+                                        <option value="rented">កំពុងជួល (Rented)</option>
+                                        <option value="maintenance">ជួសជុល (Maintenance)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>កំណត់សម្គាល់អំពីឡាន</label>
+                                <textarea id="carNotes" rows="2" class="form-control" placeholder="ព័ត៌មានបន្ថែមអំពីឡាន..."></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('carModal')">បោះបង់</button>
+                            <button type="submit" class="btn-ar btn-ar-primary"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកព័ត៌មានឡាន</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 4. NEW / EDIT CUSTOMER MODAL -->
+            <div class="modal-backdrop" id="customerModal">
+                <div class="modal-dialog">
+                    <div class="modal-header">
+                        <h3 id="customerModalTitle"><i class="fa-solid fa-user-plus text-primary"></i> បន្ថែមអតិថិជនថ្មី</h3>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button type="button" class="btn-ar btn-ar-primary" onclick="handleSaveCustomerDirect()"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុក</button>
+                            <button type="button" class="modal-close-btn" onclick="closeModal('customerModal')"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <form id="customerForm" onsubmit="handleSaveCustomer(event); return false;">
+                        <input type="hidden" id="customerId">
+                        <div class="modal-body">
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label>ឈ្មោះភ្ញៀវ *</label>
+                                    <input type="text" id="customerName" required placeholder="ឧ. សុខ ចាន់ដារ៉ា" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>លេខទូរស័ព្ទ *</label>
+                                    <input type="tel" id="customerPhone" required placeholder="ឧ. 012 345 678" class="form-control font-weight-bold">
+                                </div>
+                            </div>
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label><i class="fa-brands fa-telegram text-info"></i> Telegram</label>
+                                    <input type="text" id="customerTelegram" placeholder="@username" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>លេខអត្តសញ្ញាណប័ណ្ណ / លិខិតឆ្លងដែន</label>
+                                    <input type="text" id="customerIdCardNumber" placeholder="ឧ. 010293847" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>អាសយដ្ឋាន</label>
+                                <input type="text" id="customerAddress" placeholder="ឧ. ភ្នំពេញ..." class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>កំណត់សម្គាល់អំពីភ្ញៀវ</label>
+                                <textarea id="customerNotes" rows="2" class="form-control" placeholder="ឧ. ភ្ញៀវប្រចាំ..."></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('customerModal')">បោះបង់</button>
+                            <button type="submit" class="btn-ar btn-ar-primary"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកព័ត៌មានភ្ញៀវ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 5. TELEGRAM FORWARD INBOX MODAL -->
+            <div class="modal-backdrop" id="telegramInboxModal">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-header" style="background: rgba(0, 136, 204, 0.08);">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-brands fa-telegram" style="color: #0088cc; font-size: 1.4rem;"></i>
+                            <h3 style="margin: 0;">សារ Forward ពី Telegram ចូលមកប្រព័ន្ធ</h3>
+                        </div>
+                        <button type="button" class="modal-close-btn" onclick="closeModal('telegramInboxModal')"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; margin: 0; font-size: 12px; font-weight: 800; color: #0284c7;">
+                                    <input type="checkbox" id="fullInboxSelectAllCheckbox" style="cursor: pointer; width: 16px; height: 16px; accent-color: #0284c7; margin: 0;" onchange="window.toggleTgSelectAll(this.checked)" title="ធិចជ្រើសរើសទាំងអស់ / ដោះធិច">
+                                    <span>ធិចទាំងអស់ (Select All)</span>
+                                </label>
+                                <span id="fullInboxCheckedBadge" class="badge" style="display: none; background: #0284c7; color: #ffffff; font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 800;">បានធិច 0 ឈុត</span>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <button type="button" id="btnFullInboxMerge" class="btn-ar btn-ar-success" style="display: none; padding: 4px 12px; font-size: 11.5px; font-weight: 900;" onclick="mergeAndFillSelectedTgMessages(); closeModal('telegramInboxModal');">
+                                    <i class="fa-solid fa-code-merge"></i> ផ្គុំ & បំពេញចូលទម្រង់
+                                </button>
+                                <button type="button" id="btnFullInboxDeleteSelected" class="btn-ar" style="display: none; padding: 4px 10px; font-size: 11.5px; font-weight: 800; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 6px; align-items: center; gap: 4px;" onclick="deleteSelectedTgCardCheckboxes()">
+                                    <i class="fa-solid fa-trash-can"></i> លុបដែលបានធិច
+                                </button>
+                                <button type="button" class="btn-ar btn-ar-outline text-danger" style="padding: 3px 8px; font-size: 11px;" onclick="handleClearAllTgInbox()"><i class="fa-solid fa-broom"></i> សម្អាតទាំងអស់</button>
+                            </div>
+                        </div>
+                        <div id="telegramInboxList"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('telegramInboxModal')">បិទ</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. TELEGRAM RAW MESSAGE VIEWER MODAL -->
+            <div class="modal-backdrop" id="tgRawMsgModal">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-header" style="background: rgba(0, 136, 204, 0.08);">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-brands fa-telegram" style="color: #0088cc; font-size: 1.4rem;"></i>
+                            <h3 style="margin: 0; font-weight: 800; color: #0f172a;">សារដើមពី Telegram (Original Message)</h3>
+                        </div>
+                        <button type="button" class="modal-close-btn" onclick="closeModal('tgRawMsgModal')"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span id="tgRawMeta" style="font-size: 12px; font-weight: 800; color: #0088cc;"></span>
+                            <button type="button" class="btn-ar btn-ar-outline" style="font-size: 11px; padding: 3px 8px;" onclick="copyTgRawText()"><i class="fa-solid fa-copy"></i> Copy សារ</button>
+                        </div>
+                        <pre id="tgRawContent" style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 14px; font-size: 13px; font-weight: 700; color: #0f172a; white-space: pre-wrap; font-family: monospace, inherit; max-height: 300px; overflow-y: auto; line-height: 1.5;"></pre>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('tgRawMsgModal')">បិទ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         
 
@@ -3343,22 +4491,25 @@ input[type="date"] {
                     }
                 }
 
+                const autorentEl = document.getElementById('autoRentManagementContainer');
                 if (currentServiceCategory === 'quote') {
                     if (grid) grid.style.display = 'none';
                     if (quoteStudio) quoteStudio.style.display = 'flex';
                     if (bottomDb) bottomDb.style.display = 'none';
                     if (typeof window.selectQuoteCategoryTab === 'function') {
-                        window.selectQuoteCategoryTab(window.currentQuoteCategory || 'car', false);
+                        window.selectQuoteCategoryTab(window.currentQuoteCategory || 'autorent', false);
                     }
                     if (typeof window.syncAllQuotePrices === 'function') {
                         window.syncAllQuotePrices();
                     }
                 } else if (currentServiceCategory === 'visa' || currentServiceCategory === 'passport') {
+                    if (autorentEl) autorentEl.style.display = 'none';
                     if (grid) grid.style.display = 'none';
                     if (quoteStudio) quoteStudio.style.display = 'none';
                     if (bottomDb) bottomDb.style.display = 'flex';
                 } else {
-                    // Car or All
+                    // Car or All (سេវាកម្មឡាន)
+                    if (autorentEl) autorentEl.style.display = 'none';
                     if (grid) grid.style.display = 'grid';
                     if (quoteStudio) quoteStudio.style.display = 'none';
                     if (bottomDb) bottomDb.style.display = 'flex';
@@ -7482,7 +8633,7 @@ document.addEventListener('paste', function(e) {
         }
 
         window.selectQuoteCategoryTab = function(cat, switchView) {
-            window.currentQuoteCategory = cat || 'car';
+            window.currentQuoteCategory = cat || 'autorent';
             const cur = window.currentQuoteCategory;
             try { localStorage.setItem('activeQuoteCategoryTab', cur); } catch(e){}
 
@@ -7498,16 +8649,22 @@ document.addEventListener('paste', function(e) {
                 if (quoteStudio) quoteStudio.style.display = 'flex';
                 if (grid) grid.style.display = 'none';
                 if (bottomDb) bottomDb.style.display = 'none';
+                document.body.classList.remove('mode-car', 'mode-visa', 'mode-passport', 'mode-all');
+                document.body.classList.add('mode-quote');
                 try { sessionStorage.setItem('imvoi_selected_service', 'quote'); } catch(e){}
             }
 
             const btnCar = document.getElementById('btnTabQuoteCar');
             const btnVip = document.getElementById('btnTabQuoteVip');
             const btnVisa = document.getElementById('btnTabQuoteVisa');
+            const btnAutorent = document.getElementById('btnTabQuoteAutorent');
 
             const postCar = document.getElementById('posterCard_car');
             const postVip = document.getElementById('posterCard_vip');
             const postVisa = document.getElementById('posterCard_visa');
+            const posterSplitRow = document.getElementById('quoteStudioSplitRow');
+            const autorentContainer = document.getElementById('autoRentManagementContainer');
+            const quoteRightActions = document.getElementById('quoteRightActionsBar');
 
             const hCol1 = document.getElementById('histHeaderCol1');
             const hCol2 = document.getElementById('histHeaderCol2');
@@ -7534,26 +8691,44 @@ document.addEventListener('paste', function(e) {
             resetBtn(btnCar);
             resetBtn(btnVip);
             resetBtn(btnVisa);
+            resetBtn(btnAutorent);
 
             if (postCar) postCar.style.display = 'none';
             if (postVip) postVip.style.display = 'none';
             if (postVisa) postVisa.style.display = 'none';
 
-            if (cur === 'car') {
-                activeBtn(btnCar, '#f59e0b', 'rgba(245, 158, 11, 0.4)');
-                if (postCar) postCar.style.display = 'block';
-                if (hCol1) hCol1.textContent = 'ភ្នំពេញ ⇄ ប៉ោយប៉ែត';
-                if (hCol2) hCol2.textContent = 'សៀមរាប ⇄ ប៉ោយប៉ែត';
-            } else if (cur === 'vip') {
-                activeBtn(btnVip, '#ec4899', 'rgba(236, 72, 153, 0.4)');
-                if (postVip) postVip.style.display = 'block';
-                if (hCol1) hCol1.textContent = 'ភ្នំពេញ (PNH VIP)';
-                if (hCol2) hCol2.textContent = 'សៀមរាប (SAI VIP)';
-            } else if (cur === 'visa') {
-                activeBtn(btnVisa, '#10b981', 'rgba(16, 185, 129, 0.4)');
-                if (postVisa) postVisa.style.display = 'block';
-                if (hCol1) hCol1.textContent = 'Tourist & Biz Visa';
-                if (hCol2) hCol2.textContent = 'Visa Extension';
+            if (cur === 'autorent') {
+                activeBtn(btnAutorent, '#0284c7', 'rgba(2, 132, 199, 0.4)');
+                if (btnAutorent) btnAutorent.style.color = '#38bdf8';
+                if (posterSplitRow) posterSplitRow.style.display = 'none';
+                if (quoteRightActions) quoteRightActions.style.display = 'none';
+                if (autorentContainer) {
+                    autorentContainer.style.display = 'block';
+                }
+                if (typeof window.initAutoRentSystem === 'function') {
+                    window.initAutoRentSystem();
+                }
+            } else {
+                if (autorentContainer) autorentContainer.style.display = 'none';
+                if (posterSplitRow) posterSplitRow.style.display = 'flex';
+                if (quoteRightActions) quoteRightActions.style.display = 'flex';
+
+                if (cur === 'car') {
+                    activeBtn(btnCar, '#f59e0b', 'rgba(245, 158, 11, 0.4)');
+                    if (postCar) postCar.style.display = 'block';
+                    if (hCol1) hCol1.textContent = 'ភ្នំពេញ ⇄ ប៉ោយប៉ែត';
+                    if (hCol2) hCol2.textContent = 'សៀមរាប ⇄ ប៉ោយប៉ែត';
+                } else if (cur === 'vip') {
+                    activeBtn(btnVip, '#ec4899', 'rgba(236, 72, 153, 0.4)');
+                    if (postVip) postVip.style.display = 'block';
+                    if (hCol1) hCol1.textContent = 'ភ្នំពេញ (PNH VIP)';
+                    if (hCol2) hCol2.textContent = 'សៀមរាប (SAI VIP)';
+                } else if (cur === 'visa') {
+                    activeBtn(btnVisa, '#10b981', 'rgba(16, 185, 129, 0.4)');
+                    if (postVisa) postVisa.style.display = 'block';
+                    if (hCol1) hCol1.textContent = 'Tourist & Biz Visa';
+                    if (hCol2) hCol2.textContent = 'Visa Extension';
+                }
             }
 
             // Highlight corresponding section in settings modal
@@ -7911,11 +9086,14 @@ document.addEventListener('paste', function(e) {
             renderPriceHistoryTable();
         }
 
+        window.deletePriceHistoryLog = deletePriceHistoryLog;
+        window.clearAllPriceLogs = clearAllPriceLogs;
+
         // Auto Initialize
         document.addEventListener('DOMContentLoaded', function() {
             loadLatestPricesFromStorage();
             syncAllQuotePrices();
-            const savedCat = localStorage.getItem('activeQuoteCategoryTab') || 'car';
+            const savedCat = localStorage.getItem('activeQuoteCategoryTab') || 'autorent';
             window.selectQuoteCategoryTab(savedCat, false);
             if (getPriceHistoryList().length === 0) recordCurrentPriceLog('តម្លៃដំបូង');
             renderPriceHistoryTable();
@@ -7930,5 +9108,7 @@ document.addEventListener('paste', function(e) {
             } catch(e) {}
         });
     </script>
+    <!-- AutoRent Pro Core Application Script -->
+    <script src="assets/js/autorent.js?v=20260906_20"></script>
 </body>
 </html>

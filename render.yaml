@@ -5,4 +5,10 @@ services:
     buildCommand: "pip install -r requirements_server.txt"
     startCommand: "python server.py"
     plan: starter
-
+    envVars:
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: imvoi-data-disk
+      mountPath: /var/data
+      sizeGB: 1

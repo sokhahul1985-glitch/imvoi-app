@@ -18,6 +18,7 @@ import re
 import datetime
 import uuid
 import threading
+import time
 from PIL import Image
 
 try:
@@ -37,6 +38,15 @@ class SafeThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServe
                 pass
         super().server_bind()
 
+# Ensure UTF-8 output on Windows consoles
+try:
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8')
+    if hasattr(sys.stderr, 'reconfigure'):
+        sys.stderr.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
 # Redirect stdout/stderr if running in windowless mode (pythonw)
 if sys.stdout is None:
     sys.stdout = open(os.devnull, 'w', encoding='utf-8')
@@ -55,7 +65,8 @@ except Exception as e:
 try:
     from telegram_utils import (
         get_telegram_config, save_telegram_config, send_telegram_photo_bot,
-        send_telegram_text_bot, get_telegram_bot_info, telegram_bot_listener
+        send_telegram_text_bot, get_telegram_bot_info, telegram_bot_listener,
+        launch_telegram_desktop, get_telegram_exe_path
     )
 except Exception as e:
     def get_telegram_config(): return {"bot_token": "", "chat_id": ""}
@@ -63,6 +74,8 @@ except Exception as e:
     def send_telegram_photo_bot(b, c, p, caption=""): return {"ok": False, "description": "telegram_utils unavailable"}
     def send_telegram_text_bot(b, c, text): return {"ok": False, "description": "telegram_utils unavailable"}
     def get_telegram_bot_info(t): return {"ok": False}
+    def launch_telegram_desktop(): return False
+    def get_telegram_exe_path(): return None
     telegram_bot_listener = None
 
 
@@ -196,17 +209,30 @@ _startup_restore_if_needed()
 def load_json(filepath, default):
     if not os.path.exists(filepath):
         return default
-    try:
-        with open(filepath, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except Exception:
-        return default
+    import time
+    for attempt in range(4):
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            time.sleep(0.08)
+    return default
 
 def save_json(filepath, data):
     try:
-        # 1. Main write
-        with open(filepath, 'w', encoding='utf-8') as f:
+        # 1. Thread-safe atomic write using temp file + rename
+        tmp_file = f"{filepath}.tmp_{os.getpid()}_{int(time.time()*1000)}"
+        with open(tmp_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
+        try:
+            os.replace(tmp_file, filepath)
+        except Exception:
+            # Fallback for Windows lock contention
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            if os.path.exists(tmp_file):
+                try: os.remove(tmp_file)
+                except Exception: pass
             
         # 2. Supabase Cloud Auto-Sync
         if supabase_db and supabase_db.is_configured():
@@ -623,6 +649,44 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json_response({'success': True, 'records': data, 'invoices': data})
             return
 
+        elif path == '/api/telegram_messages':
+            tg_file = os.path.join(DATA_DIR, 'received_telegram_messages.json')
+            if not os.path.exists(tg_file):
+                tg_file = os.path.join(BASE_DIR, 'received_telegram_messages.json')
+            msgs = load_json(tg_file, [])
+            self.send_json_response({'success': True, 'messages': msgs})
+            return
+
+        elif path == '/api/bookings':
+            bk_file = os.path.join(DATA_DIR, 'saved_bookings.json')
+            if not os.path.exists(bk_file):
+                bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
+            bks = load_json(bk_file, [])
+            self.send_json_response({'success': True, 'bookings': bks})
+            return
+
+        elif path == '/api/delete_telegram_message':
+            msg_id = query.get('id', [None])[0]
+            msg_text = query.get('text', [None])[0]
+            clear_all = query.get('all', ['false'])[0].lower() in ['true', '1']
+
+            tg_file = os.path.join(DATA_DIR, 'received_telegram_messages.json')
+            if not os.path.exists(tg_file):
+                tg_file = os.path.join(BASE_DIR, 'received_telegram_messages.json')
+            msgs = load_json(tg_file, [])
+            orig_len = len(msgs)
+
+            if clear_all:
+                msgs = []
+            elif msg_id:
+                msgs = [m for m in msgs if str(m.get('id')) != str(msg_id)]
+            elif msg_text:
+                msgs = [m for m in msgs if m.get('text', '').strip() != msg_text.strip()]
+
+            save_json(tg_file, msgs)
+            self.send_json_response({'success': True, 'deleted': orig_len - len(msgs), 'remaining': len(msgs), 'messages': msgs})
+            return
+
         elif path == '/api/next_no':
             cat = query.get('category', ['car'])[0]
             self.send_json_response({'success': True, 'next_no': get_next_invoice_no(cat)})
@@ -756,6 +820,14 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json_response({'success': True, 'status': status})
             return
 
+        elif path == '/api/telegram_messages':
+            msg_file = os.path.join(DATA_DIR, 'received_telegram_messages.json')
+            if not os.path.exists(msg_file):
+                msg_file = os.path.join(BASE_DIR, 'received_telegram_messages.json')
+            msgs = load_json(msg_file, [])
+            self.send_json_response({'success': True, 'messages': msgs})
+            return
+
         elif path == '/api/latest_telegram_scans':
             query_params = urllib.parse.parse_qs(parsed.query)
             since_id = query_params.get('since', [None])[0]
@@ -773,6 +845,34 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 'url': url,
                 'key_preview': masked_key
             })
+            return
+
+        if path == '/api/telegram_groups':
+            groups_by_title = {}
+            for g_dir in [DATA_DIR, BASE_DIR]:
+                gf = os.path.join(g_dir, "known_telegram_groups.json")
+                if os.path.exists(gf):
+                    try:
+                        with open(gf, "r", encoding="utf-8") as f_g:
+                            kg = json.load(f_g)
+                            for cid, gdata in kg.items():
+                                if cid != "latest_group_id" and isinstance(gdata, dict):
+                                    t = gdata.get('title', 'Telegram Group').strip()
+                                    if not t:
+                                        continue
+                                    existing = groups_by_title.get(t.lower())
+                                    # If not seen yet, or if current is supergroup (-100...) and old wasn't, replace
+                                    if not existing or (cid.startswith('-100') and not existing['id'].startswith('-100')):
+                                        groups_by_title[t.lower()] = {
+                                            'id': cid,
+                                            'title': t,
+                                            'link': gdata.get('link', '') or (existing.get('link', '') if existing else '')
+                                        }
+                            break
+                    except Exception:
+                        pass
+            groups = list(groups_by_title.values())
+            self.send_json_response({'success': True, 'groups': groups})
             return
 
 
@@ -1838,6 +1938,279 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json_response({'success': False, 'error': msg})
             return
 
+        elif path == '/api/send_driver_dispatch':
+            driver_target = req_data.get('driver_target', '').strip()
+            text = req_data.get('text', '').strip()
+            image_urls = req_data.get('image_urls', [])
+
+            cfg = get_telegram_config()
+            bot_token = cfg.get('bot_token') or '8884318593:AAEipEVki9o1YFL0_8IYoUeSn3Xif4dlVOk'
+            
+            # Check if target is a Telegram Invite Link (e.g. https://t.me/+... or joinchat)
+            is_invite_link = False
+            invite_code = ''
+            if '+' in driver_target or 'joinchat' in driver_target:
+                is_invite_link = True
+                if '+' in driver_target:
+                    invite_code = driver_target.split('+')[-1].split('/')[0].split('?')[0].strip()
+                elif 'joinchat/' in driver_target:
+                    invite_code = driver_target.split('joinchat/')[-1].split('/')[0].split('?')[0].strip()
+
+            # Check if we have an auto-discovered group ID from the bot joining the group(s)
+            known_group_id = ''
+            known_group_title = ''
+            for g_dir in [DATA_DIR, BASE_DIR]:
+                gf = os.path.join(g_dir, "known_telegram_groups.json")
+                if os.path.exists(gf):
+                    try:
+                        with open(gf, "r", encoding="utf-8") as f_g:
+                            kg = json.load(f_g)
+                            # 1. Check if this exact link or invite code was mapped to a group
+                            for cid, gdata in kg.items():
+                                if isinstance(gdata, dict):
+                                    if invite_code and gdata.get("invite_code") == invite_code:
+                                        known_group_id = cid
+                                        known_group_title = gdata.get("title", "")
+                                        break
+                                    if driver_target and gdata.get("link") == driver_target:
+                                        known_group_id = cid
+                                        known_group_title = gdata.get("title", "")
+                                        break
+                                    g_title = str(gdata.get("title", "")).strip().lower()
+                                    d_clean = driver_target.replace('👥', '').replace('គ្រុប', '').replace('Telegram', '').replace('៖', '').strip().lower()
+                                    if g_title and (g_title == d_clean or g_title in d_clean or d_clean in g_title):
+                                        known_group_id = cid
+                                        known_group_title = gdata.get("title", "")
+                                        break
+
+                            # 2. Fallback to latest discovered group if invite link without exact match
+                            if not known_group_id and is_invite_link:
+                                known_group_id = kg.get("latest_group_id", "")
+                                if known_group_id and known_group_id in kg and isinstance(kg[known_group_id], dict):
+                                    known_group_title = kg[known_group_id].get("title", "")
+
+                            # If found, persist invite_code and link for this group
+                            if known_group_id and is_invite_link:
+                                if known_group_id in kg and isinstance(kg[known_group_id], dict):
+                                    kg[known_group_id]["link"] = driver_target
+                                    if invite_code:
+                                        kg[known_group_id]["invite_code"] = invite_code
+                                    try:
+                                        with open(gf, "w", encoding="utf-8") as f_save:
+                                            json.dump(kg, f_save, indent=2, ensure_ascii=False)
+                                    except Exception:
+                                        pass
+                            break
+                    except Exception:
+                        pass
+
+            # Determine target chat: Group ID, direct link, or username
+            chat_id = ''
+            if known_group_id:
+                chat_id = known_group_id
+            elif is_invite_link or ('http' in driver_target and not driver_target.startswith('@')):
+                # Launch telegram directly to this group/invite on user desktop
+                if invite_code:
+                    try:
+                        os.system(f'start "" "tg://join?invite={invite_code}"')
+                    except Exception:
+                        pass
+                elif driver_target.startswith('http'):
+                    try:
+                        os.system(f'start "" "{driver_target}"')
+                    except Exception:
+                        pass
+
+                self.send_json_response({
+                    'success': True,
+                    'is_direct_link': True,
+                    'invite_code': invite_code,
+                    'target_url': driver_target,
+                    'message': 'បានចម្លងទិន្នន័យរួចរាល់! កំពុងបើកទៅកាន់ Telegram Group របស់អ្នក... សូមចុច Ctrl+V ដើម្បី Paste ផ្ញើក្នុង Group!'
+                })
+                return
+            elif driver_target and (driver_target.startswith('-') or driver_target.isdigit() or (driver_target.startswith('@') and '/' not in driver_target)):
+                chat_id = driver_target
+
+            if not chat_id:
+                # Under NO circumstances fallback to bot admin chat!
+                self.send_json_response({
+                    'success': False,
+                    'error': 'សូមបញ្ចូល Link Telegram ឬ @username របស់អ្នកបើកបរ',
+                    'can_open_tme': True
+                })
+                return
+
+            res_text = send_telegram_text_bot(bot_token, chat_id, text)
+            photos_sent = 0
+            for img_rel in image_urls:
+                if not img_rel or not isinstance(img_rel, str):
+                    continue
+                clean_rel = img_rel.replace('/', os.sep).lstrip(os.sep)
+                local_path = os.path.join(BASE_DIR, clean_rel)
+                if os.path.exists(local_path):
+                    send_telegram_photo_bot(bot_token, chat_id, local_path, caption=f"📍 ឯកសារ/ទីតាំងជើងឡាន #{photos_sent+1}")
+                    photos_sent += 1
+
+            if res_text.get('ok') or photos_sent > 0:
+                target_display = known_group_title or chat_id
+                self.send_json_response({
+                    'success': True,
+                    'bot_sent': True,
+                    'message': f'បានបញ្ជូនទិន្នន័យ និងរូបភាព ({photos_sent} សន្លឹក) ចូលទៅក្នុងគ្រុប "{target_display}" រួចរាល់! 🚀',
+                    'chat_id': chat_id
+                })
+            else:
+                desc = res_text.get('description', 'Telegram error')
+                self.send_json_response({'success': False, 'error': desc, 'can_open_tme': True})
+            return
+
+        elif path == '/api/open_telegram_dispatch':
+            driver_target = req_data.get('driver_target', '').strip()
+            text = req_data.get('text', '').strip()
+
+            try:
+                if '+' in driver_target or 'joinchat' in driver_target:
+                    invite_code = driver_target.split('+')[-1].split('/')[0].split('?')[0].strip() if '+' in driver_target else driver_target.split('joinchat/')[-1].split('/')[0].split('?')[0].strip()
+                    os.system(f'start "" "tg://join?invite={invite_code}"')
+                elif driver_target.startswith('http'):
+                    os.system(f'start "" "{driver_target}"')
+                elif driver_target and not driver_target.startswith('-') and not driver_target.isdigit():
+                    clean_u = driver_target.lstrip('@')
+                    os.system(f'start "" "tg://resolve?domain={clean_u}"')
+                elif text:
+                    quoted = urllib.parse.quote(text)
+                    os.system(f'start "" "tg://msg_url?text={quoted}"')
+                else:
+                    launch_telegram_desktop()
+            except Exception as e:
+                print("Error launching telegram:", e)
+                launch_telegram_desktop()
+
+            self.send_json_response({'success': True, 'message': 'បានបើកកម្មវិធី Telegram Desktop រួចរាល់!'})
+            return
+
+        elif path == '/api/open_images_folder':
+            image_urls = req_data.get('image_urls', [])
+            opened = False
+            for img_rel in image_urls:
+                if not img_rel:
+                    continue
+                clean_rel = img_rel.replace('/', os.sep).lstrip(os.sep)
+                local_path = os.path.join(BASE_DIR, clean_rel)
+                if os.path.exists(local_path):
+                    try:
+                        os.system(f'explorer.exe /select,"{local_path}"')
+                        opened = True
+                        break
+                    except Exception:
+                        pass
+            if not opened:
+                img_dir = os.path.join(BASE_DIR, 'telegram_images')
+                if os.path.exists(img_dir):
+                    os.system(f'explorer.exe "{img_dir}"')
+                    opened = True
+            self.send_json_response({'success': True, 'opened': opened})
+            return
+
+        elif path == '/api/record_telegram_message':
+            text = req_data.get('text', '').strip()
+            sender = req_data.get('sender', 'Telegram User').strip()
+            date_str = req_data.get('date', datetime.datetime.now().strftime('%d/%m/%Y %H:%M'))
+            images = req_data.get('images', [])
+            if text or images:
+                msg_file = os.path.join(DATA_DIR, 'received_telegram_messages.json')
+                if not os.path.exists(os.path.dirname(msg_file)):
+                    msg_file = os.path.join(BASE_DIR, 'received_telegram_messages.json')
+                msgs = load_json(msg_file, [])
+                if not any((m.get('text') == text and len(m.get('images', [])) == len(images)) for m in msgs):
+                    msgs.insert(0, {
+                        'id': int(datetime.datetime.now().timestamp() * 1000),
+                        'text': text or "📷 រូបភាពភ្ជាប់ពី Telegram",
+                        'sender': sender,
+                        'date': date_str,
+                        'timestamp': int(datetime.datetime.now().timestamp()),
+                        'images': images
+                    })
+                    msgs = msgs[:100]
+                    save_json(msg_file, msgs)
+                self.send_json_response({'success': True, 'count': len(msgs)})
+            else:
+                self.send_json_response({'success': False, 'error': 'No text or images provided'}, status=400)
+            return
+
+        elif path == '/api/bookings':
+            bk_file = os.path.join(DATA_DIR, 'saved_bookings.json')
+            if not os.path.exists(os.path.dirname(bk_file)):
+                bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
+
+            bookings = req_data.get('bookings')
+            booking = req_data.get('booking')
+
+            current_bks = load_json(bk_file, [])
+            if isinstance(bookings, list):
+                save_json(bk_file, bookings)
+                self.send_json_response({'success': True, 'count': len(bookings)})
+            elif isinstance(booking, dict) and booking.get('id'):
+                idx = next((i for i, b in enumerate(current_bks) if b.get('id') == booking['id']), -1)
+                if idx >= 0:
+                    current_bks[idx] = booking
+                else:
+                    current_bks.insert(0, booking)
+                save_json(bk_file, current_bks)
+                self.send_json_response({'success': True, 'booking': booking})
+            else:
+                self.send_json_response({'success': False, 'error': 'Invalid booking data'}, status=400)
+            return
+
+        elif path == '/api/save_telegram_photo':
+            data_url = req_data.get('data_url') or req_data.get('url') or ''
+            file_name = req_data.get('name') or f"tg_photo_{int(time.time()*1000)}.jpg"
+            if data_url and 'base64,' in data_url:
+                try:
+                    tg_img_dir = os.path.join(BASE_DIR, 'telegram_images')
+                    os.makedirs(tg_img_dir, exist_ok=True)
+                    head, b64_str = data_url.split('base64,', 1)
+                    raw_bytes = base64.b64decode(b64_str)
+                    clean_name = re.sub(r'[^a-zA-Z0-9_\-\.]', '', file_name)
+                    out_path = os.path.join(tg_img_dir, clean_name)
+                    with open(out_path, 'wb') as f:
+                        f.write(raw_bytes)
+                    web_url = f"/telegram_images/{clean_name}"
+                    self.send_json_response({'success': True, 'url': web_url, 'name': clean_name})
+                    return
+                except Exception as e:
+                    self.send_json_response({'success': False, 'error': str(e)}, status=500)
+                    return
+            self.send_json_response({'success': False, 'error': 'No valid base64 image data provided'}, status=400)
+            return
+
+        elif path == '/api/delete_telegram_message':
+            msg_id = req_data.get('id')
+            msg_ids = req_data.get('ids', [])
+            msg_text = (req_data.get('text') or '').strip()
+            clear_all = req_data.get('all', False)
+
+            tg_file = os.path.join(DATA_DIR, 'received_telegram_messages.json')
+            if not os.path.exists(tg_file):
+                tg_file = os.path.join(BASE_DIR, 'received_telegram_messages.json')
+            msgs = load_json(tg_file, [])
+            orig_len = len(msgs)
+
+            if clear_all:
+                msgs = []
+            elif msg_ids and isinstance(msg_ids, list):
+                del_set = set(str(x) for x in msg_ids if x is not None)
+                msgs = [m for m in msgs if str(m.get('id')) not in del_set]
+            elif msg_id is not None:
+                msgs = [m for m in msgs if str(m.get('id')) != str(msg_id)]
+            elif msg_text:
+                msgs = [m for m in msgs if m.get('text', '').strip() != msg_text]
+
+            save_json(tg_file, msgs)
+            self.send_json_response({'success': True, 'deleted': orig_len - len(msgs), 'remaining': len(msgs), 'messages': msgs})
+            return
+
         self.send_json_response({'error': 'Invalid endpoint'}, status=404)
 
 
@@ -1846,6 +2219,220 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Content-Type', 'application/json; charset=utf-8')
         self.end_headers()
         self.wfile.write(json.dumps(data, ensure_ascii=False).encode('utf-8'))
+
+def download_telegram_photo_file(token, file_id, update_id):
+    """
+    Downloads a photo from Telegram Bot API using file_id and saves to telegram_images/ folder.
+    Returns the relative web path: /telegram_images/tg_photo_<update_id>_<short_id>.jpg
+    """
+    try:
+        tg_img_dir = os.path.join(BASE_DIR, 'telegram_images')
+        os.makedirs(tg_img_dir, exist_ok=True)
+
+        # 1. Get file path from Telegram
+        get_file_url = f"https://api.telegram.org/bot{token}/getFile?file_id={file_id}"
+        req = urllib.request.Request(get_file_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            f_data = json.loads(resp.read().decode('utf-8'))
+
+        if not f_data.get('ok') or not f_data.get('result', {}).get('file_path'):
+            return None
+
+        file_path = f_data['result']['file_path']
+        ext = os.path.splitext(file_path)[1].lower() or '.jpg'
+        if ext not in ['.jpg', '.jpeg', '.png', '.webp']:
+            ext = '.jpg'
+
+        clean_file_id = re.sub(r'[^a-zA-Z0-9]', '', str(file_id))[:10]
+        filename = f"tg_photo_{update_id}_{clean_file_id}{ext}"
+        dest_path = os.path.join(tg_img_dir, filename)
+
+        # 2. Download file content
+        dl_url = f"https://api.telegram.org/file/bot{token}/{file_path}"
+        req_dl = urllib.request.Request(dl_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
+        with urllib.request.urlopen(req_dl, timeout=20) as resp_dl:
+            img_bytes = resp_dl.read()
+            with open(dest_path, 'wb') as f:
+                f.write(img_bytes)
+
+        return f"/telegram_images/{filename}"
+    except Exception as e:
+        print(f"[TelegramBotPoller] Error downloading photo {file_id}: {e}")
+        return None
+
+def detect_photo_category(caption_text, img_path=None):
+    text_lower = (caption_text or "").lower()
+    if any(k in text_lower for k in ['flight', '✈', '✈️', 'dmk', 'bkk', 'sai', 'airasia', 'air', 'fd', 'fd-', 'fd ', 'we', 'sl', 'v9', 'k6', 'pg', 'tg', 'qv', 'ហោះហើរ', 'សំបុត្រ', 'ตั๋วเครื่องบิน', 'ไฟลท์', 'ขาเข้า', 'ขาออก', 'สนามบิน', 'airport', 'pnr', 'boarding']):
+        return 'សំបុត្រយន្តហោះ'
+    elif any(k in text_lower for k in ['passport', 'បាសស្ព័រ', 'ប៉ាស្ព័រ', 'លិខិតឆ្លងដែន', 'พาสปอร์ต', 'pass', 'pp']):
+        return 'ប៉ាស្ព័រ'
+    elif any(k in text_lower for k in ['alphard', 'hiace', 'staria', 'ឡានជួល']):
+        return 'រូបឡាន'
+    
+    if img_path and os.path.exists(img_path):
+        try:
+            from PIL import Image
+            with Image.open(img_path) as im:
+                w, h = im.size
+                aspect = max(w, h) / max(min(w, h), 1)
+                if h > w and aspect >= 1.62:
+                    if any(k in text_lower for k in ['flight', '✈', 'dmk', 'sai', 'bkk', 'airasia', 'ขาเข้า', 'ขาออก', 'pnr']):
+                        return 'សំបុត្រយន្តហោះ'
+                elif 1.20 <= aspect <= 1.58:
+                    return 'ប៉ាស្ព័រ'
+        except Exception:
+            pass
+    # In VIP border/airport transport system, default customer photos without car/flight text are passports
+    return 'ប៉ាស្ព័រ'
+
+def start_telegram_bot_message_poller():
+    """Continuously polls Telegram Bot for incoming text, photos, and photo captions and stores them in received_telegram_messages.json"""
+    def _poll_thread():
+        token = "8884318593:AAEipEVki9o1YFL0_8IYoUeSn3Xif4dlVOk"
+        cfg = get_telegram_config()
+        if cfg and cfg.get("bot_token"):
+            token = cfg.get("bot_token")
+        
+        offset = 0
+        msg_file = os.path.join(DATA_DIR, 'received_telegram_messages.json')
+        if not os.path.exists(os.path.dirname(msg_file)):
+            msg_file = os.path.join(BASE_DIR, 'received_telegram_messages.json')
+            
+        print(f"[TelegramBotPoller] Live message & photo monitor active for token: {token[:12]}...")
+        while True:
+            try:
+                url = f"https://api.telegram.org/bot{token}/getUpdates?offset={offset}&timeout=20"
+                req = urllib.request.Request(url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    data = json.loads(resp.read().decode('utf-8'))
+                    if data.get('ok') and data.get('result'):
+                        for u in data['result']:
+                            offset = max(offset, u['update_id'] + 1)
+                            m = u.get('message') or u.get('channel_post')
+                            if not m:
+                                continue
+
+                            txt = (m.get('text') or m.get('caption') or '').strip()
+                            photos = m.get('photo')
+                            doc = m.get('document')
+                            has_img = bool(photos) or (doc and (doc.get('mime_type') or '').startswith('image/'))
+
+                            # Skip if neither text nor image
+                            if not txt and not has_img:
+                                continue
+
+                            sender = ""
+                            if m.get('from'):
+                                sender = f"{m['from'].get('first_name', '')} {m['from'].get('last_name', '')}".strip()
+                                if not sender and m['from'].get('username'):
+                                    sender = f"@{m['from']['username']}"
+                            elif m.get('chat') and m['chat'].get('title'):
+                                sender = m['chat']['title']
+                            sender = sender or 'Telegram User'
+
+                            ts = m.get('date', int(datetime.datetime.now().timestamp()))
+                            dt_str = datetime.datetime.fromtimestamp(ts).strftime('%d/%m/%Y %H:%M')
+
+                            img_list = []
+                            cat = detect_photo_category(txt)
+
+                            # Handle photos (grab highest resolution)
+                            if photos and len(photos) > 0:
+                                best_photo = photos[-1]
+                                f_id = best_photo.get('file_id')
+                                if f_id:
+                                    img_url = download_telegram_photo_file(token, f_id, u['update_id'])
+                                    if img_url:
+                                        # Refine category with actual downloaded image dimensions
+                                        full_local_path = os.path.join(BASE_DIR, img_url.lstrip('/'))
+                                        cat = detect_photo_category(txt, full_local_path)
+                                        img_list.append({
+                                            'id': f"IMG-TG-{u['update_id']}",
+                                            'name': f"telegram_photo_{u['update_id']}.jpg",
+                                            'category': cat,
+                                            'url': img_url,
+                                            'date': dt_str
+                                        })
+                            elif doc and (doc.get('mime_type') or '').startswith('image/'):
+                                f_id = doc.get('file_id')
+                                if f_id:
+                                    img_url = download_telegram_photo_file(token, f_id, u['update_id'])
+                                    if img_url:
+                                        full_local_path = os.path.join(BASE_DIR, img_url.lstrip('/'))
+                                        cat = detect_photo_category(txt, full_local_path)
+                                        img_list.append({
+                                            'id': f"IMG-TG-{u['update_id']}",
+                                            'name': doc.get('file_name') or f"telegram_doc_{u['update_id']}.jpg",
+                                            'category': cat,
+                                            'url': img_url,
+                                            'date': dt_str
+                                        })
+
+                            if not txt and img_list:
+                                txt = f"📷 រូបភាព ({cat}) ពី {sender}"
+
+                            msgs = load_json(msg_file, [])
+                            is_dup = any(
+                                str(item.get('id')) == str(u['update_id']) or
+                                (img_list and any(
+                                    any(img.get('url') == ex_img.get('url') for ex_img in item.get('images', []))
+                                    for img in img_list
+                                ))
+                                for item in msgs
+                            )
+                            if not is_dup:
+                                mg_id = m.get('media_group_id')
+                                merged_into_recent = False
+                                if img_list:
+                                    for ex_msg in msgs[:10]:
+                                        same_mg = mg_id and ex_msg.get('media_group_id') == mg_id
+                                        same_sender_time = (ex_msg.get('sender') == sender and abs(ts - ex_msg.get('timestamp', ts)) < 180)
+                                        if same_mg or same_sender_time:
+                                            if 'images' not in ex_msg or not isinstance(ex_msg['images'], list):
+                                                ex_msg['images'] = []
+                                            for new_img in img_list:
+                                                if not any(e_img.get('url') == new_img.get('url') for e_img in ex_msg['images']):
+                                                    ex_msg['images'].append(new_img)
+                                            
+                                            # Preserve real booking text
+                                            ex_text = ex_msg.get('text', '').strip()
+                                            is_placeholder = not ex_text or ex_text.startswith('📷 រូបភាព') or ex_text.startswith('📘 រូបប៉ាស្ព័រ')
+                                            is_new_placeholder = not txt or txt.startswith('📷 រូបភាព') or txt.startswith('📘 រូបប៉ាស្ព័រ')
+                                            if is_placeholder and not is_new_placeholder:
+                                                ex_msg['text'] = txt
+                                            elif not is_placeholder and not is_new_placeholder and txt != ex_text:
+                                                if txt not in ex_text:
+                                                    ex_msg['text'] = f"{ex_text}\n\n{txt}"
+                                            
+                                            ex_msg['timestamp'] = ts
+                                            ex_msg['date'] = dt_str
+                                            if mg_id:
+                                                ex_msg['media_group_id'] = mg_id
+                                            merged_into_recent = True
+                                            break
+
+                                if not merged_into_recent:
+                                    new_entry = {
+                                        'id': u['update_id'],
+                                        'text': txt,
+                                        'sender': sender,
+                                        'date': dt_str,
+                                        'timestamp': ts,
+                                        'media_group_id': mg_id,
+                                        'images': img_list
+                                    }
+                                    msgs.insert(0, new_entry)
+
+                                msgs = msgs[:100]
+                                save_json(msg_file, msgs)
+                                print(f"[TelegramBotPoller] ⚡ Received/Updated message from {sender} (Total images: {len(msgs[0].get('images', []))}): {txt[:35]}...")
+            except Exception:
+                pass
+            import time
+            time.sleep(3)
+
+    t = threading.Thread(target=_poll_thread, daemon=True)
+    t.start()
 
 def main():
     global PORT
@@ -1892,11 +2479,15 @@ def main():
 
     print(f"Server Ready! Access in browser: http://localhost:{PORT}")
 
+    # Start single unified Telegram listener (avoids polling conflict)
     if telegram_bot_listener:
         try:
             telegram_bot_listener.start()
         except Exception as e:
             print("[TelegramBotListener] Start notice:", e)
+            start_telegram_bot_message_poller()
+    else:
+        start_telegram_bot_message_poller()
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
