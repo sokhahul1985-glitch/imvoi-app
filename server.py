@@ -876,14 +876,24 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             return
 
 
-        # Serve static web files
-        if path == '/assets/css/styles.css':
-            css_path = os.path.join(BASE_DIR, 'assets', 'css', 'styles.css')
-            if os.path.exists(css_path):
+        # Serve static web assets
+        if path.startswith('/assets/'):
+            clean_rel = path.lstrip('/').replace('/', os.sep)
+            asset_path = os.path.join(BASE_DIR, clean_rel)
+            if os.path.exists(asset_path) and os.path.isfile(asset_path):
+                ext = os.path.splitext(asset_path)[1].lower()
+                mime = 'text/plain'
+                if ext == '.css': mime = 'text/css; charset=utf-8'
+                elif ext == '.js': mime = 'application/javascript; charset=utf-8'
+                elif ext in ['.jpg', '.jpeg']: mime = 'image/jpeg'
+                elif ext == '.png': mime = 'image/png'
+                elif ext == '.svg': mime = 'image/svg+xml'
+                elif ext == '.ico': mime = 'image/x-icon'
+                
                 self.send_response(200)
-                self.send_header('Content-Type', 'text/css; charset=utf-8')
+                self.send_header('Content-Type', mime)
                 self.end_headers()
-                with open(css_path, 'rb') as f:
+                with open(asset_path, 'rb') as f:
                     self.wfile.write(f.read())
                 return
 
