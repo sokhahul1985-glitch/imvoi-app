@@ -4211,10 +4211,10 @@ input[type="date"] {
                             <table class="schedule-table">
                                 <thead>
                                     <tr>
-                                        <th style="min-width: 155px; cursor: pointer; user-select: none;" onclick="toggleBookingSortDateTime()" title="ចុចដើម្បីប្តូរលំដាប់ ម៉ោង និងថ្ងៃខែ (ព្រឹក ➔ យប់ ឬ យប់ ➔ ព្រឹក)">
+                                        <th style="min-width: 155px; cursor: pointer; user-select: none;" onclick="toggleBookingSortDateTime()" title="ចុចដើម្បីប្តូរលំដាប់ ម៉ោង និងថ្ងៃខែ (ថ្ងៃអនាគត ឬ ថ្ងៃចាស់ នៅលើគេ)">
                                             <i class="fa-regular fa-clock text-primary"></i> ម៉ោង / កាលបរិច្ឆេទ
                                             <span id="dashBookingSortIndicator" class="badge" style="font-size: 10px; padding: 2px 6px; background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; border-radius: 4px; margin-left: 4px; font-weight: 800;">
-                                                <i class="fa-solid fa-arrow-up-short-wide"></i> ព្រឹក ➔ យប់
+                                                <i class="fa-solid fa-arrow-down-wide-short"></i> ថ្ងៃអនាគត (លើគេ)
                                             </span>
                                         </th>
                                         <th style="min-width: 160px;"><i class="fa-solid fa-user text-primary"></i> ភ្ញៀវ / អ្នកកក់</th>
@@ -4269,10 +4269,10 @@ input[type="date"] {
                             <table class="schedule-table" id="bookingsTable">
                                 <thead>
                                     <tr>
-                                        <th style="min-width: 155px; cursor: pointer; user-select: none;" onclick="toggleBookingSortDateTime()" title="ចុចដើម្បីប្តូរលំដាប់ ម៉ោង និងថ្ងៃខែ (ព្រឹក ➔ យប់ ឬ យប់ ➔ ព្រឹក)">
+                                        <th style="min-width: 155px; cursor: pointer; user-select: none;" onclick="toggleBookingSortDateTime()" title="ចុចដើម្បីប្តូរលំដាប់ ម៉ោង និងថ្ងៃខែ (ថ្ងៃអនាគត ឬ ថ្ងៃចាស់ នៅលើគេ)">
                                             <i class="fa-regular fa-clock text-primary"></i> ម៉ោង / កាលបរិច្ឆេទ 
                                             <span id="bookingSortIndicator" class="badge" style="font-size: 10px; padding: 2px 6px; background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; border-radius: 4px; margin-left: 4px; font-weight: 800;">
-                                                <i class="fa-solid fa-arrow-up-short-wide"></i> ព្រឹក ➔ យប់
+                                                <i class="fa-solid fa-arrow-down-wide-short"></i> ថ្ងៃអនាគត (លើគេ)
                                             </span>
                                         </th>
                                         <th style="min-width: 160px;"><i class="fa-solid fa-user text-primary"></i> ភ្ញៀវ / អ្នកកក់</th>
@@ -10667,6 +10667,16 @@ document.addEventListener('paste', function(e) {
     // ==========================================
     let currentBookingSortOrder = 'asc'; // 'asc': 00:00 -> 24:00 (ព្រឹក ➔ យប់), 'desc': 24:00 -> 00:00 (យប់ ➔ ព្រឹក)
 
+    function normalizeBookingDate(dStr) {
+        if (!dStr) return '9999-12-31';
+        const s = String(dStr).trim();
+        const m = s.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
+        if (m) {
+            return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+        }
+        return s;
+    }
+
     function getBookingTimeMinutes(tStr) {
         if (!tStr) return 9999;
         const parts = String(tStr).trim().split(/[:.]/);
@@ -10677,15 +10687,15 @@ document.addEventListener('paste', function(e) {
     }
 
     function compareBookingsByDateTime(a, b, order = 'asc') {
-        const dateA = (a && a.date) ? a.date : '9999-12-31';
-        const dateB = (b && b.date) ? b.date : '9999-12-31';
+        const dateA = (a && a.date) ? normalizeBookingDate(a.date) : '0000-00-00';
+        const dateB = (b && b.date) ? normalizeBookingDate(b.date) : '0000-00-00';
 
-        // 1. Sort by Date
+        // 1. Sort by Date: Future/upcoming dates (មិនទាន់មកដល់) at the top by default (asc = date descending)
         if (dateA !== dateB) {
-            return order === 'asc' ? dateA.localeCompare(dateB) : dateB.localeCompare(dateA);
+            return order === 'asc' ? dateB.localeCompare(dateA) : dateA.localeCompare(dateB);
         }
 
-        // 2. Sort by Time within same date
+        // 2. Sort by Time within same date (00:00 -> 24:00 ព្រឹក ➔ យប់)
         const minA = getBookingTimeMinutes(a ? a.time : '');
         const minB = getBookingTimeMinutes(b ? b.time : '');
         if (minA !== minB) {
@@ -10701,8 +10711,8 @@ document.addEventListener('paste', function(e) {
             const indicator = document.getElementById(id);
             if (indicator) {
                 indicator.innerHTML = (currentBookingSortOrder === 'asc') 
-                    ? '<i class="fa-solid fa-arrow-up-short-wide"></i> ព្រឹក ➔ យប់' 
-                    : '<i class="fa-solid fa-arrow-down-wide-short"></i> យប់ ➔ ព្រឹក';
+                    ? '<i class="fa-solid fa-arrow-down-wide-short"></i> ថ្ងៃអនាគត (លើគេ)' 
+                    : '<i class="fa-solid fa-arrow-up-short-wide"></i> ថ្ងៃចាស់ (លើគេ)';
                 indicator.style.background = (currentBookingSortOrder === 'asc') ? '#e0f2fe' : '#fef2f2';
                 indicator.style.color = (currentBookingSortOrder === 'asc') ? '#0284c7' : '#dc2626';
                 indicator.style.borderColor = (currentBookingSortOrder === 'asc') ? '#7dd3fc' : '#fca5a5';

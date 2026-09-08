@@ -367,6 +367,30 @@ def cluster_telegram_messages_by_time(msgs, time_window_seconds=240):
 
 def save_json(filepath, data):
     try:
+        # Auto-sort bookings: future/upcoming dates at the top, time 00:00 -> 24:00
+        if 'saved_bookings' in filepath and isinstance(data, list):
+            def _parse_bk_min(t_str):
+                if not t_str: return 9999
+                parts = re.split(r'[:.]', str(t_str).strip())
+                try:
+                    return int(parts[0]) * 60 + (int(parts[1]) if len(parts) > 1 else 0)
+                except Exception:
+                    return 9999
+
+            def _date_sort_key(d_str):
+                if not d_str: return 0
+                d = str(d_str).strip()
+                m_dmy = re.match(r'^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$', d)
+                if m_dmy:
+                    norm = f"{m_dmy.group(3)}-{int(m_dmy.group(2)):02d}-{int(m_dmy.group(1)):02d}"
+                else:
+                    norm = d
+                digits = re.sub(r'[^0-9]', '', norm)
+                # Negative value for descending sort (future/upcoming dates at top)
+                return -int(digits) if digits else 0
+
+            data = sorted(data, key=lambda b: (_date_sort_key(b.get('date')), _parse_bk_min(b.get('time')), str(b.get('id', ''))))
+
         # 1. Thread-safe atomic write using temp file + rename
         tmp_file = f"{filepath}.tmp_{os.getpid()}_{int(time.time()*1000)}"
         with open(tmp_file, 'w', encoding='utf-8') as f:
