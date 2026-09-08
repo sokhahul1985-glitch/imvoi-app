@@ -12990,31 +12990,104 @@ document.addEventListener('paste', function(e) {
             if (tgEl) tgEl.value = tgMatch[0].trim();
         }
 
-        // 4. Location (Pickup -> Dropoff)
+        // 4. Helper to set exact booking time with minute precision
+        window.setBookingTimeValue = function(timeStr) {
+            if (!timeStr) return;
+            const timeSel = document.getElementById('bookingTime');
+            if (!timeSel) return;
+            const parts = String(timeStr).trim().split(/[:.]/);
+            if (parts.length < 2) return;
+            const hh = String(parseInt(parts[0], 10)).padStart(2, '0');
+            const mm = String(parseInt(parts[1], 10)).padStart(2, '0');
+            const formatted = `${hh}:${mm}`;
+
+            let found = false;
+            for (let i = 0; i < timeSel.options.length; i++) {
+                if (timeSel.options[i].value === formatted) {
+                    timeSel.selectedIndex = i;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                const opt = document.createElement('option');
+                opt.value = formatted;
+                const hNum = parseInt(hh, 10);
+                let period = '';
+                if (hNum === 0 || hNum === 24) period = '(១២ អធ្រាត្រ)';
+                else if (hNum < 5) period = `(${hNum} យប់)`;
+                else if (hNum < 12) period = `(${hNum} ព្រឹក)`;
+                else if (hNum === 12) period = '(១២ ថ្ងៃត្រង់)';
+                else if (hNum < 18) period = `(${hNum - 12} រសៀល)`;
+                else period = `(${hNum - 12} យប់)`;
+
+                opt.textContent = `${formatted} ${period}`;
+
+                let inserted = false;
+                for (let i = 1; i < timeSel.options.length; i++) {
+                    if (timeSel.options[i].value > formatted) {
+                        timeSel.insertBefore(opt, timeSel.options[i]);
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted) timeSel.appendChild(opt);
+                timeSel.value = formatted;
+            }
+        };
+
+        // 5. Detect Direction: Inbound (ហោះចូល / ขาเข้า) vs Outbound (ហោះចេញ / ขาចេញ / ขาออก)
+        const isInbound = /ขาเข้า|ហោះចូល|ជើងហោះហើរចូល|inbound|arrival|landing|เครื่องลง|บินเข้า/i.test(text);
+        const isOutbound = /ขา(?:ออก|ចេញ)|ហោះចេញ|ជើងហោះហើរចេញ|outbound|departure|บินออก/i.test(text);
+
+        // 6. Location (Pickup -> Dropoff)
         const pickupEl = document.getElementById('bookingPickupLoc');
         const dropoffEl = document.getElementById('bookingDropoffLoc');
 
         let matchedPickup = '';
         let matchedDropoff = '';
 
-        // Priority A: Route with arrow (e.g. รับจาก สนามบินเสียมเรียบ ( SAI ) ---> ปอยเปต)
-        const arrowMatch = text.match(/([^\n\r]+?)\s*(?:--->|-->|->|➔|—>|ទៅកាន់|ទៅ|to)\s*([^\n\r]+)/i);
-        if (arrowMatch) {
-            const leftSide = arrowMatch[1];
-            const rightSide = arrowMatch[2];
-
-            if (/เสียมเรียบ|SAI\b|REP\b|សៀមរាប/i.test(leftSide)) matchedPickup = 'សៀមរាប';
-            else if (/ปอยเปต|ប៉ោយប៉ែត|poipet/i.test(leftSide)) matchedPickup = 'ប៉ោយប៉ែត';
-            else if (/ភ្នំពេញ|phnom|penh|กรุงเทพ|BKK|DMK/i.test(leftSide)) matchedPickup = 'ភ្នំពេញ';
-            else if (/តេជោ|techo|KTI|TIA/i.test(leftSide)) matchedPickup = 'តេជោ';
-
-            if (/ปอยเปต|ប៉ោយប៉ែត|poipet/i.test(rightSide)) matchedDropoff = 'ប៉ោយប៉ែត';
-            else if (/เสียมเรียบ|SAI\b|REP\b|សៀមរាប/i.test(rightSide)) matchedDropoff = 'សៀមរាប';
-            else if (/ភ្នំពេញ|phnom|penh|กรุงเทพ|BKK|DMK/i.test(rightSide)) matchedDropoff = 'ភ្នំពេញ';
-            else if (/តេជោ|techo|KTI|TIA/i.test(rightSide)) matchedDropoff = 'តេជោ';
+        // Priority 1: Explicit Inbound / Outbound with City
+        if (/ขาเข้า\s*(?:สนามบิน)?\s*(?:เสียมเรียบ|SAI|REP|សៀមរាប)|ហោះចូល\s*(?:ព្រលាន)?\s*សៀមរាប/i.test(text)) {
+            matchedPickup = 'សៀមរាប';
+            matchedDropoff = 'ប៉ោយប៉ែត';
+        } else if (/ขาเข้า\s*(?:สนามบิน)?\s*(?:เตโช|TIA|KTI|តេជោ)|ហោះចូល\s*(?:ព្រលាន)?\s*តេជោ/i.test(text)) {
+            matchedPickup = 'តេជោ';
+            matchedDropoff = 'ប៉ោយប៉ែត';
+        } else if (/ขาเข้า\s*(?:สนามบิน)?\s*(?:พนมเปญ|PP\b|PNH\b|ភ្នំពេញ)|ហោះចូល\s*(?:ព្រលាន)?\s*ភ្នំពេញ/i.test(text)) {
+            matchedPickup = 'ភ្នំពេញ';
+            matchedDropoff = 'ប៉ោយប៉ែត';
+        } else if (/ขา(?:ออก|ចេញ)\s*(?:สนามบิน)?\s*(?:เสียมเรียบ|SAI|REP|សៀមរាប)|ហោះចេញ\s*(?:ទៅ)?\s*សៀមរាប/i.test(text)) {
+            matchedPickup = 'ប៉ោយប៉ែត';
+            matchedDropoff = 'សៀមរាប';
+        } else if (/ขา(?:ออก|ចេញ)\s*(?:สนามบิน)?\s*(?:เตโช|TIA|KTI|តេជោ)|ហោះចេញ\s*(?:ទៅ)?\s*តេជោ/i.test(text)) {
+            matchedPickup = 'ប៉ោយប៉ែត';
+            matchedDropoff = 'តេជោ';
+        } else if (/ขา(?:ออก|ចេញ)\s*(?:สนามบิน)?\s*(?:พนมเปญ|PP\b|PNH\b|ភ្នំពេញ)|ហោះចេញ\s*(?:ទៅ)?\s*ភ្នំពេញ/i.test(text)) {
+            matchedPickup = 'ប៉ោយប៉ែត';
+            matchedDropoff = 'ភ្នំពេញ';
         }
 
-        // Priority B: Explicit tags
+        // Priority 2: Route with arrow (e.g. รับจาก สนามบินเสียมเรียบ ( SAI ) ---> ปอยเปต)
+        if (!matchedPickup || !matchedDropoff) {
+            const arrowMatch = text.match(/([^\n\r]+?)\s*(?:--->|-->|->|➔|—>|ទៅកាន់|ទៅ|to)\s*([^\n\r]+)/i);
+            if (arrowMatch) {
+                const leftSide = arrowMatch[1];
+                const rightSide = arrowMatch[2];
+
+                if (/เสียมเรียบ|SAI\b|REP\b|សៀមរាប/i.test(leftSide)) matchedPickup = 'សៀមរាប';
+                else if (/ปอยเปต|ប៉ោយប៉ែត|poipet/i.test(leftSide)) matchedPickup = 'ប៉ោយប៉ែត';
+                else if (/ភ្នំពេញ|phnom|penh|กรุงเทพ|BKK|DMK/i.test(leftSide)) matchedPickup = 'ភ្នំពេញ';
+                else if (/តេជោ|techo|KTI|TIA/i.test(leftSide)) matchedPickup = 'តេជោ';
+
+                if (/ปอยเปต|ប៉ោយប៉ែត|poipet/i.test(rightSide)) matchedDropoff = 'ប៉ោយប៉ែត';
+                else if (/เสียมเรียบ|SAI\b|REP\b|សៀមរាប/i.test(rightSide)) matchedDropoff = 'សៀមរាប';
+                else if (/ភ្នំពេញ|phnom|penh|กรุงเทพ|BKK|DMK/i.test(rightSide)) matchedDropoff = 'ភ្នំពេញ';
+                else if (/តេជោ|techo|KTI|TIA/i.test(rightSide)) matchedDropoff = 'តេជោ';
+            }
+        }
+
+        // Priority 3: Explicit pickup / dropoff tags
         if (!matchedPickup) {
             const rxPickup = text.match(/(?:รับจาก|มารับ|pickup|ពី)[\s:៖]*([^\n\-\->]+)/i);
             if (rxPickup) {
@@ -13037,23 +13110,36 @@ document.addEventListener('paste', function(e) {
             }
         }
 
-        // Fallback: Global city keywords
+        // Priority 4: City keywords combined with Inbound / Outbound or pair
         const isPoipet = /ប៉ោយប៉ែត|poipet|ปอยเปต/i.test(text);
         const isSiemReap = /សៀមរាប|siem\s*reap|เสียมเรียบ|SAI\b|REP\b/i.test(text);
-        const isPhnomPenh = /ភ្នំពេញ|phnom\s*penh|กรุงเทพ|BKK|DMK|PNH\b/i.test(text);
+        const isTecho = /តេជោ|techo|TIA\b|KTI\b/i.test(text);
+        const isPhnomPenh = /ភ្នំពេញ|phnom\s*penh|PNH\b|PP\b/i.test(text);
 
         if (!matchedPickup && !matchedDropoff) {
-            if (isSiemReap && isPoipet) {
-                matchedPickup = 'សៀមរាប';
-                matchedDropoff = 'ប៉ោយប៉ែត';
-            } else if (isPoipet && isPhnomPenh) {
-                matchedPickup = 'ប៉ោយប៉ែត';
-                matchedDropoff = 'ភ្នំពេញ';
+            if (isInbound) {
+                if (isSiemReap) { matchedPickup = 'សៀមរាប'; matchedDropoff = 'ប៉ោយប៉ែត'; }
+                else if (isTecho) { matchedPickup = 'តេជោ'; matchedDropoff = 'ប៉ោយប៉ែត'; }
+                else if (isPhnomPenh) { matchedPickup = 'ភ្នំពេញ'; matchedDropoff = 'ប៉ោយប៉ែត'; }
+            } else if (isOutbound) {
+                if (isSiemReap) { matchedPickup = 'ប៉ោយប៉ែត'; matchedDropoff = 'សៀមរាប'; }
+                else if (isTecho) { matchedPickup = 'ប៉ោយប៉ែត'; matchedDropoff = 'តេជោ'; }
+                else if (isPhnomPenh) { matchedPickup = 'ប៉ោយប៉ែត'; matchedDropoff = 'ភ្នំពេញ'; }
+            } else {
+                if (isSiemReap && isPoipet) { matchedPickup = 'សៀមរាប'; matchedDropoff = 'ប៉ោយប៉ែត'; }
+                else if (isPoipet && isPhnomPenh) { matchedPickup = 'ប៉ោយប៉ែត'; matchedDropoff = 'ភ្នំពេញ'; }
+                else if (isPoipet && isTecho) { matchedPickup = 'តេជោ'; matchedDropoff = 'ប៉ោយប៉ែត'; }
+                else if (isSiemReap) { matchedPickup = 'សៀមរាប'; matchedDropoff = 'ប៉ោយប៉ែត'; }
+                else if (isTecho) { matchedPickup = 'តេជោ'; matchedDropoff = 'ប៉ោយប៉ែត'; }
             }
         } else if (matchedPickup && !matchedDropoff) {
-            if (matchedPickup === 'សៀមរាប' && isPoipet) matchedDropoff = 'ប៉ោយប៉ែត';
-            else if (matchedPickup === 'ប៉ោយប៉ែត' && isSiemReap) matchedDropoff = 'សៀមរាប';
-            else if (matchedPickup === 'ភ្នំពេញ') matchedDropoff = 'ប៉ោយប៉ែត';
+            if (matchedPickup === 'សៀមរាប') matchedDropoff = 'ប៉ោយប៉ែត';
+            else if (matchedPickup === 'តេជោ') matchedDropoff = 'ប៉ោយប៉ែត';
+            else if (matchedPickup === 'ប៉ោយប៉ែត') {
+                if (isSiemReap) matchedDropoff = 'សៀមរាប';
+                else if (isTecho) matchedDropoff = 'តេជោ';
+                else if (isPhnomPenh) matchedDropoff = 'ភ្នំពេញ';
+            }
         }
 
         if (pickupEl && matchedPickup) pickupEl.value = matchedPickup;
@@ -13062,7 +13148,7 @@ document.addEventListener('paste', function(e) {
             updateBookingRouteStyles();
         }
 
-        // 5. Date (Supports DD/MM/YYYY e.g. 10/09/2026 or 10/09/20266 typo, and YYYY-MM-DD)
+        // 7. Date (ថ្ងៃខែឆ្នាំ - Supports DD/MM/YYYY e.g. 10/09/2026 or typo 10/09/20266, and YYYY-MM-DD)
         const dateEl = document.getElementById('bookingDate');
         if (dateEl) {
             const dmyMatch = text.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](202\d)/);
@@ -13084,23 +13170,75 @@ document.addEventListener('paste', function(e) {
             }
         }
 
-        // 6. Time (Priority to pickup/meeting time e.g. เวลา : 09:00 น. or flight arrival 07:40-09:00)
-        const pickupTimeMatch = text.match(/มารับ[^\n\r]*?เวลา\s*[:៖]*\s*(\d{1,2})[:.](\d{2})/i) ||
-                                text.match(/เวลา\s*[:៖]*\s*(\d{1,2})[:.](\d{2})\s*(?:น\.|am|pm)/i) ||
-                                text.match(/[-–]\s*(\d{1,2})[:.](\d{2})/i) ||
-                                text.match(/(?:เวลา|time|ម៉ោង)\s*[:៖]*\s*(\d{1,2})[:.](\d{2})/i) ||
-                                text.match(/(\d{1,2})[:.](\d{2})/);
-        if (pickupTimeMatch) {
-            const hr = String(pickupTimeMatch[1]).padStart(2, '0');
-            const targetTime = `${hr}:00`;
-            const timeSel = document.getElementById('bookingTime');
-            if (timeSel) {
-                for (let i = 0; i < timeSel.options.length; i++) {
-                    if (timeSel.options[i].value === targetTime) {
-                        timeSel.selectedIndex = i;
-                        break;
+        // 8. Pickup Time (ម៉ោងទៅទទួល) - User Rule:
+        // - If Flight OUT (ហោះចេញ / ขาចេញ / ขาออก): Strictly take written pickup time from text!
+        // - If Flight IN (ហោះចូល / ขาเข้า): Take arrival / landing time (from ticket if present, or text)
+        let exactParsedTime = null;
+
+        if (isOutbound) {
+            // OUTBOUND: Strictly take what customer wrote in the message
+            const outTimeMatch = text.match(/มารับ[^\n\r]*?เวลา\s*[:៖]*\s*(\d{1,2})[:.](\d{2})/i) ||
+                                 text.match(/มารับ[^\n\r]*?(\d{1,2})[:.](\d{2})/i) ||
+                                 text.match(/เวลา\s*[:៖]*\s*(\d{1,2})[:.](\d{2})/i) ||
+                                 text.match(/ម៉ោង\s*[:៖]*\s*(\d{1,2})[:.](\d{2})/i) ||
+                                 text.match(/(\d{1,2})[:.](\d{2})\s*(?:น\.|am|pm)/i) ||
+                                 text.match(/(\d{1,2})[:.](\d{2})/);
+            if (outTimeMatch) {
+                exactParsedTime = `${outTimeMatch[1]}:${outTimeMatch[2]}`;
+            }
+        } else {
+            // INBOUND: Priority to arrival / landing time in text
+            const arrTimeMatch = text.match(/arrival[^\n\r]*?(\d{1,2})[:.](\d{2})/i) ||
+                                 text.match(/ถึง[^\n\r]*?(\d{1,2})[:.](\d{2})/i) ||
+                                 text.match(/เครื่องลง[^\n\r]*?(\d{1,2})[:.](\d{2})/i) ||
+                                 text.match(/time\s*[:៖]*\s*(?:\d{1,2}[:.]\d{2}\s*[-–]\s*)?(\d{1,2})[:.](\d{2})/i) ||
+                                 text.match(/เวลา\s*[:៖]*\s*(\d{1,2})[:.](\d{2})/i) ||
+                                 text.match(/ម៉ោង\s*[:៖]*\s*(\d{1,2})[:.](\d{2})/i) ||
+                                 text.match(/(\d{1,2})[:.](\d{2})\s*(?:น\.|am|pm)/i) ||
+                                 text.match(/(\d{1,2})[:.](\d{2})/);
+            if (arrTimeMatch) {
+                exactParsedTime = `${arrTimeMatch[1]}:${arrTimeMatch[2]}`;
+            }
+        }
+
+        if (exactParsedTime) {
+            setBookingTimeValue(exactParsedTime);
+        }
+
+        // 8b. If Inbound and flight ticket attached, call server OCR to verify landing time and date from ticket
+        if (isInbound && Array.isArray(currentBookingImages) && currentBookingImages.length > 0) {
+            const flightTicketImg = currentBookingImages.find(img => img.category === 'សំបុត្រយន្តហោះ') ||
+                                    currentBookingImages.find(img => /flight|ticket|air/i.test(img.name || ''));
+            if (flightTicketImg && flightTicketImg.url) {
+                fetch('/api/parse_flight_ticket', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: flightTicketImg.url })
+                })
+                .then(r => r.json())
+                .then(resp => {
+                    if (resp && resp.success && resp.data) {
+                        const tData = resp.data;
+                        if (tData.arr_time) {
+                            setBookingTimeValue(tData.arr_time);
+                        }
+                        if (tData.date && dateEl && !dateEl.value) {
+                            dateEl.value = tData.date;
+                        }
+                        if (tData.flight_no) {
+                            const nEl = document.getElementById('bookingNotes');
+                            if (nEl && !nEl.value.includes(tData.flight_no)) {
+                                nEl.value = (nEl.value ? nEl.value + ' | ' : '') + `Flight: ${tData.flight_no}`;
+                            }
+                        }
+                        if (tData.pickup_loc && pickupEl && !pickupEl.value) {
+                            pickupEl.value = tData.pickup_loc;
+                            if (dropoffEl) dropoffEl.value = tData.dropoff_loc || 'ប៉ោយប៉ែត';
+                            if (typeof updateBookingRouteStyles === 'function') updateBookingRouteStyles();
+                        }
                     }
-                }
+                })
+                .catch(() => {});
             }
         }
 

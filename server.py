@@ -675,6 +675,160 @@ def extract_best_name(data):
 
     return ""
 
+MONTH_NAME_MAP = {
+    'jan': '01', 'january': '01',
+    'feb': '02', 'february': '02',
+    'mar': '03', 'march': '03',
+    'apr': '04', 'april': '04',
+    'may': '05',
+    'jun': '06', 'june': '06',
+    'jul': '07', 'july': '07',
+    'aug': '08', 'august': '08',
+    'sep': '09', 'september': '09',
+    'oct': '10', 'october': '10',
+    'nov': '11', 'november': '11',
+    'dec': '12', 'december': '12',
+}
+
+def parse_flight_ticket_ocr(img_source):
+    if not img_source:
+        return None
+    try:
+        engine = None
+        if ocr_engine and hasattr(ocr_engine, 'rapid_ocr') and ocr_engine.rapid_ocr:
+            engine = ocr_engine.rapid_ocr
+        else:
+            try:
+                from rapidocr_onnxruntime import RapidOCR
+                engine = RapidOCR()
+            except Exception:
+                pass
+
+        if not engine:
+            return None
+
+        if isinstance(img_source, str):
+            res, _ = engine(img_source)
+        else:
+            import numpy as np
+            arr = np.array(img_source)
+            res, _ = engine(arr)
+
+        if not res:
+            return None
+
+        lines = [r[1].strip() for r in res if r and len(r) > 1 and r[1] and r[1].strip()]
+        full_text = " ".join(lines)
+
+        dep_time = None
+        arr_time = None
+        times = []
+        for tm in re.finditer(r'\b([01]?\d|2[0-3])[:.]([0-5]\d)(?:\s*(AM|PM))?\b', full_text, re.IGNORECASE):
+            h = int(tm.group(1))
+            mn = tm.group(2)
+            ap = tm.group(3)
+            if ap and ap.upper() == 'PM' and h < 12: h += 12
+            if ap and ap.upper() == 'AM' and h == 12: h = 0
+            times.append(f"{h:02d}:{mn}")
+
+        for i, line in enumerate(lines):
+            if re.search(r'\b(?:departure|depart|ออก|출발)\b', line, re.IGNORECASE):
+                sub = " ".join(lines[i:i+3])
+                m = re.search(r'\b([01]?\d|2[0-3])[:.]([0-5]\d)(?:\s*(AM|PM))?\b', sub, re.IGNORECASE)
+                if m:
+                    h = int(m.group(1))
+                    mn = m.group(2)
+                    ap = m.group(3)
+                    if ap and ap.upper() == 'PM' and h < 12: h += 12
+                    if ap and ap.upper() == 'AM' and h == 12: h = 0
+                    dep_time = f"{h:02d}:{mn}"
+            if re.search(r'\b(?:arrival|arrive|ถึง|도착)\b', line, re.IGNORECASE):
+                sub = " ".join(lines[i:i+3])
+                m = re.search(r'\b([01]?\d|2[0-3])[:.]([0-5]\d)(?:\s*(AM|PM))?\b', sub, re.IGNORECASE)
+                if m:
+                    h = int(m.group(1))
+                    mn = m.group(2)
+                    ap = m.group(3)
+                    if ap and ap.upper() == 'PM' and h < 12: h += 12
+                    if ap and ap.upper() == 'AM' and h == 12: h = 0
+                    arr_time = f"{h:02d}:{mn}"
+
+        if not arr_time and len(times) >= 2:
+            dep_time = times[0]
+            arr_time = times[1]
+        elif not arr_time and len(times) == 1:
+            arr_time = times[0]
+
+        # 2. Date
+        parsed_date = None
+        m_month_word = re.search(r'\b(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,]*(\d{1,2})[^\d]*(202\d)\b', full_text, re.IGNORECASE)
+        if m_month_word:
+            m_str = m_month_word.group(1).lower()[:3]
+            d_str = m_month_word.group(2).zfill(2)
+            y_str = m_month_word.group(3)
+            if m_str in MONTH_NAME_MAP:
+                parsed_date = f"{y_str}-{MONTH_NAME_MAP[m_str]}-{d_str}"
+
+        if not parsed_date:
+            m_day_word = re.search(r'\b(\d{1,2})[\s\-_]*(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s\-_]*(202\d)\b', full_text, re.IGNORECASE)
+            if m_day_word:
+                d_str = m_day_word.group(1).zfill(2)
+                m_str = m_day_word.group(2).lower()[:3]
+                y_str = m_day_word.group(3)
+                if m_str in MONTH_NAME_MAP:
+                    parsed_date = f"{y_str}-{MONTH_NAME_MAP[m_str]}-{d_str}"
+
+        if not parsed_date:
+            m_num = re.search(r'\b(\d{1,2})[\/\-](\d{1,2})[\/\-](202\d)\b', full_text)
+            if m_num:
+                parsed_date = f"{m_num.group(3)}-{m_num.group(2).zfill(2)}-{m_num.group(1).zfill(2)}"
+            else:
+                m_iso = re.search(r'\b(202\d)[\/\-](\d{1,2})[\/\-](\d{1,2})\b', full_text)
+                if m_iso:
+                    parsed_date = f"{m_iso.group(1)}-{m_iso.group(2).zfill(2)}-{m_iso.group(3).zfill(2)}"
+
+        # 3. Flight No
+        flight_no = None
+        m_flight = re.search(r'(KR|FD|K6|PG|TG|V9|SL|DD|QV|AK|WE|VZ|VN|BK|LQ)\s*[-]?\s*(\d{2,4})\b', full_text, re.IGNORECASE)
+        if not m_flight:
+            m_flight = re.search(r'\b([A-Z]{2}|[A-Z]\d|\d[A-Z])\s*[-]?\s*(\d{3,4})\b', full_text)
+        if m_flight:
+            flight_no = f"{m_flight.group(1).upper()}-{m_flight.group(2)}"
+
+        # 4. Route & Direction
+        is_rep = bool(re.search(r'เสียมเรียบ|siem\s*reap|SAI\b|REP\b', full_text, re.IGNORECASE))
+        is_tia = bool(re.search(r'เตโช|techo|TIA\b|KTI\b', full_text, re.IGNORECASE))
+        is_pnh = bool(re.search(r'พนมเปญ|phnom\s*penh|PNH\b', full_text, re.IGNORECASE))
+
+        cambodia_airport = ''
+        if is_rep: cambodia_airport = 'សៀមរាប'
+        elif is_tia: cambodia_airport = 'តេជោ'
+        elif is_pnh: cambodia_airport = 'ភ្នំពេញ'
+
+        direction = 'inbound'
+        pickup_loc = cambodia_airport or 'សៀមរាប'
+        dropoff_loc = 'ប៉ោយប៉ែត'
+
+        if re.search(r'departure[^\n\r]*(?:SAI|REP|TIA|KTI|PNH|siem|techo|phnom)', full_text, re.IGNORECASE):
+            direction = 'outbound'
+            pickup_loc = 'ប៉ោយប៉ែត'
+            dropoff_loc = cambodia_airport or 'សៀមរាប'
+
+        return {
+            'dep_time': dep_time,
+            'arr_time': arr_time,
+            'date': parsed_date,
+            'flight_no': flight_no,
+            'direction': direction,
+            'pickup_loc': pickup_loc,
+            'dropoff_loc': dropoff_loc,
+            'cambodia_airport': cambodia_airport,
+            'full_text': full_text[:400]
+        }
+    except Exception as e:
+        print(f"[parse_flight_ticket_ocr] Error: {e}")
+        return None
+
 class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         effective_dir = WEB_DIR if (os.path.exists(WEB_DIR) and os.path.exists(os.path.join(WEB_DIR, 'index.html'))) else BASE_DIR
@@ -1186,6 +1340,31 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                     if k not in params or not params[k]:
                         params[k] = str(v)
             self.handle_toggle_status_api(params)
+            return
+
+        elif path == '/api/parse_flight_ticket':
+            img_url = req_data.get('url') or req_data.get('image_url') or ''
+            img_b64 = req_data.get('image') or req_data.get('image_b64') or ''
+            target_path = None
+            if img_url:
+                clean_url = img_url.lstrip('/')
+                for candidate_dir in [BASE_DIR, DATA_DIR, os.path.join(BASE_DIR, 'telegram_images')]:
+                    c_path = os.path.join(candidate_dir, clean_url)
+                    if os.path.exists(c_path):
+                        target_path = c_path
+                        break
+                    b_path = os.path.join(candidate_dir, os.path.basename(clean_url))
+                    if os.path.exists(b_path):
+                        target_path = b_path
+                        break
+            pil_img = None
+            if not target_path and img_b64:
+                try:
+                    pil_img = decode_b64_image(img_b64)
+                except Exception as e:
+                    print(f"Error decoding b64 for flight ticket: {e}")
+            parsed = parse_flight_ticket_ocr(target_path or pil_img)
+            self.send_json_response({'success': bool(parsed), 'data': parsed or {}})
             return
 
         if path == '/api/save_group':
@@ -2332,6 +2511,82 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json_response({'success': True, 'count': len(msgs)})
             else:
                 self.send_json_response({'success': False, 'error': 'No text or images provided'}, status=400)
+            return
+
+        elif path == '/api/parse_flight_ticket':
+            img_url = req_data.get('image_url', '').strip()
+            data_url = req_data.get('data_url', '').strip()
+            local_path = None
+
+            if img_url:
+                clean_rel = img_url.replace('/', os.sep).lstrip(os.sep)
+                cand_path = os.path.join(BASE_DIR, clean_rel)
+                if os.path.exists(cand_path):
+                    local_path = cand_path
+                else:
+                    cand_path2 = os.path.join(DATA_DIR, clean_rel)
+                    if os.path.exists(cand_path2):
+                        local_path = cand_path2
+
+            if not local_path and data_url and 'base64,' in data_url:
+                try:
+                    tmp_img_dir = os.path.join(BASE_DIR, 'telegram_images')
+                    os.makedirs(tmp_img_dir, exist_ok=True)
+                    tmp_f = os.path.join(tmp_img_dir, f"tmp_flight_{int(time.time()*1000)}.jpg")
+                    b64_str = data_url.split('base64,')[1]
+                    with open(tmp_f, 'wb') as f_out:
+                        f_out.write(base64.b64decode(b64_str))
+                    local_path = tmp_f
+                except Exception:
+                    pass
+
+            if local_path and os.path.exists(local_path) and ocr_engine and getattr(ocr_engine, 'rapid_ocr', None):
+                try:
+                    res, _ = ocr_engine.rapid_ocr(local_path)
+                    txt_lines = [t.strip() for b, t, s in (res or []) if t and t.strip()]
+                    full_txt = ' '.join(txt_lines)
+
+                    # 1. Extract Times
+                    time_matches = re.findall(r'\b([012]?\d[:.][0-5]\d)\b', full_txt)
+                    clean_times = [t.replace('.', ':').zfill(5) for t in time_matches if len(t.split(':')[0] if ':' in t else t.split('.')[0]) <= 2]
+
+                    dep_time = clean_times[0] if len(clean_times) > 0 else ''
+                    arr_time = clean_times[1] if len(clean_times) > 1 else dep_time
+
+                    # Look for explicit arrival keyword in ticket
+                    arr_m = re.search(r'(?:arrival|ถึง|landing|sai|rep|pnh|techo|เสียมเรียบ|เตโช|ភ្នំពេញ)[^\d\n\r]*?([012]?\d[:.][0-5]\d)', full_txt, re.IGNORECASE)
+                    if arr_m:
+                        arr_time = arr_m.group(1).replace('.', ':')
+                        if len(arr_time) == 4: arr_time = '0' + arr_time
+
+                    # 2. Extract Date
+                    flight_date = ''
+                    dmy_m = re.search(r'(\d{1,2})[\/\-](\d{1,2})[\/\-](202\d)', full_txt)
+                    if dmy_m:
+                        flight_date = f"{dmy_m.group(3)}-{dmy_m.group(2).zfill(2)}-{dmy_m.group(1).zfill(2)}"
+                    else:
+                        en_m = re.search(r'(\d{1,2})\s*(?:st|nd|rd|th)?\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,]+(202\d)', full_txt, re.IGNORECASE)
+                        if en_m:
+                            month_map = {'jan':'01','feb':'02','mar':'03','apr':'04','may':'05','jun':'06','jul':'07','aug':'08','sep':'09','oct':'10','nov':'11','dec':'12'}
+                            flight_date = f"{en_m.group(3)}-{month_map[en_m.group(2).lower()[:3]]}-{en_m.group(1).zfill(2)}"
+
+                    # 3. Extract Flight Number
+                    flight_no_m = re.search(r'\b([A-Z0-9]{2}[-\s]?\d{3,4})\b', full_txt)
+                    flight_no = flight_no_m.group(1).replace(' ', '').replace('-', '') if flight_no_m else ''
+
+                    self.send_json_response({
+                        'success': True,
+                        'arrival_time': arr_time,
+                        'departure_time': dep_time,
+                        'date': flight_date,
+                        'flight_no': flight_no,
+                        'full_text': full_txt[:300]
+                    })
+                    return
+                except Exception as ex:
+                    print("Parse flight ticket error:", ex)
+
+            self.send_json_response({'success': False, 'error': 'Could not parse flight ticket'})
             return
 
         elif path == '/api/bookings':
