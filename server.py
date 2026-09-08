@@ -90,25 +90,25 @@ if not os.path.exists(DATA_DIR):
 
 SAVED_CUSTOMERS_FILE = os.path.join(DATA_DIR, 'saved_customers.json')
 INVOICE_COUNTER_FILE = os.path.join(DATA_DIR, 'invoice_counter.json')
+SAVED_BOOKINGS_FILE = os.path.join(DATA_DIR, 'saved_bookings.json')
 WEB_DIR = BASE_DIR
 
 # ===========================================================================
-# STARTUP AUTO-RESTORE: If saved_customers.json is missing/empty on server
-# start (e.g. after Render.com restart), restore from best available backup.
+# STARTUP AUTO-RESTORE: Restore Invoices & Bookings from Supabase Cloud / Backups
 # ===========================================================================
-def _startup_restore_if_needed():
-    """Auto-restore customer data from backup or Supabase Cloud if main file is missing or empty."""
+def _startup_restore_invoices():
+    """Auto-restore customer invoice data from Supabase Cloud or local backups."""
     try:
         # 0. Check Supabase Cloud DB first if configured
         if supabase_db and supabase_db.is_configured():
             try:
-                print("[Supabase] Querying Supabase Cloud Database on startup...")
+                print("[Supabase] Querying Supabase Cloud Database for invoices on startup...")
                 cloud_recs = supabase_db.fetch_all_invoices()
                 if cloud_recs and len(cloud_recs) > 0:
                     os.makedirs(DATA_DIR, exist_ok=True)
                     with open(SAVED_CUSTOMERS_FILE, 'w', encoding='utf-8') as f:
                         json.dump(cloud_recs, f, ensure_ascii=False, indent=2)
-                    print(f"[Supabase] ✅ Successfully restored {len(cloud_recs)} records from Cloud DB!")
+                    print(f"[Supabase] ✅ Successfully restored {len(cloud_recs)} invoice records from Cloud DB!")
                     
                     cloud_counters = supabase_db.fetch_counters()
                     if cloud_counters and isinstance(cloud_counters, dict):
@@ -116,9 +116,9 @@ def _startup_restore_if_needed():
                             json.dump(cloud_counters, fc, ensure_ascii=False, indent=2)
                     return
                 else:
-                    print("[Supabase] Cloud database is empty. Will seed from local file if available.")
+                    print("[Supabase] Cloud database is empty for invoices. Will seed from local file if available.")
             except Exception as se:
-                print(f"[Supabase] Startup load warning: {se}")
+                print(f"[Supabase] Invoice startup load warning: {se}")
 
         # Check if main data file is missing or empty
         main_ok = False
@@ -128,7 +128,7 @@ def _startup_restore_if_needed():
                     existing = json.load(f)
                 if isinstance(existing, list) and len(existing) > 0:
                     main_ok = True
-                    print(f"[DataRestore] Main file OK: {len(existing)} records found.")
+                    print(f"[DataRestore] Main invoice file OK: {len(existing)} records found.")
             except Exception:
                 pass
 
@@ -140,7 +140,7 @@ def _startup_restore_if_needed():
                     pass
             return  # Data is intact, nothing to do
 
-        print("[DataRestore] Main data file missing or empty. Searching backups...")
+        print("[DataRestore] Main invoice data file missing or empty. Searching backups...")
 
         # Candidate backup paths in priority order
         backup_candidates = [
@@ -170,7 +170,6 @@ def _startup_restore_if_needed():
         for bak_path in backup_candidates:
             if not os.path.exists(bak_path):
                 continue
-            # Skip restoring from itself
             try:
                 if os.path.abspath(bak_path) == os.path.abspath(SAVED_CUSTOMERS_FILE):
                     continue
@@ -187,22 +186,113 @@ def _startup_restore_if_needed():
                 print(f"[DataRestore] Could not read backup {bak_path}: {e}")
 
         if best_data and best_count > 0:
-            # Ensure DATA_DIR exists
             os.makedirs(DATA_DIR, exist_ok=True)
             with open(SAVED_CUSTOMERS_FILE, 'w', encoding='utf-8') as f:
                 json.dump(best_data, f, ensure_ascii=False, indent=2)
-            print(f"[DataRestore] ✅ Restored {best_count} records from: {best_path}")
+            print(f"[DataRestore] ✅ Restored {best_count} invoice records from: {best_path}")
             
-            # Seed to Supabase if configured
             if supabase_db and supabase_db.is_configured():
                 try:
                     threading.Thread(target=supabase_db.upsert_invoices, args=(best_data,), daemon=True).start()
                 except Exception:
                     pass
         else:
-            print("[DataRestore] No backup found. Starting with empty database.")
+            print("[DataRestore] No invoice backup found. Starting with empty database.")
     except Exception as e:
-        print(f"[DataRestore] Restore error (non-fatal): {e}")
+        print(f"[DataRestore] Invoice restore error (non-fatal): {e}")
+
+def _startup_restore_bookings():
+    """Auto-restore car rental bookings from Supabase Cloud or local backups."""
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        # 1. Supabase Cloud DB
+        if supabase_db and supabase_db.is_configured():
+            try:
+                print("[Supabase] Querying Supabase Cloud for Bookings on startup...")
+                cloud_bks = supabase_db.fetch_bookings()
+                if cloud_bks and isinstance(cloud_bks, list) and len(cloud_bks) > 0:
+                    local_bks = []
+                    for cand_f in [SAVED_BOOKINGS_FILE, os.path.join(BASE_DIR, 'saved_bookings.json')]:
+                        if os.path.exists(cand_f):
+                            try:
+                                with open(cand_f, 'r', encoding='utf-8') as fb:
+                                    local_bks = json.load(fb)
+                                if local_bks:
+                                    break
+                            except Exception:
+                                pass
+
+                    final_bks = []
+                    seen_ids = set()
+                    all_candidates = cloud_bks + [b for b in local_bks if isinstance(b, dict)]
+                    for b in all_candidates:
+                        if not isinstance(b, dict):
+                            continue
+                        bid = b.get('id') or f"BK-{int(time.time()*1000)}"
+                        if any(e.get('id') == bid and e.get('customerName') == b.get('customerName') and e.get('date') == b.get('date') for e in final_bks):
+                            continue
+                        if bid in seen_ids:
+                            bid = f"{bid}-dup{len(final_bks)+1}"
+                            b = dict(b)
+                            b['id'] = bid
+                        seen_ids.add(bid)
+                        final_bks.append(b)
+                    with open(SAVED_BOOKINGS_FILE, 'w', encoding='utf-8') as fb:
+                        json.dump(final_bks, fb, ensure_ascii=False, indent=2)
+                    print(f"[Supabase] ✅ Successfully restored {len(final_bks)} bookings from Cloud DB!")
+                    return
+                else:
+                    print("[Supabase] Cloud bookings empty. Will seed from local file if available.")
+            except Exception as se:
+                print(f"[Supabase] Booking startup load warning: {se}")
+
+        # 2. Local fallback if main file is missing or empty
+        bks_ok = False
+        if os.path.exists(SAVED_BOOKINGS_FILE):
+            try:
+                with open(SAVED_BOOKINGS_FILE, 'r', encoding='utf-8') as f:
+                    b = json.load(f)
+                if isinstance(b, list) and len(b) > 0:
+                    bks_ok = True
+                    print(f"[DataRestore] Bookings file OK: {len(b)} bookings found.")
+            except Exception:
+                pass
+
+        if not bks_ok:
+            for cand in [
+                os.path.join(BASE_DIR, 'saved_bookings.json'),
+                os.path.join(DATA_DIR, 'backups', 'latest_data', 'saved_bookings.json'),
+                os.path.join(BASE_DIR, 'backups', 'latest_data', 'saved_bookings.json'),
+            ]:
+                if os.path.exists(cand):
+                    try:
+                        with open(cand, 'r', encoding='utf-8') as f:
+                            cand_bks = json.load(f)
+                        if isinstance(cand_bks, list) and len(cand_bks) > 0:
+                            with open(SAVED_BOOKINGS_FILE, 'w', encoding='utf-8') as f:
+                                json.dump(cand_bks, f, ensure_ascii=False, indent=2)
+                            print(f"[DataRestore] ✅ Restored {len(cand_bks)} bookings from backup: {cand}")
+                            bks_ok = True
+                            break
+                    except Exception:
+                        pass
+
+        # 3. Seed Supabase Cloud DB if local has bookings
+        if bks_ok and supabase_db and supabase_db.is_configured():
+            try:
+                with open(SAVED_BOOKINGS_FILE, 'r', encoding='utf-8') as f:
+                    to_seed = json.load(f)
+                if to_seed:
+                    threading.Thread(target=supabase_db.save_bookings, args=(to_seed,), daemon=True).start()
+            except Exception:
+                pass
+    except Exception as ex:
+        print(f"[DataRestore] Booking restore non-fatal error: {ex}")
+
+def _startup_restore_if_needed():
+    """Auto-restore customer invoices, counters, and car bookings on server startup."""
+    _startup_restore_invoices()
+    _startup_restore_bookings()
 
 _startup_restore_if_needed()
 
@@ -217,6 +307,63 @@ def load_json(filepath, default):
         except Exception:
             time.sleep(0.08)
     return default
+
+def cluster_telegram_messages_by_time(msgs, time_window_seconds=240):
+    """Groups telegram messages sent around the same time (same conversation/batch) by the same sender into a single message card."""
+    if not msgs or not isinstance(msgs, list):
+        return msgs
+    
+    clustered = []
+    for m in msgs:
+        sender = (m.get('sender') or 'Telegram User').strip()
+        ts = m.get('timestamp') or 0
+        mg_id = m.get('media_group_id')
+        m_imgs = m.get('images') or []
+        m_text = (m.get('text') or '').strip()
+
+        # Try to find an existing cluster within the time window for the same sender
+        matched = None
+        for c in clustered:
+            c_sender = (c.get('sender') or 'Telegram User').strip()
+            c_ts = c.get('timestamp') or 0
+            c_mg = c.get('media_group_id')
+
+            same_mg = mg_id and c_mg and mg_id == c_mg
+            same_time = (c_sender == sender and abs(ts - c_ts) <= time_window_seconds)
+
+            if same_mg or same_time:
+                matched = c
+                break
+
+        if matched:
+            # 1. Merge images
+            if m_imgs:
+                if 'images' not in matched or not isinstance(matched['images'], list):
+                    matched['images'] = []
+                for img in m_imgs:
+                    if not any(ex.get('url') == img.get('url') for ex in matched['images']):
+                        matched['images'].append(img)
+
+            # 2. Merge texts
+            c_text = (matched.get('text') or '').strip()
+            is_c_placeholder = not c_text or c_text.startswith('📷 រូបភាព') or c_text.startswith('📘 រូបប៉ាស្ព័រ')
+            is_m_placeholder = not m_text or m_text.startswith('📷 រូបភាព') or m_text.startswith('📘 រូបប៉ាស្ព័រ')
+
+            if is_c_placeholder and not is_m_placeholder:
+                matched['text'] = m_text
+            elif not is_c_placeholder and not is_m_placeholder and m_text != c_text:
+                if m_text not in c_text and c_text not in m_text:
+                    matched['text'] = f"{c_text}\n\n{m_text}"
+
+            # Keep latest timestamp
+            matched['timestamp'] = max(ts, matched.get('timestamp', ts))
+            if ts >= matched.get('timestamp', ts):
+                matched['date'] = m.get('date', matched.get('date'))
+        else:
+            # Create a clone so original remains untouched
+            clustered.append(dict(m))
+
+    return clustered
 
 def save_json(filepath, data):
     try:
@@ -240,6 +387,8 @@ def save_json(filepath, data):
                 threading.Thread(target=supabase_db.upsert_invoices, args=(data,), daemon=True).start()
             elif 'invoice_counter' in filepath and isinstance(data, dict):
                 threading.Thread(target=supabase_db.save_counters, args=(data,), daemon=True).start()
+            elif 'saved_bookings' in filepath and isinstance(data, list):
+                threading.Thread(target=supabase_db.save_bookings, args=(data,), daemon=True).start()
 
         # 3. Auto-backup if saving customer database
         if 'saved_customers' in filepath and isinstance(data, list) and len(data) > 0:
@@ -269,6 +418,26 @@ def save_json(filepath, data):
                         json.dump(data, fv, ensure_ascii=False, indent=2)
                 except Exception as ce:
                     print(f"[CrossBackup] Warning (non-fatal): {ce}")
+
+        # 4. Auto-backup if saving car bookings database
+        if 'saved_bookings' in filepath and isinstance(data, list) and len(data) > 0:
+            bk_backup_dir = os.path.join(os.path.dirname(filepath), 'backups')
+            os.makedirs(bk_backup_dir, exist_ok=True)
+            latest_bk_bak = os.path.join(bk_backup_dir, 'saved_bookings_latest_vault.json')
+            with open(latest_bk_bak, 'w', encoding='utf-8') as fb:
+                json.dump(data, fb, ensure_ascii=False, indent=2)
+            hour_tag = datetime.datetime.now().strftime('%Y%m%d_%H')
+            hourly_bk_bak = os.path.join(bk_backup_dir, f'bookings_auto_{hour_tag}.json')
+            if not os.path.exists(hourly_bk_bak):
+                with open(hourly_bk_bak, 'w', encoding='utf-8') as fh:
+                    json.dump(data, fh, ensure_ascii=False, indent=2)
+            if os.path.abspath(DATA_DIR) != os.path.abspath(BASE_DIR):
+                try:
+                    base_bks_bak = os.path.join(BASE_DIR, 'saved_bookings.json')
+                    with open(base_bks_bak, 'w', encoding='utf-8') as fbase:
+                        json.dump(data, fbase, ensure_ascii=False, indent=2)
+                except Exception:
+                    pass
         return True
     except Exception as e:
         print("Save JSON Error:", e)
@@ -654,7 +823,8 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             if not os.path.exists(tg_file):
                 tg_file = os.path.join(BASE_DIR, 'received_telegram_messages.json')
             msgs = load_json(tg_file, [])
-            self.send_json_response({'success': True, 'messages': msgs})
+            clustered_msgs = cluster_telegram_messages_by_time(msgs)
+            self.send_json_response({'success': True, 'messages': clustered_msgs})
             return
 
         elif path == '/api/bookings':
@@ -662,6 +832,20 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             if not os.path.exists(bk_file):
                 bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
             bks = load_json(bk_file, [])
+
+            # Auto-sync with Supabase Cloud if configured
+            if supabase_db and supabase_db.is_configured():
+                try:
+                    cloud_bks = supabase_db.fetch_bookings()
+                    if cloud_bks and isinstance(cloud_bks, list):
+                        if len(cloud_bks) > len(bks):
+                            bks = cloud_bks
+                            save_json(bk_file, bks)
+                        elif len(bks) > len(cloud_bks):
+                            threading.Thread(target=supabase_db.save_bookings, args=(bks,), daemon=True).start()
+                except Exception:
+                    pass
+
             self.send_json_response({'success': True, 'bookings': bks})
             return
 
@@ -825,7 +1009,8 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             if not os.path.exists(msg_file):
                 msg_file = os.path.join(BASE_DIR, 'received_telegram_messages.json')
             msgs = load_json(msg_file, [])
-            self.send_json_response({'success': True, 'messages': msgs})
+            clustered_msgs = cluster_telegram_messages_by_time(msgs)
+            self.send_json_response({'success': True, 'messages': clustered_msgs})
             return
 
         elif path == '/api/latest_telegram_scans':
@@ -2393,33 +2578,38 @@ def start_telegram_bot_message_poller():
                             if not is_dup:
                                 mg_id = m.get('media_group_id')
                                 merged_into_recent = False
-                                if img_list:
-                                    for ex_msg in msgs[:10]:
-                                        same_mg = mg_id and ex_msg.get('media_group_id') == mg_id
-                                        same_sender_time = (ex_msg.get('sender') == sender and abs(ts - ex_msg.get('timestamp', ts)) < 180)
-                                        if same_mg or same_sender_time:
+
+                                # Check if there is an existing message from the same sender within 3 minutes (same batch/conversation)
+                                for ex_msg in msgs[:15]:
+                                    same_mg = mg_id and ex_msg.get('media_group_id') == mg_id
+                                    same_sender_time = (ex_msg.get('sender') == sender and abs(ts - ex_msg.get('timestamp', ts)) <= 240)
+                                    if same_mg or same_sender_time:
+                                        # 1. Merge images
+                                        if img_list:
                                             if 'images' not in ex_msg or not isinstance(ex_msg['images'], list):
                                                 ex_msg['images'] = []
                                             for new_img in img_list:
                                                 if not any(e_img.get('url') == new_img.get('url') for e_img in ex_msg['images']):
                                                     ex_msg['images'].append(new_img)
-                                            
-                                            # Preserve real booking text
-                                            ex_text = ex_msg.get('text', '').strip()
-                                            is_placeholder = not ex_text or ex_text.startswith('📷 រូបភាព') or ex_text.startswith('📘 រូបប៉ាស្ព័រ')
-                                            is_new_placeholder = not txt or txt.startswith('📷 រូបភាព') or txt.startswith('📘 រូបប៉ាស្ព័រ')
-                                            if is_placeholder and not is_new_placeholder:
-                                                ex_msg['text'] = txt
-                                            elif not is_placeholder and not is_new_placeholder and txt != ex_text:
-                                                if txt not in ex_text:
-                                                    ex_msg['text'] = f"{ex_text}\n\n{txt}"
-                                            
-                                            ex_msg['timestamp'] = ts
-                                            ex_msg['date'] = dt_str
-                                            if mg_id:
-                                                ex_msg['media_group_id'] = mg_id
-                                            merged_into_recent = True
-                                            break
+                                        
+                                        # 2. Merge texts intelligently
+                                        ex_text = (ex_msg.get('text') or '').strip()
+                                        new_text = (txt or '').strip()
+                                        is_ex_placeholder = not ex_text or ex_text.startswith('📷 រូបភាព') or ex_text.startswith('📘 រូបប៉ាស្ព័រ')
+                                        is_new_placeholder = not new_text or new_text.startswith('📷 រូបភាព') or new_text.startswith('📘 រូបប៉ាស្ព័រ')
+
+                                        if is_ex_placeholder and not is_new_placeholder:
+                                            ex_msg['text'] = new_text
+                                        elif not is_ex_placeholder and not is_new_placeholder and new_text != ex_text:
+                                            if new_text not in ex_text and ex_text not in new_text:
+                                                ex_msg['text'] = f"{ex_text}\n\n{new_text}"
+                                        
+                                        ex_msg['timestamp'] = max(ts, ex_msg.get('timestamp', ts))
+                                        ex_msg['date'] = dt_str
+                                        if mg_id and not ex_msg.get('media_group_id'):
+                                            ex_msg['media_group_id'] = mg_id
+                                        merged_into_recent = True
+                                        break
 
                                 if not merged_into_recent:
                                     new_entry = {

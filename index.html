@@ -4771,7 +4771,6 @@ input[type="date"] {
                             </button>
                             <div style="display: flex; gap: 8px;">
                                 <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('bookingModal')">បោះបង់</button>
-                                <button type="submit" class="btn-ar btn-ar-primary"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកការកក់</button>
                             </div>
                         </div>
                     </form>
@@ -12363,10 +12362,13 @@ document.addEventListener('paste', function(e) {
             if (idx >= 0) bookings[idx] = newBooking;
         } else {
             bookings.unshift(newBooking);
+            editingBookingId = newBooking.id;
+            const bIdInput = document.getElementById('bookingId');
+            if (bIdInput) bIdInput.value = newBooking.id;
         }
 
         setBookings(bookings);
-        closeModal('bookingModal');
+        // Do NOT auto-close modal: Keep open so user can inspect and click "សម្អាត" before closing
         showToast('រក្សាទុកការកក់ជោគជ័យ! ✅');
 
         // Persist full bookings array to server database for immediate cross-device sync (PC & Mobile)
