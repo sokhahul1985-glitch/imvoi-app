@@ -2415,7 +2415,16 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 })
                 return
 
-            res_text = send_telegram_text_bot(bot_token, chat_id, text)
+            # Support HTML formatting for bold (<b>...</b> or **...**)
+            import re
+            if '**' in text:
+                escaped_text = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+                html_text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', escaped_text)
+                res_text = send_telegram_text_bot(bot_token, chat_id, html_text, parse_mode='HTML')
+                if not res_text.get('ok'):
+                    res_text = send_telegram_text_bot(bot_token, chat_id, text)
+            else:
+                res_text = send_telegram_text_bot(bot_token, chat_id, text)
             photos_sent = 0
             for img_rel in image_urls:
                 if not img_rel or not isinstance(img_rel, str):

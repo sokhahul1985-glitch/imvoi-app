@@ -3385,6 +3385,25 @@ input[type="date"] {
             text-shadow: 0 0 12px rgba(253, 224, 71, 0.5);
         }
 
+        /* Responsive Table, Zoom & Floating Controls */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .app-zoom-widget button:hover {
+            background: #e2e8f0 !important;
+        }
+        #floatingZoomWidget button:hover {
+            filter: brightness(1.25);
+            transform: scale(1.08);
+        }
+        @media (max-width: 768px) {
+            .d-none-sm {
+                display: none !important;
+            }
+        }
+
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -3662,8 +3681,21 @@ input[type="date"] {
                     <button type="button" class="cat-nav-tab" id="btnTabQuoteVisa" onclick="window.selectQuoteCategoryTab('visa', true)" style="background: #ffffff; color: #334155; border: 1.5px solid #cbd5e1; font-weight: 800; border-radius: 9px; padding: 8px 18px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13.5px;">🛂 ស្នើថ្លៃវីសា (Poster)</button>
                 </div>
 
-                <!-- Right Action Buttons -->
+                <!-- Right Action Buttons & Zoom Controls -->
                 <div id="quoteRightActionsBar" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <!-- Zoom Controls -->
+                    <div class="app-zoom-widget" style="display: inline-flex; align-items: center; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 2px 4px; gap: 3px;">
+                        <button type="button" onclick="changeAppZoom(-5)" title="ពង្រួមអេក្រង់ (Zoom Out)" style="width: 26px; height: 26px; border: 1px solid #e2e8f0; background: #f8fafc; color: #0f172a; border-radius: 5px; font-weight: 900; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                        <button type="button" onclick="resetAppZoom()" title="Reset 100%" style="border: none; background: transparent; color: #0284c7; font-weight: 800; font-size: 11.5px; padding: 0 4px; cursor: pointer; min-width: 42px; text-align: center;">
+                            <span id="quoteZoomValueDisplay">100%</span>
+                        </button>
+                        <button type="button" onclick="changeAppZoom(5)" title="ពង្រីកអេក្រង់ (Zoom In)" style="width: 26px; height: 26px; border: 1px solid #e2e8f0; background: #f8fafc; color: #0f172a; border-radius: 5px; font-weight: 900; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+
                     <button type="button" class="btn-sys btn-dark" style="font-size: 12.5px; padding: 8px 14px; font-weight: 800; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="openQuoteSettingsModal()">⚙️ កែប្រែតម្លៃ</button>
                     <button type="button" class="btn-sys btn-indigo" style="font-size: 12.5px; padding: 8px 14px; font-weight: 800; background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(37,99,235,0.3); cursor: pointer;" onclick="copyPosterToClipboard()">📋 Copy រូបភាព</button>
                     <button type="button" class="btn-sys btn-emerald" style="font-size: 12.5px; padding: 8px 14px; font-weight: 800; background: linear-gradient(135deg, #059669, #10b981); color: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(16,185,129,0.3); cursor: pointer;" onclick="downloadPosterImage()">🖼️ ទាញយក PNG</button>
@@ -4057,8 +4089,27 @@ input[type="date"] {
                         </button>
                     </div>
 
-                    <!-- Top Right Quick Actions -->
-                    <div class="ar-top-actions">
+                    <!-- Top Right Quick Actions & Zoom Controls -->
+                    <div class="ar-top-actions" style="display: flex; align-items: center; gap: 8px;">
+                        <!-- Screen Zoom Controls (ពង្រីក / ពង្រួម អេក្រង់) -->
+                        <div class="app-zoom-widget" style="display: inline-flex; align-items: center; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 9px; padding: 2px 4px; gap: 3px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                            <span style="font-size: 11px; font-weight: 800; color: #475569; padding: 0 4px; display: inline-flex; align-items: center; gap: 4px;">
+                                <i class="fa-solid fa-magnifying-glass text-primary"></i> <span class="d-none-sm">ពង្រីក/ពង្រួម</span>
+                            </span>
+                            <button type="button" onclick="changeAppZoom(-5)" title="ពង្រួមអេក្រង់ (Zoom Out) ដើម្បីមើលទិន្នន័យបានពេញ" style="width: 26px; height: 26px; border: 1px solid #e2e8f0; background: #f8fafc; color: #0f172a; border-radius: 6px; font-weight: 900; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s;">
+                                <i class="fa-solid fa-minus"></i>
+                            </button>
+                            <button type="button" onclick="resetAppZoom()" title="កំណត់ត្រឡប់មកធម្មតាវិញ (100%)" style="border: none; background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; border-radius: 6px; font-weight: 800; font-size: 11.5px; height: 26px; padding: 0 8px; cursor: pointer; min-width: 46px; text-align: center;">
+                                <span id="appZoomValueDisplay">100%</span>
+                            </button>
+                            <button type="button" onclick="changeAppZoom(5)" title="ពង្រីកអេក្រង់ (Zoom In) ដើម្បីមើលអក្សរធំច្បាស់" style="width: 26px; height: 26px; border: 1px solid #e2e8f0; background: #f8fafc; color: #0f172a; border-radius: 6px; font-weight: 900; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s;">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                            <button type="button" onclick="toggleAppFullscreen()" title="ពង្រីកពេញអេក្រង់ (Fullscreen)" style="width: 26px; height: 26px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; border-radius: 6px; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fa-solid fa-expand" id="appFullscreenIcon"></i>
+                            </button>
+                        </div>
+
                         <a href="https://t.me/car_rent_sokha88_bot" target="_blank" class="btn-ar btn-ar-outline" style="color:#0088cc; font-weight:700;">
                             <i class="fa-solid fa-robot"></i> @car_rent_sokha88_bot
                         </a>
@@ -4160,7 +4211,12 @@ input[type="date"] {
                             <table class="schedule-table">
                                 <thead>
                                     <tr>
-                                        <th style="min-width: 140px;"><i class="fa-regular fa-clock text-primary"></i> ម៉ោង / កាលបរិច្ឆេទ</th>
+                                        <th style="min-width: 155px; cursor: pointer; user-select: none;" onclick="toggleBookingSortDateTime()" title="ចុចដើម្បីប្តូរលំដាប់ ម៉ោង និងថ្ងៃខែ (ព្រឹក ➔ យប់ ឬ យប់ ➔ ព្រឹក)">
+                                            <i class="fa-regular fa-clock text-primary"></i> ម៉ោង / កាលបរិច្ឆេទ
+                                            <span id="dashBookingSortIndicator" class="badge" style="font-size: 10px; padding: 2px 6px; background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; border-radius: 4px; margin-left: 4px; font-weight: 800;">
+                                                <i class="fa-solid fa-arrow-up-short-wide"></i> ព្រឹក ➔ យប់
+                                            </span>
+                                        </th>
                                         <th style="min-width: 160px;"><i class="fa-solid fa-user text-primary"></i> ភ្ញៀវ / អ្នកកក់</th>
                                         <th style="min-width: 180px;"><i class="fa-solid fa-car text-primary"></i> ប្រភេទរថយន្ត</th>
                                         <th style="min-width: 200px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅធ្វើដំណើរ (Route)</th>
@@ -4213,7 +4269,12 @@ input[type="date"] {
                             <table class="schedule-table" id="bookingsTable">
                                 <thead>
                                     <tr>
-                                        <th style="min-width: 140px;"><i class="fa-regular fa-clock text-primary"></i> ម៉ោង / កាលបរិច្ឆេទ</th>
+                                        <th style="min-width: 155px; cursor: pointer; user-select: none;" onclick="toggleBookingSortDateTime()" title="ចុចដើម្បីប្តូរលំដាប់ ម៉ោង និងថ្ងៃខែ (ព្រឹក ➔ យប់ ឬ យប់ ➔ ព្រឹក)">
+                                            <i class="fa-regular fa-clock text-primary"></i> ម៉ោង / កាលបរិច្ឆេទ 
+                                            <span id="bookingSortIndicator" class="badge" style="font-size: 10px; padding: 2px 6px; background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; border-radius: 4px; margin-left: 4px; font-weight: 800;">
+                                                <i class="fa-solid fa-arrow-up-short-wide"></i> ព្រឹក ➔ យប់
+                                            </span>
+                                        </th>
                                         <th style="min-width: 160px;"><i class="fa-solid fa-user text-primary"></i> ភ្ញៀវ / អ្នកកក់</th>
                                         <th style="min-width: 180px;"><i class="fa-solid fa-car text-primary"></i> ប្រភេទរថយន្ត</th>
                                         <th style="min-width: 200px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅធ្វើដំណើរ (Route)</th>
@@ -10601,6 +10662,56 @@ document.addEventListener('paste', function(e) {
         renderDashboard();
     };
 
+    // ==========================================
+    // Bookings Sorting by Date & Time (ព្រឹក ➔ យប់ / យប់ ➔ ព្រឹក)
+    // ==========================================
+    let currentBookingSortOrder = 'asc'; // 'asc': 00:00 -> 24:00 (ព្រឹក ➔ យប់), 'desc': 24:00 -> 00:00 (យប់ ➔ ព្រឹក)
+
+    function getBookingTimeMinutes(tStr) {
+        if (!tStr) return 9999;
+        const parts = String(tStr).trim().split(/[:.]/);
+        let h = parseInt(parts[0], 10);
+        if (isNaN(h)) return 9999;
+        let m = parseInt(parts[1], 10) || 0;
+        return h * 60 + m;
+    }
+
+    function compareBookingsByDateTime(a, b, order = 'asc') {
+        const dateA = (a && a.date) ? a.date : '9999-12-31';
+        const dateB = (b && b.date) ? b.date : '9999-12-31';
+
+        // 1. Sort by Date
+        if (dateA !== dateB) {
+            return order === 'asc' ? dateA.localeCompare(dateB) : dateB.localeCompare(dateA);
+        }
+
+        // 2. Sort by Time within same date
+        const minA = getBookingTimeMinutes(a ? a.time : '');
+        const minB = getBookingTimeMinutes(b ? b.time : '');
+        if (minA !== minB) {
+            return order === 'asc' ? (minA - minB) : (minB - minA);
+        }
+
+        return String((a && a.id) || '').localeCompare(String((b && b.id) || ''));
+    }
+
+    window.toggleBookingSortDateTime = function() {
+        currentBookingSortOrder = (currentBookingSortOrder === 'asc') ? 'desc' : 'asc';
+        ['bookingSortIndicator', 'dashBookingSortIndicator'].forEach(id => {
+            const indicator = document.getElementById(id);
+            if (indicator) {
+                indicator.innerHTML = (currentBookingSortOrder === 'asc') 
+                    ? '<i class="fa-solid fa-arrow-up-short-wide"></i> ព្រឹក ➔ យប់' 
+                    : '<i class="fa-solid fa-arrow-down-wide-short"></i> យប់ ➔ ព្រឹក';
+                indicator.style.background = (currentBookingSortOrder === 'asc') ? '#e0f2fe' : '#fef2f2';
+                indicator.style.color = (currentBookingSortOrder === 'asc') ? '#0284c7' : '#dc2626';
+                indicator.style.borderColor = (currentBookingSortOrder === 'asc') ? '#7dd3fc' : '#fca5a5';
+            }
+        });
+        if (typeof renderBookings === 'function') renderBookings(currentBookingFilter);
+        if (typeof renderDashboard === 'function') renderDashboard();
+    };
+
     // Dashboard
     function renderDashboard() {
         const bookings = getBookings();
@@ -10747,6 +10858,9 @@ document.addEventListener('paste', function(e) {
             return;
         }
 
+        // Apply chronological sorting by Date & Time (ព្រឹក ➔ យប់)
+        filteredTrips.sort((a, b) => compareBookingsByDateTime(a, b, currentBookingSortOrder));
+
         tbody.innerHTML = filteredTrips.map(b => renderBookingRow(b)).join('');
 
         // Also refresh Telegram Booking Analysis Section
@@ -10856,6 +10970,9 @@ document.addEventListener('paste', function(e) {
         if (q) {
             filtered = filtered.filter(b => matchBookingSearch(b, q));
         }
+
+        // Apply chronological sorting by Date & Time (ព្រឹក ➔ យប់)
+        filtered.sort((a, b) => compareBookingsByDateTime(a, b, currentBookingSortOrder));
 
         const tbody = document.getElementById('bookingsGrid');
         if (!tbody) return;
@@ -12683,10 +12800,10 @@ document.addEventListener('paste', function(e) {
         if (driverTg) msg += `👮‍♂️ អ្នកបើកបរ / Driver: ${driverTg}\n`;
         msg += `📅 កាលបរិច្ឆេទ: ${b.date || ''}\n`;
         msg += `⏰ ម៉ោងចេញដំណើរ: ${b.time || '--:--'}\n`;
-        msg += `👤 ឈ្មោះភ្ញៀវ: ${b.customerName || 'អតិថិជន'}\n`;
+        msg += `👤 **ឈ្មោះភ្ញៀវ: ${b.customerName || 'អតិថិជន'}**\n`;
         if (b.customerPhone) msg += `📞 លេខទូរស័ព្ទភ្ញៀវ: ${b.customerPhone}\n`;
         if (b.customerTelegram) msg += `💬 Telegram ភ្ញៀវ: ${b.customerTelegram}\n`;
-        msg += `🚘 ប្រភេទរថយន្ត: ${carsStr}\n`;
+        msg += `🚗 **ប្រភេទរថយន្ត: ${carsStr}**\n`;
         msg += `📍 ទីតាំងទទួល (Pickup): ${b.pickupLoc || 'ភ្នំពេញ'}\n`;
         msg += `🏁 ទីតាំងទម្លាក់ (Dropoff): ${b.dropoffLoc || 'ប៉ោយប៉ែត'}\n`;
         if (b.vipService) msg += `⭐ សេវា VIP: ${b.vipService}\n`;
@@ -12763,13 +12880,44 @@ document.addEventListener('paste', function(e) {
         }
     };
 
+    async function copyDispatchRichText(plainText) {
+        if (!plainText) return;
+        const htmlText = plainText
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+            .replace(/\n/g, '<br>');
+
+        try {
+            if (navigator.clipboard && window.ClipboardItem) {
+                const textBlob = new Blob([plainText], { type: 'text/plain' });
+                const htmlBlob = new Blob([htmlText], { type: 'text/html' });
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        'text/plain': textBlob,
+                        'text/html': htmlBlob
+                    })
+                ]);
+                return true;
+            }
+        } catch (e) {}
+
+        try {
+            await navigator.clipboard.writeText(plainText);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
     window.copyDispatchTextOnly = async function() {
         const txtArea = document.getElementById('dispatchMessageText');
         if (!txtArea || !txtArea.value.trim()) return;
-        try {
-            await navigator.clipboard.writeText(txtArea.value.trim());
+        const ok = await copyDispatchRichText(txtArea.value.trim());
+        if (ok) {
             showToast('បានចម្លងទិន្នន័យការងារជើងឡានរួចរាល់! 📋 (Ctrl+V ដើម្បី Paste ក្នុង Telegram)');
-        } catch (e) {
+        } else {
             showToast('សូមជ្រើសរើស Text រួចចុច Ctrl+C');
         }
     };
@@ -12835,12 +12983,8 @@ document.addEventListener('paste', function(e) {
         // Get selected images
         const checkedImgs = Array.from(document.querySelectorAll('.dispatch-image-check:checked')).map(cb => cb.value);
 
-        // 1. ALWAYS Copy text to clipboard so user can instantly paste
-        try {
-            await navigator.clipboard.writeText(messageText);
-        } catch (e) {
-            console.warn('Clipboard write error:', e);
-        }
+        // 1. ALWAYS Copy text to clipboard with HTML bold so user can instantly paste
+        await copyDispatchRichText(messageText);
 
         // 2. Call backend dispatch API
         let botSent = false;
@@ -14822,8 +14966,114 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
         }
     }
 
+    // ==========================================
+    // Screen Zoom & Scale Controls (ពង្រីក / ពង្រួម អេក្រង់)
+    // ==========================================
+    let currentAppZoomLevel = 100;
+    try {
+        const savedZoom = localStorage.getItem('app_ui_zoom_level');
+        if (savedZoom) {
+            const parsed = parseInt(savedZoom, 10);
+            if (!isNaN(parsed) && parsed >= 60 && parsed <= 160) {
+                currentAppZoomLevel = parsed;
+            }
+        }
+    } catch (e) {}
+
+    function applyAppZoom(percent, showNotification = false) {
+        currentAppZoomLevel = Math.max(65, Math.min(160, percent));
+        document.body.style.zoom = currentAppZoomLevel + '%';
+        try {
+            localStorage.setItem('app_ui_zoom_level', String(currentAppZoomLevel));
+        } catch (e) {}
+
+        ['appZoomValueDisplay', 'floatingZoomValueDisplay', 'quoteZoomValueDisplay'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = currentAppZoomLevel + '%';
+        });
+
+        if (showNotification && typeof showToast === 'function') {
+            showToast(`🔍 កម្រិតពង្រីកអេក្រង់៖ ${currentAppZoomLevel}%`);
+        }
+    }
+
+    window.changeAppZoom = function(delta) {
+        applyAppZoom(currentAppZoomLevel + delta, true);
+    };
+
+    window.resetAppZoom = function() {
+        applyAppZoom(100, true);
+    };
+
+    window.toggleAppFullscreen = function() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+            ['appFullscreenIcon', 'floatingFullscreenIcon'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.className = 'fa-solid fa-compress';
+            });
+            if (typeof showToast === 'function') showToast('⛶ បានបើកទម្រង់ពេញអេក្រង់ (Fullscreen)');
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+            ['appFullscreenIcon', 'floatingFullscreenIcon'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.className = 'fa-solid fa-expand';
+            });
+        }
+    };
+
+    // Listen to Fullscreen change to update icons
+    document.addEventListener('fullscreenchange', () => {
+        const isFull = !!document.fullscreenElement;
+        ['appFullscreenIcon', 'floatingFullscreenIcon'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.className = isFull ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+        });
+    });
+
+    // Keyboard Zoom Shortcuts (Ctrl + / Ctrl - / Ctrl 0)
+    window.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && (e.key === '+' || e.key === '=')) {
+            e.preventDefault();
+            changeAppZoom(5);
+        } else if (e.ctrlKey && (e.key === '-' || e.key === '_')) {
+            e.preventDefault();
+            changeAppZoom(-5);
+        } else if (e.ctrlKey && e.key === '0') {
+            e.preventDefault();
+            resetAppZoom();
+        }
+    });
+
+    // Apply saved zoom level on load immediately
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => applyAppZoom(currentAppZoomLevel));
+    } else {
+        applyAppZoom(currentAppZoomLevel);
+    }
+
 })();
 
 </script>
+
+    <!-- Floating Glassmorphic Zoom Control Widget (Fixed Bottom-Right) -->
+    <div id="floatingZoomWidget" style="position: fixed; bottom: 18px; right: 18px; z-index: 99999; display: flex; align-items: center; background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1.5px solid rgba(255,255,255,0.25); border-radius: 30px; padding: 5px 10px; gap: 5px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); color: #ffffff; user-select: none;">
+        <span style="font-size: 11px; font-weight: 800; color: #38bdf8; display: flex; align-items: center; gap: 4px; padding-left: 2px;">
+            <i class="fa-solid fa-magnifying-glass"></i> <span class="d-none-sm">ពង្រីក/ពង្រួម:</span>
+        </span>
+        <button type="button" onclick="changeAppZoom(-5)" title="ពង្រួមអេក្រង់ (Zoom Out)" style="width: 26px; height: 26px; border: none; background: rgba(255,255,255,0.18); color: #ffffff; border-radius: 50%; font-weight: 900; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;">
+            <i class="fa-solid fa-minus"></i>
+        </button>
+        <button type="button" onclick="resetAppZoom()" title="ចុចកំណត់ត្រឡប់មក 100%" style="border: none; background: rgba(2, 132, 199, 0.35); border: 1px solid #38bdf8; color: #fde047; font-weight: 900; font-size: 11.5px; height: 24px; border-radius: 12px; padding: 0 7px; cursor: pointer; min-width: 44px; text-align: center;">
+            <span id="floatingZoomValueDisplay">100%</span>
+        </button>
+        <button type="button" onclick="changeAppZoom(5)" title="ពង្រីកអេក្រង់ (Zoom In)" style="width: 26px; height: 26px; border: none; background: rgba(255,255,255,0.18); color: #ffffff; border-radius: 50%; font-weight: 900; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+        <button type="button" onclick="toggleAppFullscreen()" title="ពង្រីកពេញអេក្រង់ (Fullscreen)" style="width: 26px; height: 26px; border: none; background: rgba(56, 189, 248, 0.25); color: #38bdf8; border-radius: 50%; font-weight: 800; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-left: 2px;">
+            <i class="fa-solid fa-expand" id="floatingFullscreenIcon"></i>
+        </button>
+    </div>
+
 </body>
 </html>
