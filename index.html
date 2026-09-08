@@ -4059,16 +4059,6 @@ input[type="date"] {
 
                     <!-- Top Right Quick Actions -->
                     <div class="ar-top-actions">
-                        <button type="button" class="btn-ar btn-ar-primary" onclick="openNewBookingModal()">
-                            <i class="fa-solid fa-plus"></i> កក់ឡានថ្មី
-                        </button>
-                        <button type="button" class="btn-ar btn-ar-telegram" style="font-weight: 800; display: inline-flex; align-items: center; gap: 6px;" onclick="fetchAndFillLatestTelegramMessage()">
-                            <i class="fa-brands fa-telegram"></i> <span>ទាញសារពី Bot ចូលបង្កើតថ្មី</span>
-                        </button>
-                        <button type="button" class="btn-ar btn-ar-outline" onclick="openModal('telegramInboxModal'); renderTelegramInboxList();" style="position: relative;">
-                            <i class="fa-brands fa-telegram text-info"></i> Telegram Inbox
-                            <span id="topBarTgCountBadge" class="badge" style="display: none; background: #0284c7; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 800; margin-left: 4px;">0</span>
-                        </button>
                         <a href="https://t.me/car_rent_sokha88_bot" target="_blank" class="btn-ar btn-ar-outline" style="color:#0088cc; font-weight:700;">
                             <i class="fa-solid fa-robot"></i> @car_rent_sokha88_bot
                         </a>
@@ -4119,11 +4109,8 @@ input[type="date"] {
                             <div class="card-title">
                                 <i class="fa-solid fa-calendar-day text-primary" style="font-size: 1.3rem;"></i>
                                 <div>
-                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                        <h3 id="dashScheduleCardTitle">កាលវិភាគចេញដំណើរថ្ងៃនេះ (Today's Trips)</h3>
-                                        <button type="button" class="btn-ar btn-ar-primary" style="padding: 4px 10px; font-size: 11.5px;" onclick="openNewBookingModal()">
-                                            <i class="fa-solid fa-plus"></i> កក់ឡានថ្មី
-                                        </button>
+                                    <div>
+                                        <h3 id="dashScheduleCardTitle" style="margin: 0; font-weight: 800;">កាលវិភាគចេញដំណើរថ្ងៃនេះ (Today's Trips)</h3>
                                     </div>
                                     <p style="margin: 0; font-size: 11px; color: #64748b;" id="dashScheduleCardSub">ជើងឡានដែលត្រូវចេញដំណើរ និងទទួលភ្ញៀវទាំងអស់ក្នុងថ្ងៃនេះ</p>
                                 </div>
@@ -4137,7 +4124,7 @@ input[type="date"] {
                         </div>
 
                         <!-- Filter Tabs in Dashboard (ផ្ទាំងសង្ខេប) -->
-                        <div class="filter-toolbar" style="margin: 8px 14px 4px 14px; padding-bottom: 6px; border-bottom: 1px solid #f1f5f9;">
+                        <div class="filter-toolbar" style="margin: 8px 14px 4px 14px; padding-bottom: 6px; border-bottom: 1px solid #f1f5f9; justify-content: flex-start; gap: 10px;">
                             <div class="filter-tabs" id="dashScheduleTabs">
                                 <button type="button" class="filter-tab" data-dash-filter="all" onclick="setDashboardScheduleFilter('all')">ទាំងអស់ (<span id="dashCountAll">0</span>)</button>
                                 <button type="button" class="filter-tab active" data-dash-filter="dueToday" onclick="setDashboardScheduleFilter('dueToday')">🕒 ថ្ងៃនេះ (<span id="dashCountToday">0</span>)</button>
@@ -4145,9 +4132,24 @@ input[type="date"] {
                                 <button type="button" class="filter-tab" data-dash-filter="upcoming" onclick="setDashboardScheduleFilter('upcoming')">កក់ទុកមុន (<span id="dashCountUpcoming">0</span>)</button>
                                 <button type="button" class="filter-tab" data-dash-filter="completed" onclick="setDashboardScheduleFilter('completed')">បានបញ្ចប់ (<span id="dashCountCompleted">0</span>)</button>
                             </div>
-                            <div class="filter-search-box" style="position: relative; display: flex; align-items: center; min-width: 280px; max-width: 440px;">
-                                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; color: #0284c7;"></i>
-                                <input type="text" id="dashScheduleSearch" oninput="renderDashboard()" placeholder="🔍 ស្វែងរក (ឈ្មោះ, ម៉ោង, ឡាន, ផ្លូវ, Telegram, VIP...)" style="padding-left: 32px; padding-right: 28px; width: 100%;">
+
+                            <!-- Action Buttons shifted directly to the left beside the tabs -->
+                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                <button type="button" class="btn-ar btn-ar-primary" style="padding: 5px 11px; font-size: 11.5px; font-weight: 800;" onclick="openNewBookingModal()">
+                                    <i class="fa-solid fa-plus"></i> កក់ឡានថ្មី
+                                </button>
+                                <button type="button" class="btn-ar btn-ar-telegram" style="font-weight: 800; font-size: 11.5px; padding: 5px 11px; display: inline-flex; align-items: center; gap: 6px;" onclick="fetchAndFillLatestTelegramMessage()">
+                                    <i class="fa-brands fa-telegram"></i> <span>ទាញសារពី Bot ចូលបង្កើតថ្មី</span>
+                                </button>
+                                <button type="button" class="btn-ar btn-ar-outline" style="font-size: 11.5px; padding: 5px 11px; font-weight: 700; position: relative;" onclick="openModal('telegramInboxModal'); renderTelegramInboxList();">
+                                    <i class="fa-brands fa-telegram text-info"></i> Telegram Inbox
+                                    <span id="topBarTgCountBadge" class="badge" style="display: none; background: #0284c7; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 800; margin-left: 4px;">0</span>
+                                </button>
+                            </div>
+
+                            <div class="filter-search-box" style="margin-left: auto; position: relative; display: flex; align-items: center; min-width: 260px; max-width: 380px;">
+                                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; color: #0284c7; cursor: pointer;" onclick="document.getElementById('dashScheduleSearch').focus(); renderDashboard();" title="ចុចដើម្បីស្វែងរក"></i>
+                                <input type="text" id="dashScheduleSearch" oninput="renderDashboard()" onkeyup="if(event.key==='Escape')clearDashScheduleSearch(); else renderDashboard();" placeholder="🔍 ស្វែងរក (ឈ្មោះ, ម៉ោង, ឡាន, ផ្លូវ, Telegram, VIP...)" autocomplete="off" spellcheck="false" style="padding-left: 32px; padding-right: 28px; width: 100%;">
                                 <button type="button" id="dashScheduleSearchClearBtn" onclick="clearDashScheduleSearch()" style="position: absolute; right: 8px; background: none; border: none; color: #94a3b8; font-size: 13px; cursor: pointer; display: none; padding: 2px;" title="សម្អាតការស្វែងរក">
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
@@ -4442,6 +4444,9 @@ input[type="date"] {
                     <div class="modal-header">
                         <h3 id="bookingModalTitle"><i class="fa-solid fa-calendar-plus text-primary"></i> បង្កើតការកក់ និងជួលឡានថ្មី</h3>
                         <div style="display: flex; align-items: center; gap: 8px;">
+                            <button type="button" class="btn-ar btn-ar-outline" style="background: #ffffff; color: #475569; border: 1.5px solid #cbd5e1; font-weight: 800; display: inline-flex; align-items: center; gap: 5px;" onclick="handleClearBookingFormModal()" title="សម្អាតទិន្នន័យទាំងអស់ក្នុងទម្រង់ និងកាឡោត">
+                                <i class="fa-solid fa-broom text-warning"></i> សម្អាត
+                            </button>
                             <button type="button" class="btn-ar btn-ar-primary" onclick="handleSaveBookingDirect()"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុក</button>
                             <button type="button" class="modal-close-btn" onclick="closeModal('bookingModal')"><i class="fa-solid fa-xmark"></i></button>
                         </div>
@@ -4534,8 +4539,9 @@ input[type="date"] {
                                         <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
                                             <div style="flex: 1; min-width: 110px;">
                                                 <label style="font-size: 11px; font-weight: 700; color: #0284c7;">📍 យកពី :</label>
-                                                <select id="bookingPickupLoc" class="form-control font-weight-bold" style="background:#0284c7;color:#fff;">
-                                                    <option value="ប៉ោយប៉ែត" selected>📍 ប៉ោយប៉ែត</option>
+                                                <select id="bookingPickupLoc" class="form-control font-weight-bold" style="background:#ffffff;color:#475569;" onchange="updateBookingRouteStyles()">
+                                                    <option value="">-- ជ្រើសរើសទីតាំង --</option>
+                                                    <option value="ប៉ោយប៉ែត">📍 ប៉ោយប៉ែត</option>
                                                     <option value="ភ្នំពេញ">📍 ភ្នំពេញ</option>
                                                     <option value="សៀមរាប">📍 សៀមរាប</option>
                                                     <option value="តេជោ">📍 តេជោ</option>
@@ -4546,8 +4552,9 @@ input[type="date"] {
                                             </button>
                                             <div style="flex: 1; min-width: 110px;">
                                                 <label style="font-size: 11px; font-weight: 700; color: #dc2626;">🏁 ជូនទៅ :</label>
-                                                <select id="bookingDropoffLoc" class="form-control font-weight-bold" style="background:#dc2626;color:#fff;">
-                                                    <option value="ភ្នំពេញ" selected>📍 ភ្នំពេញ</option>
+                                                <select id="bookingDropoffLoc" class="form-control font-weight-bold" style="background:#ffffff;color:#475569;" onchange="updateBookingRouteStyles()">
+                                                    <option value="">-- ជ្រើសរើសទីតាំង --</option>
+                                                    <option value="ភ្នំពេញ">📍 ភ្នំពេញ</option>
                                                     <option value="ប៉ោយប៉ែត">📍 ប៉ោយប៉ែត</option>
                                                     <option value="សៀមរាប">📍 សៀមរាប</option>
                                                     <option value="តេជោ">📍 តេជោ</option>
@@ -4560,6 +4567,7 @@ input[type="date"] {
                                             <div style="flex: 1; min-width: 120px;">
                                                 <label style="font-size: 11px; font-weight: 700;">⏰ ម៉ោង :</label>
                                                 <select id="bookingTime" required class="form-control font-weight-bold text-primary">
+                                                    <option value="">-- ជ្រើសរើសម៉ោង --</option>
                                                     <option value="01:00">01:00 (១ យប់)</option>
                                                     <option value="02:00">02:00 (២ យប់)</option>
                                                     <option value="03:00">03:00 (៣ យប់)</option>
@@ -4567,7 +4575,7 @@ input[type="date"] {
                                                     <option value="05:00">05:00 (៥ ព្រឹក)</option>
                                                     <option value="06:00">06:00 (៦ ព្រឹក)</option>
                                                     <option value="07:00">07:00 (៧ ព្រឹក)</option>
-                                                    <option value="08:00" selected>08:00 (៨ ព្រឹក)</option>
+                                                    <option value="08:00">08:00 (៨ ព្រឹក)</option>
                                                     <option value="09:00">09:00 (៩ ព្រឹក)</option>
                                                     <option value="10:00">10:00 (១០ ព្រឹក)</option>
                                                     <option value="11:00">11:00 (១១ ព្រឹក)</option>
@@ -4650,7 +4658,7 @@ input[type="date"] {
                                 </div>
 
                                 <!-- Right Column: Telegram Bot Live Receiver & Auto-Fill -->
-                                <div class="telegram-paste-box d-flex flex-column" style="background: #f0f9ff; border: 2px solid #38bdf8; border-radius: 10px; padding: 12px;">
+                                <div class="telegram-paste-box d-flex flex-column" style="background: #f0f9ff; border: 2px solid #38bdf8; border-radius: 10px; padding: 12px; height: 100%; display: flex; flex-direction: column;">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                         <div style="display: flex; align-items: center; gap: 6px;">
                                             <i class="fa-brands fa-telegram" style="color: #0088cc; font-size: 1.3rem;"></i>
@@ -4701,11 +4709,6 @@ input[type="date"] {
                                             </div>
                                         </div>
 
-                                        <!-- Search within recent sets -->
-                                        <div style="margin-bottom: 6px;">
-                                            <input type="text" id="tgSetsSearchInput" placeholder="🔍 ស្វែងរកតាមឈ្មោះ, ជើងហោះហើរ, ផ្លូវ..." style="width: 100%; font-size: 11px; padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; background: #ffffff; box-sizing: border-box;" oninput="filterTgRecentCards(this.value)">
-                                        </div>
-
                                         <!-- Multi-select Merge Action Toolbar -->
                                         <div id="tgMergeActionToolbar" style="display: none; background: #e0f2fe; border: 1.5px solid #0284c7; border-radius: 8px; padding: 6px 10px; margin-bottom: 6px; justify-content: space-between; align-items: center;">
                                             <div style="font-size: 11px; font-weight: 800; color: #0369a1; display: flex; align-items: center; gap: 5px;">
@@ -4740,46 +4743,36 @@ input[type="date"] {
                                         </div>
 
                                         <!-- Visual Cards List (Scrollable, Compact Height) -->
-                                        <div id="tgBotRecentCardsList" style="display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto; padding-right: 2px;">
+                                        <div id="tgBotRecentCardsList" style="display: flex; flex-direction: column; gap: 6px; max-height: 140px; overflow-y: auto; padding-right: 2px;">
                                         </div>
                                     </div>
 
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                                        <label style="font-size: 11px; font-weight: 800; color: #334155; margin: 0;">📝 ខ្លឹមសារសារ Telegram ៖</label>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; flex-shrink: 0;">
+                                        <label style="font-size: 11px; font-weight: 800; color: #334155; margin: 0;">📝 ខ្លឹមសារសារ Telegram ដើម ៖</label>
                                         <div style="display: flex; gap: 4px; align-items: center;">
-                                            <button type="button" class="btn-ar font-weight-bold" style="font-size: 10.5px; padding: 2px 8px; background: #0284c7; color: #ffffff; border: none; border-radius: 5px; display: inline-flex; align-items: center; gap: 4px;" onclick="parseAndAutoFillTelegramText()" title="វិភាគអត្ថបទភ្លាមៗ">
+                                            <button type="button" class="btn-ar font-weight-bold" style="font-size: 11px; padding: 3px 9px; background: #0284c7; color: #ffffff; border: none; border-radius: 5px; display: inline-flex; align-items: center; gap: 4px;" onclick="parseAndAutoFillTelegramText()" title="វិភាគអត្ថបទភ្លាមៗ">
                                                 <i class="fa-solid fa-wand-magic-sparkles"></i> វិភាគឥឡូវ
                                             </button>
-                                            <button type="button" class="btn-ar btn-ar-outline" style="font-size: 10.5px; padding: 2px 6px; background: #fff;" onclick="loadDemoTelegramMessageToForm()">
-                                                <i class="fa-solid fa-lightbulb text-warning"></i> សារគំរូ
+                                            <button type="button" class="btn-ar btn-ar-outline" style="font-size: 11px; padding: 3px 7px; background: #fff;" onclick="pasteFromClipboardToTelegramInput()" title="Paste ពី Clipboard">
+                                                <i class="fa-solid fa-paste"></i> Paste
+                                            </button>
+                                            <button type="button" class="btn-ar btn-ar-outline" style="font-size: 11px; padding: 3px 6px; background: #fff;" onclick="clearTelegramPasteInput()" title="សម្អាត">
+                                                <i class="fa-solid fa-trash-can"></i>
                                             </button>
                                         </div>
                                     </div>
-                                    <textarea id="telegramPasteInput" rows="3" class="form-control font-weight-bold" style="resize: vertical; min-height: 65px; max-height: 130px; font-size: 12px; margin-bottom: 6px; font-family: monospace, inherit; color: #0f172a; line-height: 1.4;" placeholder="ពេលអ្នកផ្ញើសារចូល @car_rent_sokha88_bot សារនឹងរត់មកបំពេញទីនេះភ្លាមៗ... ឬអាចចុច Ctrl+V ដើម្បី Paste ផ្ទាល់"></textarea>
-
-                                    <!-- Sticky Action Footer Bar (Always Visible & Accessible!) -->
-                                    <div style="position: sticky; bottom: -12px; z-index: 10; background: #f0f9ff; padding: 6px 0 2px 0; border-top: 1.5px dashed #7dd3fc; margin-top: 4px; box-shadow: 0 -4px 10px rgba(240,249,255,0.95);">
-                                        <button type="button" class="btn-ar btn-ar-telegram font-weight-bold" style="width: 100%; padding: 8px 10px; font-size: 12.5px; font-weight: 900; background: linear-gradient(135deg, #0284c7, #0369a1); box-shadow: 0 3px 8px rgba(2,132,199,0.35); display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 5px;" onclick="parseAndAutoFillTelegramText()">
-                                            <i class="fa-solid fa-wand-magic-sparkles"></i> វិភាគ & បំពេញទម្រង់ឡើងវិញ
-                                        </button>
-                                        <div style="display: flex; gap: 6px;">
-                                            <button type="button" class="btn-ar btn-ar-outline" style="flex: 1; font-size: 11px; background: #fff;" onclick="pasteFromClipboardToTelegramInput()">
-                                                <i class="fa-solid fa-paste"></i> Paste ពី Clipboard
-                                            </button>
-                                            <button type="button" class="btn-ar btn-ar-outline" style="font-size: 11px; background: #fff;" onclick="clearTelegramPasteInput()">
-                                                <i class="fa-solid fa-trash-can"></i> សម្អាត
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div style="font-size: 10.5px; color: #0369a1; line-height: 1.3; margin-top: 6px; font-weight: 700; background: #e0f2fe; padding: 5px 8px; border-radius: 6px;">
-                                        <i class="fa-solid fa-bolt text-warning"></i> សារផ្ញើចូល Bot នឹងរត់មកបំពេញឈ្មោះ, លេខ, ឡាន, ផ្លូវ, ម៉ោង និង VIP ក្នុងទម្រង់បង្កើតថ្មីស្វ័យប្រវត្តិ!
-                                    </div>
+                                    <textarea id="telegramPasteInput" class="form-control font-weight-bold" style="flex: 1 1 auto; min-height: 250px; width: 100%; resize: vertical; font-size: 12.5px; margin-bottom: 0; font-family: monospace, inherit; color: #0f172a; line-height: 1.5; background: #ffffff; border: 1.5px solid #7dd3fc; border-radius: 8px; box-sizing: border-box;" placeholder="ពេលអ្នកផ្ញើសារចូល @car_rent_sokha88_bot សារនឹងរត់មកបំពេញទីនេះភ្លាមៗ... ឬអាចចុច Ctrl+V ដើម្បី Paste ផ្ទាល់"></textarea>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('bookingModal')">បោះបង់</button>
-                            <button type="submit" class="btn-ar btn-ar-primary"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកការកក់</button>
+                        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                            <button type="button" class="btn-ar btn-ar-outline" style="background: #ffffff; color: #475569; border: 1.5px solid #cbd5e1; font-weight: 800; display: inline-flex; align-items: center; gap: 5px;" onclick="handleClearBookingFormModal()" title="សម្អាតទិន្នន័យទាំងអស់ក្នុងទម្រង់ និងកាឡោត">
+                                <i class="fa-solid fa-broom text-warning"></i> សម្អាត
+                            </button>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('bookingModal')">បោះបង់</button>
+                                <button type="submit" class="btn-ar btn-ar-primary"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកការកក់</button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -10437,12 +10430,22 @@ document.addEventListener('paste', function(e) {
     // Time, Date, Customer Name, Phone, Car Model/Plate, Route, Telegram,
     // Driver, VIP, Border Clearance, Notes, Flight, Status, Photos count)
     // =========================================================================
+    function cleanSearchText(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/[\u200B-\u200D\uFEFF]/g, '')
+            .normalize('NFC')
+            .toLowerCase()
+            .trim();
+    }
+    window.cleanSearchText = cleanSearchText;
+
     function matchBookingSearch(b, query) {
         if (!query) return true;
-        const qTrimmed = String(query).trim();
-        if (!qTrimmed) return true;
+        const qClean = cleanSearchText(query);
+        if (!qClean) return true;
 
-        const terms = qTrimmed.toLowerCase().split(/\s+/).filter(Boolean);
+        const terms = qClean.split(/\s+/).filter(Boolean);
         if (terms.length === 0) return true;
 
         const chunks = [];
@@ -10568,13 +10571,14 @@ document.addEventListener('paste', function(e) {
             chunks.push(`រូបភាព ${b.images.length} photo camera`);
         }
 
-        const fullHaystack = chunks.join(' ').toLowerCase();
+        const fullHaystack = cleanSearchText(chunks.join(' '));
 
         return terms.every(t => {
             const cleanT = t.startsWith('@') ? t.substring(1) : t;
             return fullHaystack.includes(t) || (cleanT && fullHaystack.includes(cleanT));
         });
     }
+    window.matchBookingSearch = matchBookingSearch;
 
     window.clearDashScheduleSearch = function() {
         const sInput = document.getElementById('dashScheduleSearch');
@@ -10664,7 +10668,7 @@ document.addEventListener('paste', function(e) {
 
         // Filter list for dashboard table
         const sInput = document.getElementById('dashScheduleSearch');
-        const q = (sInput ? sInput.value : '').toLowerCase().trim();
+        const q = cleanSearchText(sInput ? sInput.value : '');
         const clearBtn = document.getElementById('dashScheduleSearchClearBtn');
         if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
 
@@ -10751,6 +10755,7 @@ document.addEventListener('paste', function(e) {
             renderTelegramAnalysis();
         }
     }
+    window.renderDashboard = renderDashboard;
 
     function renderBookingRow(b) {
         const carChips = (b.cars && b.cars.length > 0 ? b.cars : ['អាលផាត (Alphard)']).map(c => {
@@ -10866,6 +10871,7 @@ document.addEventListener('paste', function(e) {
 
         tbody.innerHTML = filtered.map(b => renderBookingRow(b)).join('');
     }
+    window.renderBookings = renderBookings;
 
     // ==========================================
     // Cars Fleet & Intelligent Booking Schedule (មុន ពេលនេះ ក្រោយ)
@@ -11463,10 +11469,13 @@ document.addEventListener('paste', function(e) {
         if (phoneEl) phoneEl.value = prefill.customerPhone || '';
         document.getElementById('bookingTelegramLink').value = prefill.customerTelegram || '';
         document.getElementById('bookingDriverTelegram').value = prefill.driverTelegram || '';
-        document.getElementById('bookingDate').value = prefill.date || getTodayStr(0);
-        document.getElementById('bookingTime').value = prefill.time || '08:00';
-        document.getElementById('bookingPickupLoc').value = prefill.pickupLoc || 'ប៉ោយប៉ែត';
-        document.getElementById('bookingDropoffLoc').value = prefill.dropoffLoc || 'ភ្នំពេញ';
+        document.getElementById('bookingDate').value = prefill.date || '';
+        document.getElementById('bookingTime').value = prefill.time || '';
+        document.getElementById('bookingPickupLoc').value = prefill.pickupLoc || '';
+        document.getElementById('bookingDropoffLoc').value = prefill.dropoffLoc || '';
+        if (typeof updateBookingRouteStyles === 'function') {
+            updateBookingRouteStyles();
+        }
         document.getElementById('bookingVipService').value = prefill.vipService || '';
         document.getElementById('bookingBorderClear').value = prefill.borderClear || '';
         const notesEl = document.getElementById('bookingNotes');
@@ -11688,6 +11697,29 @@ document.addEventListener('paste', function(e) {
         container.appendChild(div);
     };
 
+    window.updateBookingRouteStyles = function() {
+        const p = document.getElementById('bookingPickupLoc');
+        const d = document.getElementById('bookingDropoffLoc');
+        if (p) {
+            if (p.value) {
+                p.style.background = '#0284c7';
+                p.style.color = '#ffffff';
+            } else {
+                p.style.background = '#ffffff';
+                p.style.color = '#475569';
+            }
+        }
+        if (d) {
+            if (d.value) {
+                d.style.background = '#dc2626';
+                d.style.color = '#ffffff';
+            } else {
+                d.style.background = '#ffffff';
+                d.style.color = '#475569';
+            }
+        }
+    };
+
     window.swapFormLocations = function() {
         const p = document.getElementById('bookingPickupLoc');
         const d = document.getElementById('bookingDropoffLoc');
@@ -11695,6 +11727,9 @@ document.addEventListener('paste', function(e) {
             const tmp = p.value;
             p.value = d.value;
             d.value = tmp;
+            if (typeof updateBookingRouteStyles === 'function') {
+                updateBookingRouteStyles();
+            }
         }
     };
 
@@ -12099,6 +12134,148 @@ document.addEventListener('paste', function(e) {
             window.rotateLightboxImage();
         }
     });
+
+    // Clear Booking Form & Telegram Cards State Completely
+    window.handleClearBookingFormModal = function() {
+        editingBookingId = null;
+
+        // 1. Reset Form & Hidden ID
+        const f = document.getElementById('bookingForm');
+        if (f) f.reset();
+
+        const idEl = document.getElementById('bookingId');
+        if (idEl) idEl.value = '';
+
+        // 2. Clear Customer Inputs & Error borders
+        const custNameEl = document.getElementById('bookingCustomerName');
+        if (custNameEl) {
+            custNameEl.value = '';
+            custNameEl.style.borderColor = '';
+            custNameEl.style.boxShadow = '';
+        }
+        const errEl = document.getElementById('bookingCustomerNameError');
+        if (errEl) errEl.style.display = 'none';
+
+        const phoneEl = document.getElementById('bookingCustomerPhone');
+        if (phoneEl) phoneEl.value = '';
+
+        const tgLinkEl = document.getElementById('bookingTelegramLink');
+        if (tgLinkEl) tgLinkEl.value = '';
+
+        const driverTgEl = document.getElementById('bookingDriverTelegram');
+        if (driverTgEl) driverTgEl.value = '';
+
+        const vipEl = document.getElementById('bookingVipService');
+        if (vipEl) vipEl.value = '';
+
+        const borderEl = document.getElementById('bookingBorderClear');
+        if (borderEl) borderEl.value = '';
+
+        const notesEl = document.getElementById('bookingNotes');
+        if (notesEl) notesEl.value = '';
+
+        // 3. Reset Route, Date & Time defaults (Clean completely - no prefilled values, no background colors)
+        const pickupEl = document.getElementById('bookingPickupLoc');
+        if (pickupEl) pickupEl.value = '';
+        const dropoffEl = document.getElementById('bookingDropoffLoc');
+        if (dropoffEl) dropoffEl.value = '';
+        if (typeof updateBookingRouteStyles === 'function') {
+            updateBookingRouteStyles();
+        }
+
+        const dateEl = document.getElementById('bookingDate');
+        if (dateEl) dateEl.value = '';
+        const timeEl = document.getElementById('bookingTime');
+        if (timeEl) timeEl.value = '';
+
+        // 4. Reset Cars & Customers dropdowns
+        if (typeof populateCarDropdowns === 'function') {
+            populateCarDropdowns();
+        }
+        if (typeof populateCustomerDropdown === 'function') {
+            populateCustomerDropdown();
+        }
+
+        const extraSlots = document.getElementById('bookingExtraCarSlotsContainer');
+        if (extraSlots) extraSlots.innerHTML = '';
+        extraCarSlotCount = 4;
+
+        // 5. Clear Attached Photos & Documents
+        currentBookingImages = [];
+        window.currentBookingImages = [];
+        window.activeBookingFormImages = [];
+        if (typeof renderBookingImageThumbnails === 'function') {
+            renderBookingImageThumbnails();
+        }
+
+        // Reset Photo Category buttons styling
+        const catBtns = document.querySelectorAll('.photo-cat-btn');
+        catBtns.forEach(btn => {
+            if (btn.getAttribute('data-cat') === 'ប៉ាស្ព័រ') {
+                btn.style.border = '1px solid #3b82f6';
+                btn.style.background = '#eff6ff';
+                btn.style.color = '#1d4ed8';
+                btn.style.fontWeight = '800';
+            } else {
+                btn.style.border = '1px solid #cbd5e1';
+                btn.style.background = '#f8fafc';
+                btn.style.color = '#475569';
+                btn.style.fontWeight = '700';
+            }
+        });
+
+        // 6. Clear Telegram Raw Textarea
+        const tgInput = document.getElementById('telegramPasteInput');
+        if (tgInput) tgInput.value = '';
+
+        // 7. Clear Telegram Cards & Bot Messages completely so they are NOT shown anymore
+        window.__tgCardsSuppressed = true;
+        tgRecentMessages = [];
+        window.tgRecentMessages = [];
+        activeTelegramMessage = null;
+        window.activeTelegramMessage = null;
+        if (typeof selectedTgCardIndices !== 'undefined' && selectedTgCardIndices) {
+            selectedTgCardIndices.clear();
+        }
+        if (window.selectedTgCardIndices && typeof window.selectedTgCardIndices.clear === 'function') {
+            window.selectedTgCardIndices.clear();
+        }
+
+        // Hide Telegram cards wrapper completely and clear list
+        const tgWrap = document.getElementById('tgBotRecentMsgsWrap');
+        if (tgWrap) tgWrap.style.display = 'none';
+        const tgCardsList = document.getElementById('tgBotRecentCardsList');
+        if (tgCardsList) tgCardsList.innerHTML = '';
+        const tgBadge = document.getElementById('tgBotRecentCountBadge');
+        if (tgBadge) tgBadge.textContent = '0 ឈុត';
+        const tgSel = document.getElementById('tgBotRecentSelect');
+        if (tgSel) tgSel.innerHTML = '<option value="">-- គ្មានសារពី Bot ទេ --</option>';
+
+        // Sync Master Checkboxes & Toolbar
+        if (typeof syncSelectAllCheckboxesUI === 'function') {
+            syncSelectAllCheckboxesUI();
+        }
+        if (typeof updateTgMergeToolbar === 'function') {
+            updateTgMergeToolbar();
+        }
+
+        // Delete all cached bot messages on the server so live poller won't re-populate old cards
+        try {
+            fetch('/api/delete_telegram_message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ all: true })
+            }).catch(() => {});
+        } catch(e) {}
+
+        // Reset Modal Title
+        const title = document.getElementById('bookingModalTitle');
+        if (title) title.innerHTML = '<i class="fa-solid fa-calendar-plus text-primary"></i> បង្កើតការកក់ និងជួលឡានថ្មី';
+
+        if (typeof showToast === 'function') {
+            showToast('🧹 បានសម្អាតទិន្នន័យក្នុងទម្រង់ និងកាឡោតរួចរាល់!');
+        }
+    };
 
     // Save Booking
     window.handleSaveBookingDirect = function() {
@@ -12879,6 +13056,9 @@ document.addEventListener('paste', function(e) {
 
         if (pickupEl && matchedPickup) pickupEl.value = matchedPickup;
         if (dropoffEl && matchedDropoff) dropoffEl.value = matchedDropoff;
+        if (typeof updateBookingRouteStyles === 'function') {
+            updateBookingRouteStyles();
+        }
 
         // 5. Date (Supports DD/MM/YYYY e.g. 10/09/2026 or 10/09/20266 typo, and YYYY-MM-DD)
         const dateEl = document.getElementById('bookingDate');
@@ -13256,8 +13436,63 @@ document.addEventListener('paste', function(e) {
         return 'ប៉ាស្ព័រ';
     }
 
+    function clusterTelegramMessagesByTime(msgs, windowSeconds = 240) {
+        if (!msgs || !Array.isArray(msgs)) return [];
+        let clustered = [];
+        msgs.forEach(m => {
+            const sender = (m.sender || 'Telegram User').trim();
+            const ts = m.timestamp || (m.id && m.id > 1000000000 && m.id < 5000000000 ? m.id : 0);
+            const mImgs = m.images || [];
+            const mText = (m.text || '').trim();
+
+            let matched = clustered.find(c => {
+                const cSender = (c.sender || 'Telegram User').trim();
+                const cTs = c.timestamp || 0;
+                if (cSender !== sender) return false;
+                if (m.media_group_id && c.media_group_id && m.media_group_id === c.media_group_id) return true;
+                if (ts && cTs && Math.abs(ts - cTs) <= windowSeconds) return true;
+                if (m.date && c.date && m.date === c.date) return true;
+                return false;
+            });
+
+            if (matched) {
+                // Merge images
+                if (mImgs && mImgs.length > 0) {
+                    if (!matched.images) matched.images = [];
+                    mImgs.forEach(img => {
+                        if (!matched.images.some(ex => ex.url === img.url || (ex.id && ex.id === img.id))) {
+                            matched.images.push(img);
+                        }
+                    });
+                }
+                // Merge text
+                const cText = (matched.text || '').trim();
+                const isCPlaceholder = !cText || cText.startsWith('📷 រូបភាព') || cText.startsWith('📘 រូបប៉ាស្ព័រ');
+                const isMPlaceholder = !mText || mText.startsWith('📷 រូបភាព') || mText.startsWith('📘 រូបប៉ាស្ព័រ');
+                if (isCPlaceholder && !isMPlaceholder) {
+                    matched.text = mText;
+                } else if (!isCPlaceholder && !isMPlaceholder && mText !== cText) {
+                    if (!cText.includes(mText) && !mText.includes(cText)) {
+                        matched.text = `${cText}\n\n${mText}`;
+                    }
+                }
+                if (ts && (!matched.timestamp || ts > matched.timestamp)) {
+                    matched.timestamp = ts;
+                    if (m.date) matched.date = m.date;
+                }
+            } else {
+                clustered.push({
+                    ...m,
+                    images: [...(m.images || [])]
+                });
+            }
+        });
+        return clustered;
+    }
+
     // Direct function to fetch the latest message and inject into "បង្កើតថ្មី"
     window.fetchAndFillLatestTelegramMessage = async function(silent = false) {
+        window.__tgCardsSuppressed = false;
         if (!silent) showToast('🔄 កំពុងទាញសារ និងរូបភាពពី Telegram Bot...');
         const indicator = document.getElementById('tgBotSyncIndicator');
         if (indicator) indicator.textContent = 'កំពុងទាញយក...';
@@ -13277,6 +13512,8 @@ document.addEventListener('paste', function(e) {
                                 text: sm.text || '',
                                 sender: sm.sender || 'Telegram User',
                                 date: sm.date || 'ថ្មីៗ',
+                                timestamp: sm.timestamp || 0,
+                                media_group_id: sm.media_group_id || null,
                                 images: Array.isArray(sm.images) ? sm.images : []
                             });
                         }
@@ -13288,14 +13525,14 @@ document.addEventListener('paste', function(e) {
             if (combined.length === 0) {
                 combined.push({
                     id: 9991,
-                    text: `บริษัท 365 วันที่ : 10/09/2026\nรับจาก สนามบินเสียมเรียบ ( SAI ) ---> ปอยเปต\n- VIP : 1 คน\n- Flight :PG0903\n- Time :07:40-09:00\n\n1. NARUBODIN CHAENGWATTANAKUN\n\n- Car : รถเล็ก 1 คัน\n🚨 มารับสนามบินเสียมเรียบ วันที่ 10/09/20266 เวลา : 09:00 น. 🚨\n\nมาส่ง : หอพักหลัง Siem Reap Massage\nhttps://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`,
+                    text: `บริษัท 365 วันที่ : 10/09/2026\nรับจาก สนามบินเสียมเรียบ ( SAI ) ---> ปอยเปต\n- VIP : 1 คน\n- Flight :PG0903\n- Time :07:40-09:00\n\n1. NARUBODIN CHAENGWATTANAKUN\n\n- Car : รถเล็ก 1 คัน\n🚨 มារាប់สนามบินเสียมเรียบ วันที่ 10/09/20266 เวลา : 09:00 น. 🚨\n\nมาส่ง : หอพักหลัง Siem Reap Massage\nhttps://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`,
                     sender: '🚖 ចុងក្រោយ (Forwarded Booking)',
                     date: '10/09/2026 09:00',
                     images: []
                 });
             }
 
-            tgRecentMessages = combined;
+            tgRecentMessages = clusterTelegramMessagesByTime(combined);
             updateTgBotRecentDropdown();
 
             // Pick the newest message
@@ -13346,7 +13583,7 @@ document.addEventListener('paste', function(e) {
             if (sResp.ok) {
                 const sData = await sResp.json();
                 if (sData && sData.success && Array.isArray(sData.messages) && sData.messages.length > 0) {
-                    tgRecentMessages = sData.messages;
+                    tgRecentMessages = clusterTelegramMessagesByTime(sData.messages);
                     updateTgBotRecentDropdown();
                 }
             }
@@ -14157,6 +14394,12 @@ document.addEventListener('paste', function(e) {
                         const isBrandNewMsg = !isFirstRun && newest && (curId !== lastKnownTelegramMsgId);
                         const isUpdatedWithNewImages = !isFirstRun && newest && (curId === lastKnownTelegramMsgId) && (curImgCount > lastKnownTelegramImgCount);
 
+                        // If modal was cleared by user, do not resurrect old messages
+                        if (window.__tgCardsSuppressed && !isBrandNewMsg && !isUpdatedWithNewImages) {
+                            return;
+                        }
+                        window.__tgCardsSuppressed = false;
+
                         tgRecentMessages = newMsgs;
                         updateTgBotRecentDropdown();
 
@@ -14346,6 +14589,15 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
                 if (currentTab === 'bookings') renderBookings(currentBookingFilter, q);
                 else if (currentTab === 'cars') renderCars(currentCarFilter, q);
                 else if (currentTab === 'customers') renderCustomers(q);
+            };
+        }
+
+        const dSearch = document.getElementById('dashScheduleSearch');
+        if (dSearch) {
+            dSearch.oninput = function() { renderDashboard(); };
+            dSearch.onkeyup = function(e) {
+                if (e.key === 'Escape') clearDashScheduleSearch();
+                else renderDashboard();
             };
         }
 
