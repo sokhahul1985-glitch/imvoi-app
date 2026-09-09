@@ -1034,16 +1034,14 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
             bks = load_json(bk_file, [])
 
-            # Auto-sync with Supabase Cloud if configured
+            # Auto-sync with Supabase Cloud if configured (only seed if local is empty)
             if supabase_db and supabase_db.is_configured():
                 try:
-                    cloud_bks = supabase_db.fetch_bookings()
-                    if cloud_bks and isinstance(cloud_bks, list):
-                        if len(cloud_bks) > len(bks):
+                    if not bks:
+                        cloud_bks = supabase_db.fetch_bookings()
+                        if cloud_bks and isinstance(cloud_bks, list):
                             bks = cloud_bks
                             save_json(bk_file, bks)
-                        elif len(bks) > len(cloud_bks):
-                            threading.Thread(target=supabase_db.save_bookings, args=(bks,), daemon=True).start()
                 except Exception:
                     pass
 
@@ -2669,6 +2667,11 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             current_bks = load_json(bk_file, [])
             if isinstance(bookings, list):
                 save_json(bk_file, bookings)
+                if supabase_db and supabase_db.is_configured():
+                    try:
+                        threading.Thread(target=supabase_db.save_bookings, args=(bookings,), daemon=True).start()
+                    except Exception:
+                        pass
                 self.send_json_response({'success': True, 'count': len(bookings)})
             elif isinstance(booking, dict) and booking.get('id'):
                 idx = next((i for i, b in enumerate(current_bks) if b.get('id') == booking['id']), -1)
@@ -2831,6 +2834,17 @@ def start_telegram_bot_message_poller():
                             if not m:
                                 continue
 
+                            # 🛑 Chat Filter: Only allow messages from the configured Telegram room/chat
+                            chat_obj = m.get('chat') or {}
+                            c_id_str = str(chat_obj.get('id', '')).strip()
+                            cfg_tg = get_telegram_config()
+                            allowed_chat_id = str(cfg_tg.get("chat_id", "")).strip()
+                            allowed_chat_ids = [str(x).strip() for x in cfg_tg.get("allowed_chat_ids", []) if str(x).strip()]
+                            if allowed_chat_id and allowed_chat_id not in allowed_chat_ids:
+                                allowed_chat_ids.append(allowed_chat_id)
+                            if allowed_chat_ids and c_id_str not in allowed_chat_ids:
+                                continue
+
                             txt = (m.get('text') or m.get('caption') or '').strip()
                             photos = m.get('photo')
                             doc = m.get('document')
@@ -2840,14 +2854,32 @@ def start_telegram_bot_message_poller():
                             if not txt and not has_img:
                                 continue
 
-                            sender = ""
+                            # Forward info detection
+                            forward_from = m.get('forward_from')
+                            forward_chat = m.get('forward_from_chat')
+                            forward_sender_name = m.get('forward_sender_name')
+                            f_origin = ''
+                            if forward_from:
+                                f_origin = (forward_from.get('first_name', '') + ' ' + (forward_from.get('last_name') or '')).strip()
+                            elif forward_chat and forward_chat.get('title'):
+                                f_origin = forward_chat.get('title')
+                            elif forward_sender_name:
+                                f_origin = forward_sender_name
+
+                            base_sender = ""
                             if m.get('from'):
-                                sender = f"{m['from'].get('first_name', '')} {m['from'].get('last_name', '')}".strip()
-                                if not sender and m['from'].get('username'):
-                                    sender = f"@{m['from']['username']}"
+                                base_sender = f"{m['from'].get('first_name', '')} {m['from'].get('last_name', '')}".strip()
+                                if not base_sender and m['from'].get('username'):
+                                    base_sender = f"@{m['from']['username']}"
                             elif m.get('chat') and m['chat'].get('title'):
-                                sender = m['chat']['title']
-                            sender = sender or 'Telegram User'
+                                base_sender = m['chat']['title']
+
+                            if f_origin and base_sender:
+                                sender = f"{base_sender} (Forwarded from {f_origin})"
+                            elif f_origin:
+                                sender = f"Forwarded from {f_origin}"
+                            else:
+                                sender = base_sender or 'Telegram User'
 
                             ts = m.get('date', int(datetime.datetime.now().timestamp()))
                             dt_str = datetime.datetime.fromtimestamp(ts).strftime('%d/%m/%Y %H:%M')

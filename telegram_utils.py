@@ -373,12 +373,21 @@ class TelegramBotListener:
 
     def _record_incoming_message(self, msg, update_id, token=None):
         try:
-            # ONLY record messages from private chat (e.g. Chat ID 8985821312 or private customer chat).
-            # Do NOT record messages from driver groups!
             chat = msg.get("chat") or {}
             chat_type = str(chat.get("type", "")).lower()
             chat_id_str = str(chat.get("id", ""))
-            if chat_type in ["group", "supergroup", "channel"] or chat_id_str.startswith("-"):
+            group_title = chat.get("title") or ""
+
+            # 🛑 Filter: Only accept incoming messages from the configured Telegram room/chat
+            # Other rooms/groups/chats are strictly rejected and not imported into the app
+            cfg = get_telegram_config()
+            allowed_chat_id = str(cfg.get("chat_id", "")).strip()
+            allowed_chat_ids = [str(x).strip() for x in cfg.get("allowed_chat_ids", []) if str(x).strip()]
+            if allowed_chat_id and allowed_chat_id not in allowed_chat_ids:
+                allowed_chat_ids.append(allowed_chat_id)
+
+            if allowed_chat_ids and chat_id_str not in allowed_chat_ids:
+                # Discard message from outside room
                 return
 
             text = (msg.get("text") or msg.get("caption") or "").strip()
@@ -392,8 +401,33 @@ class TelegramBotListener:
                 return
 
             sender = msg.get("from", {})
-            sender_name = sender.get("first_name", "") + (" " + sender.get("last_name", "") if sender.get("last_name") else "")
-            sender_name = sender_name.strip() or msg.get("chat", {}).get("title", "Telegram User")
+            user_name = sender.get("first_name", "") + (" " + sender.get("last_name", "") if sender.get("last_name") else "")
+            user_name = user_name.strip()
+
+            # Forward info detection (e.g. Forwarded from Art GA1)
+            forward_from = msg.get("forward_from")
+            forward_chat = msg.get("forward_from_chat")
+            forward_sender_name = msg.get("forward_sender_name")
+            forward_origin = ""
+            if forward_from:
+                f_n = (forward_from.get("first_name", "") + " " + (forward_from.get("last_name") or "")).strip()
+                if f_n:
+                    forward_origin = f_n
+            elif forward_chat and forward_chat.get("title"):
+                forward_origin = forward_chat.get("title")
+            elif forward_sender_name:
+                forward_origin = forward_sender_name
+
+            if forward_origin and user_name:
+                sender_name = f"{user_name} (Forwarded from {forward_origin})"
+            elif forward_origin:
+                sender_name = f"Forwarded from {forward_origin}"
+            elif group_title and user_name:
+                sender_name = f"{user_name} ({group_title})"
+            elif group_title:
+                sender_name = group_title
+            else:
+                sender_name = user_name or "Telegram User"
 
             # Category detection
             cat = "ប៉ាស្ព័រ"
@@ -488,37 +522,40 @@ class TelegramBotListener:
             if not is_dup:
                 mg_id = msg.get("media_group_id")
                 merged_into_recent_album = False
-                if img_list:
-                    for ex_msg in existing[:10]:
-                        same_mg = mg_id and ex_msg.get('media_group_id') == mg_id
-                        same_sender_time = (ex_msg.get('sender') == sender_name and abs(now_ts - ex_msg.get('timestamp', now_ts)) < 180)
-                        if same_mg or same_sender_time:
+                for ex_msg in existing[:15]:
+                    same_mg = mg_id and ex_msg.get('media_group_id') == mg_id
+                    same_sender_time = (ex_msg.get('sender') == sender_name and abs(now_ts - ex_msg.get('timestamp', now_ts)) <= 240)
+                    if same_mg or same_sender_time:
+                        if img_list:
                             if 'images' not in ex_msg or not isinstance(ex_msg['images'], list):
                                 ex_msg['images'] = []
                             for new_img in img_list:
                                 if not any(e_img.get('url') == new_img.get('url') for e_img in ex_msg['images']):
                                     ex_msg['images'].append(new_img)
-                            
-                            # Preserve real booking text - never overwrite real text with placeholder
-                            ex_text = ex_msg.get('text', '').strip()
-                            is_placeholder = not ex_text or ex_text.startswith('📷 រូបភាព') or ex_text.startswith('📘 រូបប៉ាស្ព័រ')
-                            is_new_placeholder = not text or text.startswith('📷 រូបភាព') or text.startswith('📘 រូបប៉ាស្ព័រ')
-                            if is_placeholder and not is_new_placeholder:
-                                ex_msg['text'] = text
-                            elif not is_placeholder and not is_new_placeholder and text != ex_text:
-                                if text not in ex_text:
-                                    ex_msg['text'] = f"{ex_text}\n\n{text}"
+                        
+                        # Preserve and merge real booking text
+                        ex_text = (ex_msg.get('text') or '').strip()
+                        new_text = (text or '').strip()
+                        is_ex_placeholder = not ex_text or ex_text.startswith('📷 រូបភាព') or ex_text.startswith('📘 រូបប៉ាស្ព័រ')
+                        is_new_placeholder = not new_text or new_text.startswith('📷 រូបភាព') or new_text.startswith('📘 រូបប៉ាស្ព័រ')
 
-                            ex_msg['timestamp'] = now_ts
-                            ex_msg['date'] = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
-                            if mg_id:
-                                ex_msg['media_group_id'] = mg_id
-                            merged_into_recent_album = True
-                            break
+                        if is_ex_placeholder and not is_new_placeholder:
+                            ex_msg['text'] = new_text
+                        elif not is_ex_placeholder and not is_new_placeholder and new_text != ex_text:
+                            if new_text not in ex_text and ex_text not in new_text:
+                                ex_msg['text'] = f"{ex_text}\n\n{new_text}"
+
+                        ex_msg['timestamp'] = max(now_ts, ex_msg.get('timestamp', now_ts))
+                        ex_msg['date'] = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
+                        if mg_id and not ex_msg.get('media_group_id'):
+                            ex_msg['media_group_id'] = mg_id
+                        merged_into_recent_album = True
+                        break
 
                 if not merged_into_recent_album:
                     new_entry = {
                         "id": update_id or now_ts,
+                        "chat_id": chat_id_str,
                         "text": text,
                         "sender": sender_name,
                         "date": datetime.datetime.now().strftime("%d/%m/%Y %H:%M"),
@@ -629,16 +666,23 @@ class TelegramBotListener:
                     if not msg:
                         continue
 
-                    # Restrict incoming message processing to Private Chat ONLY.
-                    # Groups are ONLY for sending OUT dispatches from AutoRent, NEVER for ingesting customer data.
-                    chat_obj = msg.get("chat") or {}
-                    c_type = str(chat_obj.get("type", "")).lower()
-                    c_id_str = str(chat_obj.get("id", ""))
-                    if c_type in ["group", "supergroup", "channel"] or c_id_str.startswith("-"):
+                    # 🛑 Chat filter: only process messages from the configured chat room
+                    c_id_str = str((msg.get("chat") or {}).get("id", "")).strip()
+                    allowed_chat_id = str(cfg.get("chat_id", "")).strip()
+                    allowed_chat_ids = [str(x).strip() for x in cfg.get("allowed_chat_ids", []) if str(x).strip()]
+                    if allowed_chat_id and allowed_chat_id not in allowed_chat_ids:
+                        allowed_chat_ids.append(allowed_chat_id)
+                    if allowed_chat_ids and c_id_str not in allowed_chat_ids:
                         continue
 
-                    # Record incoming text or caption and photo for AutoRent integration (Private chat only)
+                    # Record incoming text or caption and photo for AutoRent integration
                     self._record_incoming_message(msg, upd.get("update_id"), token)
+
+                    # Restrict automated INVOICE issuing/OCR to Private Chat ONLY.
+                    chat_obj = msg.get("chat") or {}
+                    c_type = str(chat_obj.get("type", "")).lower()
+                    if c_type in ["group", "supergroup", "channel"] or c_id_str.startswith("-"):
+                        continue
 
                     mg_id = msg.get("media_group_id")
                     photos = msg.get("photo")
@@ -668,8 +712,8 @@ class TelegramBotListener:
                                     self.last_update_id = max(self.last_update_id, next_upd["update_id"])
                                     n_msg = next_upd.get("message") or next_upd.get("channel_post")
                                     if n_msg:
-                                        n_chat = n_msg.get("chat") or {}
-                                        if str(n_chat.get("type", "")).lower() in ["group", "supergroup", "channel"] or str(n_chat.get("id", "")).startswith("-"):
+                                        n_c_id_str = str((n_msg.get("chat") or {}).get("id", "")).strip()
+                                        if allowed_chat_ids and n_c_id_str not in allowed_chat_ids:
                                             continue
                                         # Record incoming message for subsequent album photos!
                                         self._record_incoming_message(n_msg, next_upd.get("update_id"), token)
