@@ -19,6 +19,7 @@ import datetime
 import uuid
 import threading
 import time
+import traceback
 from PIL import Image
 
 try:
@@ -61,6 +62,29 @@ except Exception as e:
     ocr_engine = None
     def clean_person_name(s): return s
     print("Notice: OCR Engine fallback:", e)
+
+def safe_float(val, default=0.0):
+    if val is None:
+        return default
+    try:
+        if isinstance(val, (int, float)):
+            return float(val)
+        s = str(val).strip().replace('$', '').replace(',', '')
+        return float(s) if s else default
+    except Exception:
+        return default
+
+def safe_int(val, default=0):
+    if val is None:
+        return default
+    try:
+        if isinstance(val, int):
+            return val
+        s = re.sub(r'[^0-9]', '', str(val))
+        return int(s) if s else default
+    except Exception:
+        return default
+
 
 try:
     from telegram_utils import (
@@ -299,7 +323,6 @@ _startup_restore_if_needed()
 def load_json(filepath, default):
     if not os.path.exists(filepath):
         return default
-    import time
     for attempt in range(4):
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
@@ -1278,6 +1301,16 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_POST(self):
+        try:
+            self.handle_post_request()
+        except Exception as e:
+            traceback.print_exc()
+            try:
+                self.send_json_response({'success': False, 'error': f"Internal Server Error: {str(e)}"}, status=500)
+            except Exception:
+                pass
+
+    def handle_post_request(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
         content_type = self.headers.get('Content-Type', '')
@@ -1684,7 +1717,7 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                         if 'customer' in item:
                             item['customer']['service_category'] = req_service_category
 
-                    exchange_rate = float(item.get('group_data', {}).get('exchange_rate', 33.90))
+                    exchange_rate = safe_float(item.get('group_data', {}).get('exchange_rate', 33.90), 33.90)
                     new_members = []
                     new_items = []
                     grand_usd = 0.0
@@ -1693,18 +1726,18 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                         name = (m.get('full_english_name') or m.get('name') or m.get('english_name') or '').strip()
                         pass_no = (m.get('passport_no') or m.get('passport') or '-').strip()
                         nat = (m.get('nationality') or 'THAI').strip()
-                        usd = float(m.get('usd', 0.0))
-                        vip = float(m.get('vip', 0.0))
-                        clearance = float(m.get('clearance_fee', 0.0) or m.get('clearance', 0.0))
-                        permit = float(m.get('work_permit', 0.0))
-                        car = float(m.get('car_fee', 0.0) or m.get('car', 0.0))
-                        visa = float(m.get('visa_fee', 0.0) or m.get('visa', 0.0))
-                        evisa = float(m.get('e_visa', 0.0) or m.get('evisa', 0.0))
-                        overstay = float(m.get('overstay', 0.0) or m.get('fine_fee', 0.0) or m.get('fine', 0.0))
-                        passport_fee = float(m.get('passport_fee', 0.0))
-                        namelist_fee = float(m.get('namelist_fee', 0.0))
-                        missing_doc_fee = float(m.get('missing_doc_fee', 0.0) or m.get('doc_fee', 0.0))
-                        visa_stamping_fee = float(m.get('visa_stamping_fee', 0.0) or m.get('stamping_fee', 0.0))
+                        usd = safe_float(m.get('usd', 0.0))
+                        vip = safe_float(m.get('vip', 0.0))
+                        clearance = safe_float(m.get('clearance_fee', 0.0) or m.get('clearance', 0.0))
+                        permit = safe_float(m.get('work_permit', 0.0))
+                        car = safe_float(m.get('car_fee', 0.0) or m.get('car', 0.0))
+                        visa = safe_float(m.get('visa_fee', 0.0) or m.get('visa', 0.0))
+                        evisa = safe_float(m.get('e_visa', 0.0) or m.get('evisa', 0.0))
+                        overstay = safe_float(m.get('overstay', 0.0) or m.get('fine_fee', 0.0) or m.get('fine', 0.0))
+                        passport_fee = safe_float(m.get('passport_fee', 0.0))
+                        namelist_fee = safe_float(m.get('namelist_fee', 0.0))
+                        missing_doc_fee = safe_float(m.get('missing_doc_fee', 0.0) or m.get('doc_fee', 0.0))
+                        visa_stamping_fee = safe_float(m.get('visa_stamping_fee', 0.0) or m.get('stamping_fee', 0.0))
                         months = str(m.get('extension_months') or m.get('months') or m.get('visa_months') or '').strip()
                         is_issued = m.get('visa_issued') in [True, 'true', 'True', 1, '1'] or m.get('visa_status') == 'issued' or m.get('status') == 'issued'
                         visa_status = 'issued' if is_issued else 'pending'
@@ -1801,7 +1834,7 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             if not found:
                 # Create brand new group record
                 formatted_tdate = format_display_date(travel_date) if travel_date else datetime.datetime.now().strftime("%d-%m-%Y")
-                exchange_rate = float(req_data.get('exchange_rate', 33.90))
+                exchange_rate = safe_float(req_data.get('exchange_rate', 33.90), 33.90)
                 service_category = req_service_category or 'passport'
                 new_members = []
                 new_items = []
@@ -1812,21 +1845,21 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                     pass_no = (m.get('passport_no') or m.get('passport') or '-').strip()
                     nat = (m.get('nationality') or 'THAI').strip()
                     photo_data = str(m.get('photo_data') or m.get('photo') or m.get('image_url') or '')
-                    passport_fee = float(m.get('passport_fee', 0.0))
-                    namelist_fee = float(m.get('namelist_fee', 0.0))
-                    missing_doc_fee = float(m.get('missing_doc_fee', 0.0) or m.get('doc_fee', 0.0))
-                    visa_stamping_fee = float(m.get('visa_stamping_fee', 0.0) or m.get('stamping_fee', 0.0))
-                    evisa = float(m.get('e_visa') or m.get('evisa') or 0)
-                    vip = float(m.get('vip') or 0)
-                    clearance = float(m.get('clearance_fee') or m.get('clearance') or 0)
-                    permit = float(m.get('work_permit') or m.get('permit') or 0)
-                    car = float(m.get('car_fee') or m.get('car') or 0)
-                    visa = float(m.get('visa_fee') or m.get('visa') or 0)
-                    overstay = float(m.get('overstay') or m.get('fine_fee') or m.get('fine') or 0)
+                    passport_fee = safe_float(m.get('passport_fee', 0.0))
+                    namelist_fee = safe_float(m.get('namelist_fee', 0.0))
+                    missing_doc_fee = safe_float(m.get('missing_doc_fee', 0.0) or m.get('doc_fee', 0.0))
+                    visa_stamping_fee = safe_float(m.get('visa_stamping_fee', 0.0) or m.get('stamping_fee', 0.0))
+                    evisa = safe_float(m.get('e_visa') or m.get('evisa') or 0)
+                    vip = safe_float(m.get('vip') or 0)
+                    clearance = safe_float(m.get('clearance_fee') or m.get('clearance') or 0)
+                    permit = safe_float(m.get('work_permit') or m.get('permit') or 0)
+                    car = safe_float(m.get('car_fee') or m.get('car') or 0)
+                    visa = safe_float(m.get('visa_fee') or m.get('visa') or 0)
+                    overstay = safe_float(m.get('overstay') or m.get('fine_fee') or m.get('fine') or 0)
                     months = str(m.get('extension_months') or m.get('months') or m.get('visa_months') or '').strip()
                     is_issued = m.get('visa_issued') in [True, 'true', 'True', 1, '1'] or m.get('visa_status') == 'issued' or m.get('status') == 'issued'
                     visa_status = 'issued' if is_issued else 'pending'
-                    usd = float(m.get('usd') or 0)
+                    usd = safe_float(m.get('usd') or 0)
                     if usd == 0 and (evisa or vip or clearance or permit or car or visa or overstay or passport_fee or namelist_fee or missing_doc_fee or visa_stamping_fee):
                         usd = evisa + vip + clearance + permit + car + visa + overstay + passport_fee + namelist_fee + missing_doc_fee + visa_stamping_fee
 
@@ -1962,20 +1995,22 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                         "last_passport_number": 0, "passport_prefix": "INV ",
                         "last_quote_number": 0, "quote_prefix": "QT "
                     })
+                    if not isinstance(counter, dict):
+                        counter = {}
                     if service_category == 'visa':
-                        if num_val > counter.get("last_visa_number", 0):
+                        if num_val > safe_int(counter.get("last_visa_number", 0)):
                             counter["last_visa_number"] = num_val
                             save_json(INVOICE_COUNTER_FILE, counter)
                     elif service_category == 'passport':
-                        if num_val > counter.get("last_passport_number", 0):
+                        if num_val > safe_int(counter.get("last_passport_number", 0)):
                             counter["last_passport_number"] = num_val
                             save_json(INVOICE_COUNTER_FILE, counter)
                     elif service_category in ['quote', 'quotation']:
-                        if num_val > counter.get("last_quote_number", 0):
+                        if num_val > safe_int(counter.get("last_quote_number", 0)):
                             counter["last_quote_number"] = num_val
                             save_json(INVOICE_COUNTER_FILE, counter)
                     else:
-                        if num_val > counter.get("last_number", 0):
+                        if num_val > safe_int(counter.get("last_number", 0)):
                             counter["last_number"] = num_val
                             save_json(INVOICE_COUNTER_FILE, counter)
 
@@ -1991,7 +2026,7 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             new_travel_date = req_data.get('new_travel_date', '').strip()
             new_agency_company = req_data.get('new_agency_company', '').strip()
             service_category = req_data.get('service_category', 'visa').strip().lower()
-            exchange_rate = float(req_data.get('exchange_rate', 33.90))
+            exchange_rate = safe_float(req_data.get('exchange_rate', 33.90), 33.90)
 
             if not source_receipt_no or not split_members_data:
                 self.send_json_response({'success': False, 'error': 'Missing source_receipt_no or split_members'}, status=400)
@@ -2005,12 +2040,14 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 if num_part.isdigit():
                     num_val = int(num_part)
                     counter = load_json(INVOICE_COUNTER_FILE, {"last_number": 0, "prefix": "INV ", "last_visa_number": 0, "visa_prefix": "VISA "})
+                    if not isinstance(counter, dict):
+                        counter = {}
                     if service_category == 'visa':
-                        if num_val > counter.get("last_visa_number", 0):
+                        if num_val > safe_int(counter.get("last_visa_number", 0)):
                             counter["last_visa_number"] = num_val
                             save_json(INVOICE_COUNTER_FILE, counter)
                     else:
-                        if num_val > counter.get("last_number", 0):
+                        if num_val > safe_int(counter.get("last_number", 0)):
                             counter["last_number"] = num_val
                             save_json(INVOICE_COUNTER_FILE, counter)
 
@@ -2440,7 +2477,6 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
             # Support HTML formatting for bold (<b>...</b> or **...**)
-            import re
             if '**' in text:
                 escaped_text = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
                 html_text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', escaped_text)
@@ -2916,7 +2952,6 @@ def start_telegram_bot_message_poller():
                                 print(f"[TelegramBotPoller] ⚡ Received/Updated message from {sender} (Total images: {len(msgs[0].get('images', []))}): {txt[:35]}...")
             except Exception:
                 pass
-            import time
             time.sleep(3)
 
     t = threading.Thread(target=_poll_thread, daemon=True)

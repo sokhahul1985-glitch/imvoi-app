@@ -5322,13 +5322,76 @@ input[type="date"] {
             </div>
 
             <div class="modal-footer" style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 12px;">
-                <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                     <div style="font-weight: 800; font-size: 15px; color: #059669;" id="gmmGrandTotalDisplay">💵 សរុបទឹកប្រាក់ក្នុងក្រុម: $0.00</div>
+                    <div id="gmmSelectedSummary" style="display: none; font-size: 12.5px; font-weight: 800; color: #0284c7; background: #e0f2fe; padding: 4px 10px; border-radius: 6px; border: 1.5px solid #bae6fd; align-items: center; gap: 4px;">
+                        <span>☑️ បានជ្រើសរើស:</span>
+                        <span id="gmmSelectedCount" style="color: #0369a1; font-size: 13px;">0</span> នាក់
+                    </div>
                 </div>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; padding: 8px 20px; font-size: 14px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(5,150,105,0.3);" id="btnGmmSave" onclick="saveGroupMembersChanges()">💾 រក្សាទុក (Save Changes)</button>
+                    <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #0284c7, #0ea5e9); color: #ffffff; padding: 8px 18px; font-size: 13.5px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3); transition: all 0.2s;" id="btnGmmSplit" onclick="openSplitGroupModal()" title="ជ្រើសរើសសមាជិកដើម្បីបំបែកបង្កើតគ្រុប/វិក្កយបត្រថ្មី">
+                        <span>✂️ បំបែកគ្រុបថ្មី (Split Group)</span>
+                        <span id="gmmSelectedBadge" style="display: none; background: #ffffff; color: #0284c7; padding: 1px 7px; border-radius: 10px; font-size: 11.5px; font-weight: 900; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">0</span>
+                    </button>
+                    <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; padding: 8px 20px; font-size: 14px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(5,150,105,0.3);" id="btnGmmSave" onclick="saveGroupMembersChanges()">💾 កែប្រែ & រក្សាទុក (Update & Save)</button>
                     <button type="button" class="btn-sys btn-dark" style="padding: 8px 16px; font-size: 14px; font-weight: 700; border-radius: 6px;" onclick="closeGroupMembersModal()">❌ បិទផ្ទាំង (Close)</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Split Group Confirmation & Customization Modal Popup -->
+    <div id="splitGroupModal" class="modal-overlay" style="z-index: 1200; display: none;">
+        <div class="modal-card" style="max-width: 580px; width: 95%; background: #ffffff; border-radius: 12px; padding: 20px 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+            <div class="modal-toolbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1.5px solid #e2e8f0;">
+                <div style="font-weight: 800; font-size: 16px; color: #0284c7; display: flex; align-items: center; gap: 6px;">✂️ បំបែកសមាជិកបង្កើតគ្រុបថ្មី (Split to New Group)</div>
+                <button type="button" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer; padding: 2px 6px; border-radius: 4px;" onclick="closeSplitGroupModal()">✖</button>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Selected Count & Member Preview Box -->
+                <div style="background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 8px; padding: 10px 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 13px; font-weight: 800; color: #0369a1;">👥 សមាជិកដែលបានជ្រើសរើសដើម្បីបំបែក:</span>
+                        <span id="sgmSelectedCountBadge" style="font-size: 12px; font-weight: 800; background: #0284c7; color: #ffffff; padding: 2px 8px; border-radius: 12px;">0 នាក់</span>
+                    </div>
+                    <div id="sgmMembersListPreview" style="max-height: 100px; overflow-y: auto; font-size: 12px; color: #334155; font-weight: 600; line-height: 1.6; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 10px;">
+                        <!-- List of selected member names -->
+                    </div>
+                </div>
+
+                <!-- Form fields for the new group -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label style="display: block; font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 4px;">🧾 លេខវិក្កយបត្រថ្មី <span style="color:#ef4444;">*</span>:</label>
+                        <input type="text" id="sgmNewReceiptNo" class="form-input highlight-input" style="height: 32px; font-weight: 800; border: 1.5px solid #0284c7; border-radius: 6px; padding: 2px 8px; font-size: 13px; width: 100%; box-sizing: border-box; background: #e0f2fe; color: #0369a1; text-align: center;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 4px;">📅 ថ្ងៃដាក់/ធ្វើដំណើរ:</label>
+                        <input type="date" id="sgmTravelDate" class="form-input" style="height: 32px; font-weight: 700; border: 1.2px solid #38bdf8; border-radius: 6px; padding: 2px 8px; font-size: 12px; width: 100%; box-sizing: border-box; color-scheme: light; cursor: pointer; color: #0f172a;" onclick="this.showPicker()">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label style="display: block; font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 4px;">👤 ឈ្មោះអ្នកនាំ/បញ្ជូន <span style="color:#ef4444;">*</span>:</label>
+                        <input type="text" id="sgmSenderName" class="form-input" placeholder="បញ្ចូលឈ្មោះអ្នកនាំ..." style="height: 32px; font-weight: 700; border: 1.2px solid #0284c7; border-radius: 6px; padding: 2px 10px; font-size: 12.5px; width: 100%; box-sizing: border-box; color: #0f172a;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 4px;">🏢 ក្រុមហ៊ុន / Agency:</label>
+                        <input type="text" id="sgmAgencyCompany" class="form-input" placeholder="បញ្ចូលក្រុមហ៊ុន..." style="height: 32px; font-weight: 700; border: 1.2px solid #cbd5e1; border-radius: 6px; padding: 2px 10px; font-size: 12.5px; width: 100%; box-sizing: border-box; color: #0f172a;">
+                    </div>
+                </div>
+
+                <!-- Group Comparison Summary Notice -->
+                <div id="sgmComparisonNotice" style="font-size: 12px; font-weight: 700; color: #475569; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 8px 12px; text-align: center;">
+                </div>
+            </div>
+
+            <div style="margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+                <button type="button" class="btn-sys btn-dark" style="padding: 8px 16px; font-size: 13.5px; font-weight: 700; border-radius: 6px;" onclick="closeSplitGroupModal()">❌ បោះបង់ (Cancel)</button>
+                <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; padding: 8px 20px; font-size: 13.5px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" id="btnConfirmSplit" onclick="confirmExecuteSplitGroup()">✂️ បញ្ជាក់ការបំបែកគ្រុប (Confirm Split)</button>
             </div>
         </div>
     </div>
@@ -7049,6 +7112,7 @@ input[type="date"] {
                     // Set mode based on active category with explicit empty list
                     const initialMode = (currentServiceCategory === 'visa') ? 'visa' : (currentServiceCategory === 'passport' ? 'passport' : 'line');
                     currentGmmCachedItem = null;
+                    currentModalReceiptData = null;
                     switchGmmMode(initialMode, []);
 
                     // Clear bulk fee inputs
@@ -7841,6 +7905,16 @@ input[type="date"] {
             if (summary && countSpan) {
                 countSpan.textContent = count;
                 summary.style.display = count > 0 ? 'inline-flex' : 'none';
+            }
+
+            const btnSplit = document.getElementById('btnGmmSplit');
+            if (btnSplit) {
+                if (count > 0) {
+                    btnSplit.style.boxShadow = '0 0 0 3px rgba(2, 132, 199, 0.4), 0 2px 6px rgba(2,132,199,0.3)';
+                    btnSplit.style.filter = 'none';
+                } else {
+                    btnSplit.style.boxShadow = '0 2px 6px rgba(2,132,199,0.3)';
+                }
             }
         }
 
@@ -8828,20 +8902,28 @@ input[type="date"] {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(pendingGmmSavePayload)
             })
-            .then(r => r.json())
+            .then(async r => {
+                const isJson = (r.headers.get('content-type') || '').includes('application/json');
+                const data = isJson ? await r.json() : null;
+                if (!r.ok) {
+                    const errText = (data && data.error) ? data.error : `Server status ${r.status} (${r.statusText})`;
+                    throw new Error(errText);
+                }
+                return data;
+            })
             .then(res => {
                 if (btnSave) {
                     btnSave.disabled = false;
                     btnSave.textContent = '💾 កែប្រែ & រក្សាទុក (Update & Save)';
                 }
-                if (res.success) {
+                if (res && res.success) {
                     const catNameKh = chosenCategory === 'car' ? 'ផ្នែកឡាន (Car)' : (chosenCategory === 'passport' ? 'ផ្នែកប៉ាសស្ព័រ & ផ្សេងៗ (Passport)' : 'ផ្នែកវីសា (Visa)');
                     alert(`🎉 បានរក្សាទុកទិន្នន័យទៅក្នុង${catNameKh} បានជោគជ័យ!`);
                     pendingGmmSavePayload = null;
                     closeGroupMembersModal();
                     loadDatabaseRecords();
                 } else {
-                    alert('បរាជ័យក្នុងការរក្សាទុក៖ ' + (res.error || ''));
+                    alert('បរាជ័យក្នុងការរក្សាទុក៖ ' + ((res && res.error) || 'មិនស្គាល់មូលហេតុ'));
                 }
             })
             .catch(err => {
