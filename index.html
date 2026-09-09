@@ -4592,6 +4592,13 @@ input[type="date"] {
                                                     <option value="យកក្លៀដាន">🚀 យកក្លៀដាន</option>
                                                 </select>
                                             </div>
+                                            <div style="min-width: 125px;">
+                                                <label style="font-size: 11px; font-weight: 700; color: #16a34a;"><i class="fa-solid fa-file-invoice-dollar"></i> ធ្វើ Invoice :</label>
+                                                <select id="bookingInvoiceDone" class="form-control font-weight-bold">
+                                                    <option value="false">⬜ មិនទាន់ធ្វើ</option>
+                                                    <option value="true">✅ ធ្វើរួចរាល់</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -4625,35 +4632,102 @@ input[type="date"] {
                                                 <label style="font-size: 11px; font-weight: 700;">📅 ថ្ងៃចេញ :</label>
                                                 <input type="date" id="bookingDate" required class="form-control font-weight-bold">
                                             </div>
-                                            <div style="flex: 1; min-width: 120px;">
-                                                <label style="font-size: 11px; font-weight: 700;">⏰ ម៉ោង :</label>
-                                                <select id="bookingTime" required class="form-control font-weight-bold text-primary">
-                                                    <option value="">-- ជ្រើសរើសម៉ោង --</option>
-                                                    <option value="01:00">01:00 (១ យប់)</option>
-                                                    <option value="02:00">02:00 (២ យប់)</option>
-                                                    <option value="03:00">03:00 (៣ យប់)</option>
-                                                    <option value="04:00">04:00 (៤ ភ្លឺ)</option>
-                                                    <option value="05:00">05:00 (៥ ព្រឹក)</option>
-                                                    <option value="06:00">06:00 (៦ ព្រឹក)</option>
-                                                    <option value="07:00">07:00 (៧ ព្រឹក)</option>
-                                                    <option value="08:00">08:00 (៨ ព្រឹក)</option>
-                                                    <option value="09:00">09:00 (៩ ព្រឹក)</option>
-                                                    <option value="10:00">10:00 (១០ ព្រឹក)</option>
-                                                    <option value="11:00">11:00 (១១ ព្រឹក)</option>
-                                                    <option value="12:00">12:00 (១២ ថ្ងៃត្រង់)</option>
-                                                    <option value="13:00">13:00 (១ រសៀល)</option>
-                                                    <option value="14:00">14:00 (២ រសៀល)</option>
-                                                    <option value="15:00">15:00 (៣ រសៀល)</option>
-                                                    <option value="16:00">16:00 (៤ ល្ងាច)</option>
-                                                    <option value="17:00">17:00 (៥ ល្ងាច)</option>
-                                                    <option value="18:00">18:00 (៦ ល្ងាច)</option>
-                                                    <option value="19:00">19:00 (៧ យប់)</option>
-                                                    <option value="20:00">20:00 (៨ យប់)</option>
-                                                    <option value="21:00">21:00 (៩ យប់)</option>
-                                                    <option value="22:00">22:00 (១០ យប់)</option>
-                                                    <option value="23:00">23:00 (១១ យប់)</option>
-                                                    <option value="24:00">24:00 (១២ អធ្រាត្រ)</option>
-                                                </select>
+                                                                                        <div style="flex: 1.3; min-width: 170px;">
+                                                <label style="font-size: 11px; font-weight: 700; color: #0284c7;"><i class="fa-solid fa-clock"></i> ម៉ោង & នាទី :</label>
+                                                <div style="display: flex; gap: 4px; align-items: center;">
+                                                    <select id="bookingTimeHour" class="form-control font-weight-bold text-primary" style="padding: 4px 6px; font-size: 11.5px; text-align: center;" onchange="updateCombinedBookingTime()">
+<option value="">-- ម៉ោង --</option>
+                                                        <option value="00">00 (១២ អធ្រាត្រ)</option>
+                                                        <option value="01">01 (១ យប់)</option>
+                                                        <option value="02">02 (២ យប់)</option>
+                                                        <option value="03">03 (៣ យប់)</option>
+                                                        <option value="04">04 (៤ ភ្លឺ)</option>
+                                                        <option value="05">05 (៥ ភ្លឺ)</option>
+                                                        <option value="06">06 (៦ ព្រឹក)</option>
+                                                        <option value="07">07 (៧ ព្រឹក)</option>
+                                                        <option value="08">08 (៨ ព្រឹក)</option>
+                                                        <option value="09">09 (៩ ព្រឹក)</option>
+                                                        <option value="10">10 (១០ ព្រឹក)</option>
+                                                        <option value="11">11 (១១ ព្រឹក)</option>
+                                                        <option value="12">12 (១២ ថ្ងៃត្រង់)</option>
+                                                        <option value="13">13 (១ រសៀល)</option>
+                                                        <option value="14">14 (២ រសៀល)</option>
+                                                        <option value="15">15 (៣ រសៀល)</option>
+                                                        <option value="16">16 (៤ ល្ងាច)</option>
+                                                        <option value="17">17 (៥ ល្ងាច)</option>
+                                                        <option value="18">18 (៦ ល្ងាច)</option>
+                                                        <option value="19">19 (៧ យប់)</option>
+                                                        <option value="20">20 (៨ យប់)</option>
+                                                        <option value="21">21 (៩ យប់)</option>
+                                                        <option value="22">22 (១០ យប់)</option>
+                                                        <option value="23">23 (១១ យប់)</option>
+                                                    </select>
+                                                    <span style="font-weight: 900; font-size: 16px; color: #0284c7; user-select: none;">:</span>
+                                                    <select id="bookingTimeMinute" class="form-control font-weight-bold text-primary" style="padding: 4px 6px; font-size: 11.5px; text-align: center;" onchange="updateCombinedBookingTime()">
+<option value="">-- នាទី --</option>
+                                                        <option value="00">00 នាទី</option>
+                                                        <option value="01">01 នាទី</option>
+                                                        <option value="02">02 នាទី</option>
+                                                        <option value="03">03 នាទី</option>
+                                                        <option value="04">04 នាទី</option>
+                                                        <option value="05">05 នាទី</option>
+                                                        <option value="06">06 នាទី</option>
+                                                        <option value="07">07 នាទី</option>
+                                                        <option value="08">08 នាទី</option>
+                                                        <option value="09">09 នាទី</option>
+                                                        <option value="10">10 នាទី</option>
+                                                        <option value="11">11 នាទី</option>
+                                                        <option value="12">12 នាទី</option>
+                                                        <option value="13">13 នាទី</option>
+                                                        <option value="14">14 នាទី</option>
+                                                        <option value="15">15 នាទី</option>
+                                                        <option value="16">16 នាទី</option>
+                                                        <option value="17">17 នាទី</option>
+                                                        <option value="18">18 នាទី</option>
+                                                        <option value="19">19 នាទី</option>
+                                                        <option value="20">20 នាទី</option>
+                                                        <option value="21">21 នាទី</option>
+                                                        <option value="22">22 នាទី</option>
+                                                        <option value="23">23 នាទី</option>
+                                                        <option value="24">24 នាទី</option>
+                                                        <option value="25">25 នាទី</option>
+                                                        <option value="26">26 នាទី</option>
+                                                        <option value="27">27 នាទី</option>
+                                                        <option value="28">28 នាទី</option>
+                                                        <option value="29">29 នាទី</option>
+                                                        <option value="30">30 នាទី</option>
+                                                        <option value="31">31 នាទី</option>
+                                                        <option value="32">32 នាទី</option>
+                                                        <option value="33">33 នាទី</option>
+                                                        <option value="34">34 នាទី</option>
+                                                        <option value="35">35 នាទី</option>
+                                                        <option value="36">36 នាទី</option>
+                                                        <option value="37">37 នាទី</option>
+                                                        <option value="38">38 នាទី</option>
+                                                        <option value="39">39 នាទី</option>
+                                                        <option value="40">40 នាទី</option>
+                                                        <option value="41">41 នាទី</option>
+                                                        <option value="42">42 នាទី</option>
+                                                        <option value="43">43 នាទី</option>
+                                                        <option value="44">44 នាទី</option>
+                                                        <option value="45">45 នាទី</option>
+                                                        <option value="46">46 នាទី</option>
+                                                        <option value="47">47 នាទី</option>
+                                                        <option value="48">48 នាទី</option>
+                                                        <option value="49">49 នាទី</option>
+                                                        <option value="50">50 នាទី</option>
+                                                        <option value="51">51 នាទី</option>
+                                                        <option value="52">52 នាទី</option>
+                                                        <option value="53">53 នាទី</option>
+                                                        <option value="54">54 នាទី</option>
+                                                        <option value="55">55 នាទី</option>
+                                                        <option value="56">56 នាទី</option>
+                                                        <option value="57">57 នាទី</option>
+                                                        <option value="58">58 នាទី</option>
+                                                        <option value="59">59 នាទី</option>
+                                                    </select>
+                                                </div>
+                                                <input type="hidden" id="bookingTime" name="bookingTime" value="">
                                             </div>
                                         </div>
                                     </div>
@@ -5128,8 +5202,8 @@ input[type="date"] {
                                     <input type="text" id="customerName" required placeholder="ឧ. សុខ ចាន់ដារ៉ា" class="form-control">
                                 </div>
                                 <div class="form-group">
-                                    <label>លេខទូរស័ព្ទ *</label>
-                                    <input type="tel" id="customerPhone" required placeholder="ឧ. 012 345 678" class="form-control font-weight-bold">
+                                    <label>លេខទូរស័ព្ទ (បើមាន)</label>
+                                    <input type="tel" id="customerPhone" placeholder="ឧ. 012 345 678" class="form-control font-weight-bold">
                                 </div>
                             </div>
                             <div class="form-row-2">
@@ -10325,23 +10399,6 @@ document.addEventListener('paste', function(e) {
     function getInitialBookings() {
         return [
             {
-                id: 'BK-1005',
-                customerName: 'NARUBODIN CHAENGWATTANAKUN',
-                customerPhone: '',
-                customerTelegram: '',
-                driverTelegram: '',
-                cars: ['Alphard VIP 2023'],
-                vipService: 'យក VIP',
-                borderClear: '',
-                pickupLoc: 'សៀមរាប',
-                dropoffLoc: 'ប៉ោយប៉ែត',
-                date: '2026-09-10',
-                time: '09:00',
-                status: 'upcoming',
-                notes: 'Flight: PG0903 | ទទួលនៅព្រលាន SAI ម៉ោង 09:00 | ជូនទៅ: หอพักหลัง Siem Reap Massage | 📍 Map: https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic',
-                rawMessage: 'บริษัท 365 วันที่ : 10/09/2026\\nรับจาก สนามบินเสียมเรียบ ( SAI ) ---> ปอยเปต\\n- VIP : 1 คน\\n- Flight :PG0903\\n- Time :07:40-09:00\\n\\n1. NARUBODIN CHAENGWATTANAKUN\\n\\n- Car : รถเล็ก 1 คัน\\n🚨 มารับสนามบินเสียมเรียบ วันที่ 10/09/20266 เวลา : 09:00 น. 🚨\\n\\nมาส่ง : หอพักหลัง Siem Reap Massage\\nhttps://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic'
-            },
-            {
                 id: 'BK-1001',
                 customerName: 'Sokha Lin',
                 customerPhone: '012 345 678',
@@ -10432,15 +10489,7 @@ document.addEventListener('paste', function(e) {
     }
 
     function getBookings() {
-        let b = loadData(STORAGE_KEY_BOOKINGS, getInitialBookings());
-        if (!b.some(x => x.id === 'BK-1005' || (x.customerName && x.customerName.includes('NARUBODIN')))) {
-            const init = getInitialBookings();
-            if (init[0] && init[0].id === 'BK-1005') {
-                b.unshift(init[0]);
-                saveData(STORAGE_KEY_BOOKINGS, b);
-            }
-        }
-        return b;
+        return loadData(STORAGE_KEY_BOOKINGS, getInitialBookings());
     }
     function setBookings(b) { saveData(STORAGE_KEY_BOOKINGS, b); }
 
@@ -10709,6 +10758,11 @@ document.addEventListener('paste', function(e) {
 
         // 9. Status & Photos
         if (b.status) chunks.push(b.status);
+        if (b.invoiceDone) {
+            chunks.push('ធ្វើរួច ធ្វើ invoice ហើយ វិក្កយបត្ររួច invoice done invoiced');
+        } else {
+            chunks.push('មិនទាន់ធ្វើ មិនទាន់ គ្មាន invoice no invoice');
+        }
         if (b.images && Array.isArray(b.images) && b.images.length > 0) {
             chunks.push(`រូបភាព ${b.images.length} photo camera`);
         }
@@ -10971,6 +11025,21 @@ document.addEventListener('paste', function(e) {
         }).join(' ');
         const vipBadge = b.vipService ? `<span class="table-badge-car badge-vip" style="white-space: nowrap; font-size: 13px; font-weight: 900; color: #9a3412; background: #fef3c7; border: 1.5px solid #f59e0b; padding: 4px 10px;">⭐ ${b.vipService}</span>` : '';
         const borderBadge = b.borderClear ? `<span class="table-badge-car" style="background:#dcfce7;color:#166534;border: 1.5px solid #16a34a;white-space: nowrap; font-size: 13px; font-weight: 900; padding: 4px 10px;">🚀 ${b.borderClear}</span>` : '';
+
+        const isInvDone = !!b.invoiceDone;
+        const invoiceBtn = isInvDone ? `
+            <button type="button" class="btn-ar" onclick="toggleBookingInvoice('${b.id}', event)" 
+                title="ចុចដើម្បីដក ឬប្តូរ (បច្ចុប្បន្ន៖ ធ្វើ Invoice ហើយ ✅)"
+                style="padding: 4px 10px; font-size: 12.5px; font-weight: 800; border-radius: 6px; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; background: #dcfce7; color: #15803d; border: 1.5px solid #86efac; box-shadow: 0 1px 2px rgba(22,101,52,0.12);">
+                <i class="fa-solid fa-square-check" style="font-size: 14px; color: #16a34a;"></i> <span>ធ្វើរួច</span>
+            </button>
+        ` : `
+            <button type="button" class="btn-ar" onclick="toggleBookingInvoice('${b.id}', event)" 
+                title="ចុចដើម្បីធិចថាបានធ្វើវិក្កយបត្ររួច (Mark Invoice as Done)"
+                style="padding: 4px 10px; font-size: 12.5px; font-weight: 700; border-radius: 6px; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; background: #f8fafc; color: #64748b; border: 1.5px dashed #cbd5e1;">
+                <i class="fa-regular fa-square" style="font-size: 14px; color: #94a3b8;"></i> <span>មិនទាន់</span>
+            </button>
+        `;
 
         const custTg = b.customerTelegram ? `<a href="https://t.me/${b.customerTelegram.replace('@','')}" target="_blank" class="btn-ar btn-ar-telegram" style="padding: 4px 12px; font-size: 12.5px; font-weight: 800; white-space: nowrap; border-radius: 6px;"><i class="fa-brands fa-telegram"></i> ${b.customerTelegram}</a>` : '<span style="color:#64748b; font-weight: 700;">--</span>';
         const driverTg = b.driverTelegram ? `
@@ -11679,13 +11748,21 @@ document.addEventListener('paste', function(e) {
         document.getElementById('bookingDriverTelegram').value = prefill.driverTelegram || '';
         document.getElementById('bookingDate').value = prefill.date || '';
         document.getElementById('bookingTime').value = prefill.time || '';
-        document.getElementById('bookingPickupLoc').value = prefill.pickupLoc || '';
-        document.getElementById('bookingDropoffLoc').value = prefill.dropoffLoc || '';
+        if (typeof setBookingTimeValue === 'function') setBookingTimeValue(prefill.time || '');
+        if (typeof setLocationDropdownVal === 'function') {
+            setLocationDropdownVal(document.getElementById('bookingPickupLoc'), prefill.pickupLoc || '');
+            setLocationDropdownVal(document.getElementById('bookingDropoffLoc'), prefill.dropoffLoc || '');
+        } else {
+            document.getElementById('bookingPickupLoc').value = prefill.pickupLoc || '';
+            document.getElementById('bookingDropoffLoc').value = prefill.dropoffLoc || '';
+        }
         if (typeof updateBookingRouteStyles === 'function') {
             updateBookingRouteStyles();
         }
         document.getElementById('bookingVipService').value = prefill.vipService || '';
         document.getElementById('bookingBorderClear').value = prefill.borderClear || '';
+        const newInvEl = document.getElementById('bookingInvoiceDone');
+        if (newInvEl) newInvEl.value = prefill.invoiceDone ? 'true' : 'false';
         const notesEl = document.getElementById('bookingNotes');
         if (notesEl) notesEl.value = prefill.notes || '';
 
@@ -11749,10 +11826,18 @@ document.addEventListener('paste', function(e) {
         document.getElementById('bookingDriverTelegram').value = b.driverTelegram || '';
         document.getElementById('bookingDate').value = b.date || getTodayStr(0);
         document.getElementById('bookingTime').value = b.time || '08:00';
-        document.getElementById('bookingPickupLoc').value = b.pickupLoc || 'ប៉ោយប៉ែត';
-        document.getElementById('bookingDropoffLoc').value = b.dropoffLoc || 'ភ្នំពេញ';
+        if (typeof setBookingTimeValue === 'function') setBookingTimeValue(b.time || '08:00');
+        if (typeof setLocationDropdownVal === 'function') {
+            setLocationDropdownVal(document.getElementById('bookingPickupLoc'), b.pickupLoc || 'ប៉ោយប៉ែត');
+            setLocationDropdownVal(document.getElementById('bookingDropoffLoc'), b.dropoffLoc || 'ភ្នំពេញ');
+        } else {
+            document.getElementById('bookingPickupLoc').value = b.pickupLoc || 'ប៉ោយប៉ែត';
+            document.getElementById('bookingDropoffLoc').value = b.dropoffLoc || 'ភ្នំពេញ';
+        }
         document.getElementById('bookingVipService').value = b.vipService || '';
         document.getElementById('bookingBorderClear').value = b.borderClear || '';
+        const editInvEl = document.getElementById('bookingInvoiceDone');
+        if (editInvEl) editInvEl.value = b.invoiceDone ? 'true' : 'false';
         const editNotesEl = document.getElementById('bookingNotes');
         if (editNotesEl) editNotesEl.value = b.notes || '';
 
@@ -11788,6 +11873,29 @@ document.addEventListener('paste', function(e) {
         'ហៃយាស់ (Hiace)',
         'ឡានក្រុង (Bus)'
     ];
+
+    function setLocationDropdownVal(selectEl, locVal) {
+        if (!selectEl || !locVal) return;
+        const cleanVal = String(locVal).trim();
+        if (!cleanVal) return;
+
+        let found = false;
+        for (let i = 0; i < selectEl.options.length; i++) {
+            if (selectEl.options[i].value.toLowerCase() === cleanVal.toLowerCase()) {
+                selectEl.selectedIndex = i;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            const opt = document.createElement('option');
+            opt.value = cleanVal;
+            opt.textContent = '📍 ' + cleanVal;
+            selectEl.appendChild(opt);
+            selectEl.value = cleanVal;
+        }
+    }
+    window.setLocationDropdownVal = setLocationDropdownVal;
 
     function setCarDropdownVal(selectEl, carVal) {
         if (!selectEl || !carVal) return;
@@ -11875,11 +11983,16 @@ document.addEventListener('paste', function(e) {
         if (currentTypedPhone) document.getElementById('customerPhone').value = currentTypedPhone;
         if (currentTypedTg) document.getElementById('customerTelegram').value = currentTypedTg;
 
-        // Ensure higher z-index so customerModal displays properly above bookingModal
+        // Ensure higher z-index so customerModal displays properly ABOVE bookingModal (bookingModal is z-index: 9999!)
         const cModal = document.getElementById('customerModal');
-        if (cModal) cModal.style.zIndex = '1060';
+        if (cModal) {
+            cModal.style.zIndex = '10050';
+            cModal.style.display = 'flex';
+            cModal.classList.add('show');
+        }
 
         openModal('customerModal');
+        if (cModal) cModal.style.zIndex = '10050';
     };
 
     window.addBookingModalExtraCarSlot = function() {
@@ -11932,9 +12045,15 @@ document.addEventListener('paste', function(e) {
         const p = document.getElementById('bookingPickupLoc');
         const d = document.getElementById('bookingDropoffLoc');
         if (p && d) {
-            const tmp = p.value;
-            p.value = d.value;
-            d.value = tmp;
+            const tmpP = p.value;
+            const tmpD = d.value;
+            if (typeof setLocationDropdownVal === 'function') {
+                setLocationDropdownVal(p, tmpD);
+                setLocationDropdownVal(d, tmpP);
+            } else {
+                p.value = tmpD;
+                d.value = tmpP;
+            }
             if (typeof updateBookingRouteStyles === 'function') {
                 updateBookingRouteStyles();
             }
@@ -12395,6 +12514,7 @@ document.addEventListener('paste', function(e) {
         if (dateEl) dateEl.value = '';
         const timeEl = document.getElementById('bookingTime');
         if (timeEl) timeEl.value = '';
+        if (typeof setBookingTimeValue === 'function') setBookingTimeValue('');
 
         // 4. Reset Cars & Customers dropdowns
         if (typeof populateCarDropdowns === 'function') {
@@ -12547,6 +12667,10 @@ document.addEventListener('paste', function(e) {
         }
 
         const bookings = getBookings();
+        const existingBookingForSave = editingBookingId ? bookings.find(b => b.id === editingBookingId) : null;
+        const invSelectEl = document.getElementById('bookingInvoiceDone');
+        const isInvDoneVal = invSelectEl ? (invSelectEl.value === 'true') : (existingBookingForSave ? !!existingBookingForSave.invoiceDone : false);
+
         const newBooking = {
             id: editingBookingId || ('BK-' + (1000 + bookings.length + 1)),
             customerName: custName,
@@ -12561,6 +12685,7 @@ document.addEventListener('paste', function(e) {
             date: document.getElementById('bookingDate').value || getTodayStr(0),
             time: document.getElementById('bookingTime').value || '08:00',
             status: 'active',
+            invoiceDone: isInvDoneVal,
             notes: document.getElementById('bookingNotes') ? document.getElementById('bookingNotes').value.trim() : '',
             rawMessage: document.getElementById('telegramPasteInput') ? document.getElementById('telegramPasteInput').value : '',
             images: currentBookingImages ? [...currentBookingImages] : []
@@ -12595,6 +12720,38 @@ document.addEventListener('paste', function(e) {
         switchTab(currentTab);
     };
 
+    // Toggle Booking Invoice Status (ធ្វើរួច / មិនទាន់ធ្វើ)
+    window.toggleBookingInvoice = function(id, evt) {
+        if (evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+        }
+        let bookings = getBookings();
+        const b = bookings.find(x => x.id === id);
+        if (!b) return;
+
+        b.invoiceDone = !b.invoiceDone;
+        setBookings(bookings);
+
+        // Immediate server sync for cross-device & cloud backup
+        try {
+            fetch('/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bookings: bookings })
+            }).catch(e => console.warn('Could not sync booking invoice status:', e));
+        } catch (e) {}
+
+        if (typeof renderDashboard === 'function') renderDashboard();
+        if (typeof renderBookings === 'function') renderBookings(currentBookingFilter);
+
+        if (b.invoiceDone) {
+            showToast(`✅ បានធិចសម្គាល់៖ ធ្វើ Invoice ហើយ (${b.customerName || b.id})`);
+        } else {
+            showToast(`↩️ បានដកការសម្គាល់៖ មិនទាន់ធ្វើ Invoice (${b.customerName || b.id})`);
+        }
+    };
+
     window.deleteBooking = function(id) {
         if (!confirm(`តើអ្នកប្រាកដជាចង់លុបការកក់លេខ ${id} នេះមែនទេ?`)) return;
         let bookings = getBookings();
@@ -12625,6 +12782,22 @@ document.addEventListener('paste', function(e) {
         if (badge) {
             badge.textContent = b.status === 'active' ? 'កំពុងជួល' : (b.status === 'dueToday' ? 'ចេញថ្ងៃនេះ' : b.status);
             badge.className = 'badge bg-' + (b.status === 'active' ? 'success' : 'primary');
+            
+            // Remove existing invoice badge if present
+            const oldInvBadge = document.getElementById('detailBookingInvoiceBadge');
+            if (oldInvBadge) oldInvBadge.remove();
+            
+            const invBadgeEl = document.createElement('span');
+            invBadgeEl.id = 'detailBookingInvoiceBadge';
+            invBadgeEl.className = 'badge';
+            if (b.invoiceDone) {
+                invBadgeEl.style.cssText = 'background: #dcfce7; color: #15803d; border: 1.5px solid #86efac; font-weight: 800; font-size: 12px; padding: 3px 8px; margin-left: 4px;';
+                invBadgeEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> ធ្វើ Invoice ហើយ';
+            } else {
+                invBadgeEl.style.cssText = 'background: #f1f5f9; color: #64748b; border: 1.5px solid #cbd5e1; font-weight: 800; font-size: 12px; padding: 3px 8px; margin-left: 4px;';
+                invBadgeEl.innerHTML = '<i class="fa-regular fa-square"></i> មិនទាន់ធ្វើ Invoice';
+            }
+            badge.insertAdjacentElement('afterend', invBadgeEl);
         }
 
         window.activeBookingDetailsImages = (b.images || []).map((img, i) => ({
@@ -12706,6 +12879,9 @@ document.addEventListener('paste', function(e) {
             footer.innerHTML = `
                 <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('bookingDetailsModal')">បិទ</button>
                 <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                    <button type="button" class="btn-ar" style="${b.invoiceDone ? 'background: #dcfce7; color: #15803d; border: 1.5px solid #86efac;' : 'background: #f8fafc; color: #475569; border: 1.5px solid #cbd5e1;'} font-weight: 800;" onclick="toggleBookingInvoice('${b.id}', event); viewBookingDetails('${b.id}');" title="ចុចដើម្បីប្តូរស្ថានភាព Invoice">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> ${b.invoiceDone ? 'ធ្វើ Invoice ហើយ ✅' : 'ធិចថាធ្វើ Invoice ⬜'}
+                    </button>
                     <button type="button" class="btn-ar btn-ar-primary" style="font-weight: 800; background: #0284c7;" onclick="closeModal('bookingDetailsModal'); openDispatchDriverModal('${b.id}');"><i class="fa-brands fa-telegram"></i> ចាត់ចែង & បញ្ជូនតៃកុង</button>
                     <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('bookingDetailsModal'); openEditBookingModal('${b.id}');"><i class="fa-solid fa-pen"></i> កែប្រែ</button>
                     <button type="button" class="btn-ar btn-ar-success" onclick="markBookingCompleted('${b.id}')"><i class="fa-solid fa-check"></i> បញ្ចប់ការកក់</button>
@@ -13166,7 +13342,10 @@ document.addEventListener('paste', function(e) {
             return;
         }
 
-        const text = input.value;
+        const rawText = input.value;
+        // Strip Telegram bot wrapper headers e.g. "[សារពី Sokha GMP88 - 10/09/2026 05:24]"
+        // so that dates/timestamps inside the bot forwarding stamp NEVER pollute the booking!
+        const text = rawText.replace(/\[\s*សារពី\s*[^\]]+\]/g, '').trim();
 
         // 1. Name
         let cleanName = '';
@@ -13227,50 +13406,65 @@ document.addEventListener('paste', function(e) {
         }
 
         // 4. Helper to set exact booking time with minute precision
-        window.setBookingTimeValue = function(timeStr) {
-            if (!timeStr) return;
-            const timeSel = document.getElementById('bookingTime');
-            if (!timeSel) return;
-            const parts = String(timeStr).trim().split(/[:.]/);
-            if (parts.length < 2) return;
-            const hh = String(parseInt(parts[0], 10)).padStart(2, '0');
-            const mm = String(parseInt(parts[1], 10)).padStart(2, '0');
-            const formatted = `${hh}:${mm}`;
+            // Helper to set and sync exact booking hour and minute dropdowns
+    window.setBookingTimeValue = function(timeStr) {
+        const bTime = document.getElementById('bookingTime');
+        const hSel = document.getElementById('bookingTimeHour');
+        const mSel = document.getElementById('bookingTimeMinute');
+        if (!timeStr) {
+            if (bTime) bTime.value = '';
+            if (hSel) hSel.value = '';
+            if (mSel) mSel.value = '';
+            return;
+        }
+        const parts = String(timeStr).trim().split(/[:.]/);
+        if (parts.length < 2) return;
+        const hh = String(parseInt(parts[0], 10)).padStart(2, '0');
+        const mm = String(parseInt(parts[1], 10)).padStart(2, '0');
+        const formatted = `${hh}:${mm}`;
 
+        if (bTime) bTime.value = formatted;
+
+        if (hSel) {
+            hSel.value = (hh === '24') ? '00' : hh;
+        }
+
+        if (mSel) {
             let found = false;
-            for (let i = 0; i < timeSel.options.length; i++) {
-                if (timeSel.options[i].value === formatted) {
-                    timeSel.selectedIndex = i;
+            for (let i = 0; i < mSel.options.length; i++) {
+                if (mSel.options[i].value === mm) {
+                    mSel.selectedIndex = i;
                     found = true;
                     break;
                 }
             }
             if (!found) {
                 const opt = document.createElement('option');
-                opt.value = formatted;
-                const hNum = parseInt(hh, 10);
-                let period = '';
-                if (hNum === 0 || hNum === 24) period = '(១២ អធ្រាត្រ)';
-                else if (hNum < 5) period = `(${hNum} យប់)`;
-                else if (hNum < 12) period = `(${hNum} ព្រឹក)`;
-                else if (hNum === 12) period = '(១២ ថ្ងៃត្រង់)';
-                else if (hNum < 18) period = `(${hNum - 12} រសៀល)`;
-                else period = `(${hNum - 12} យប់)`;
-
-                opt.textContent = `${formatted} ${period}`;
-
-                let inserted = false;
-                for (let i = 1; i < timeSel.options.length; i++) {
-                    if (timeSel.options[i].value > formatted) {
-                        timeSel.insertBefore(opt, timeSel.options[i]);
-                        inserted = true;
-                        break;
-                    }
-                }
-                if (!inserted) timeSel.appendChild(opt);
-                timeSel.value = formatted;
+                opt.value = mm;
+                opt.textContent = `${mm} នាទី`;
+                mSel.appendChild(opt);
+                mSel.value = mm;
             }
-        };
+        }
+    };
+
+    window.updateCombinedBookingTime = function() {
+        const hSel = document.getElementById('bookingTimeHour');
+        const mSel = document.getElementById('bookingTimeMinute');
+        const bTime = document.getElementById('bookingTime');
+        if (!bTime) return;
+
+        const hh = hSel && hSel.value !== '' ? hSel.value.padStart(2, '0') : '';
+        const mm = mSel && mSel.value !== '' ? mSel.value.padStart(2, '0') : '';
+
+        if (hh === '' && mm === '') {
+            bTime.value = '';
+        } else {
+            const finalH = hh || '08';
+            const finalM = mm || '00';
+            bTime.value = `${finalH}:${finalM}`;
+        }
+    };
 
         // 5. Detect Direction: Inbound (ហោះចូល / ขาเข้า) vs Outbound (ហោះចេញ / ขาចេញ / ขาออก)
         const isInbound = /ขาเข้า|ហោះចូល|ជើងហោះហើរចូល|inbound|arrival|landing|เครื่องลง|บินเข้า/i.test(text);
@@ -13283,11 +13477,68 @@ document.addEventListener('paste', function(e) {
         let matchedPickup = '';
         let matchedDropoff = '';
 
+        const rx_techo = /เตโช|เดโช|techo|decho|TIA\b|KTI\b|ตេជោ/i;
+        const rx_siemreap = /សៀមរាប|siem\s*reap|เสียมเรียบ|SAI\b|REP\b/i;
+        const rx_poipet = /ប៉ោយប៉ែត|poipet|ปอยเปต|ปป\b/i;
+        const rx_phnompenh = /ភ្នំពេញ|phnom\s*penh|PNH\b|PP\b/i;
+
+        // Route detection: "Pick from ... send to ..." or "from ... to ..." or arrow "A ---> B"
+        const pickSendMatch = text.match(/(?:Pick\s*from|from|ពី|ចេញពី|รับจาก)\s*([^\n\r]+?)\s*(?:send\s*to|to|ទៅកាន់|ទៅ|--->|-->|->|➔|—>|ไป\s*ส่ง|ไป|ส่ง)\s*([^\n\r]+)/i);
+        if (pickSendMatch) {
+            const left = pickSendMatch[1].trim();
+            const right = pickSendMatch[2].trim();
+            if (rx_techo.test(left)) matchedPickup = 'តេជោ';
+            else if (rx_siemreap.test(left)) matchedPickup = 'សៀមរាប';
+            else if (rx_poipet.test(left)) matchedPickup = 'ប៉ោយប៉ែត';
+            else if (rx_phnompenh.test(left)) matchedPickup = 'ភ្នំពេញ';
+
+            if (rx_techo.test(right)) matchedDropoff = 'តេជោ';
+            else if (rx_siemreap.test(right)) matchedDropoff = 'សៀមរាប';
+            else if (rx_poipet.test(right)) matchedDropoff = 'ប៉ោយប៉ែត';
+            else if (rx_phnompenh.test(right)) matchedDropoff = 'ភ្នំពេញ';
+        }
+
+        // Capture specific pickup place: e.g. "รับที่ตึก55", "มารับตึกฟ้า", "รับที่ M1", "มารับที่ ตึก 40", "รับ : M1", "จุดรับ M1", "ទទួលនៅ M1"
+        const rxSpecificPickup = /(?:มารับที่|มารับ|รับที่|รับ(?!\s*\d{1,2}[:.]\d{2}|\s*\d{1,2}\s*(?:น\.|am|pm|ตี|[.:]\d{2})|[ทร]ាប|งาน|แขก|ส่ง|เหมา)|จุดรับ(?:ที่)?|สถานที่รับ(?:ที่)?|รับ\s*[:៖]|มารับ\s*[:៖]|pickup\s*(?:at|from)?|ទទួលនៅ|ទៅទទួលនៅ|យកពី|ទទួលពី)[\s:៖]*([A-Za-z0-9\u0E00-\u0E7F\s\-_#\.\(\)]+?)(?=\s*(?:เวลา|ម៉ោង|time|\d{1,2}[:.]\d{2}|วันที่|ថ្ងៃ|VIP|vip|ขา|pax|คน|\n|\r|$))/gi;
+        let specificPickupPlace = '';
+        let spMatch;
+        while ((spMatch = rxSpecificPickup.exec(text)) !== null) {
+            if (spMatch[1]) {
+                let cand = spMatch[1].trim().replace(/^(?:ที่|at|from|จาก)\s*/i, '').trim();
+                cand = cand.replace(/(ตึก)(\d+)/g, '$1 $2');
+                if (cand && !/^(?:รถ[A-Za-z0-9\s]*|คน|ผู้โดยสาร|ลูกค้า|สนามบิน|airport|ព្រលាន|\d+)$/i.test(cand)) {
+                    specificPickupPlace = cand;
+                    break;
+                }
+            }
+        }
+
+        // Capture specific dropoff or destination: e.g. "send to สนามบินเดโช", "ไปสนามบินเตโช", "ไป...", "ส่งที่ ...", "มาส่งที่ ...", "ទៅកាន់...", "ជូនទៅ ..."
+        const rxSpecificDropoff = /(?:(?:send\s*to|ไป\s*ส่ง(?:ที่)?|มา\s*ส่ง(?:ที่)?|ส่ง\s*ที่|ไป\s*ที่|ទៅកាន់|ទៅ\s*ដល់|ទៅ|ជូនទៅ|ដាក់នៅ|dropoff\s*(?:at|to)?)\s*[:៖]*|(?:^|\n)\s*(?:ไป|ส่ง)\s*[:៖]?\s*)([A-Za-z0-9\u0E00-\u0E7F\s\-_#\.\(\)]+?)(?=\s*(?:เวลา|ម៉ោង|time|\d{1,2}[:.]\d{2}|วันที่|ថ្ងៃ|VIP|vip|ขา|pax|คน|\n|\r|$))/im;
+        const specificDropoffMatch = text.match(rxSpecificDropoff);
+        let specificDropoffPlace = '';
+        if (specificDropoffMatch && specificDropoffMatch[1]) {
+            let sd = specificDropoffMatch[1].trim().replace(/^(?:ที่|at|to)\s*/i, '').trim();
+            if (sd && !/^(?:รถ[A-Za-z0-9\s]*|คน|ผู้โดยสาร|ลูกค้า|\d+)$/i.test(sd)) {
+                if (rx_techo.test(sd)) {
+                    matchedDropoff = 'តេជោ';
+                } else if (rx_siemreap.test(sd)) {
+                    matchedDropoff = 'សៀមរាប';
+                } else if (rx_poipet.test(sd)) {
+                    matchedDropoff = 'ប៉ោយប៉ែត';
+                } else if (rx_phnompenh.test(sd)) {
+                    matchedDropoff = 'ភ្នំពេញ';
+                } else if (!/^(?:สนามบิน|airport|ព្រលាន)$/i.test(sd)) {
+                    specificDropoffPlace = sd;
+                }
+            }
+        }
+
         // Priority 1: Explicit Inbound / Outbound with City
         if (/ขาเข้า\s*(?:สนามบิน)?\s*(?:เสียมเรียบ|SAI|REP|សៀមរាប)|ហោះចូល\s*(?:ព្រលាន)?\s*សៀមរាប/i.test(text)) {
             matchedPickup = 'សៀមរាប';
             matchedDropoff = 'ប៉ោយប៉ែត';
-        } else if (/ขาเข้า\s*(?:สนามบิน)?\s*(?:เตโช|TIA|KTI|តេជោ)|ហោះចូល\s*(?:ព្រលាន)?\s*តេជោ/i.test(text)) {
+        } else if (/ขาเข้า\s*(?:สนามบิน)?\s*(?:เตโช|เดโช|TIA|KTI|តេជោ)|ហោះចូល\s*(?:ព្រលាន)?\s*តេជោ/i.test(text)) {
             matchedPickup = 'តេជោ';
             matchedDropoff = 'ប៉ោយប៉ែត';
         } else if (/ขาเข้า\s*(?:สนามบิน)?\s*(?:พนมเปญ|PP\b|PNH\b|ភ្នំពេញ)|ហោះចូល\s*(?:ព្រលាន)?\s*ភ្នំពេញ/i.test(text)) {
@@ -13296,7 +13547,7 @@ document.addEventListener('paste', function(e) {
         } else if (/ขา(?:ออก|ចេញ)\s*(?:สนามบิน)?\s*(?:เสียมเรียบ|SAI|REP|សៀមរាប)|ហោះចេញ\s*(?:ទៅ)?\s*សៀមរាប/i.test(text)) {
             matchedPickup = 'ប៉ោយប៉ែត';
             matchedDropoff = 'សៀមរាប';
-        } else if (/ขา(?:ออก|ចេញ)\s*(?:สนามบิน)?\s*(?:เตโช|TIA|KTI|តេជោ)|ហោះចេញ\s*(?:ទៅ)?\s*តេជោ/i.test(text)) {
+        } else if (/ขา(?:ออก|ចេញ)\s*(?:สนามบิน)?\s*(?:เตโช|เดโช|TIA|KTI|តេជោ)|ហោះចេញ\s*(?:ទៅ)?\s*តេជោ/i.test(text)) {
             matchedPickup = 'ប៉ោយប៉ែត';
             matchedDropoff = 'តេជោ';
         } else if (/ขา(?:ออก|ចេញ)\s*(?:สนามบิน)?\s*(?:พนมเปญ|PP\b|PNH\b|ភ្នំពេញ)|ហោះចេញ\s*(?:ទៅ)?\s*ភ្នំពេញ/i.test(text)) {
@@ -13304,53 +13555,53 @@ document.addEventListener('paste', function(e) {
             matchedDropoff = 'ភ្នំពេញ';
         }
 
-        // Priority 2: Route with arrow (e.g. รับจาก สนามบินเสียมเรียบ ( SAI ) ---> ปอยเปต)
+        // Priority 2: Route with arrow or 'ទៅ' / 'ไป'
         if (!matchedPickup || !matchedDropoff) {
-            const arrowMatch = text.match(/([^\n\r]+?)\s*(?:--->|-->|->|➔|—>|ទៅកាន់|ទៅ|to)\s*([^\n\r]+)/i);
+            const arrowMatch = text.match(/([^\n\r]+?)\s*(?:--->|-->|->|➔|—>|ទៅកាន់|ទៅ|to|ไป)\s*([^\n\r]+)/i);
             if (arrowMatch) {
                 const leftSide = arrowMatch[1];
                 const rightSide = arrowMatch[2];
 
-                if (/เสียมเรียบ|SAI\b|REP\b|សៀមរាប/i.test(leftSide)) matchedPickup = 'សៀមរាប';
-                else if (/ปอยเปต|ប៉ោយប៉ែត|poipet/i.test(leftSide)) matchedPickup = 'ប៉ោយប៉ែត';
+                if (rx_siemreap.test(leftSide)) matchedPickup = 'សៀមរាប';
+                else if (rx_poipet.test(leftSide)) matchedPickup = 'ប៉ោយប៉ែត';
                 else if (/ភ្នំពេញ|phnom|penh|กรุงเทพ|BKK|DMK/i.test(leftSide)) matchedPickup = 'ភ្នំពេញ';
-                else if (/តេជោ|techo|KTI|TIA/i.test(leftSide)) matchedPickup = 'តេជោ';
+                else if (rx_techo.test(leftSide)) matchedPickup = 'តេជោ';
 
-                if (/ปอยเปต|ប៉ោយប៉ែត|poipet/i.test(rightSide)) matchedDropoff = 'ប៉ោយប៉ែត';
-                else if (/เสียมเรียบ|SAI\b|REP\b|សៀមរាប/i.test(rightSide)) matchedDropoff = 'សៀមរាប';
+                if (rx_poipet.test(rightSide)) matchedDropoff = 'ប៉ោយប៉ែត';
+                else if (rx_siemreap.test(rightSide)) matchedDropoff = 'សៀមរាប';
                 else if (/ភ្នំពេញ|phnom|penh|กรุงเทพ|BKK|DMK/i.test(rightSide)) matchedDropoff = 'ភ្នំពេញ';
-                else if (/តេជោ|techo|KTI|TIA/i.test(rightSide)) matchedDropoff = 'តេជោ';
+                else if (rx_techo.test(rightSide)) matchedDropoff = 'តេជោ';
             }
         }
 
         // Priority 3: Explicit pickup / dropoff tags
         if (!matchedPickup) {
-            const rxPickup = text.match(/(?:รับจาก|มารับ|pickup|ពី)[\s:៖]*([^\n\-\->]+)/i);
+            const rxPickup = text.match(/(?:Pick\s*from|รับจาก|มารับ|pickup|ពី)[\s:៖]*([^\n\-\->]+)/i);
             if (rxPickup) {
                 const pText = rxPickup[1];
-                if (/เสียมเรียบ|SAI|សៀមរាប/i.test(pText)) matchedPickup = 'សៀមរាប';
-                else if (/ปอยเปต|ប៉ោយប៉ែត/i.test(pText)) matchedPickup = 'ប៉ោយប៉ែត';
+                if (rx_siemreap.test(pText)) matchedPickup = 'សៀមរាប';
+                else if (rx_poipet.test(pText)) matchedPickup = 'ប៉ោយប៉ែត';
                 else if (/ភ្នំពេញ|phnom|กรุงเทพ/i.test(pText)) matchedPickup = 'ភ្នំពេញ';
-                else if (/តេជោ|techo/i.test(pText)) matchedPickup = 'តេជោ';
+                else if (rx_techo.test(pText)) matchedPickup = 'តេជោ';
             }
         }
 
         if (!matchedDropoff) {
-            const rxDropoff = text.match(/(?:มาส่ง|ไปส่ง|dropoff|ទៅ)[\s:៖]*([^\n\r]+)/i);
+            const rxDropoff = text.match(/(?:send\s*to|มาส่ง|ไปส่ง|dropoff|ទៅ)[\s:៖]*([^\n\r]+)/i);
             if (rxDropoff) {
                 const dText = rxDropoff[1];
-                if (/ปอยเปต|ប៉ោយប៉ែត|poipet/i.test(dText)) matchedDropoff = 'ប៉ោយប៉ែត';
-                else if (/เสียมเรียบ|SAI|សៀមរាប/i.test(dText) && !/massage/i.test(dText)) matchedDropoff = 'សៀមរាប';
+                if (rx_poipet.test(dText)) matchedDropoff = 'ប៉ោយប៉ែត';
+                else if (rx_siemreap.test(dText) && !/massage/i.test(dText)) matchedDropoff = 'សៀមរាប';
                 else if (/ភ្នំពេញ|phnom|กรุงเทพ/i.test(dText)) matchedDropoff = 'ភ្នំពេញ';
-                else if (/តេជោ|techo/i.test(dText)) matchedDropoff = 'តេជោ';
+                else if (rx_techo.test(dText)) matchedDropoff = 'តេជោ';
             }
         }
 
         // Priority 4: City keywords combined with Inbound / Outbound or pair
-        const isPoipet = /ប៉ោយប៉ែត|poipet|ปอยเปต/i.test(text);
-        const isSiemReap = /សៀមរាប|siem\s*reap|เสียมเรียบ|SAI\b|REP\b/i.test(text);
-        const isTecho = /តេជោ|techo|TIA\b|KTI\b/i.test(text);
-        const isPhnomPenh = /ភ្នំពេញ|phnom\s*penh|PNH\b|PP\b/i.test(text);
+        const isPoipet = rx_poipet.test(text);
+        const isSiemReap = rx_siemreap.test(text);
+        const isTecho = rx_techo.test(text);
+        const isPhnomPenh = rx_phnompenh.test(text);
 
         if (!matchedPickup && !matchedDropoff) {
             if (isInbound) {
@@ -13378,8 +13629,30 @@ document.addEventListener('paste', function(e) {
             }
         }
 
-        if (pickupEl && matchedPickup) pickupEl.value = matchedPickup;
-        if (dropoffEl && matchedDropoff) dropoffEl.value = matchedDropoff;
+        // USER RULE: If specific pickup place (e.g. "รับที่ตึก55", "รับที่ M1") was parsed, REPLACE pickup location with it!
+        if (specificPickupPlace) {
+            matchedPickup = specificPickupPlace;
+        }
+        if (specificDropoffPlace) {
+            matchedDropoff = specificDropoffPlace;
+        }
+
+        // Ensure dropoff is set if pickup was replaced by specific place
+        if (matchedPickup && !matchedDropoff) {
+            if (isTecho && matchedPickup !== 'តេជោ') matchedDropoff = 'តេជោ';
+            else if (isSiemReap && matchedPickup !== 'សៀមរាប') matchedDropoff = 'សៀមរាប';
+            else if (isPoipet && matchedPickup !== 'ប៉ោយប៉ែត') matchedDropoff = 'ប៉ោយប៉ែត';
+            else if (isPhnomPenh && matchedPickup !== 'ភ្នំពេញ') matchedDropoff = 'ភ្នំពេញ';
+        }
+
+        if (pickupEl && matchedPickup) {
+            if (typeof setLocationDropdownVal === 'function') setLocationDropdownVal(pickupEl, matchedPickup);
+            else pickupEl.value = matchedPickup;
+        }
+        if (dropoffEl && matchedDropoff) {
+            if (typeof setLocationDropdownVal === 'function') setLocationDropdownVal(dropoffEl, matchedDropoff);
+            else dropoffEl.value = matchedDropoff;
+        }
         if (typeof updateBookingRouteStyles === 'function') {
             updateBookingRouteStyles();
         }
@@ -13387,7 +13660,11 @@ document.addEventListener('paste', function(e) {
         // 7. Date (ថ្ងៃខែឆ្នាំ - Supports DD/MM/YYYY e.g. 10/09/2026 or typo 10/09/20266, and YYYY-MM-DD)
         const dateEl = document.getElementById('bookingDate');
         if (dateEl) {
-            const dmyMatch = text.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](202\d)/);
+            // Prioritize pickup date written near 'มารับ' e.g. "มารับที่ ตึก 41 วันที่ 09/09/2026"
+            const pickupDateMatch = text.match(/มารับ[^\n\r]*?วันที่\s*(\d{1,2})[\/\-](\d{1,2})[\/\-](202\d)/i);
+            // Priority 2: Explicit 'Date', 'วันที่', 'ថ្ងៃ' label e.g. "Date 11/9/2026"
+            const explicitDateMatch = text.match(/(?:Date|ថ្ងៃ(?:ទី)?|កាលបរិច្ឆេទ|วันที่)[\s:៖]*(\d{1,2})[\/\-](\d{1,2})[\/\-](202\d)/i);
+            const dmyMatch = pickupDateMatch || explicitDateMatch || text.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](202\d)/);
             const ymdMatch = text.match(/(202\d)[\/\-](\d{1,2})[\/\-](\d{1,2})/);
             if (dmyMatch) {
                 const d = dmyMatch[1].padStart(2, '0');
@@ -13406,12 +13683,18 @@ document.addEventListener('paste', function(e) {
             }
         }
 
-        // 8. Pickup Time (ម៉ោងទៅទទួល) - User Rule:
-        // - If Flight OUT (ហោះចេញ / ขาចេញ / ขาออก): Strictly take written pickup time from text!
-        // - If Flight IN (ហោះចូល / ขาเข้า): Take arrival / landing time (from ticket if present, or text)
+        // 8. Pickup Time (ម៉ោងទៅទទួល)
         let exactParsedTime = null;
 
-        if (isOutbound) {
+        // HIGHEST PRIORITY: Explicit Vehicle Pickup Time written in the message
+        // e.g. "Time : รับ 01.00น. (ตี1)", "Time : 01.00", "เวลารับ...", "ម៉ោងទទួល...", "มารับ... เวลา...", "รับ 01.00น."
+        const carPickupTimeMatch = text.match(/(?:Time|ម៉ោង|ពេល)[\s:៖]*(?:รับ|ទៅទទួល|ទទួល)?[\s:៖]*(\d{1,2})[:.](\d{2})/i) ||
+                                   text.match(/(?:เวลารับ|ម៉ោងទទួល|ម៉ោងចេញ|มารับ[^\n\r]*?เวลา)[\s:៖]*(\d{1,2})[:.](\d{2})/i) ||
+                                   text.match(/รับ\s*[:៖]*\s*(\d{1,2})[:.](\d{2})\s*(?:น\.|am|pm|ตี)/i);
+
+        if (carPickupTimeMatch) {
+            exactParsedTime = `${carPickupTimeMatch[1]}:${carPickupTimeMatch[2]}`;
+        } else if (isOutbound) {
             // OUTBOUND: Strictly take what customer wrote in the message
             const outTimeMatch = text.match(/มารับ[^\n\r]*?เวลา\s*[:៖]*\s*(\d{1,2})[:.](\d{2})/i) ||
                                  text.match(/มารับ[^\n\r]*?(\d{1,2})[:.](\d{2})/i) ||
@@ -13486,23 +13769,66 @@ document.addEventListener('paste', function(e) {
             document.getElementById('bookingBorderClear').value = 'យកក្លៀដាន';
         }
 
-        // 8. Car Type (Supports the 5 standard categories: SUV, Alphard, Staria, Hiace, Bus, or No Car)
+        // 8. Car Type & Car Count (Supports: SUV, Alphard, Staria, Hiace, Bus, or No Car + seat count rules & multi-cars)
         const s1 = document.getElementById('bookingCarSelect');
         if (s1) {
+            let detectedCar = '';
             if (/មិនយកឡាន|no\s*car|not?\s*need\s*car|មិនបាច់ឡាន|គ្មានឡាន|មិនត្រូវ(?:ការ)?ឡាន|មិនជួលឡាន|មិនយក(?:រថ)?យន្ត/i.test(text)) {
-                setCarDropdownVal(s1, 'no_car');
+                detectedCar = 'no_car';
             } else if (/alphard|អាលផាត|អាល់ផាត/i.test(text)) {
-                setCarDropdownVal(s1, 'អាលផាត (Alphard)');
+                detectedCar = 'អាលផាត (Alphard)';
             } else if (/hiace|ហៃយាស់/i.test(text)) {
-                setCarDropdownVal(s1, 'ហៃយាស់ (Hiace)');
+                detectedCar = 'ហៃយាស់ (Hiace)';
             } else if (/suv|lexus|ឡាក់ស៊ីស|nx200|អេសយូវី/i.test(text)) {
-                setCarDropdownVal(s1, 'អេសយូវី (SUV)');
+                detectedCar = 'អេសយូវី (SUV)';
             } else if (/staria|starex|ស្តារេច/i.test(text)) {
-                setCarDropdownVal(s1, 'ស្តារេច (Staria)');
+                detectedCar = 'ស្តារេច (Staria)';
             } else if (/universe|bus|ឡានក្រុង/i.test(text)) {
-                setCarDropdownVal(s1, 'ឡានក្រុង (Bus)');
+                detectedCar = 'ឡានក្រុង (Bus)';
             } else if (/รถเล็ก|small\s*car|sedan|ឡានតូច/i.test(text)) {
-                setCarDropdownVal(s1, 'អេសយូវី (SUV)');
+                detectedCar = 'អេសយូវី (SUV)';
+            }
+
+            // USER RULE: Detect car type by seat count e.g. "2 ที่นั่ง", "1-3 ที่นั่ง", "4-6 ที่นั่ง", "7-9 ที่นั่ง", "7-12 ที่นั่ง"
+            // 1-3 ที่นั่ง = SUV, 4-6 ที่นั่ง = Alphard, 7-9 ที่นั่ง = Staria, 7-12 / 10-12 ที่นั่ง = Hiace
+            const seatMatch = text.match(/(\d+)(?:\s*[-–~]\s*(\d+))?\s*(?:ที่นั่ง|seats?|កៅអី)/i);
+            if (seatMatch) {
+                const sMin = parseInt(seatMatch[1], 10);
+                const sMax = seatMatch[2] ? parseInt(seatMatch[2], 10) : sMin;
+                const seatCap = sMax; // capacity
+                if (!detectedCar || detectedCar === 'អេសយូវី (SUV)') {
+                    if (seatCap <= 3) {
+                        detectedCar = 'អេសយូវី (SUV)';
+                    } else if (seatCap <= 6) {
+                        detectedCar = 'អាលផាត (Alphard)';
+                    } else if (seatCap <= 9) {
+                        detectedCar = 'ស្តារេច (Staria)';
+                    } else if (seatCap <= 15) {
+                        detectedCar = 'ហៃយាស់ (Hiace)';
+                    } else {
+                        detectedCar = 'ឡានក្រុង (Bus)';
+                    }
+                }
+            }
+
+            if (detectedCar) {
+                setCarDropdownVal(s1, detectedCar);
+            }
+
+            // Auto-populate multiple car slots if specified e.g. "2 คัน", "3 គ្រឿង", etc.
+            const carCountMatch = text.match(/(\d+)\s*(?:คัน|គ្រឿង|cars?|units?|輛)/i);
+            const carCount = carCountMatch ? parseInt(carCountMatch[1], 10) : 1;
+            if (carCount >= 2 && s1.value && s1.value !== 'no_car') {
+                const s2 = document.getElementById('bookingCarSelect2');
+                if (s2) setCarDropdownVal(s2, s1.value);
+            }
+            if (carCount >= 3 && s1.value && s1.value !== 'no_car') {
+                const s3 = document.getElementById('bookingCarSelect3');
+                if (s3) setCarDropdownVal(s3, s1.value);
+            }
+            if (carCount >= 4 && s1.value && s1.value !== 'no_car') {
+                const s4 = document.getElementById('bookingCarSelect4');
+                if (s4) setCarDropdownVal(s4, s1.value);
             }
         }
 
@@ -13512,9 +13838,17 @@ document.addEventListener('paste', function(e) {
         const dropoffPlaceMatch = text.match(/มาส่ง\s*[:៖]\s*([^\n\r]+)/i);
 
         let notesParts = [];
-        if (flightMatch) notesParts.push(`Flight: ${flightMatch[1]}`);
+        if (specificPickupPlace) notesParts.push(`ទទួលនៅ: ${specificPickupPlace}`);
         if (dropoffPlaceMatch) notesParts.push(`ជូនទៅ: ${dropoffPlaceMatch[1].trim()}`);
+        else if (specificDropoffPlace) notesParts.push(`ជូនទៅ: ${specificDropoffPlace}`);
+        if (flightMatch) notesParts.push(`Flight: ${flightMatch[1]}`);
         if (mapsMatch) notesParts.push(`📍 Map: ${mapsMatch[0]}`);
+
+        // Pax count e.g. "10คน", "10 នាក់"
+        const paxMatch = text.match(/(\d+)\s*(?:คน|នាក់|pax|guests?|passengers?)/i);
+        if (paxMatch && !notesParts.some(p => p.includes('នាក់') || p.includes('Pax'))) {
+            notesParts.push(`ចំនួនភ្ញៀវ: ${paxMatch[1]} នាក់`);
+        }
 
         const notesEl = document.getElementById('bookingNotes');
         if (notesEl && notesParts.length > 0) {
@@ -14859,9 +15193,10 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
     // Backup & Export
     window.handleExportBookingsCsv = function() {
         const bookings = getBookings();
-        let csv = '\uFEFFល.រ,លេខកូដ,កាលបរិច្ឆេទ,ម៉ោង,ឈ្មោះភ្ញៀវ,លេខទូរស័ព្ទ,Telegram,រថយន្ត,យកពី,ជូនទៅ,VIP,ក្លៀដាន,ស្ថានភាព\n';
+        let csv = '\uFEFFល.រ,លេខកូដ,ធ្វើ Invoice ហើយ,កាលបរិច្ឆេទ,ម៉ោង,ឈ្មោះភ្ញៀវ,លេខទូរស័ព្ទ,Telegram,រថយន្ត,យកពី,ជូនទៅ,VIP,ក្លៀដាន,ស្ថានភាព\n';
         bookings.forEach((b, i) => {
-            csv += `"${i+1}","${b.id}","${b.date}","${b.time}","${b.customerName}","${b.customerPhone}","${b.customerTelegram}","${(b.cars||[]).join('+')}","${b.pickupLoc}","${b.dropoffLoc}","${b.vipService}","${b.borderClear}","${b.status}"\n`;
+            const invStatusText = b.invoiceDone ? 'ធ្វើរួច' : 'មិនទាន់';
+            csv += `"${i+1}","${b.id}","${invStatusText}","${b.date}","${b.time}","${b.customerName}","${b.customerPhone}","${b.customerTelegram}","${(b.cars||[]).join('+')}","${b.pickupLoc}","${b.dropoffLoc}","${b.vipService}","${b.borderClear}","${b.status}"\n`;
         });
 
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -14943,6 +15278,22 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
         if (!localStorage.getItem(STORAGE_KEY_BOOKINGS)) setBookings(getInitialBookings());
         if (!localStorage.getItem(STORAGE_KEY_CARS)) setCars(DEFAULT_CARS);
         
+        // Purge hardcoded demo booking BK-1005 (NARUBODIN) from localStorage permanently
+        try {
+            let curBks = loadData(STORAGE_KEY_BOOKINGS, []);
+            if (Array.isArray(curBks) && curBks.some(x => x.id === 'BK-1005' || (x.customerName && x.customerName.includes('NARUBODIN')))) {
+                curBks = curBks.filter(x => x.id !== 'BK-1005' && (!x.customerName || !x.customerName.includes('NARUBODIN')));
+                saveData(STORAGE_KEY_BOOKINGS, curBks);
+                try {
+                    fetch('/api/bookings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ bookings: curBks })
+                    }).catch(() => {});
+                } catch (e) {}
+            }
+        } catch (e) {}
+
         // Clean out demo seed customers requested by user (Sokha Lin, Zhang Wei, Tanaka Kenji, NARUBODIN)
         try {
             const storedCusts = loadData(STORAGE_KEY_CUSTOMERS, []);
