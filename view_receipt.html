@@ -1213,41 +1213,53 @@ input[type="date"] {
             });
         }
 
-        function copyInvoiceImageAndOpenTelegram() {
-            showTgToast('🔄 កំពុង Copy រូបភាពវិក្កយបត្រចូល Clipboard...', 'info');
+        async function copyInvoiceImageAndOpenTelegram() {
+            showTgToast('🔄 កំពុង Copy រូបភាពវិក្កយបត្រ...', 'info');
 
-            renderReceiptCanvas().then(canvas => {
-                canvas.toBlob(blob => {
-                    if (navigator.clipboard && window.ClipboardItem) {
-                        const item = new ClipboardItem({ 'image/png': blob });
-                        navigator.clipboard.write([item]).then(() => {
-                            showTgToast('✅ <b>បាន Copy រូបភាពវិក័យប័ត្រចូល Clipboard!</b><br>សូមចុច <b>Ctrl + V</b> ក្នុង Telegram Chat ដើម្បី Paste ផ្ញើរូបភាព!', 'success');
-                            window.location.href = 'tg://msg';
-                        }).catch(err => {
-                            downloadFallbackAndOpenTelegram(canvas);
-                        });
-                    } else {
-                        downloadFallbackAndOpenTelegram(canvas);
-                    }
-                });
-            });
-        }
+            window.focus();
+            let copied = false;
 
-        function downloadFallbackAndOpenTelegram(canvas) {
-            let tDate = document.getElementById('rDateStr')?.textContent?.trim() || '';
-            tDate = tDate.replace(/\//g, '-').replace(/[^a-zA-Z0-9\-]/g, '');
-            if (!tDate || tDate === '-') {
-                const today = new Date();
-                const dd = String(today.getDate()).padStart(2, '0');
-                const mm = String(today.getMonth() + 1).padStart(2, '0');
-                const yyyy = today.getFullYear();
-                tDate = `${dd}-${mm}-${yyyy}`;
+            if (navigator.clipboard && window.ClipboardItem) {
+                try {
+                    const clipboardPromise = new Promise(async (resolve, reject) => {
+                        try {
+                            const canvas = await renderReceiptCanvas();
+                            canvas.toBlob(blob => {
+                                if (blob) resolve(blob);
+                                else reject(new Error("toBlob returned empty"));
+                            }, 'image/png');
+                        } catch (err) {
+                            reject(err);
+                        }
+                    });
+                    const item = new ClipboardItem({ 'image/png': clipboardPromise });
+                    await navigator.clipboard.write([item]);
+                    copied = true;
+                } catch (e1) {
+                    console.warn("Promise-based clipboard write failed, trying direct blob:", e1);
+                }
             }
-            const link = document.createElement('a');
-            link.download = `${tDate}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            showTgToast('📥 បានទាញយករូបភាពវិក័យប័ត្រ! លោកអ្នកអាច Drag/Upload រូបភាពនេះចូល Telegram Chat បាន!', 'info');
+
+            if (!copied) {
+                try {
+                    const canvas = await renderReceiptCanvas();
+                    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+                    if (blob && navigator.clipboard && window.ClipboardItem) {
+                        window.focus();
+                        const item = new ClipboardItem({ 'image/png': blob });
+                        await navigator.clipboard.write([item]);
+                        copied = true;
+                    }
+                } catch (e2) {
+                    console.warn("Direct blob clipboard write failed:", e2);
+                }
+            }
+
+            if (copied) {
+                showTgToast('✅ <b>បាន Copy រូបភាពវិក័យប័ត្រចូល Clipboard!</b><br>សូមចុច <b>Ctrl + V</b> ក្នុង Telegram Chat ដើម្បី Paste ផ្ញើរូបភាព!', 'success');
+            } else {
+                showTgToast('⚠️ បានបើក Telegram! (ប្រសិនមិនទាន់ជាប់ សូម Right-click លើវិក្កយបត្រ រើស "Copy image" រួច Ctrl+V)', 'info');
+            }
             window.location.href = 'tg://msg';
         }
 

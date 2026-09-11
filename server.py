@@ -90,13 +90,14 @@ try:
     from telegram_utils import (
         get_telegram_config, save_telegram_config, send_telegram_photo_bot,
         send_telegram_text_bot, get_telegram_bot_info, telegram_bot_listener,
-        launch_telegram_desktop, get_telegram_exe_path
+        launch_telegram_desktop, get_telegram_exe_path, _handle_chat_migration
     )
 except Exception as e:
-    def get_telegram_config(): return {"bot_token": "", "chat_id": ""}
+    def get_telegram_config(): return {"bot_token": "8884318593:AAEipEVki9o1YFL0_8IYoUeSn3Xif4dlVOk", "chat_id": "8985821312"}
     def save_telegram_config(b, c): pass
+    def _handle_chat_migration(old_c, new_c): pass
     def send_telegram_photo_bot(b, c, p, caption=""): return {"ok": False, "description": "telegram_utils unavailable"}
-    def send_telegram_text_bot(b, c, text): return {"ok": False, "description": "telegram_utils unavailable"}
+    def send_telegram_text_bot(b, c, text, parse_mode=None): return {"ok": False, "description": "telegram_utils unavailable"}
     def get_telegram_bot_info(t): return {"ok": False}
     def launch_telegram_desktop(): return False
     def get_telegram_exe_path(): return None
@@ -121,30 +122,9 @@ WEB_DIR = BASE_DIR
 # STARTUP AUTO-RESTORE: Restore Invoices & Bookings from Supabase Cloud / Backups
 # ===========================================================================
 def _startup_restore_invoices():
-    """Auto-restore customer invoice data from Supabase Cloud or local backups."""
+    """Auto-restore customer invoice data from local files, backups, or Supabase Cloud."""
     try:
-        # 0. Check Supabase Cloud DB first if configured
-        if supabase_db and supabase_db.is_configured():
-            try:
-                print("[Supabase] Querying Supabase Cloud Database for invoices on startup...")
-                cloud_recs = supabase_db.fetch_all_invoices()
-                if cloud_recs and len(cloud_recs) > 0:
-                    os.makedirs(DATA_DIR, exist_ok=True)
-                    with open(SAVED_CUSTOMERS_FILE, 'w', encoding='utf-8') as f:
-                        json.dump(cloud_recs, f, ensure_ascii=False, indent=2)
-                    print(f"[Supabase] ✅ Successfully restored {len(cloud_recs)} invoice records from Cloud DB!")
-                    
-                    cloud_counters = supabase_db.fetch_counters()
-                    if cloud_counters and isinstance(cloud_counters, dict):
-                        with open(INVOICE_COUNTER_FILE, 'w', encoding='utf-8') as fc:
-                            json.dump(cloud_counters, fc, ensure_ascii=False, indent=2)
-                    return
-                else:
-                    print("[Supabase] Cloud database is empty for invoices. Will seed from local file if available.")
-            except Exception as se:
-                print(f"[Supabase] Invoice startup load warning: {se}")
-
-        # Check if main data file is missing or empty
+        # 1. Check if main local data file is intact first (Fastest!)
         main_ok = False
         if os.path.exists(SAVED_CUSTOMERS_FILE):
             try:
@@ -166,7 +146,7 @@ def _startup_restore_invoices():
 
         print("[DataRestore] Main invoice data file missing or empty. Searching backups...")
 
-        # Candidate backup paths in priority order
+        # 2. Candidate backup paths in priority order
         backup_candidates = [
             os.path.join(DATA_DIR, 'backups', 'saved_customers_latest_vault.json'),
             os.path.join(BASE_DIR, 'backups', 'saved_customers_latest_vault.json'),
@@ -220,57 +200,38 @@ def _startup_restore_invoices():
                     threading.Thread(target=supabase_db.upsert_invoices, args=(best_data,), daemon=True).start()
                 except Exception:
                     pass
-        else:
-            print("[DataRestore] No invoice backup found. Starting with empty database.")
+            return
+
+        # 3. Fallback to Supabase Cloud DB only if local files and backups are missing
+        if supabase_db and supabase_db.is_configured():
+            try:
+                print("[Supabase] Querying Supabase Cloud Database for invoices on startup...")
+                cloud_recs = supabase_db.fetch_all_invoices()
+                if cloud_recs and len(cloud_recs) > 0:
+                    os.makedirs(DATA_DIR, exist_ok=True)
+                    with open(SAVED_CUSTOMERS_FILE, 'w', encoding='utf-8') as f:
+                        json.dump(cloud_recs, f, ensure_ascii=False, indent=2)
+                    print(f"[Supabase] ✅ Successfully restored {len(cloud_recs)} invoice records from Cloud DB!")
+                    
+                    cloud_counters = supabase_db.fetch_counters()
+                    if cloud_counters and isinstance(cloud_counters, dict):
+                        with open(INVOICE_COUNTER_FILE, 'w', encoding='utf-8') as fc:
+                            json.dump(cloud_counters, fc, ensure_ascii=False, indent=2)
+                    return
+                else:
+                    print("[Supabase] Cloud database is empty for invoices.")
+            except Exception as se:
+                print(f"[Supabase] Invoice startup load warning: {se}")
+
+        print("[DataRestore] No invoice backup found. Starting with empty database.")
     except Exception as e:
         print(f"[DataRestore] Invoice restore error (non-fatal): {e}")
 
 def _startup_restore_bookings():
-    """Auto-restore car rental bookings from Supabase Cloud or local backups."""
+    """Auto-restore car rental bookings from local files, backups, or Supabase Cloud."""
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
-        # 1. Supabase Cloud DB
-        if supabase_db and supabase_db.is_configured():
-            try:
-                print("[Supabase] Querying Supabase Cloud for Bookings on startup...")
-                cloud_bks = supabase_db.fetch_bookings()
-                if cloud_bks and isinstance(cloud_bks, list) and len(cloud_bks) > 0:
-                    local_bks = []
-                    for cand_f in [SAVED_BOOKINGS_FILE, os.path.join(BASE_DIR, 'saved_bookings.json')]:
-                        if os.path.exists(cand_f):
-                            try:
-                                with open(cand_f, 'r', encoding='utf-8') as fb:
-                                    local_bks = json.load(fb)
-                                if local_bks:
-                                    break
-                            except Exception:
-                                pass
-
-                    final_bks = []
-                    seen_ids = set()
-                    all_candidates = cloud_bks + [b for b in local_bks if isinstance(b, dict)]
-                    for b in all_candidates:
-                        if not isinstance(b, dict):
-                            continue
-                        bid = b.get('id') or f"BK-{int(time.time()*1000)}"
-                        if any(e.get('id') == bid and e.get('customerName') == b.get('customerName') and e.get('date') == b.get('date') for e in final_bks):
-                            continue
-                        if bid in seen_ids:
-                            bid = f"{bid}-dup{len(final_bks)+1}"
-                            b = dict(b)
-                            b['id'] = bid
-                        seen_ids.add(bid)
-                        final_bks.append(b)
-                    with open(SAVED_BOOKINGS_FILE, 'w', encoding='utf-8') as fb:
-                        json.dump(final_bks, fb, ensure_ascii=False, indent=2)
-                    print(f"[Supabase] ✅ Successfully restored {len(final_bks)} bookings from Cloud DB!")
-                    return
-                else:
-                    print("[Supabase] Cloud bookings empty. Will seed from local file if available.")
-            except Exception as se:
-                print(f"[Supabase] Booking startup load warning: {se}")
-
-        # 2. Local fallback if main file is missing or empty
+        # 1. Local file first (Fastest!)
         bks_ok = False
         if os.path.exists(SAVED_BOOKINGS_FILE):
             try:
@@ -282,6 +243,7 @@ def _startup_restore_bookings():
             except Exception:
                 pass
 
+        # 2. Local backup fallback
         if not bks_ok:
             for cand in [
                 os.path.join(BASE_DIR, 'saved_bookings.json'),
@@ -301,7 +263,20 @@ def _startup_restore_bookings():
                     except Exception:
                         pass
 
-        # 3. Seed Supabase Cloud DB if local has bookings
+        # 3. Supabase Cloud DB fallback if neither local nor backup found
+        if not bks_ok and supabase_db and supabase_db.is_configured():
+            try:
+                print("[Supabase] Querying Supabase Cloud for Bookings on startup...")
+                cloud_bks = supabase_db.fetch_bookings()
+                if cloud_bks and isinstance(cloud_bks, list) and len(cloud_bks) > 0:
+                    with open(SAVED_BOOKINGS_FILE, 'w', encoding='utf-8') as fb:
+                        json.dump(cloud_bks, fb, ensure_ascii=False, indent=2)
+                    print(f"[Supabase] ✅ Successfully restored {len(cloud_bks)} bookings from Cloud DB!")
+                    bks_ok = True
+            except Exception as se:
+                print(f"[Supabase] Booking startup load warning: {se}")
+
+        # 4. Seed Supabase Cloud DB in background if local has bookings
         if bks_ok and supabase_db and supabase_db.is_configured():
             try:
                 with open(SAVED_BOOKINGS_FILE, 'r', encoding='utf-8') as f:
@@ -1094,19 +1069,31 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json_response({'success': True, 'category': cat, 'last_number': num, 'next_no': get_next_invoice_no(cat)})
             return
 
-        elif path == '/api/invoice':
-            receipt_no = query.get('no', [''])[0].strip().lower().replace('🛂', '').strip()
+        elif path in ['/api/invoice', '/api/receipt']:
+            raw_no = query.get('no', [''])[0].strip()
+            clean_query = raw_no.lower().replace('🛂', '').replace('-', '').replace(' ', '').strip()
             data = load_json(SAVED_CUSTOMERS_FILE, [])
             target = None
             for item in data:
-                r_no = (item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or item.get('passport_no') or item.get('id') or '').strip().lower().replace('🛂', '').strip()
-                if r_no == receipt_no or (item.get('passport_no') and item.get('passport_no').strip().lower() == receipt_no):
-                    target = item
+                candidates = [
+                    str(item.get('receipt_no') or ''),
+                    str((item.get('group_data') or {}).get('receipt_no') or ''),
+                    str((item.get('customer') or {}).get('receipt_no') or ''),
+                    str((item.get('group_info') or {}).get('receipt_no') or ''),
+                    str(item.get('passport_no') or ''),
+                    str(item.get('id') or '')
+                ]
+                for c in candidates:
+                    c_clean = c.lower().replace('🛂', '').replace('-', '').replace(' ', '').strip()
+                    if c_clean and (c_clean == clean_query or (clean_query.isdigit() and c_clean.endswith(clean_query))):
+                        target = item
+                        break
+                if target:
                     break
             if target:
                 self.send_json_response({'success': True, 'invoice': target})
             else:
-                self.send_json_response({'success': False, 'error': 'Invoice not found'}, status=404)
+                self.send_json_response({'success': False, 'error': f'Invoice {raw_no} not found'}, status=404)
             return
 
         elif path == '/api/toggle_status':
@@ -2674,9 +2661,24 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                         pass
                 self.send_json_response({'success': True, 'count': len(bookings)})
             elif isinstance(booking, dict) and booking.get('id'):
-                idx = next((i for i, b in enumerate(current_bks) if b.get('id') == booking['id']), -1)
+                target_id = booking['id']
+                idx = next((i for i, b in enumerate(current_bks) if b.get('id') == target_id), -1)
                 if idx >= 0:
-                    current_bks[idx] = booking
+                    old_b = current_bks[idx]
+                    same_cust = (str(old_b.get('customerName') or '').strip().lower() == str(booking.get('customerName') or '').strip().lower())
+                    same_date = (str(old_b.get('date') or '').strip() == str(booking.get('date') or '').strip())
+                    same_time = (str(old_b.get('time') or '').strip() == str(booking.get('time') or '').strip())
+                    if same_cust and (same_date or same_time):
+                        current_bks[idx] = booking
+                    else:
+                        max_num = 1000
+                        for b in current_bks:
+                            m = re.match(r'^BK-(\d+)$', str(b.get('id') or ''))
+                            if m:
+                                max_num = max(max_num, int(m.group(1)))
+                        new_safe_id = f"BK-{max_num + 1}"
+                        booking['id'] = new_safe_id
+                        current_bks.insert(0, booking)
                 else:
                     current_bks.insert(0, booking)
                 save_json(bk_file, current_bks)
@@ -2830,19 +2832,88 @@ def start_telegram_bot_message_poller():
                     if data.get('ok') and data.get('result'):
                         for u in data['result']:
                             offset = max(offset, u['update_id'] + 1)
-                            m = u.get('message') or u.get('channel_post')
+
+                            # 1. Detect chat migration from basic group to supergroup
+                            msg_obj = u.get('message') or u.get('channel_post') or {}
+                            migrate_to = msg_obj.get('migrate_to_chat_id')
+                            if migrate_to:
+                                old_c_id = str((msg_obj.get('chat') or {}).get('id', ''))
+                                _handle_chat_migration(old_c_id, str(migrate_to))
+
+                            # 2. Detect & remember any group / supergroup
+                            chat_candidate = None
+                            if u.get('my_chat_member'):
+                                chat_candidate = u['my_chat_member'].get('chat')
+                            elif msg_obj.get('chat'):
+                                chat_candidate = msg_obj.get('chat')
+
+                            if chat_candidate and str(chat_candidate.get('type', '')).lower() in ['group', 'supergroup', 'channel']:
+                                grp_id = str(chat_candidate.get('id', ''))
+                                grp_title = chat_candidate.get('title') or 'Telegram Group'
+                                try:
+                                    for g_dir in [DATA_DIR, BASE_DIR]:
+                                        gf = os.path.join(g_dir, "known_telegram_groups.json")
+                                        kg = {}
+                                        if os.path.exists(gf):
+                                            try:
+                                                with open(gf, "r", encoding="utf-8") as f_g:
+                                                    kg = json.load(f_g)
+                                            except Exception:
+                                                kg = {}
+                                        to_remove = [k for k, v in kg.items() if k != "latest_group_id" and isinstance(v, dict) and v.get("title") == grp_title and k != grp_id and grp_id.startswith("-100")]
+                                        for rk in to_remove:
+                                            del kg[rk]
+                                        old_link = (kg.get(grp_id) or {}).get('link', '')
+                                        old_code = (kg.get(grp_id) or {}).get('invite_code', '')
+                                        kg[grp_id] = {
+                                            "id": grp_id,
+                                            "title": grp_title,
+                                            "link": old_link,
+                                            "invite_code": old_code,
+                                            "updated_at": datetime.datetime.now().isoformat()
+                                        }
+                                        kg["latest_group_id"] = grp_id
+                                        with open(gf, "w", encoding="utf-8") as f_g:
+                                            json.dump(kg, f_g, indent=2, ensure_ascii=False)
+                                except Exception:
+                                    pass
+
+                            m = msg_obj
                             if not m:
                                 continue
 
-                            # 🛑 Chat Filter: Only allow messages from the configured Telegram room/chat
                             chat_obj = m.get('chat') or {}
                             c_id_str = str(chat_obj.get('id', '')).strip()
+                            c_type = str(chat_obj.get('type', '')).lower()
+                            txt = (m.get('text') or m.get('caption') or '').strip()
+
+                            # 3. Handle /start command in group with confirmation
+                            if txt.lower().startswith('/start') and c_type in ['group', 'supergroup']:
+                                grp_title = chat_obj.get('title') or 'Telegram Group'
+                                greet_msg = f"🤖 សួស្តី! Bot ការកក់ឡាន បានភ្ជាប់ជាមួយគ្រុប «{grp_title}» ដោយជោគជ័យ! 🎉\n\nឥឡូវនេះ លោកអ្នកអាចជ្រើសរើសគ្រុបនេះក្នុងប្រព័ន្ធ Web App ដើម្បីបញ្ជូនទិន្នន័យការងារជើងឡានបានភ្លាមៗ។"
+                                send_telegram_text_bot(token, c_id_str, greet_msg)
+                                continue
+
+                            # 🛑 Chat Filter: allow configured chat OR any known connected groups
                             cfg_tg = get_telegram_config()
                             allowed_chat_id = str(cfg_tg.get("chat_id", "")).strip()
                             allowed_chat_ids = [str(x).strip() for x in cfg_tg.get("allowed_chat_ids", []) if str(x).strip()]
                             if allowed_chat_id and allowed_chat_id not in allowed_chat_ids:
                                 allowed_chat_ids.append(allowed_chat_id)
-                            if allowed_chat_ids and c_id_str not in allowed_chat_ids:
+
+                            is_known = False
+                            for g_dir in [DATA_DIR, BASE_DIR]:
+                                gf = os.path.join(g_dir, "known_telegram_groups.json")
+                                if os.path.exists(gf):
+                                    try:
+                                        with open(gf, "r", encoding="utf-8") as f_g:
+                                            if c_id_str in json.load(f_g):
+                                                is_known = True
+                                                break
+                                    except Exception:
+                                        pass
+
+                            if allowed_chat_ids and c_id_str not in allowed_chat_ids and not is_known:
                                 continue
 
                             txt = (m.get('text') or m.get('caption') or '').strip()
@@ -2993,7 +3064,7 @@ def main():
     global PORT
     httpd = None
     env_port = os.environ.get('PORT')
-    ports = [int(env_port)] if env_port else [8080, 8888, 8000, 8001]
+    ports = [int(env_port)] if env_port else [8000, 8080, 8001, 8888]
 
     # 1. First check if Imvoi server is already running on any of these ports
     for p in ports:

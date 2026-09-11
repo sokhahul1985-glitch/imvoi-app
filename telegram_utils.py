@@ -11,13 +11,20 @@ import subprocess
 import urllib.request
 import urllib.parse
 import datetime
-from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton,
-    QMessageBox, QFrame, QApplication, QFileDialog
-)
-from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtCore import Qt, QUrl, QMimeData
-from receipt_generator import ReceiptGenerator
+try:
+    from PyQt6.QtWidgets import (
+        QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton,
+        QMessageBox, QFrame, QApplication, QFileDialog
+    )
+    from PyQt6.QtGui import QImage, QPixmap
+    from PyQt6.QtCore import Qt, QUrl, QMimeData
+    from receipt_generator import ReceiptGenerator
+except Exception:
+    QDialog = QVBoxLayout = QHBoxLayout = QLabel = QLineEdit = QPushButton = None
+    QMessageBox = QFrame = QApplication = QFileDialog = None
+    QImage = QPixmap = None
+    Qt = QUrl = QMimeData = None
+    ReceiptGenerator = None
 
 
 CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "telegram_config.json")
@@ -133,6 +140,44 @@ def copy_receipt_image_to_clipboard(png_path):
     return False
 
 
+def _handle_chat_migration(old_chat_id, new_chat_id):
+    """Auto-update known_telegram_groups.json when a group upgrades to supergroup"""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        data_dir = os.environ.get('DATA_DIR', '/var/data' if os.path.exists('/var/data') else base_dir)
+        for g_dir in [data_dir, base_dir]:
+            gf = os.path.join(g_dir, "known_telegram_groups.json")
+            if os.path.exists(gf):
+                try:
+                    with open(gf, "r", encoding="utf-8") as f:
+                        kg = json.load(f)
+                    old_info = kg.get(str(old_chat_id), {})
+                    title = old_info.get("title", "Telegram Group")
+                    link = old_info.get("link", "")
+                    invite_code = old_info.get("invite_code", "")
+                    
+                    # Remove old id
+                    if str(old_chat_id) in kg:
+                        del kg[str(old_chat_id)]
+                    
+                    # Add new supergroup id
+                    kg[str(new_chat_id)] = {
+                        "id": str(new_chat_id),
+                        "title": title,
+                        "link": link,
+                        "invite_code": invite_code,
+                        "updated_at": datetime.datetime.now().isoformat()
+                    }
+                    if kg.get("latest_group_id") == str(old_chat_id):
+                        kg["latest_group_id"] = str(new_chat_id)
+                    with open(gf, "w", encoding="utf-8") as f:
+                        json.dump(kg, f, indent=2, ensure_ascii=False)
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+
 def send_telegram_photo_bot(bot_token, chat_id, photo_path, caption=""):
     """
     Sends PNG photo directly to Telegram Chat / Channel via Bot API sendPhoto.
@@ -171,6 +216,16 @@ def send_telegram_photo_bot(bot_token, chat_id, photo_path, caption=""):
         with urllib.request.urlopen(req, timeout=15) as resp:
             res_data = json.loads(resp.read().decode('utf-8'))
             return res_data
+    except urllib.error.HTTPError as e:
+        try:
+            err_data = json.loads(e.read().decode('utf-8'))
+            migrate_to = err_data.get('parameters', {}).get('migrate_to_chat_id')
+            if migrate_to:
+                _handle_chat_migration(chat_id, migrate_to)
+                return send_telegram_photo_bot(bot_token, str(migrate_to), photo_path, caption)
+        except Exception:
+            pass
+        return {"ok": False, "description": str(e)}
     except Exception as e:
         return {"ok": False, "description": str(e)}
 
@@ -192,6 +247,16 @@ def send_telegram_text_bot(bot_token, chat_id, text, parse_mode=None):
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
             return json.loads(resp.read().decode('utf-8'))
+    except urllib.error.HTTPError as e:
+        try:
+            err_data = json.loads(e.read().decode('utf-8'))
+            migrate_to = err_data.get('parameters', {}).get('migrate_to_chat_id')
+            if migrate_to:
+                _handle_chat_migration(chat_id, migrate_to)
+                return send_telegram_text_bot(bot_token, str(migrate_to), text, parse_mode)
+        except Exception:
+            pass
+        return {"ok": False, "description": str(e)}
     except Exception as e:
         return {"ok": False, "description": str(e)}
 
