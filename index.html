@@ -10544,9 +10544,45 @@ document.addEventListener('paste', function(e) {
     function setCars(c) { saveData(STORAGE_KEY_CARS, c); }
 
     function getCustomers() {
-        return loadData(STORAGE_KEY_CUSTOMERS, []);
+        let list = loadData(STORAGE_KEY_CUSTOMERS, []);
+        if (!Array.isArray(list) || list.length === 0) {
+            // Intelligent local fallback: Auto-extract unique customers from existing bookings!
+            const bks = loadData(STORAGE_KEY_BOOKINGS, []);
+            if (Array.isArray(bks) && bks.length > 0) {
+                const map = {};
+                bks.forEach(b => {
+                    const nm = (b.customerName || '').trim();
+                    if (nm && nm.length >= 2 && !map[nm.toLowerCase()]) {
+                        map[nm.toLowerCase()] = {
+                            id: 'CUST-' + String(Object.keys(map).length + 1).padStart(3, '0'),
+                            name: nm,
+                            phone: (b.customerPhone || '').trim(),
+                            telegram: (b.customerTelegram || '').trim(),
+                            idCard: '',
+                            address: (b.dropoffLoc || '').trim(),
+                            notes: ''
+                        };
+                    }
+                });
+                const extracted = Object.values(map);
+                if (extracted.length > 0) {
+                    list = extracted;
+                    saveData(STORAGE_KEY_CUSTOMERS, list);
+                }
+            }
+        }
+        return Array.isArray(list) ? list : [];
     }
-    function setCustomers(c) { saveData(STORAGE_KEY_CUSTOMERS, c); }
+    function setCustomers(c) {
+        saveData(STORAGE_KEY_CUSTOMERS, c);
+        try {
+            fetch('/api/customers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ customers: c })
+            }).catch(() => {});
+        } catch (e) {}
+    }
 
     function getTgInbox() {
         return loadData(STORAGE_KEY_INBOX, [
@@ -12767,6 +12803,26 @@ document.addEventListener('paste', function(e) {
         setBookings(bookings);
         // Do NOT auto-close modal: Keep open so user can inspect and click "សម្អាត" before closing
         showToast('រក្សាទុកការកក់ជោគជ័យ! ✅');
+
+        // Auto-save customer to ភ្ញៀវចាស់ (customers directory) if not exists
+        try {
+            const currentCusts = getCustomers();
+            const exists = currentCusts.some(c => (c.name || '').trim().toLowerCase() === custName.toLowerCase());
+            if (!exists) {
+                const autoCust = {
+                    id: 'CUST-' + String(currentCusts.length + 1).padStart(3, '0'),
+                    name: custName,
+                    phone: document.getElementById('bookingCustomerPhone') ? document.getElementById('bookingCustomerPhone').value.trim() : '',
+                    telegram: document.getElementById('bookingTelegramLink') ? document.getElementById('bookingTelegramLink').value.trim() : '',
+                    idCard: '',
+                    address: document.getElementById('bookingDropoffLoc') ? document.getElementById('bookingDropoffLoc').value.trim() : '',
+                    notes: 'ភ្ញៀវបានមកពីការកក់ឡាន'
+                };
+                currentCusts.push(autoCust);
+                setCustomers(currentCusts);
+                if (typeof populateCustomerDropdown === 'function') populateCustomerDropdown();
+            }
+        } catch(e) {}
 
         // Persist full bookings array to server database for immediate cross-device sync (PC & Mobile)
         try {
@@ -15407,6 +15463,9 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
         if (typeof window.syncBookingsWithServer === 'function') {
             window.syncBookingsWithServer();
         }
+        if (typeof window.syncCustomersWithServer === 'function') {
+            window.syncCustomersWithServer();
+        }
     };
 
     // Global Server Synchronization Function (Syncs PC & Phone in real-time)
@@ -15424,6 +15483,12 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
                         setBookings(data.bookings);
                         renderCurrentTabQuietly();
                     }
+                    // Auto-ensure customers exist on this device from incoming bookings
+                    const curCusts = loadData(STORAGE_KEY_CUSTOMERS, []);
+                    if (!curCusts || curCusts.length === 0) {
+                        getCustomers();
+                        if (typeof populateCustomerDropdown === 'function') populateCustomerDropdown();
+                    }
                 } else {
                     // If server database is empty but local has bookings, upload to populate server
                     const localBks = getBookings();
@@ -15433,6 +15498,45 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ bookings: localBks })
                         }).catch(e => {});
+                    }
+                }
+            }
+        } catch (e) {}
+    };
+
+    // Global Customer Server Synchronization (Syncs PC & Phone in real-time)
+    window.syncCustomersWithServer = async function() {
+        try {
+            const resp = await fetch('/api/customers');
+            if (!resp.ok) return;
+            const data = await resp.json();
+            if (data && data.success && Array.isArray(data.customers)) {
+                if (data.customers.length > 0) {
+                    const localCusts = loadData(STORAGE_KEY_CUSTOMERS, []);
+                    const merged = [...data.customers];
+                    const existingNames = new Set(merged.map(x => (x.name || '').trim().toLowerCase()));
+                    (Array.isArray(localCusts) ? localCusts : []).forEach(lc => {
+                        const lName = (lc.name || '').trim().toLowerCase();
+                        if (lName && !existingNames.has(lName)) {
+                            existingNames.add(lName);
+                            merged.push(lc);
+                        }
+                    });
+                    const sStr = JSON.stringify(merged);
+                    const lStr = JSON.stringify(localCusts);
+                    if (sStr !== lStr) {
+                        saveData(STORAGE_KEY_CUSTOMERS, merged);
+                        if (typeof populateCustomerDropdown === 'function') populateCustomerDropdown();
+                        if (currentTab === 'customers' && typeof renderCustomers === 'function') renderCustomers();
+                    }
+                } else {
+                    const localCusts = getCustomers();
+                    if (localCusts.length > 0) {
+                        fetch('/api/customers', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ customers: localCusts })
+                        }).catch(() => {});
                     }
                 }
             }
@@ -15449,14 +15553,14 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
 
     // Auto-sync whenever user returns to browser tab on Phone or PC
     document.addEventListener('visibilitychange', function() {
-        if (!document.hidden && typeof window.syncBookingsWithServer === 'function') {
-            window.syncBookingsWithServer();
+        if (!document.hidden) {
+            if (typeof window.syncBookingsWithServer === 'function') window.syncBookingsWithServer();
+            if (typeof window.syncCustomersWithServer === 'function') window.syncCustomersWithServer();
         }
     });
     window.addEventListener('focus', function() {
-        if (typeof window.syncBookingsWithServer === 'function') {
-            window.syncBookingsWithServer();
-        }
+        if (typeof window.syncBookingsWithServer === 'function') window.syncBookingsWithServer();
+        if (typeof window.syncCustomersWithServer === 'function') window.syncCustomersWithServer();
     });
 
     // Auto initialize if DOM is already loaded or when ready
