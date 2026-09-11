@@ -1,6 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="km">
 <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&family=Noto+Sans+Khmer:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome 6 & AutoRent Pro Stylesheet -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Embedded AutoRent Pro Stylesheet (Guarantees 100% Styling on Live Server) -->
@@ -1670,9 +1673,23 @@ input[type="date"] {
     padding: 36px 42px !important;
     border-radius: 8px !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
-    font-family: 'Kantumruy Pro', 'Noto Sans Khmer', Arial, sans-serif !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Kantumruy Pro", "Noto Sans Khmer", sans-serif !important;
+    letter-spacing: 0.02em !important;
+    word-spacing: 0.08em !important;
+    font-variant-ligatures: none !important;
+    font-feature-settings: "liga" 0 !important;
+    text-rendering: geometricPrecision !important;
     position: relative !important;
     box-sizing: border-box !important;
+}
+
+.cmp-receipt-paper *, #printableReceiptArea * {
+    font-family: inherit !important;
+    letter-spacing: 0.02em !important;
+    word-spacing: 0.08em !important;
+    font-variant-ligatures: none !important;
+    font-feature-settings: "liga" 0 !important;
+    text-rendering: geometricPrecision !important;
 }
 
 .receipt-paper-wrapper {
@@ -9500,6 +9517,42 @@ input[type="date"] {
             window.open('/view_receipt.html?no=' + encodeURIComponent(rNo), '_blank');
         }
 
+        async function captureReceiptCanvas(receiptEl) {
+            if (!receiptEl) return null;
+            if (document.fonts && document.fonts.ready) {
+                try {
+                    await document.fonts.ready;
+                } catch (e) {
+                    console.warn("document.fonts.ready error:", e);
+                }
+            }
+            return await html2canvas(receiptEl, {
+                scale: 2,
+                backgroundColor: '#ffffff',
+                useCORS: true,
+                logging: false,
+                onclone: (clonedDoc) => {
+                    if (document.fonts && clonedDoc.fonts) {
+                        try {
+                            document.fonts.forEach(font => clonedDoc.fonts.add(font));
+                        } catch (e) {}
+                    }
+                    const clonedReceipt = clonedDoc.getElementById('printableReceiptArea');
+                    if (clonedReceipt) {
+                        clonedReceipt.style.letterSpacing = '0.02em';
+                        clonedReceipt.style.wordSpacing = '0.08em';
+                        clonedReceipt.style.fontVariantLigatures = 'none';
+                        const allElems = clonedReceipt.getElementsByTagName('*');
+                        for (let i = 0; i < allElems.length; i++) {
+                            allElems[i].style.letterSpacing = '0.02em';
+                            allElems[i].style.wordSpacing = '0.08em';
+                            allElems[i].style.fontVariantLigatures = 'none';
+                        }
+                    }
+                }
+            });
+        }
+
         async function downloadReceiptPNG() {
             let tDate = document.getElementById('mTravelDate')?.textContent?.trim() || '';
             const rNo = document.getElementById('mReceiptNo')?.textContent?.trim() || 'Receipt';
@@ -9539,7 +9592,7 @@ input[type="date"] {
 
                 if (fileHandle) {
                     try {
-                        const canvas = await html2canvas(receiptEl, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+                        const canvas = await captureReceiptCanvas(receiptEl);
                         const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                         const writable = await fileHandle.createWritable();
                         await writable.write(blob);
@@ -9558,7 +9611,7 @@ input[type="date"] {
 
             // 2. Fallback for older browsers & mobile
             try {
-                const canvas = await html2canvas(receiptEl, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+                const canvas = await captureReceiptCanvas(receiptEl);
                 const link = document.createElement('a');
                 link.download = defaultFileName;
                 link.href = canvas.toDataURL('image/png');
@@ -9587,12 +9640,7 @@ input[type="date"] {
                 try {
                     const clipboardPromise = new Promise(async (resolve, reject) => {
                         try {
-                            const canvas = await html2canvas(receiptEl, {
-                                scale: 2,
-                                useCORS: true,
-                                backgroundColor: '#ffffff',
-                                logging: false
-                            });
+                            const canvas = await captureReceiptCanvas(receiptEl);
                             canvas.toBlob(blob => {
                                 if (blob) resolve(blob);
                                 else reject(new Error("toBlob returned empty"));
@@ -9610,12 +9658,7 @@ input[type="date"] {
             }
 
             // Attempt 2: Direct blob write
-            const canvas = await html2canvas(receiptEl, {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                logging: false
-            });
+            const canvas = await captureReceiptCanvas(receiptEl);
             const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
             if (!blob) throw new Error("Could not create PNG blob");
 
@@ -9651,7 +9694,7 @@ input[type="date"] {
             // 1. Android & Mobile Native Share
             if (isMobileDevice && navigator.share && navigator.canShare) {
                 try {
-                    const canvas = await html2canvas(receiptEl, { scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false });
+                    const canvas = await captureReceiptCanvas(receiptEl);
                     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                     if (blob) {
                         const file = new File([blob], `Receipt_${rNo.replace(/[^a-zA-Z0-9_-]/g, '_')}.png`, { type: 'image/png' });
