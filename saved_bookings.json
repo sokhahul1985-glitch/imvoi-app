@@ -1,7 +1,7 @@
 [
   {
-    "id": "BK-1054",
-    "customerName": "Koy🌻1🐶",
+    "id": "BK-1087",
+    "customerName": "Panther EAT",
     "customerPhone": "",
     "customerTelegram": "",
     "driverTelegram": "",
@@ -12,31 +12,213 @@
     "borderClear": "",
     "pickupLoc": "ប៉ោយប៉ែត",
     "dropoffLoc": "សៀមរាប",
-    "date": "2026-09-16",
-    "time": "05:00",
+    "date": "2026-09-17",
+    "time": "08:00",
     "status": "active",
-    "notes": "",
-    "rawMessage": "Poipet - SiemReap\n16.09.26\n4 people\nAlpha 1",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ALphard ครับ",
+    "rawMessage": "จองรถ วันที่ 17 ครับ\n\nALphard ครับ",
     "images": [
       {
-        "id": "IMG-TG-678569548",
-        "name": "telegram_photo_678569548.jpg",
+        "id": "IMG-TG-678569890",
+        "name": "telegram_photo_678569890.jpg",
         "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569548_AgACAgUAAx.jpg",
-        "date": "09/09/2026 15:17"
+        "url": "/telegram_images/tg_photo_678569890_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:47"
       },
       {
-        "id": "IMG-TG-678569549",
-        "name": "telegram_photo_678569549.jpg",
+        "id": "IMG-TG-678569891",
+        "name": "telegram_photo_678569891.jpg",
         "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569549_AgACAgUAAx.jpg",
-        "date": "09/09/2026 15:17"
+        "url": "/telegram_images/tg_photo_678569891_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:47"
+      },
+      {
+        "id": "IMG-TG-678569892",
+        "name": "telegram_photo_678569892.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569892_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:47"
       }
     ]
   },
   {
-    "id": "BK-1057",
-    "customerName": "911BAM.HR",
+    "id": "BK-1054",
+    "cars": [
+      "អាលផាត (Alphard)"
+    ],
+    "date": "2026-09-16",
+    "time": "05:00",
+    "notes": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569548",
+        "url": "/telegram_images/tg_photo_678569548_AgACAgUAAx.jpg",
+        "date": "09/09/2026 15:17",
+        "name": "telegram_photo_678569548.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569549",
+        "url": "/telegram_images/tg_photo_678569549_AgACAgUAAx.jpg",
+        "date": "09/09/2026 15:17",
+        "name": "telegram_photo_678569549.jpg",
+        "category": "ប៉ាស្ព័រ"
+      }
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "rawMessage": "Poipet - SiemReap\n16.09.26\n4 people\nAlpha 1",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "Koy🌻1🐶",
+    "customerPhone": "",
+    "driverTelegram": "",
+    "customerTelegram": ""
+  },
+  {
+    "id": "BK-1083",
+    "customerName": "ติดต่อตัวแทน VIP",
+    "customerPhone": "",
+    "customerTelegram": "@Sokhalion",
+    "driverTelegram": "",
+    "cars": [
+      "ហៃយាស់ (Hiace)",
+      "ហៃយាស់ (Hiace)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "date": "2026-09-15",
+    "time": "01:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึก 53 - ไปส่งสนามบินเตโช | ចំនួនភ្ញៀវ: 2 នាក់",
+    "rawMessage": "@Sokhalion \nวันที่ 15/09/2026 เวลา 01.00 น.\nรับจากตึก 53 - ไปส่งสนามบินเตโช\nจองรถตู้ 2 คน\nพนักงาน 17 คน",
+    "images": [
+      {
+        "id": "IMG-TG-678569880",
+        "name": "telegram_photo_678569880.jpg",
+        "category": "សំបុត្រយន្តហោះ",
+        "url": "/telegram_images/tg_photo_678569880_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:30"
+      }
+    ]
+  },
+  {
+    "id": "BK-1082",
+    "customerName": "ติดต่อตัวแทน VIP",
+    "customerPhone": "",
+    "customerTelegram": "@Sokhalion",
+    "driverTelegram": "",
+    "cars": [
+      "ហៃយាស់ (Hiace)",
+      "ហៃយាស់ (Hiace)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "date": "2026-09-14",
+    "time": "01:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ស្តាមេនសិន ตึก 53 - ไปสนามบินเตโช | ចំនួនភ្ញៀវ: 15 នាក់",
+    "rawMessage": "@Sokhalion \nวันที่ 14/09/2026 เวลา 01.00 น.\nรับจากตึก 53 - ไปสนามบินเตโช\nจองรถตู้ 2 คัน\nพนักงานจำนวน 15 คน",
+    "images": [
+      {
+        "id": "IMG-TG-678569879",
+        "name": "telegram_photo_678569879.jpg",
+        "category": "សំបុត្រយន្តហោះ",
+        "url": "/telegram_images/tg_photo_678569879_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:28"
+      }
+    ]
+  },
+  {
+    "id": "BK-1059",
+    "customerName": "HR369 - Sokha",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "",
+    "cars": [
+      "អាលផាត (Alphard)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
+    "date": "2026-09-14",
+    "time": "09:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: អគ្គាហ្ហា ស្តាមេនសិន ตึกฟ้า-ตึกM1",
+    "rawMessage": "วันที่14/9/2026\nเวลา09.00น.\nจองAlphard 1คัน\nมารับตึกฟ้า-ตึกM1",
+    "images": [
+      {
+        "id": "IMG-TG-678569686",
+        "name": "telegram_photo_678569686.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569686_AgACAgUAAx.jpg",
+        "date": "11/09/2026 05:58"
+      }
+    ]
+  },
+  {
+    "id": "BK-1072",
+    "customerName": "carrot rnd",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "",
+    "cars": [
+      "អាលផាត (Alphard)"
+    ],
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "เสียมเรียบ",
+    "date": "2026-09-13",
+    "time": "10:30",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: เสียมเรียบ | ចំនួនភ្ញៀវ: 3 នាក់",
+    "rawMessage": "วันที่13Sep 3คนครับ เสียมเรียบ\nVIPออก+อัลพาร์ด1คัน\nรับGalaxy10.30",
+    "images": [
+      {
+        "id": "IMG-TG-678569841",
+        "name": "telegram_photo_678569841.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569841_AgACAgUAAx.jpg",
+        "date": "11/09/2026 13:29"
+      },
+      {
+        "id": "IMG-TG-678569842",
+        "name": "telegram_photo_678569842.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569842_AgACAgUAAx.jpg",
+        "date": "11/09/2026 13:29"
+      },
+      {
+        "id": "IMG-TG-678569843",
+        "name": "telegram_photo_678569843.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569843_AgACAgUAAx.jpg",
+        "date": "11/09/2026 13:29"
+      },
+      {
+        "id": "IMG-TG-678569844",
+        "name": "telegram_photo_678569844.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569844_AgACAgUAAx.jpg",
+        "date": "11/09/2026 13:29"
+      }
+    ]
+  },
+  {
+    "id": "BK-1060",
+    "customerName": "HR369 - Sokha",
     "customerPhone": "",
     "customerTelegram": "",
     "driverTelegram": "",
@@ -45,224 +227,567 @@
     ],
     "vipService": "យក VIP",
     "borderClear": "យកក្លៀដាន",
-    "pickupLoc": "សៀមរាប",
+    "pickupLoc": "ភ្នំពេញ",
     "dropoffLoc": "ប៉ោយប៉ែត",
-    "date": "2026-09-11",
-    "time": "16:00",
+    "date": "2026-09-13",
+    "time": "17:45",
     "status": "active",
-    "notes": "",
-    "rawMessage": "วันที่ 11/09/69 นายพี่ บินเข้า ปป. จำนวน 2 คน \nเครื่องลงสนามบินเสียมเรียบเวลา 15.10-16.10  น. \nสายการบิน Air Asia FD614\n\nประสาน ตม. และ เคลียร์ด่านให้ด้วย \n\nจองรถ  SUV 1 คัน",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: เตโช-ปอยเปตค่ะ | ចំនួនភ្ញៀវ: 1 នាក់",
+    "rawMessage": "วันที่13/9/2026\nเวลา17.45น.\nจองรถSUV 1คัน\nจองVIP 1 คน\nรับจากเตโช-ปอยเปตค่ะ\n\nรูปพาสปอร์ตค่ะ",
     "images": [
       {
-        "id": "IMG-TG-678569563",
-        "name": "telegram_photo_678569563.jpg",
+        "id": "IMG-TG-678569683",
+        "name": "telegram_photo_678569683.jpg",
         "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569563_AgACAgUAAx.jpg",
-        "date": "09/09/2026 15:49"
+        "url": "/telegram_images/tg_photo_678569683_AgACAgUAAx.jpg",
+        "date": "11/09/2026 05:54"
       },
       {
-        "id": "IMG-TG-678569564",
-        "name": "telegram_photo_678569564.jpg",
+        "id": "IMG-TG-678569684",
+        "name": "telegram_photo_678569684.jpg",
         "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569564_AgACAgUAAx.jpg",
-        "date": "09/09/2026 15:49"
-      },
-      {
-        "id": "IMG-TG-678569565",
-        "name": "telegram_photo_678569565.jpg",
-        "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569565_AgACAgUAAx.jpg",
-        "date": "09/09/2026 15:49"
+        "url": "/telegram_images/tg_photo_678569684_AgACAgUAAx.jpg",
+        "date": "11/09/2026 05:54"
       }
     ]
   },
   {
-    "id": "BK-1047",
-    "customerName": "PLOY.",
+    "id": "BK-1071",
+    "customerName": "Gucci_4 - Sokha",
     "customerPhone": "",
     "customerTelegram": "",
     "driverTelegram": "",
     "cars": [
-      "អាលផាត (Alphard)",
-      "អាលផាត (Alphard)"
+      "អេសយូវី (SUV)"
     ],
     "vipService": "",
     "borderClear": "",
-    "pickupLoc": "ភ្នំពេញ",
+    "pickupLoc": "តេជោ",
     "dropoffLoc": "ប៉ោយប៉ែត",
-    "date": "2026-09-11",
-    "time": "17:00",
+    "date": "2026-09-13",
+    "time": "23:30",
     "status": "active",
+    "invoiceDone": false,
     "notes": "",
-    "rawMessage": "📷 រូបភាព (ប៉ាស្ព័រ) ពី Sokha GMP88",
+    "rawMessage": "[សារពី Sokha GMP88 (Forwarded from Gucci_4) - 11/09/2026 13:01]\nตึก 46 ห้อง อยู่หลังโซน3 นะคะ\n\n---\n\n[សារពី Sokha GMP88 (Forwarded from Gucci_11) - 11/09/2026 13:01]\nรายละเอียดการจองรถ  ค่ะ\n- วันที่ 12/9/26 เวลา 23:30 น.\n- จำนวนคนเดินทาง : 2 ท่าน (ไม่รวมคนขับ)\n- จำนวนคัน : 1 คัน (SUV)\n- ต้นทาง : ตึก 46\n- ปลายทาง : สนามบินเตโช",
     "images": [
       {
-        "id": "IMG-TG-678569408",
-        "name": "telegram_photo_678569408.jpg",
+        "id": "IMG-TG-678569835",
+        "name": "telegram_photo_678569835.jpg",
         "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569408_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:19"
+        "url": "/telegram_images/tg_photo_678569835_AgACAgUAAx.jpg",
+        "date": "11/09/2026 13:01"
+      },
+      {
+        "id": "IMG-TG-678569833",
+        "name": "telegram_photo_678569833.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569833_AgACAgUAAx.jpg",
+        "date": "11/09/2026 13:01"
+      },
+      {
+        "id": "IMG-TG-678569834",
+        "name": "telegram_photo_678569834.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569834_AgACAgUAAx.jpg",
+        "date": "11/09/2026 13:01"
+      },
+      {
+        "id": "IMG-TG-678569837",
+        "name": "telegram_photo_678569837.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569837_AgACAgUAAx.jpg",
+        "date": "11/09/2026 13:01"
       }
     ]
   },
   {
-    "id": "BK-1040",
-    "customerName": "จองรถ คุณ Sokha GMP",
+    "id": "BK-1061",
+    "customerName": "169 Car with driver",
+    "customerPhone": "",
+    "customerTelegram": "@Sokhalion",
+    "driverTelegram": "J Heng",
+    "cars": [
+      "ហៃយាស់ (Hiace)",
+      "ហៃយាស់ (Hiace)"
+    ],
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "date": "2026-09-12",
+    "time": "00:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "📍 Map: https://maps.app.goo.gl/YbMZNhqTYE1UGa6M8 | ចំនួនភ្ញៀវ: 14 នាក់",
+    "rawMessage": "รายละเอียดการเดินทางโดยสายการบิน (ขาออก) ✈️\n\n- 📅 วันที่ 12-Sep-2026\n- 👥 จำนวน 14 คน\n\n- ✈️ สายการบิน THAI AIR WAYS\n- 🛫 จาก KTI - BKK ( ไฟลท์  TG 0587)\n- ⏰ เวลา เวลา 09.40-11.00 น.\n\n- 🚗 รถรับส่ง 300$\n- ❌ (NO VIP)\n\n👤 รายชื่อ\n1.WIPADA PITAKSA\n2.PORNCHAWEE SUWAN\n3.BENYAPA HABMAD\n4.MONGKOL PROMJANTUEK\n5.SAWWALAK DEESAMUT\n6.YUWADEE RERMSRI\n7.NOPPHAKAEO DUKHUNTHOD\n8.PATARAWAN YENRAM\n9.JANTHAKAN LINGSEEHA\n10.NONGKHRAN SAENGSING\n11.CHANACHAI  MINGSOONGNERN\n12.SIRIRAT PHOKOW\n13.NITTAYA SAENMEE\n14.CHOLLADA  SUREN\n\n📍สถานที่รับ ตึกไวท์โฮม 66ห้อง ครับ📍\n\n🕐 เวลารับ 00.00 น.🕐 \n\n\nhttps://maps.app.goo.gl/YbMZNhqTYE1UGa6M8\n\n\n🚗 รบกวนขอรูปรถ\n👨🏻‍✈️ รูปคนขับ\n📲 เบอร์โทร \n@Sokhalion",
+    "images": [
+      {
+        "id": "IMG-TG-678569703",
+        "name": "telegram_photo_678569703.jpg",
+        "category": "សំបុត្រយន្តហោះ",
+        "url": "/telegram_images/tg_photo_678569703_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:30"
+      },
+      {
+        "id": "IMG-TG-678569704",
+        "name": "telegram_photo_678569704.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569704_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:30"
+      },
+      {
+        "id": "IMG-TG-678569705",
+        "name": "telegram_photo_678569705.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569705_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:30"
+      },
+      {
+        "id": "IMG-TG-678569706",
+        "name": "telegram_photo_678569706.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569706_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:30"
+      },
+      {
+        "id": "IMG-TG-678569707",
+        "name": "telegram_photo_678569707.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569707_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:30"
+      },
+      {
+        "id": "IMG-TG-678569708",
+        "name": "telegram_photo_678569708.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569708_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:30"
+      },
+      {
+        "id": "IMG-TG-678569709",
+        "name": "telegram_photo_678569709.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569709_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:30"
+      },
+      {
+        "id": "IMG-TG-678569710",
+        "name": "telegram_photo_678569710.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569710_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:30"
+      },
+      {
+        "id": "IMG-TG-678569711",
+        "name": "telegram_photo_678569711.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569711_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:31"
+      },
+      {
+        "id": "IMG-TG-678569712",
+        "name": "telegram_photo_678569712.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569712_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:31"
+      },
+      {
+        "id": "IMG-TG-678569713",
+        "name": "telegram_photo_678569713.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569713_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:31"
+      },
+      {
+        "id": "IMG-TG-678569714",
+        "name": "telegram_photo_678569714.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569714_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:31"
+      },
+      {
+        "id": "IMG-TG-678569715",
+        "name": "telegram_photo_678569715.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569715_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:31"
+      },
+      {
+        "id": "IMG-TG-678569716",
+        "name": "telegram_photo_678569716.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569716_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:31"
+      },
+      {
+        "id": "IMG-TG-678569717",
+        "name": "telegram_photo_678569717.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569717_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:31"
+      }
+    ]
+  },
+  {
+    "id": "BK-1065",
+    "customerName": "HR356",
     "customerPhone": "",
     "customerTelegram": "",
-    "driverTelegram": "កក់ឡាន",
+    "driverTelegram": "J Heng",
     "cars": [
-      "អាលផាត (Alphard)"
+      "អាលផាត (Alphard)",
+      "ស្តារេច (Staria)"
     ],
     "vipService": "",
     "borderClear": "",
     "pickupLoc": "ប៉ោយប៉ែត",
     "dropoffLoc": "តេជោ",
-    "date": "2026-09-10",
+    "date": "2026-09-12",
     "time": "00:00",
     "status": "active",
-    "notes": "",
-    "rawMessage": "จองรถ Alphard   1 คัน\nPoi Pet →   Techo\n\nผู้โดยสาร จำนวน  2 คน  \n\nวันที่ 10/9/2026\n\n📍รับที่ Galaxy Casino จำนวน 1 คน \n📍รับที่ตึก95 จำนวน 1 คน \n\n\n⏰รถมารับเวลา 00.00 น. (เที่ยงคืน)",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: HD ហូលីដេ  นะคะ | ចំនួនភ្ញៀវ: 6 នាក់",
+    "rawMessage": "คอนเฟิร์มรถรับพนักงาน *คุณโซคา\n*สนามบินเตโช ขาออก\nพนักงานเดินทางจำนวน 6 คน \nAlphard 5-7 ที่นั่ง =  120 USD\n\nรวม 120 USD\n\nพนักงานบินออกวันที่ 12/09/2026\nTecho - Bangkok\nรายชื่อพนักงาน\nเปิ้ล\nกวาง\nเฟิร์น\nเมย์\nติ๊ด\nบอลP\n\nมารับที่ HD นะคะ\n\nStarex  5-7 ที่นั่ง \nอีก 1 คัน ขนกระเป๋าแยกค่ะพี่",
     "images": [
       {
-        "id": "IMG-TG-678569360",
-        "name": "telegram_photo_678569360.jpg",
-        "category": "រូបឡាន",
-        "url": "/telegram_images/tg_photo_678569360_AgACAgUAAx.jpg",
-        "date": "09/09/2026 04:58"
+        "id": "IMG-TG-678569758",
+        "name": "telegram_photo_678569758.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569758_AgACAgUAAx.jpg",
+        "date": "11/09/2026 07:22"
       }
     ]
   },
   {
-    "id": "BK-1044",
-    "customerName": "HR369 - Sokha",
+    "id": "BK-1069",
+    "customerName": "จองรถ คุณ Sokha GMP",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "J Heng",
+    "cars": [
+      "ស្តារេច (Staria)"
+    ],
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
+    "date": "2026-09-12",
+    "time": "00:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึก 95 จำนวน 1 | 📍 Map: https://maps.app.goo.gl/ZT5zZ4YirugXZz8S6 | ចំនួនភ្ញៀវ: 1 នាក់",
+    "rawMessage": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569783",
+        "name": "telegram_photo_678569783.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569783_AgACAgUAAx.jpg",
+        "date": "11/09/2026 07:51"
+      },
+      {
+        "id": "IMG-TG-678569784",
+        "name": "telegram_photo_678569784.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569784_AgACAgUAAy.jpg",
+        "date": "11/09/2026 07:51"
+      },
+      {
+        "id": "IMG-TG-678569785",
+        "name": "telegram_photo_678569785.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569785_AgACAgUAAx.jpg",
+        "date": "11/09/2026 07:51"
+      },
+      {
+        "id": "IMG-TG-678569786",
+        "name": "telegram_photo_678569786.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569786_AgACAgUAAx.jpg",
+        "date": "11/09/2026 07:54"
+      },
+      {
+        "id": "IMG-TG-678569787",
+        "name": "telegram_photo_678569787.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569787_AgACAgUAAx.jpg",
+        "date": "11/09/2026 07:54"
+      }
+    ]
+  },
+  {
+    "id": "BK-1066",
+    "customerName": "Sokha & 911",
+    "customerPhone": "081662083",
+    "customerTelegram": "",
+    "driverTelegram": "J Heng",
+    "cars": [
+      "ហៃយាស់ (Hiace)",
+      "ហៃយាស់ (Hiace)",
+      "ហៃយាស់ (Hiace)",
+      "ហៃយាស់ (Hiace)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "date": "2026-09-12",
+    "time": "01:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึกZ2 | Flight: K6722 | 📍 Map: https://www.google.com/maps/place/13%C2%B038'39.7%22N+102%C2%B034'10.2%22E/@13.644359,102 | ចំនួនភ្ញៀវ: 28 នាក់",
+    "rawMessage": "Pick from ปอยเปต send to สนามบินเตโช\nDate12/09/2026\nTime : รับ  01.00น. ( ตีหนึ่ง)\nCustomer: 28คน\nCar : Hiace Van 4คัน 600$ \n(คันละ150$)\n\n\n12/09/2026  สนามบินเตโช เวลา08.15น. ถึง สนามบินสุวรรณภูมิ เวลา 09.30น.\nCombodia Airways Flight : K6722\n\nรับที่ตึกZ2\nhttps://www.google.com/maps/place/13%C2%B038'39.7%22N+102%C2%B034'10.2%22E/@13.644359,102",
+    "images": [
+      {
+        "id": "IMG-TG-678569766",
+        "name": "telegram_photo_678569766.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569766_AgACAgUAAx.jpg",
+        "date": "11/09/2026 07:33"
+      }
+    ]
+  },
+  {
+    "id": "BK-1062",
+    "customerName": "169 Car with driver",
     "customerPhone": "",
     "customerTelegram": "",
     "driverTelegram": "J Heng",
     "cars": [
       "អេសយូវី (SUV)"
     ],
-    "vipService": "",
+    "vipService": "យក VIP",
     "borderClear": "",
     "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "ភ្នំពេញ",
-    "date": "2026-09-10",
-    "time": "01:00",
+    "dropoffLoc": "សៀមរាប",
+    "date": "2026-09-12",
+    "time": "05:00",
     "status": "active",
-    "notes": "",
-    "rawMessage": "วันที่ 10/09/2026 - DONE\n\nปป ไปสนามบินเตโช\nSUV - 1 คัน\nรับที่ M1 เวลา 01.00 น.",
+    "invoiceDone": false,
+    "notes": "📍 Map: https://maps.app.goo.gl/YbMZNhqTYE1UGa6M8 | ចំនួនភ្ញៀវ: 2 នាក់",
+    "rawMessage": "รายละเอียดการเดินทางโดยสายการบิน (ขาออก) ✈️\n\n- 📅 วันที่ 12-Sep-2026\n- 👥 จำนวน 2 คน\n\n- ✈️ สายการบิน Singapore Airlines\n- 🛫 จาก SAI - SIN ( ไฟลท์  SQ 163)\n- ⏰ เวลา เวลา 10.30-13.55 น.\n\n- 🚗 รถรับส่ง 60$\n- 👮🏻‍♂️ตม. VIP 50$\n\n👤 รายชื่อ\n1.MR. NOPPHARAT  SUWANNAKLOM\n2.MR. SUPINAN  SAMANMIT\n\n📍สถานที่รับ ตึกไวท์โฮม 66ห้อง ครับ📍\n\n🕐 เวลารับ 05.00 น.🕐 \n\n\nhttps://maps.app.goo.gl/YbMZNhqTYE1UGa6M8",
     "images": [
       {
-        "id": "IMG-TG-678569390",
-        "name": "telegram_photo_678569390.jpg",
+        "id": "IMG-TG-678569697",
+        "name": "telegram_photo_678569697.jpg",
         "category": "សំបុត្រយន្តហោះ",
-        "url": "/telegram_images/tg_photo_678569390_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:10"
+        "url": "/telegram_images/tg_photo_678569697_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:19"
+      },
+      {
+        "id": "IMG-TG-678569698",
+        "name": "telegram_photo_678569698.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569698_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:19"
+      },
+      {
+        "id": "IMG-TG-678569699",
+        "name": "telegram_photo_678569699.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569699_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:19"
       }
     ]
   },
   {
-    "id": "BK-1045",
-    "customerName": "HR369 - Sokha",
+    "id": "BK-1070",
+    "customerName": "ติดต่อตัวแทน VIP",
     "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
+    "customerTelegram": "@Sokhalion",
+    "driverTelegram": "Phinin",
     "cars": [
-      "អាលផាត (Alphard)",
       "អាលផាត (Alphard)"
     ],
     "vipService": "យក VIP",
     "borderClear": "",
     "pickupLoc": "ប៉ោយប៉ែត",
     "dropoffLoc": "សៀមរាប",
-    "date": "2026-09-10",
-    "time": "03:00",
+    "date": "2026-09-12",
+    "time": "05:00",
     "status": "active",
-    "notes": "",
-    "rawMessage": "วันที่ 10/09/2026 - DONE  \n\nปป ไป เสียมเรียบ\nAlphard - 2 คัน\nรับที่ M1 เวลา 03.00 น. \nVIP ขาออกเสียมเรียบ - 10คน ค่ะ",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: Star Mantion - ไปส่งสนามบินเสียมเรียบ | ចំនួនភ្ញៀវ: 3 នាក់",
+    "rawMessage": "",
     "images": [
       {
-        "id": "IMG-TG-678569391",
-        "name": "telegram_photo_678569391.jpg",
+        "id": "IMG-TG-678569806",
+        "name": "telegram_photo_678569806.jpg",
         "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569391_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:12"
+        "url": "/telegram_images/tg_photo_678569806_AgACAgUAAx.jpg",
+        "date": "11/09/2026 08:20"
       },
       {
-        "id": "IMG-TG-678569392",
-        "name": "telegram_photo_678569392.jpg",
+        "id": "IMG-TG-678569807",
+        "name": "telegram_photo_678569807.jpg",
         "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569392_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:12"
+        "url": "/telegram_images/tg_photo_678569807_AgACAgUAAx.jpg",
+        "date": "11/09/2026 08:20"
       },
       {
-        "id": "IMG-TG-678569393",
-        "name": "telegram_photo_678569393.jpg",
+        "id": "IMG-TG-678569808",
+        "name": "telegram_photo_678569808.jpg",
         "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569393_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:12"
+        "url": "/telegram_images/tg_photo_678569808_AgACAgUAAx.jpg",
+        "date": "11/09/2026 08:20"
       },
       {
-        "id": "IMG-TG-678569394",
-        "name": "telegram_photo_678569394.jpg",
-        "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569394_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:12"
-      },
-      {
-        "id": "IMG-TG-678569395",
-        "name": "telegram_photo_678569395.jpg",
-        "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569395_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:12"
-      },
-      {
-        "id": "IMG-TG-678569396",
-        "name": "telegram_photo_678569396.jpg",
-        "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569396_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:12"
-      },
-      {
-        "id": "IMG-TG-678569397",
-        "name": "telegram_photo_678569397.jpg",
-        "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569397_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:13"
-      },
-      {
-        "id": "IMG-TG-678569398",
-        "name": "telegram_photo_678569398.jpg",
-        "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569398_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:13"
-      },
-      {
-        "id": "IMG-TG-678569399",
-        "name": "telegram_photo_678569399.jpg",
-        "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569399_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:13"
-      },
-      {
-        "id": "IMG-TG-678569400",
-        "name": "telegram_photo_678569400.jpg",
-        "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569400_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:13"
-      },
-      {
-        "id": "IMG-TG-678569401",
-        "name": "telegram_photo_678569401.jpg",
-        "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569401_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:13"
+        "id": "IMG-TG-678569805",
+        "name": "telegram_photo_678569805.jpg",
+        "category": "សំបុត្រយន្តហោះ",
+        "url": "/telegram_images/tg_photo_678569805_AgACAgUAAx.jpg",
+        "date": "11/09/2026 08:20"
       }
     ]
   },
   {
-    "id": "BK-1055",
-    "customerName": "GA10​ 🎋 ธุรการ Center​ 🎐🐼",
+    "id": "BK-1001",
+    "customerName": "PP PG",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "Nab",
+    "cars": [
+      "អាលផាត (Alphard)"
+    ],
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "date": "2026-09-12",
+    "time": "06:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "https://maps.google.com/maps?q=13.662855,102.556077&ll=13.662855,102.556077&z=16",
+    "rawMessage": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569738",
+        "name": "telegram_photo_678569738.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569738_AgACAgUAAx.jpg",
+        "date": "11/09/2026 07:02"
+      },
+      {
+        "id": "IMG-TG-678569739",
+        "name": "telegram_photo_678569739.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569739_AgACAgUAAx.jpg",
+        "date": "11/09/2026 07:02"
+      },
+      {
+        "id": "IMG-TG-678569740",
+        "name": "telegram_photo_678569740.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569740_AgACAgUAAx.jpg",
+        "date": "11/09/2026 07:02"
+      },
+      {
+        "id": "IMG-TG-678569741",
+        "name": "telegram_photo_678569741.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569741_AgACAgUAAx.jpg",
+        "date": "11/09/2026 07:02"
+      }
+    ]
+  },
+  {
+    "id": "BK-1077",
+    "customerName": "VIP ( คุณโสคา ) 747",
+    "customerPhone": "",
+    "customerTelegram": "@Sokhalion",
+    "driverTelegram": "J Heng",
+    "cars": [
+      "អេសយូវី (SUV)"
+    ],
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "date": "2026-09-12",
+    "time": "13:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึก CC โซน 2 | 📍 Map: https://maps.google.com/maps?q=13.648497,102.561508&ll=13.648497,102.561508&z=16 | ចំនួនភ្ញៀវ: 3 នាក់",
+    "rawMessage": "ขอรถ SUV = 1 คัน \nปอยเปต ไป เสียมเรียบ\n\nรับที่ตึก CC โซน 2 เวลา 13.00 น. พรุ่งนี้ (วันที่ 12/09/2026) ค่ะ\n\n🏢ตึก CC โซน 2 : https://maps.google.com/maps?q=13.648497,102.561508&ll=13.648497,102.561508&z=16\n\nVIP ขาออก เสียมเรียบ 12/09/2026 = 3 คนค่ะ\nเป็นวีซ่าโอเวอร์ทั้งหมดเลยค่ะ\n\n@Sokhalion",
+    "images": [
+      {
+        "id": "IMG-TG-678569859",
+        "name": "telegram_photo_678569859.jpg",
+        "category": "សំបុត្រយន្តហោះ",
+        "url": "/telegram_images/tg_photo_678569859_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:08"
+      },
+      {
+        "id": "IMG-TG-678569860",
+        "name": "telegram_photo_678569860.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569860_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:08"
+      },
+      {
+        "id": "IMG-TG-678569861",
+        "name": "telegram_photo_678569861.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569861_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:08"
+      },
+      {
+        "id": "IMG-TG-678569862",
+        "name": "telegram_photo_678569862.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569862_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:08"
+      }
+    ]
+  },
+  {
+    "id": "BK-1068",
+    "customerName": "จองรถ คุณ Sokha GMP",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "J Heng",
+    "cars": [
+      "អេសយូវី (SUV)"
+    ],
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "date": "2026-09-12",
+    "time": "13:30",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึก 95 จำนวน 1 | 📍 Map: https://maps.app.goo.gl/ZT5zZ4YirugXZz8S6 | ចំនួនភ្ញៀវ: 1 នាក់",
+    "rawMessage": "[សារពី Sokha GMP88 (Forwarded from HR.2 UCOM Prow 🧚‍♀️) - 11/09/2026 07:51]\nจองรถ 1-3  ที่นั่ง 1 คัน\nPoi Pet →   SIEM REAP \n\nVIP  จำนวน 1 คน  \n\nวันที่  12/9/2026\n\n📍รับที่ตึก 95 จำนวน 1 คน\n\n\n⏰ เวลา 13.30 น.\n\nตึก95\nhttps://maps.app.goo.gl/ZT5zZ4YirugXZz8S6",
+    "images": [
+      {
+        "id": "IMG-TG-678569783",
+        "name": "telegram_photo_678569783.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569783_AgACAgUAAx.jpg",
+        "date": "11/09/2026 07:51"
+      },
+      {
+        "id": "IMG-TG-678569784",
+        "name": "telegram_photo_678569784.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569784_AgACAgUAAy.jpg",
+        "date": "11/09/2026 07:51"
+      },
+      {
+        "id": "IMG-TG-678569785",
+        "name": "telegram_photo_678569785.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569785_AgACAgUAAx.jpg",
+        "date": "11/09/2026 07:51"
+      }
+    ]
+  },
+  {
+    "id": "BK-1067",
+    "customerName": "จองรถ คุณ Sokha GMP",
     "customerPhone": "",
     "customerTelegram": "",
     "driverTelegram": "J Heng",
@@ -273,24 +798,944 @@
     "borderClear": "",
     "pickupLoc": "ប៉ោយប៉ែត",
     "dropoffLoc": "សៀមរាប",
-    "date": "2026-09-10",
-    "time": "04:00",
+    "date": "2026-09-12",
+    "time": "17:00",
     "status": "active",
-    "notes": "",
-    "rawMessage": "",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึก 35 จำนวน 5 | 📍 Map: https://maps.app.goo.gl/zDz6VXK5fw5WJNRp8 | ចំនួនភ្ញៀវ: 5 នាក់",
+    "rawMessage": "[សារពី Sokha GMP88 (Forwarded from HR.2 UCOM Prow 🧚‍♀️) - 11/09/2026 07:44]\nจองรถ Starex 8 ที่นั่ง  1 คัน\nPoi Pet →   SIEM REAP \nVIP  จำนวน 5 คน  \n\nวันที่  12/9/2026\n\n📍รับที่ตึก 35 จำนวน 5 คน\n\n\n⏰ เวลา 17.00 น.\n\nตึก35\nhttps://maps.app.goo.gl/zDz6VXK5fw5WJNRp8",
     "images": [
       {
-        "id": "IMG-TG-678569553",
-        "name": "telegram_photo_678569553.jpg",
+        "id": "IMG-TG-678569777",
+        "name": "telegram_photo_678569777.jpg",
         "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569553_AgACAgUAAx.jpg",
-        "date": "09/09/2026 15:19"
+        "url": "/telegram_images/tg_photo_678569777_AgACAgUAAx.jpg",
+        "date": "11/09/2026 07:44"
+      },
+      {
+        "id": "IMG-TG-678569778",
+        "name": "telegram_photo_678569778.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569778_AgACAgUAAy.jpg",
+        "date": "11/09/2026 07:44"
       }
     ]
   },
   {
+    "id": "BK-1063",
+    "customerName": "HR369 - Sokha",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "J Heng",
+    "cars": [
+      "អាលផាត (Alphard)",
+      "ហៃយាស់ (Hiace)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
+    "date": "2026-09-12",
+    "time": "21:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึกฟ้า)",
+    "rawMessage": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569678",
+        "name": "telegram_photo_678569678.jpg",
+        "category": "រូបឡាន",
+        "url": "/telegram_images/tg_photo_678569678_AgACAgUAAy.jpg",
+        "date": "11/09/2026 05:49"
+      }
+    ]
+  },
+  {
+    "id": "BK-1079",
+    "customerName": "จองรถ คุณ Sokha GMP",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "",
+    "cars": [
+      "អាលផាត (Alphard)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ตึก 35 จำนวน 2",
+    "dropoffLoc": "ប៉ោយប៉ែត",
+    "date": "2026-09-11",
+    "time": "00:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึก 35 จำนวน 2 | 📍 Map: https://maps.app.goo.gl/zDz6VXK5fw5WJNRp8 | ចំនួនភ្ញៀវ: 2 នាក់",
+    "rawMessage": "จองรถ Alphard   1 คัน\nPoi Pet →   Techo\n\nผู้โดยสาร จำนวน  2 คน  \n\nวันที่ 11/9/2026\n\n📍รับที่ตึก35 จำนวน 2 คน \n\n\n⏰รถมารับเวลา 00.00 น. (เที่ยงคืน)\n\nตึก35\nhttps://maps.app.goo.gl/zDz6VXK5fw5WJNRp8",
+    "images": [
+      {
+        "id": "IMG-TG-678569873",
+        "name": "telegram_photo_678569873.jpg",
+        "category": "រូបឡាន",
+        "url": "/telegram_images/tg_photo_678569873_AgACAgUAAy.jpg",
+        "date": "11/09/2026 14:23"
+      },
+      {
+        "id": "IMG-TG-678569874",
+        "name": "telegram_photo_678569874.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569874_AgACAgUAAy.jpg",
+        "date": "11/09/2026 14:23"
+      }
+    ]
+  },
+  {
+    "id": "BK-1086",
+    "customerName": "169 Car with driver",
+    "customerPhone": "",
+    "customerTelegram": "@Sokhalion",
+    "driverTelegram": "",
+    "cars": [
+      "អាលផាត (Alphard)"
+    ],
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "date": "2026-09-11",
+    "time": "00:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "📍 Map: https://maps.app.goo.gl/5GnN9t1Eg2rmepYm7 | ចំនួនភ្ញៀវ: 4 នាក់",
+    "rawMessage": "รายละเอียดการเดินทางโดยสายการบิน (ขาออก) ✈️\n\n- 📅 วันที่ 11-Sep-2026\n- 👥 จำนวน 4 คน\n\n- ✈️ สายการบิน THAI AIR WAYS\n- 🛫 จาก KTI - BKK ( ไฟลท์  TG 0587)\n- ⏰ เวลา เวลา 09.40-11.00 น.\n\n- 🚗 รถรับส่ง 120$\n- ❌ (NO VIP)\n\n👤 รายชื่อ\n1.SITTICHAI PANYAKHRUEA\n2.SUPATTRA PANAMPAI\n3.TEERAWAT WAINUKHAN\n4.SULEEPORN LANWONG\n\n📍สถานที่รับ ตึกบลูเฮ้าท์ 53ห้อง  ครับ📍\n\n🕐 เวลารับ 00.00 น. 🕐  \n\n🚗 รบกวนขอรูปรถ\n👨🏻‍✈️ รูปคนขับ\n📲 เบอร์โทร \n@Sokhalion\n\nhttps://maps.app.goo.gl/5GnN9t1Eg2rmepYm7",
+    "images": [
+      {
+        "id": "IMG-TG-678569885",
+        "name": "telegram_photo_678569885.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569885_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:44"
+      },
+      {
+        "id": "IMG-TG-678569886",
+        "name": "telegram_photo_678569886.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569886_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:44"
+      },
+      {
+        "id": "IMG-TG-678569887",
+        "name": "telegram_photo_678569887.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569887_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:44"
+      },
+      {
+        "id": "IMG-TG-678569888",
+        "name": "telegram_photo_678569888.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569888_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:44"
+      }
+    ]
+  },
+  {
+    "id": "BK-1020",
+    "customerName": "Sokha & 911",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "J Heng",
+    "cars": [
+      "ហៃយាស់ (Hiace)",
+      "ហៃយាស់ (Hiace)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ตึก 55",
+    "dropoffLoc": "តេជោ",
+    "date": "2026-09-11",
+    "time": "01:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึก 55 | Flight: KR | 📍 Map: https://maps.google.com/maps?q=13.659417,102.554933&ll=13.659417,102.554933&z=16 | ចំនួនភ្ញៀវ: 15 នាក់",
+    "rawMessage": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569587",
+        "url": "/telegram_images/tg_photo_678569587_AgACAgUAAx.jpg",
+        "date": "10/09/2026 05:39",
+        "name": "telegram_photo_678569587.jpg",
+        "category": "សំបុត្រយន្តហោះ"
+      }
+    ]
+  },
+  {
+    "id": "BK-1004",
+    "customerName": "Sokha & 911",
+    "customerPhone": "081662083",
+    "customerTelegram": "",
+    "driverTelegram": "J Heng",
+    "cars": [
+      "ហៃយាស់ (Hiace)",
+      "ហៃយាស់ (Hiace)",
+      "ហៃយាស់ (Hiace)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "date": "2026-09-11",
+    "time": "06:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึกZ2 | Flight: FD | 📍 Map: https://www.google.com/maps/place/13%C2%B038'39.7%22N+102%C2%B034'10.2%22E/@13.644359,102 | ចំនួនភ្ញៀវ: 24 នាក់",
+    "rawMessage": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569724",
+        "name": "telegram_photo_678569724.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569724_AgACAgUAAx.jpg",
+        "date": "11/09/2026 06:40"
+      }
+    ]
+  },
+  {
+    "id": "BK-1074",
+    "customerName": "A. HR 88INTER",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "",
+    "cars": [
+      "អេសយូវី (SUV)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "date": "2026-09-11",
+    "time": "06:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ฮอริเดย์ค่ะ",
+    "rawMessage": "เดินทางพรุ่งนี้ค่ะ รถออก 06.00 น นะคะ รับที่ฮอริเดย์ค่ะ",
+    "images": [
+      {
+        "id": "IMG-TG-678569848",
+        "name": "telegram_photo_678569848.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569848_AgACAgUAAx.jpg",
+        "date": "11/09/2026 13:50"
+      },
+      {
+        "id": "IMG-TG-678569849",
+        "name": "telegram_photo_678569849.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569849_AgACAgUAAx.jpg",
+        "date": "11/09/2026 13:50"
+      }
+    ]
+  },
+  {
+    "id": "BK-1078",
+    "customerName": "จองรถ คุณ Sokha GMP",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "",
+    "cars": [
+      "អាលផាត (Alphard)"
+    ],
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "date": "2026-09-11",
+    "time": "06:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึก 95 จำนวน 1 | 📍 Map: https://www.google.com/maps/place/13%C2%B039'29.8%22N+102%C2%B033'19.1%22E/@13.6585906,102.5554885,3a,75y,312.56h,119.75t/data=!3m7!1e1!3m5!1s2pqRZjABqQRLLJoZJ-8bvw!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-29.752895946646618%26panoid%3D2pqRZjABqQRLLJoZJ-8bvw%26yaw%3D312.55778473179123!7i13312!8i6656!4m4!3m3!8m2!3d13.6582757!4d102.5553179?entry=ttu&g_ep=EgoyMDI2MDkwNi4wIKXMDSoASAFQAw%3D%3D | ចំនួនភ្ញៀវ: 5 នាក់",
+    "rawMessage": "จองรถ ALPHARD  1 คัน\nPoi Pet →   SIEM REAP \nVIP  จำนวน 5 คน  \n\nวันที่  11/9/2026\n\n📍รับที่ตึก 95 จำนวน 1 คน\n📍รับที่ตึก 84 จำนวน 1 คน\n📍รับที่ตึกพักโซน2 จำนวน 4 คน\n\n⏰ เวลา 06.00น.\n\nตึก 84\nhttps://www.google.com/maps/place/13%C2%B039'29.8%22N+102%C2%B033'19.1%22E/@13.6585906,102.5554885,3a,75y,312.56h,119.75t/data=!3m7!1e1!3m5!1s2pqRZjABqQRLLJoZJ-8bvw!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-29.752895946646618%26panoid%3D2pqRZjABqQRLLJoZJ-8bvw%26yaw%3D312.55778473179123!7i13312!8i6656!4m4!3m3!8m2!3d13.6582757!4d102.5553179?entry=ttu&g_ep=EgoyMDI2MDkwNi4wIKXMDSoASAFQAw%3D%3D",
+    "images": [
+      {
+        "id": "IMG-TG-678569866",
+        "name": "telegram_photo_678569866.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569866_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:22"
+      },
+      {
+        "id": "IMG-TG-678569867",
+        "name": "telegram_photo_678569867.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569867_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:22"
+      },
+      {
+        "id": "IMG-TG-678569868",
+        "name": "telegram_photo_678569868.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569868_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:22"
+      },
+      {
+        "id": "IMG-TG-678569869",
+        "name": "telegram_photo_678569869.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569869_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:22"
+      },
+      {
+        "id": "IMG-TG-678569870",
+        "name": "telegram_photo_678569870.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569870_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:22"
+      },
+      {
+        "id": "IMG-TG-678569871",
+        "name": "telegram_photo_678569871.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569871_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:22"
+      },
+      {
+        "id": "IMG-TG-678569872",
+        "name": "telegram_photo_678569872.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569872_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:22"
+      }
+    ]
+  },
+  {
+    "id": "BK-1080",
+    "customerName": "ติดต่อตัวแทน VIP",
+    "customerPhone": "",
+    "customerTelegram": "@Sokhalion",
+    "driverTelegram": "",
+    "cars": [
+      "អេសយូវី (SUV)"
+    ],
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "date": "2026-09-11",
+    "time": "06:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึก 53 - ไปส่งสนามบินเสียมเรียบ",
+    "rawMessage": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569875",
+        "name": "telegram_photo_678569875.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569875_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:25"
+      },
+      {
+        "id": "IMG-TG-678569876",
+        "name": "telegram_photo_678569876.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569876_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:25"
+      }
+    ]
+  },
+  {
+    "id": "BK-1081",
+    "customerName": "ติดต่อตัวแทน VIP",
+    "customerPhone": "",
+    "customerTelegram": "@Sokhalion",
+    "driverTelegram": "",
+    "cars": [
+      "អេសយូវី (SUV)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "date": "2026-09-11",
+    "time": "06:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: Star Mantion - ไปสนามบินเตโช",
+    "rawMessage": "@Sokhalion \nวันที 11/09/2026 เวลา 06.00 น.\nรับจาก Star Mantion - ไปสนามบินเตโช\nจองรถ SUV 1 คัน",
+    "images": [
+      {
+        "id": "IMG-TG-678569877",
+        "name": "telegram_photo_678569877.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569877_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:26"
+      },
+      {
+        "id": "IMG-TG-678569878",
+        "name": "telegram_photo_678569878.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569878_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:26"
+      }
+    ]
+  },
+  {
+    "id": "BK-1085",
+    "customerName": "VIPตม. +รถ จองโซคา (กรณีบินเอง)",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "",
+    "cars": [
+      "អាលផាត (Alphard)",
+      "អាលផាត (Alphard)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ភ្នំពេញ",
+    "dropoffLoc": "តេជោ",
+    "date": "2026-09-11",
+    "time": "06:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึกZ2 | Flight: FD | 📍 Map: https://www.google.com/maps/place/13%C2%B038'39.7%22N+102%C2%B034'10.2%22E/@13.644359,102 | ចំនួនភ្ញៀវ: 7 នាក់",
+    "rawMessage": "Pick from ปอยเปต send to สนามบินเตโช\nDate11/09/2026\nTime : รับ  06.00น. ( หกโมงเช้า)\nCustomer: 7คน\nCar : Alphard 2คัน 240$ \n(คันละ120$)\n\n\n11/09/2026  สนามบินเตโช เวลา18.35น.  ถึง สนามบินดอนเมือง เวลา 19.55น.\nAir Asia Flight : FD 607\n\nรับที่ตึกZ2\nhttps://www.google.com/maps/place/13%C2%B038'39.7%22N+102%C2%B034'10.2%22E/@13.644359,102",
+    "images": [
+      {
+        "id": "IMG-TG-678569883",
+        "name": "telegram_photo_678569883.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569883_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:41"
+      }
+    ]
+  },
+  {
+    "id": "BK-1084",
+    "customerName": "GA MKT03 Snack",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "",
+    "cars": [
+      "អេសយូវី (SUV)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "date": "2026-09-11",
+    "time": "07:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ปอยเปตไปส่ง สนามเตโช | ចំនួនភ្ញៀវ: 1 នាក់",
+    "rawMessage": "บริษัท 656 วันที่ 11/09/2026\nรับจากปอยเปตไปส่ง สนามเตโช\nVIP 1คน  \nมารับจากตึก Z  เวลา 07.00 น. \nจองรถ รถตู้เก๋ง\nไฟล์บิน 18.35น.  - 19.55  น.",
+    "images": [
+      {
+        "id": "IMG-TG-678569881",
+        "name": "telegram_photo_678569881.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569881_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:37"
+      },
+      {
+        "id": "IMG-TG-678569882",
+        "name": "telegram_photo_678569882.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569882_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:37"
+      }
+    ]
+  },
+  {
+    "id": "BK-1076",
+    "customerName": "911BAM.HR",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "",
+    "cars": [
+      "អាលផាត (Alphard)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "date": "2026-09-11",
+    "time": "10:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: พนักงาน พี่  2 | 📍 Map: https://www.google.com/maps/place/13%C2%B038'39.7%22N+102%C2%B034'10.2%22E/@13.644359,102 | ចំនួនភ្ញៀវ: 2 នាក់",
+    "rawMessage": "วันที่ 11 SEP 2026 เวลา 10.00 น.   \nจัดรถมารับ  พนักงาน พี่  2คน \nจองรถ  Alphard  1 คัน\n\nรับที่ ตึก Z2 ไปส่งสนามบินเสียมเรียบ \nhttps://www.google.com/maps/place/13%C2%B038'39.7%22N+102%C2%B034'10.2%22E/@13.644359,102\nบินโดยสายการบิน AirAsia (FD-615) เครื่องออกเวลา 16.55 น. \nประสาน ตม. ให้ด้วยนะคะ",
+    "images": [
+      {
+        "id": "IMG-TG-678569853",
+        "name": "telegram_photo_678569853.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569853_AgACAgUAAy.jpg",
+        "date": "11/09/2026 14:01"
+      },
+      {
+        "id": "IMG-TG-678569854",
+        "name": "telegram_photo_678569854.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569854_AgACAgUAAy.jpg",
+        "date": "11/09/2026 14:01"
+      },
+      {
+        "id": "IMG-TG-678569855",
+        "name": "telegram_photo_678569855.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569855_AgACAgUAAy.jpg",
+        "date": "11/09/2026 14:01"
+      }
+    ]
+  },
+  {
+    "id": "BK-1075",
+    "customerName": "911BAM.HR",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "",
+    "cars": [
+      "អាលផាត (Alphard)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
+    "date": "2026-09-11",
+    "time": "13:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: นายพี่ 2 | ចំនួនភ្ញៀវ: 2 នាក់",
+    "rawMessage": "[សារពី Sokha GMP88 (Forwarded from 911BAM.HR) - 11/09/2026 13:59]\nวันที่ 11 SEP 2026 เวลา 13.00 น.   \nจัดรถมารับ  นายพี่ 2คน \nจองรถ  Alphard  1 คัน\nรับที่  Galaxy Casino\n\nบินโดยสายการบิน Bangkok Airways (PG 908) เครื่องออกเวลา 16.55 น. \nประสาน ตม. ให้ด้วยนะคะ",
+    "images": []
+  },
+  {
+    "id": "BK-1057",
+    "customerName": "911BAM.HR",
+    "customerPhone": "",
+    "customerTelegram": "",
+    "driverTelegram": "Phinin",
+    "cars": [
+      "អេសយូវី (SUV)"
+    ],
+    "vipService": "យក VIP",
+    "borderClear": "យកក្លៀដាន",
+    "pickupLoc": "សៀមរាប",
+    "dropoffLoc": "ប៉ោយប៉ែត",
+    "date": "2026-09-11",
+    "time": "16:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "",
+    "rawMessage": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569563",
+        "url": "/telegram_images/tg_photo_678569563_AgACAgUAAx.jpg",
+        "date": "09/09/2026 15:49",
+        "name": "telegram_photo_678569563.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569564",
+        "url": "/telegram_images/tg_photo_678569564_AgACAgUAAx.jpg",
+        "date": "09/09/2026 15:49",
+        "name": "telegram_photo_678569564.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569565",
+        "url": "/telegram_images/tg_photo_678569565_AgACAgUAAx.jpg",
+        "date": "09/09/2026 15:49",
+        "name": "telegram_photo_678569565.jpg",
+        "category": "ប៉ាស្ព័រ"
+      }
+    ]
+  },
+  {
+    "id": "BK-1047",
+    "cars": [
+      "អាលផាត (Alphard)",
+      "អាលផាត (Alphard)"
+    ],
+    "date": "2026-09-11",
+    "time": "17:00",
+    "notes": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569408",
+        "url": "/telegram_images/tg_photo_678569408_AgACAgUAAx.jpg",
+        "date": "09/09/2026 05:19",
+        "name": "telegram_photo_678569408.jpg",
+        "category": "ប៉ាស្ព័រ"
+      }
+    ],
+    "status": "active",
+    "pickupLoc": "ភ្នំពេញ",
+    "dropoffLoc": "ប៉ោយប៉ែត",
+    "rawMessage": "📷 រូបភាព (ប៉ាស្ព័រ) ពី Sokha GMP88",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "PLOY.",
+    "customerPhone": "",
+    "driverTelegram": "កក់ឡាន",
+    "customerTelegram": ""
+  },
+  {
+    "id": "BK-1073",
+    "customerName": "HR369 - Sokha",
+    "customerPhone": "026",
+    "customerTelegram": "",
+    "driverTelegram": "J Heng",
+    "cars": [
+      "អាលផាត (Alphard)",
+      "ហៃយាស់ (Hiace)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
+    "date": "2026-09-11",
+    "time": "21:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึกฟ้า)",
+    "rawMessage": "[សារពី Sokha GMP88 (Forwarded from Super_HR_Office 369) - 11/09/2026 13:44]\nวันที่11/9/2026\nเวลา21.00น.\nจองรถตู้ 1 คัน(รับตึกฟ้า)\nAlphard  1 คัน(รับตึกM1)",
+    "images": [
+      {
+        "id": "IMG-TG-678569847",
+        "name": "telegram_photo_678569847.jpg",
+        "category": "រូបឡាន",
+        "url": "/telegram_images/tg_photo_678569847_AgACAgUAAy.jpg",
+        "date": "11/09/2026 13:44"
+      }
+    ]
+  },
+  {
+    "id": "BK-1088",
+    "customerName": "88S - GMP",
+    "customerPhone": "09 2026",
+    "customerTelegram": "",
+    "driverTelegram": "",
+    "cars": [
+      "អាលផាត (Alphard)"
+    ],
+    "vipService": "",
+    "borderClear": "",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "date": "2026-09-11",
+    "time": "22:00",
+    "status": "active",
+    "invoiceDone": false,
+    "notes": "ទទួលនៅ: ตึก 40 | 📍 Map: https://www.google.com/maps/search/?api=1&query=13.675776,102.56731 | ចំនួនភ្ញៀវ: 4 នាក់",
+    "rawMessage": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569894",
+        "name": "telegram_photo_678569894.jpg",
+        "category": "សំបុត្រយន្តហោះ",
+        "url": "/telegram_images/tg_photo_678569894_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:52"
+      },
+      {
+        "id": "IMG-TG-678569895",
+        "name": "telegram_photo_678569895.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569895_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:52"
+      },
+      {
+        "id": "IMG-TG-678569896",
+        "name": "telegram_photo_678569896.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569896_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:52"
+      },
+      {
+        "id": "IMG-TG-678569897",
+        "name": "telegram_photo_678569897.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569897_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:52"
+      },
+      {
+        "id": "IMG-TG-678569898",
+        "name": "telegram_photo_678569898.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569898_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:52"
+      },
+      {
+        "id": "IMG-TG-678569899",
+        "name": "telegram_photo_678569899.jpg",
+        "category": "ប៉ាស្ព័រ",
+        "url": "/telegram_images/tg_photo_678569899_AgACAgUAAx.jpg",
+        "date": "11/09/2026 14:52"
+      }
+    ]
+  },
+  {
+    "id": "BK-1040",
+    "cars": [
+      "អាលផាត (Alphard)"
+    ],
+    "date": "2026-09-10",
+    "time": "00:00",
+    "notes": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569360",
+        "url": "/telegram_images/tg_photo_678569360_AgACAgUAAx.jpg",
+        "date": "09/09/2026 04:58",
+        "name": "telegram_photo_678569360.jpg",
+        "category": "រូបឡាន"
+      }
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "rawMessage": "จองรถ Alphard   1 คัน\nPoi Pet →   Techo\n\nผู้โดยสาร จำนวน  2 คน  \n\nวันที่ 10/9/2026\n\n📍รับที่ Galaxy Casino จำนวน 1 คน \n📍รับที่ตึก95 จำนวน 1 คน \n\n\n⏰รถมารับเวลา 00.00 น. (เที่ยงคืน)",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "จองรถ คุณ Sokha GMP",
+    "customerPhone": "",
+    "driverTelegram": "កក់ឡាន",
+    "customerTelegram": ""
+  },
+  {
+    "id": "BK-1044",
+    "cars": [
+      "អេសយូវី (SUV)"
+    ],
+    "date": "2026-09-10",
+    "time": "01:00",
+    "notes": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569390",
+        "url": "/telegram_images/tg_photo_678569390_AgACAgUAAx.jpg",
+        "date": "09/09/2026 05:10",
+        "name": "telegram_photo_678569390.jpg",
+        "category": "សំបុត្រយន្តហោះ"
+      }
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
+    "rawMessage": "วันที่ 10/09/2026 - DONE\n\nปป ไปสนามบินเตโช\nSUV - 1 คัน\nรับที่ M1 เวลา 01.00 น.",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "HR369 - Sokha",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
+  },
+  {
+    "id": "BK-1045",
+    "cars": [
+      "អាលផាត (Alphard)",
+      "អាលផាត (Alphard)"
+    ],
+    "date": "2026-09-10",
+    "time": "03:00",
+    "notes": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569391",
+        "url": "/telegram_images/tg_photo_678569391_AgACAgUAAx.jpg",
+        "date": "09/09/2026 05:12",
+        "name": "telegram_photo_678569391.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569392",
+        "url": "/telegram_images/tg_photo_678569392_AgACAgUAAx.jpg",
+        "date": "09/09/2026 05:12",
+        "name": "telegram_photo_678569392.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569393",
+        "url": "/telegram_images/tg_photo_678569393_AgACAgUAAx.jpg",
+        "date": "09/09/2026 05:12",
+        "name": "telegram_photo_678569393.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569394",
+        "url": "/telegram_images/tg_photo_678569394_AgACAgUAAx.jpg",
+        "date": "09/09/2026 05:12",
+        "name": "telegram_photo_678569394.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569395",
+        "url": "/telegram_images/tg_photo_678569395_AgACAgUAAx.jpg",
+        "date": "09/09/2026 05:12",
+        "name": "telegram_photo_678569395.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569396",
+        "url": "/telegram_images/tg_photo_678569396_AgACAgUAAx.jpg",
+        "date": "09/09/2026 05:12",
+        "name": "telegram_photo_678569396.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569397",
+        "url": "/telegram_images/tg_photo_678569397_AgACAgUAAx.jpg",
+        "date": "09/09/2026 05:13",
+        "name": "telegram_photo_678569397.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569398",
+        "url": "/telegram_images/tg_photo_678569398_AgACAgUAAx.jpg",
+        "date": "09/09/2026 05:13",
+        "name": "telegram_photo_678569398.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569399",
+        "url": "/telegram_images/tg_photo_678569399_AgACAgUAAx.jpg",
+        "date": "09/09/2026 05:13",
+        "name": "telegram_photo_678569399.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569400",
+        "url": "/telegram_images/tg_photo_678569400_AgACAgUAAx.jpg",
+        "date": "09/09/2026 05:13",
+        "name": "telegram_photo_678569400.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569401",
+        "url": "/telegram_images/tg_photo_678569401_AgACAgUAAx.jpg",
+        "date": "09/09/2026 05:13",
+        "name": "telegram_photo_678569401.jpg",
+        "category": "ប៉ាស្ព័រ"
+      }
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "rawMessage": "วันที่ 10/09/2026 - DONE  \n\nปป ไป เสียมเรียบ\nAlphard - 2 คัน\nรับที่ M1 เวลา 03.00 น. \nVIP ขาออกเสียมเรียบ - 10คน ค่ะ",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "HR369 - Sokha",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
+  },
+  {
+    "id": "BK-1055",
+    "cars": [
+      "ស្តារេច (Staria)"
+    ],
+    "date": "2026-09-10",
+    "time": "04:00",
+    "notes": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569553",
+        "url": "/telegram_images/tg_photo_678569553_AgACAgUAAx.jpg",
+        "date": "09/09/2026 15:19",
+        "name": "telegram_photo_678569553.jpg",
+        "category": "ប៉ាស្ព័រ"
+      }
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "rawMessage": "",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "GA10​ 🎋 ธุรการ Center​ 🎐🐼",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
+  },
+  {
     "id": "BK-1050",
+    "cars": [
+      "ហៃយាស់ (Hiace)"
+    ],
+    "date": "2026-09-10",
+    "time": "05:00",
+    "notes": "Flight: Thai | 📍 Map: https://maps.app.goo.gl/UFL6p4ymwpBpDP8Z6",
+    "images": [
+      {
+        "id": "IMG-TG-678569432",
+        "url": "/telegram_images/tg_photo_678569432_AgACAgUAAx.jpg",
+        "date": "09/09/2026 07:29",
+        "name": "telegram_photo_678569432.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569433",
+        "url": "/telegram_images/tg_photo_678569433_AgACAgUAAx.jpg",
+        "date": "09/09/2026 07:29",
+        "name": "telegram_photo_678569433.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569434",
+        "url": "/telegram_images/tg_photo_678569434_AgACAgUAAx.jpg",
+        "date": "09/09/2026 07:29",
+        "name": "telegram_photo_678569434.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569435",
+        "url": "/telegram_images/tg_photo_678569435_AgACAgUAAx.jpg",
+        "date": "09/09/2026 07:29",
+        "name": "telegram_photo_678569435.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569436",
+        "url": "/telegram_images/tg_photo_678569436_AgACAgUAAx.jpg",
+        "date": "09/09/2026 07:29",
+        "name": "telegram_photo_678569436.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569437",
+        "url": "/telegram_images/tg_photo_678569437_AgACAgUAAx.jpg",
+        "date": "09/09/2026 07:29",
+        "name": "telegram_photo_678569437.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569438",
+        "url": "/telegram_images/tg_photo_678569438_AgACAgUAAx.jpg",
+        "date": "09/09/2026 07:29",
+        "name": "telegram_photo_678569438.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569439",
+        "url": "/telegram_images/tg_photo_678569439_AgACAgUAAx.jpg",
+        "date": "09/09/2026 07:29",
+        "name": "telegram_photo_678569439.jpg",
+        "category": "ប៉ាស្ព័រ"
+      }
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "rawMessage": "",
+    "vipService": "យក VIP",
+    "borderClear": "",
     "customerName": "ส่งรถขาเข้า-ออก",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
+  },
+  {
+    "id": "BK-1022",
+    "customerName": "ติดต่อตัวแทน VIP",
     "customerPhone": "",
     "customerTelegram": "",
     "driverTelegram": "J Heng",
@@ -302,10 +1747,10 @@
     "pickupLoc": "ប៉ោយប៉ែត",
     "dropoffLoc": "សៀមរាប",
     "date": "2026-09-10",
-    "time": "05:00",
+    "time": "05:30",
     "status": "active",
     "notes": "Flight: Thai | 📍 Map: https://maps.app.goo.gl/UFL6p4ymwpBpDP8Z6",
-    "rawMessage": "",
+    "rawMessage": "🚐 Transfer Service Booking  (ขาออก)\n\n📅    10 Sep 2026\n\n👥    7 Passengers\n\n📍 Route: Poipet  ➜   Siem Reap Airport\n\n🕗 Pickup: 05.30 น.\n\n🚌 Van (7–12 ท่าน\n\n💵    USD 140 / คัน\n\n✈️ Flight  :Thai Air Asia FD 611 / 🛫 SAI → DMK  |11.55 - 13.00\n\n🌴 VIP Transfer:  25  USD\n—————————————————————\n\n🏠 House 15 (Duangchan)\nhttps://maps.app.goo.gl/UFL6p4ymwpBpDP8Z6\n\n🏠 House 92\nhttps://maps.google.com/maps?q=13.668812,102.561965&ll=13.668812,102.561965&z=16",
     "images": [
       {
         "id": "IMG-TG-678569432",
@@ -367,66 +1812,66 @@
   },
   {
     "id": "BK-1049",
-    "customerName": "HR หลัก",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "Phinin",
     "cars": [
       "អាលផាត (Alphard)"
     ],
-    "vipService": "យក VIP",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "សៀមរាប",
     "date": "2026-09-10",
     "time": "06:00",
-    "status": "active",
     "notes": "យកនៅកាឡាក់ស៊ី",
-    "rawMessage": "วันที่ 10/09/2026 - เวลา 06.00 น.\nรับจาก ตึกกาแลคซี่ ไปส่ง เสียมเรียบ\nจอง VIP ขาออก + รถอัลพาท 1 คัน ค่ะ",
     "images": [
       {
         "id": "IMG-TG-678569415",
-        "name": "telegram_photo_678569415.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569415_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:47"
+        "date": "09/09/2026 05:47",
+        "name": "telegram_photo_678569415.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569416",
-        "name": "telegram_photo_678569416.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569416_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:47"
+        "date": "09/09/2026 05:47",
+        "name": "telegram_photo_678569416.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "rawMessage": "วันที่ 10/09/2026 - เวลา 06.00 น.\nรับจาก ตึกกาแลคซี่ ไปส่ง เสียมเรียบ\nจอง VIP ขาออก + รถอัลพาท 1 คัน ค่ะ",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "HR หลัก",
+    "customerPhone": "",
+    "driverTelegram": "Phinin",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1051",
-    "customerName": "จองรถ SOKHA",
-    "customerPhone": "",
-    "customerTelegram": "@Sokhalion",
-    "driverTelegram": "កក់ឡាន",
     "cars": [
       "អាលផាត (Alphard)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "តេជោ",
-    "dropoffLoc": "ប៉ោយប៉ែត",
     "date": "2026-09-10",
     "time": "08:50",
-    "status": "active",
     "notes": "",
-    "rawMessage": "ขาเข้า\nวันที่เดินทาง : 10/09/2026\nรถ : อัลพาร์ด 1 คัน\nจำนวน : 2 PAX\nสนามบิน :  BKK - KTI\nเวลาขึ้นเครื่อง :   07:30- 08:50 น. @Sokhalion",
     "images": [
       {
         "id": "IMG-TG-678569486",
-        "name": "telegram_photo_678569486.jpg",
-        "category": "សំបុត្រយន្តហោះ",
         "url": "/telegram_images/tg_photo_678569486_AgACAgUAAx.jpg",
-        "date": "09/09/2026 10:38"
+        "date": "09/09/2026 10:38",
+        "name": "telegram_photo_678569486.jpg",
+        "category": "សំបុត្រយន្តហោះ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "តេជោ",
+    "dropoffLoc": "ប៉ោយប៉ែត",
+    "rawMessage": "ขาเข้า\nวันที่เดินทาง : 10/09/2026\nรถ : อัลพาร์ด 1 คัน\nจำนวน : 2 PAX\nสนามบิน :  BKK - KTI\nเวลาขึ้นเครื่อง :   07:30- 08:50 น. @Sokhalion",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "จองรถ SOKHA",
+    "customerPhone": "",
+    "driverTelegram": "កក់ឡាន",
+    "customerTelegram": "@Sokhalion"
   },
   {
     "id": "BK-1003",
@@ -449,1086 +1894,1056 @@
   },
   {
     "id": "BK-1052",
-    "customerName": "A. HR 88INTER",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អាលផាត (Alphard)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "ភ្នំពេញ",
     "date": "2026-09-10",
     "time": "09:00",
-    "status": "active",
     "notes": "",
-    "rawMessage": "📷 រូបភាព (ប៉ាស្ព័រ) ពី Sokha GMP88",
     "images": [
       {
         "id": "IMG-TG-678569533",
-        "name": "telegram_photo_678569533.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569533_AgACAgUAAx.jpg",
-        "date": "09/09/2026 14:35"
+        "date": "09/09/2026 14:35",
+        "name": "telegram_photo_678569533.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569534",
-        "name": "telegram_photo_678569534.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569534_AgACAgUAAx.jpg",
-        "date": "09/09/2026 14:35"
+        "date": "09/09/2026 14:35",
+        "name": "telegram_photo_678569534.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569535",
-        "name": "telegram_photo_678569535.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569535_AgACAgUAAx.jpg",
-        "date": "09/09/2026 14:35"
+        "date": "09/09/2026 14:35",
+        "name": "telegram_photo_678569535.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569536",
-        "name": "telegram_photo_678569536.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569536_AgACAgUAAx.jpg",
-        "date": "09/09/2026 14:35"
+        "date": "09/09/2026 14:35",
+        "name": "telegram_photo_678569536.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569537",
-        "name": "telegram_photo_678569537.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569537_AgACAgUAAx.jpg",
-        "date": "09/09/2026 14:35"
+        "date": "09/09/2026 14:35",
+        "name": "telegram_photo_678569537.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
+    "rawMessage": "📷 រូបភាព (ប៉ាស្ព័រ) ពី Sokha GMP88",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "A. HR 88INTER",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1053",
-    "customerName": "911BAM.HR",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អេសយូវី (SUV)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "សៀមរាប",
-    "dropoffLoc": "ប៉ោយប៉ែត",
     "date": "2026-09-10",
     "time": "10:05",
-    "status": "active",
     "notes": "",
-    "rawMessage": "วันที่ 10/09/69 นายพี่ บินเข้า ปป. จำนวน 1 คน \nเครื่องลงสนามบินเสียมเรียบเวลา 10.05 -11.10  น. \nสายการบิน Air Asia FD610\n\nประสาน ตม. และ เคลียร์ด่านให้ด้วย \n\nจองรถ  SUV 1 คัน",
     "images": [
       {
         "id": "IMG-TG-678569540",
-        "name": "telegram_photo_678569540.jpg",
-        "category": "សំបុត្រយន្តហោះ",
         "url": "/telegram_images/tg_photo_678569540_AgACAgUAAx.jpg",
-        "date": "09/09/2026 14:45"
+        "date": "09/09/2026 14:45",
+        "name": "telegram_photo_678569540.jpg",
+        "category": "សំបុត្រយន្តហោះ"
       },
       {
         "id": "IMG-TG-678569541",
-        "name": "telegram_photo_678569541.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569541_AgACAgUAAx.jpg",
-        "date": "09/09/2026 14:45"
+        "date": "09/09/2026 14:45",
+        "name": "telegram_photo_678569541.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "សៀមរាប",
+    "dropoffLoc": "ប៉ោយប៉ែត",
+    "rawMessage": "วันที่ 10/09/69 นายพี่ บินเข้า ปป. จำนวน 1 คน \nเครื่องลงสนามบินเสียมเรียบเวลา 10.05 -11.10  น. \nสายการบิน Air Asia FD610\n\nประสาน ตม. และ เคลียร์ด่านให้ด้วย \n\nจองรถ  SUV 1 คัน",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "911BAM.HR",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1039",
+    "cars": [
+      "អាលផាត (Alphard)"
+    ],
+    "date": "2026-09-10",
+    "time": "11:00",
+    "notes": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569312",
+        "url": "/telegram_images/tg_photo_678569312_AgACAgUAAx.jpg",
+        "date": "09/09/2026 00:33",
+        "name": "telegram_photo_678569312.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569313",
+        "url": "/telegram_images/tg_photo_678569313_AgACAgUAAx.jpg",
+        "date": "09/09/2026 00:33",
+        "name": "telegram_photo_678569313.jpg",
+        "category": "ប៉ាស្ព័រ"
+      }
+    ],
+    "status": "active",
+    "pickupLoc": "សៀមរាប",
+    "dropoffLoc": "ប៉ោយប៉ែត",
+    "rawMessage": "เส้นทาง : เสียมราฐ - ปอยเปต\nวันที่ 10/9/2026\nจำนวน 1 คน\nจองรถ Alphard 1 คัน\nจอง VIP ขาเข้า 1 คน\nส่งที่หน้าโรงแรม Holiday ค่ะ @Sokhalion",
+    "vipService": "យក VIP",
+    "borderClear": "យកក្លៀដាន",
     "customerName": "HR222 - Sokha",
     "customerPhone": "",
-    "customerTelegram": "@Sokhalion",
     "driverTelegram": "Phinin",
-    "cars": [
-      "អាលផាត (Alphard)"
-    ],
-    "vipService": "យក VIP",
-    "borderClear": "យកក្លៀដាន",
-    "pickupLoc": "សៀមរាប",
-    "dropoffLoc": "ប៉ោយប៉ែត",
-    "date": "2026-09-10",
-    "time": "11:00",
-    "status": "active",
-    "notes": "",
-    "rawMessage": "เส้นทาง : เสียมราฐ - ปอยเปต\nวันที่ 10/9/2026\nจำนวน 1 คน\nจองรถ Alphard 1 คัน\nจอง VIP ขาเข้า 1 คน\nส่งที่หน้าโรงแรม Holiday ค่ะ @Sokhalion",
-    "images": [
-      {
-        "id": "IMG-TG-678569312",
-        "name": "telegram_photo_678569312.jpg",
-        "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569312_AgACAgUAAx.jpg",
-        "date": "09/09/2026 00:33"
-      },
-      {
-        "id": "IMG-TG-678569313",
-        "name": "telegram_photo_678569313.jpg",
-        "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569313_AgACAgUAAx.jpg",
-        "date": "09/09/2026 00:33"
-      }
-    ]
-  },
-  {
-    "id": "BK-1039-dup3",
-    "cars": [
-      "អាលផាត (Alphard)"
-    ],
-    "date": "2026-09-10",
-    "time": "11:00",
-    "notes": "",
-    "images": [
-      {
-        "id": "IMG-TG-678569312",
-        "url": "/telegram_images/tg_photo_678569312_AgACAgUAAx.jpg",
-        "date": "09/09/2026 00:33",
-        "name": "telegram_photo_678569312.jpg",
-        "category": "ប៉ាស្ព័រ"
-      },
-      {
-        "id": "IMG-TG-678569313",
-        "url": "/telegram_images/tg_photo_678569313_AgACAgUAAx.jpg",
-        "date": "09/09/2026 00:33",
-        "name": "telegram_photo_678569313.jpg",
-        "category": "ប៉ាស្ព័រ"
-      }
-    ],
-    "status": "active",
-    "pickupLoc": "សៀមរាប",
-    "dropoffLoc": "ប៉ោយប៉ែត",
-    "rawMessage": "เส้นทาง : เสียมราฐ - ปอยเปต\nวันที่ 10/9/2026\nจำนวน 1 คน\nจองรถ Alphard 1 คัน\nจอง VIP ขาเข้า 1 คน\nส่งที่หน้าโรงแรม Holiday ค่ะ @Sokhalion",
-    "vipService": "យក VIP",
-    "borderClear": "យកក្លៀដាន",
-    "invoiceDone": false,
-    "customerName": "HR222 - Sokha",
-    "customerPhone": "",
-    "driverTelegram": "",
-    "customerTelegram": "@Sokhalion"
-  },
-  {
-    "id": "BK-1039-dup40",
-    "cars": [
-      "អាលផាត (Alphard)"
-    ],
-    "date": "2026-09-10",
-    "time": "11:00",
-    "notes": "",
-    "images": [
-      {
-        "id": "IMG-TG-678569312",
-        "url": "/telegram_images/tg_photo_678569312_AgACAgUAAx.jpg",
-        "date": "09/09/2026 00:33",
-        "name": "telegram_photo_678569312.jpg",
-        "category": "ប៉ាស្ព័រ"
-      },
-      {
-        "id": "IMG-TG-678569313",
-        "url": "/telegram_images/tg_photo_678569313_AgACAgUAAx.jpg",
-        "date": "09/09/2026 00:33",
-        "name": "telegram_photo_678569313.jpg",
-        "category": "ប៉ាស្ព័រ"
-      }
-    ],
-    "status": "active",
-    "pickupLoc": "សៀមរាប",
-    "dropoffLoc": "ប៉ោយប៉ែត",
-    "rawMessage": "เส้นทาง : เสียมราฐ - ปอยเปต\nวันที่ 10/9/2026\nจำนวน 1 คน\nจองรถ Alphard 1 คัน\nจอง VIP ขาเข้า 1 คน\nส่งที่หน้าโรงแรม Holiday ค่ะ @Sokhalion",
-    "vipService": "យក VIP",
-    "borderClear": "យកក្លៀដាន",
-    "invoiceDone": false,
-    "customerName": "HR222 - Sokha",
-    "customerPhone": "",
-    "driverTelegram": "",
     "customerTelegram": "@Sokhalion"
   },
   {
     "id": "BK-1016",
-    "customerName": "HR369🎌office 𝓥𝖎𝖊𝖜 🎌",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អេសយូវី (SUV)"
     ],
-    "vipService": "យក VIP",
-    "borderClear": "យកក្លៀដាន",
-    "pickupLoc": "ភ្នំពេញ",
-    "dropoffLoc": "ប៉ោយប៉ែត",
     "date": "2026-09-10",
     "time": "12:00",
-    "status": "active",
     "notes": "",
-    "rawMessage": "วันที่ 10/9/2026\nรถ SUV - 1 คัน\nVIP ขาเข้าเตโช T VISA  - 1 คน\nเคลียร์ด่าน - 1 คนค่ะ\nArrival - 12.45 น.",
     "images": [
       {
         "id": "IMG-TG-678569160",
-        "name": "telegram_photo_678569160.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569160_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:32"
+        "date": "08/09/2026 15:32",
+        "name": "telegram_photo_678569160.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569161",
-        "name": "telegram_photo_678569161.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569161_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:32"
+        "date": "08/09/2026 15:32",
+        "name": "telegram_photo_678569161.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ភ្នំពេញ",
+    "dropoffLoc": "ប៉ោយប៉ែត",
+    "rawMessage": "วันที่ 10/9/2026\nรถ SUV - 1 คัน\nVIP ขาเข้าเตโช T VISA  - 1 คน\nเคลียร์ด่าน - 1 คนค่ะ\nArrival - 12.45 น.",
+    "vipService": "យក VIP",
+    "borderClear": "យកក្លៀដាន",
+    "customerName": "HR369🎌office 𝓥𝖎𝖊𝖜 🎌",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1015",
-    "customerName": "HR369🎌office 𝓥𝖎𝖊𝖜 🎌",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "🚫 មិនយកឡាន"
     ],
-    "vipService": "យក VIP",
-    "borderClear": "",
-    "pickupLoc": "សៀមរាប",
-    "dropoffLoc": "ប៉ោយប៉ែត",
     "date": "2026-09-10",
     "time": "13:00",
-    "status": "active",
     "notes": "",
-    "rawMessage": "วันที่10/09/2026\nจอง VIP - ขาเข้าเสียมเรียบ 1 คน\nเวลา 13.15 น.",
     "images": [
       {
         "id": "IMG-TG-678569158",
-        "name": "telegram_photo_678569158.jpg",
-        "category": "សំបុត្រយន្តហោះ",
         "url": "/telegram_images/tg_photo_678569158_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:28"
+        "date": "08/09/2026 15:28",
+        "name": "telegram_photo_678569158.jpg",
+        "category": "សំបុត្រយន្តហោះ"
       },
       {
         "id": "IMG-TG-678569159",
-        "name": "telegram_photo_678569159.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569159_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:28"
+        "date": "08/09/2026 15:28",
+        "name": "telegram_photo_678569159.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "សៀមរាប",
+    "dropoffLoc": "ប៉ោយប៉ែត",
+    "rawMessage": "วันที่10/09/2026\nจอง VIP - ขาเข้าเสียมเรียบ 1 คน\nเวลา 13.15 น.",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "HR369🎌office 𝓥𝖎𝖊𝖜 🎌",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1042",
-    "customerName": "จองรถ คุณ Sokha GMP",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "ហៃយាស់ (Hiace)"
     ],
-    "vipService": "យក VIP",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "សៀមរាប",
     "date": "2026-09-10",
     "time": "13:00",
-    "status": "active",
     "notes": "",
-    "rawMessage": "จองรถ 7-12  ที่นั่ง 1 คัน\nPoi Pet →   SIEM REAP \n\nVIP  จำนวน 10 คน  \n\nวันที่  10/9/2026\n\n📍รับที่ตึก 95 จำนวน 10 คน\n\n\n⏰ เวลา 13.00น.",
     "images": [
       {
         "id": "IMG-TG-678569364",
-        "name": "telegram_photo_678569364.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569364_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:02"
+        "date": "09/09/2026 05:02",
+        "name": "telegram_photo_678569364.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569365",
-        "name": "telegram_photo_678569365.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569365_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:02"
+        "date": "09/09/2026 05:02",
+        "name": "telegram_photo_678569365.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569366",
-        "name": "telegram_photo_678569366.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569366_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:02"
+        "date": "09/09/2026 05:02",
+        "name": "telegram_photo_678569366.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569367",
-        "name": "telegram_photo_678569367.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569367_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:02"
+        "date": "09/09/2026 05:02",
+        "name": "telegram_photo_678569367.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569368",
-        "name": "telegram_photo_678569368.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569368_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:02"
+        "date": "09/09/2026 05:02",
+        "name": "telegram_photo_678569368.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569369",
-        "name": "telegram_photo_678569369.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569369_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:02"
+        "date": "09/09/2026 05:02",
+        "name": "telegram_photo_678569369.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569370",
-        "name": "telegram_photo_678569370.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569370_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:02"
+        "date": "09/09/2026 05:02",
+        "name": "telegram_photo_678569370.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569371",
-        "name": "telegram_photo_678569371.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569371_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:02"
+        "date": "09/09/2026 05:02",
+        "name": "telegram_photo_678569371.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569372",
-        "name": "telegram_photo_678569372.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569372_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:02"
+        "date": "09/09/2026 05:02",
+        "name": "telegram_photo_678569372.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569373",
-        "name": "telegram_photo_678569373.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569373_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:02"
+        "date": "09/09/2026 05:02",
+        "name": "telegram_photo_678569373.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569374",
-        "name": "telegram_photo_678569374.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569374_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:02"
+        "date": "09/09/2026 05:02",
+        "name": "telegram_photo_678569374.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "rawMessage": "จองรถ 7-12  ที่นั่ง 1 คัน\nPoi Pet →   SIEM REAP \n\nVIP  จำนวน 10 คน  \n\nวันที่  10/9/2026\n\n📍รับที่ตึก 95 จำนวน 10 คน\n\n\n⏰ เวลา 13.00น.",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "จองรถ คุณ Sokha GMP",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1041",
-    "customerName": "จองรถ คุณ Sokha GMP",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អេសយូវី (SUV)"
     ],
-    "vipService": "យក VIP",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "សៀមរាប",
     "date": "2026-09-10",
     "time": "17:30",
-    "status": "active",
     "notes": "",
-    "rawMessage": "จองรถ 1-3  ที่นั่ง 1 คัน\nPoi Pet →   SIEM REAP \n\nVIP  จำนวน 2 คน  \n\nวันที่  10/9/2026\n\n📍รับที่ตึก 95 จำนวน 2 คน\n\n\n⏰ เวลา 17.30น.",
     "images": [
       {
         "id": "IMG-TG-678569361",
-        "name": "telegram_photo_678569361.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569361_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:00"
+        "date": "09/09/2026 05:00",
+        "name": "telegram_photo_678569361.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569362",
-        "name": "telegram_photo_678569362.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569362_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:00"
+        "date": "09/09/2026 05:00",
+        "name": "telegram_photo_678569362.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569363",
-        "name": "telegram_photo_678569363.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569363_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:01"
+        "date": "09/09/2026 05:01",
+        "name": "telegram_photo_678569363.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "rawMessage": "จองรถ 1-3  ที่นั่ง 1 คัน\nPoi Pet →   SIEM REAP \n\nVIP  จำนวน 2 คน  \n\nวันที่  10/9/2026\n\n📍รับที่ตึก 95 จำนวน 2 คน\n\n\n⏰ เวลา 17.30น.",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "จองรถ คุณ Sokha GMP",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1056",
-    "customerName": "88S - GMP",
-    "customerPhone": "09 2026",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អេសយូវី (SUV)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "តេជោ",
     "date": "2026-09-10",
     "time": "22:30",
-    "status": "active",
     "notes": "📍 Map: https://maps.app.goo.gl/9ZEWAnJDoMQKkm1v7?g_st=ipc",
-    "rawMessage": "บริษัท 88S วันที่ 10/09/2026\nรับจากปอยเปต--->สนามบินพนมเปญ (KTI) Techo\nVIP : 2 คน\n\nรายละเอียดการเดินทางโดยสายการบิน ดังนี้\n\n(OUTขาออก) KTI-BKK\nบริษัท 88s MKT\nวันที่ 10-09-2026\nจำนวน 2 คน\nหมายเหตุ ขอไฟล์ท  • K6722\nเวลา 08:15 - 09:30 น.\n\n1.MR. PACHALAPONG  PUWANNAWONG\n2.MISS PARINYAPORN  WONGSACHAN\n\n2 ที่นั่ง / 1 คัน\n🚨มารับที่ ตึก 41 วันที่ 09/09/2026 เวลา :22:30 น.🚨 \n\nรับ : ตึก 41\nhttps://maps.app.goo.gl/9ZEWAnJDoMQKkm1v7?g_st=ipc \n\nส่ง : Techo International Airport\nhttps://maps.app.goo.gl/ikoD4cQFMTdz5zNG9",
     "images": [
       {
         "id": "IMG-TG-678569558",
-        "name": "telegram_photo_678569558.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569558_AgACAgUAAx.jpg",
-        "date": "09/09/2026 15:22"
+        "date": "09/09/2026 15:22",
+        "name": "telegram_photo_678569558.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569559",
-        "name": "telegram_photo_678569559.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569559_AgACAgUAAx.jpg",
-        "date": "09/09/2026 15:22"
+        "date": "09/09/2026 15:22",
+        "name": "telegram_photo_678569559.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569560",
-        "name": "telegram_photo_678569560.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569560_AgACAgUAAx.jpg",
-        "date": "09/09/2026 15:22"
+        "date": "09/09/2026 15:22",
+        "name": "telegram_photo_678569560.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569561",
-        "name": "telegram_photo_678569561.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569561_AgACAgUAAx.jpg",
-        "date": "09/09/2026 15:22"
+        "date": "09/09/2026 15:22",
+        "name": "telegram_photo_678569561.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "rawMessage": "บริษัท 88S วันที่ 10/09/2026\nรับจากปอยเปต--->สนามบินพนมเปญ (KTI) Techo\nVIP : 2 คน\n\nรายละเอียดการเดินทางโดยสายการบิน ดังนี้\n\n(OUTขาออก) KTI-BKK\nบริษัท 88s MKT\nวันที่ 10-09-2026\nจำนวน 2 คน\nหมายเหตุ ขอไฟล์ท  • K6722\nเวลา 08:15 - 09:30 น.\n\n1.MR. PACHALAPONG  PUWANNAWONG\n2.MISS PARINYAPORN  WONGSACHAN\n\n2 ที่นั่ง / 1 คัน\n🚨มารับที่ ตึก 41 วันที่ 09/09/2026 เวลา :22:30 น.🚨 \n\nรับ : ตึก 41\nhttps://maps.app.goo.gl/9ZEWAnJDoMQKkm1v7?g_st=ipc \n\nส่ง : Techo International Airport\nhttps://maps.app.goo.gl/ikoD4cQFMTdz5zNG9",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "88S - GMP",
+    "customerPhone": "09 2026",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1046",
-    "customerName": "BIW",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "ហៃយាស់ (Hiace)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "ភ្នំពេញ",
     "date": "2026-09-10",
     "time": "23:00",
-    "status": "active",
     "notes": "ទៅយកនៅ សូនសាម",
+    "images": [],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
     "rawMessage": "สวัสดีครับพี่ คืนนีจองรถตู้1คันไปสนามบินเตโชครับ ให้รถมารับที่โซน3 เวลา 23.00 น ครับ เดินทาง7 คน ครับ",
-    "images": []
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "BIW",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1043",
-    "customerName": "169 Car with driver",
-    "customerPhone": "",
-    "customerTelegram": "@Sokhalion",
-    "driverTelegram": "J Heng",
     "cars": [
       "អេសយូវី (SUV)",
       "ហៃយាស់ (Hiace)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "តេជោ",
     "date": "2026-09-10",
     "time": "24:00",
-    "status": "active",
     "notes": "📍 Map: https://maps.app.goo.gl/5GnN9t1Eg2rmepYm7",
-    "rawMessage": "ขอรถ SUV  เพิ่ม 1 คันนะครับ สำหรับขนกระเป๋าสัมภาระ\n\n📍สถานที่รับ ตึกบลูเฮ้าท์ 53ห้อง  ครับ📍\n\n🕐 เวลารับ 00.00 น. 🕐  \n\n🚗 รบกวนขอรูปรถ\n👨🏻‍✈️ รูปคนขับ\n📲 เบอร์โทร \n@Sokhalion\n\nhttps://maps.app.goo.gl/5GnN9t1Eg2rmepYm7\n\nรายละเอียดการเดินทางโดยสายการบิน (ขาออก) ✈️\n\n- 📅 วันที่ 10-Sep-2026\n- 👥 จำนวน 10 คน\n\n- ✈️ สายการบิน THAI AIR WAYS\n- 🛫 จาก KTI - BKK ( ไฟลท์  TG 0587)\n- ⏰ เวลา เวลา 09.40-11.00 น.\n\n- 🚗 รถรับส่ง \n- ❌ (NO VIP)\n\n👤 รายชื่อ\n\n1.APICHAT KHOBOMKLANG\n2.THEIDARAT KANYAPASIT\n3.AITTHIPHON KHANDUANG\n4.BUNNISA DANCHIMPORN\n5.WACHIRAPORN KRACHONGRAM\n6.SUPHAKORN KAEWSANGHAN\n7.PHISIT SONSRI\n8.SUCHINDA SRISREM\n9.NOPPHADON PHAETKRANG\n10.ALISA AUKARAPETRA",
     "images": [
       {
         "id": "IMG-TG-678569375",
-        "name": "telegram_photo_678569375.jpg",
-        "category": "សំបុត្រយន្តហោះ",
         "url": "/telegram_images/tg_photo_678569375_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:05"
+        "date": "09/09/2026 05:05",
+        "name": "telegram_photo_678569375.jpg",
+        "category": "សំបុត្រយន្តហោះ"
       },
       {
         "id": "IMG-TG-678569376",
-        "name": "telegram_photo_678569376.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569376_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:05"
+        "date": "09/09/2026 05:05",
+        "name": "telegram_photo_678569376.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569377",
-        "name": "telegram_photo_678569377.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569377_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:05"
+        "date": "09/09/2026 05:05",
+        "name": "telegram_photo_678569377.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569378",
-        "name": "telegram_photo_678569378.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569378_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:05"
+        "date": "09/09/2026 05:05",
+        "name": "telegram_photo_678569378.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569379",
-        "name": "telegram_photo_678569379.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569379_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:05"
+        "date": "09/09/2026 05:05",
+        "name": "telegram_photo_678569379.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569380",
-        "name": "telegram_photo_678569380.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569380_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:05"
+        "date": "09/09/2026 05:05",
+        "name": "telegram_photo_678569380.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569381",
-        "name": "telegram_photo_678569381.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569381_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:05"
+        "date": "09/09/2026 05:05",
+        "name": "telegram_photo_678569381.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569382",
-        "name": "telegram_photo_678569382.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569382_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:05"
+        "date": "09/09/2026 05:05",
+        "name": "telegram_photo_678569382.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569383",
-        "name": "telegram_photo_678569383.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569383_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:05"
+        "date": "09/09/2026 05:05",
+        "name": "telegram_photo_678569383.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569384",
-        "name": "telegram_photo_678569384.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569384_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:05"
+        "date": "09/09/2026 05:05",
+        "name": "telegram_photo_678569384.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569385",
-        "name": "telegram_photo_678569385.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569385_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:05"
+        "date": "09/09/2026 05:05",
+        "name": "telegram_photo_678569385.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569386",
-        "name": "telegram_photo_678569386.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569386_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:05"
+        "date": "09/09/2026 05:05",
+        "name": "telegram_photo_678569386.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "rawMessage": "ขอรถ SUV  เพิ่ม 1 คันนะครับ สำหรับขนกระเป๋าสัมภาระ\n\n📍สถานที่รับ ตึกบลูเฮ้าท์ 53ห้อง  ครับ📍\n\n🕐 เวลารับ 00.00 น. 🕐  \n\n🚗 รบกวนขอรูปรถ\n👨🏻‍✈️ รูปคนขับ\n📲 เบอร์โทร \n@Sokhalion\n\nhttps://maps.app.goo.gl/5GnN9t1Eg2rmepYm7\n\nรายละเอียดการเดินทางโดยสายการบิน (ขาออก) ✈️\n\n- 📅 วันที่ 10-Sep-2026\n- 👥 จำนวน 10 คน\n\n- ✈️ สายการบิน THAI AIR WAYS\n- 🛫 จาก KTI - BKK ( ไฟลท์  TG 0587)\n- ⏰ เวลา เวลา 09.40-11.00 น.\n\n- 🚗 รถรับส่ง \n- ❌ (NO VIP)\n\n👤 รายชื่อ\n\n1.APICHAT KHOBOMKLANG\n2.THEIDARAT KANYAPASIT\n3.AITTHIPHON KHANDUANG\n4.BUNNISA DANCHIMPORN\n5.WACHIRAPORN KRACHONGRAM\n6.SUPHAKORN KAEWSANGHAN\n7.PHISIT SONSRI\n8.SUCHINDA SRISREM\n9.NOPPHADON PHAETKRANG\n10.ALISA AUKARAPETRA",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "169 Car with driver",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": "@Sokhalion"
   },
   {
     "id": "BK-1048",
-    "customerName": "HR356",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "ហៃយាស់ (Hiace)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "តេជោ",
     "date": "2026-09-10",
     "time": "24:00",
-    "status": "active",
     "notes": "📍 Map: https://maps.app.goo.gl/HjzYfvBoZuXRiJpR6",
-    "rawMessage": "คอนเฟิร์มรถรับพนักงาน *คุณโซคา\n*สนามบินเตโช ขาออก\nพนักงานเดินทางจำนวน 10 คน \nรถตู้ 7-12 ที่นั่ง =  \n\nรวม \n\nพนักงานบินออกวันที่ 10/09/2026\nTecho - Bangkok\nรายชื่อพนักงาน \n1.อุ้ม2\n2.เบียร์\n3.แอนนี่\n4.ตี๋3\n5.แป้ง\n6.ฟลุ๊ค2\n7.วาย\n8.กันต์2\n9.บุ๋ม\n10.ต้น2\n\nเดินทางออกจากที่พัก เวลา 24.00 น ของวันที่ 09/09/26\n\nhttps://maps.app.goo.gl/HjzYfvBoZuXRiJpR6",
     "images": [
       {
         "id": "IMG-TG-678569409",
-        "name": "telegram_photo_678569409.jpg",
-        "category": "សំបុត្រយន្តហោះ",
         "url": "/telegram_images/tg_photo_678569409_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:21"
+        "date": "09/09/2026 05:21",
+        "name": "telegram_photo_678569409.jpg",
+        "category": "សំបុត្រយន្តហោះ"
       },
       {
         "id": "IMG-TG-678569410",
-        "name": "telegram_photo_678569410.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569410_AgACAgUAAx.jpg",
-        "date": "09/09/2026 05:21"
+        "date": "09/09/2026 05:21",
+        "name": "telegram_photo_678569410.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "rawMessage": "คอนเฟิร์มรถรับพนักงาน *คุณโซคา\n*สนามบินเตโช ขาออก\nพนักงานเดินทางจำนวน 10 คน \nรถตู้ 7-12 ที่นั่ง =  \n\nรวม \n\nพนักงานบินออกวันที่ 10/09/2026\nTecho - Bangkok\nรายชื่อพนักงาน \n1.อุ้ม2\n2.เบียร์\n3.แอนนี่\n4.ตี๋3\n5.แป้ง\n6.ฟลุ๊ค2\n7.วาย\n8.กันต์2\n9.บุ๋ม\n10.ต้น2\n\nเดินทางออกจากที่พัก เวลา 24.00 น ของวันที่ 09/09/26\n\nhttps://maps.app.goo.gl/HjzYfvBoZuXRiJpR6",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "HR356",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1029",
-    "customerName": "HR369 - Sokha",
-    "customerPhone": "026",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អាលផាត (Alphard)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "ភ្នំពេញ",
     "date": "2026-09-09",
     "time": "00:20",
-    "status": "active",
     "notes": "",
-    "rawMessage": "วันที่ 9/9/2026 -  \n\nปป ไปสนามบินเตโช\nAlphard - 1 คัน\nรับที่ M1 เวลา 00.20 น.",
     "images": [
       {
         "id": "IMG-TG-678569220",
-        "name": "telegram_photo_678569220.jpg",
-        "category": "សំបុត្រយន្តហោះ",
         "url": "/telegram_images/tg_photo_678569220_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:18"
+        "date": "08/09/2026 16:18",
+        "name": "telegram_photo_678569220.jpg",
+        "category": "សំបុត្រយន្តហោះ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
+    "rawMessage": "วันที่ 9/9/2026 -  \n\nปป ไปสนามบินเตโช\nAlphard - 1 คัน\nรับที่ M1 เวลา 00.20 น.",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "HR369 - Sokha",
+    "customerPhone": "026",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1034",
-    "customerName": "จองรถ SOKHA",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "ហៃយាស់ (Hiace)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "តេជោ",
     "date": "2026-09-09",
     "time": "00:30",
-    "status": "active",
     "notes": "📍 Map: https://maps.app.goo.gl/4cgNPjsGSdqPz1Gr7",
-    "rawMessage": "",
     "images": [
       {
         "id": "IMG-TG-678569234",
-        "name": "telegram_photo_678569234.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569234_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:32"
+        "date": "08/09/2026 16:32",
+        "name": "telegram_photo_678569234.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569235",
-        "name": "telegram_photo_678569235.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569235_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:32"
+        "date": "08/09/2026 16:32",
+        "name": "telegram_photo_678569235.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569232",
-        "name": "telegram_photo_678569232.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569232_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:32"
+        "date": "08/09/2026 16:32",
+        "name": "telegram_photo_678569232.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569229",
-        "name": "telegram_photo_678569229.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569229_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:32"
+        "date": "08/09/2026 16:32",
+        "name": "telegram_photo_678569229.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "rawMessage": "",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "จองรถ SOKHA",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1031",
-    "customerName": "HR369 - Sokha",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អេសយូវី (SUV)"
     ],
-    "vipService": "យក VIP",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "សៀមរាប",
     "date": "2026-09-09",
     "time": "03:00",
-    "status": "active",
     "notes": "",
-    "rawMessage": "วันที่ 9/9/2026 - DONE  \n\nปป ไป เสียมเรียบ\nSUV - 1 คัน\nรับที่ M1 เวลา 03.00 น. \nVIP ขาออกเสียมเรียบ - 2คน ค่ะ",
     "images": [
       {
         "id": "IMG-TG-678569222",
-        "name": "telegram_photo_678569222.jpg",
-        "category": "សំបុត្រយន្តហោះ",
         "url": "/telegram_images/tg_photo_678569222_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:21"
+        "date": "08/09/2026 16:21",
+        "name": "telegram_photo_678569222.jpg",
+        "category": "សំបុត្រយន្តហោះ"
       },
       {
         "id": "IMG-TG-678569223",
-        "name": "telegram_photo_678569223.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569223_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:21"
+        "date": "08/09/2026 16:21",
+        "name": "telegram_photo_678569223.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569224",
-        "name": "telegram_photo_678569224.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569224_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:21"
+        "date": "08/09/2026 16:21",
+        "name": "telegram_photo_678569224.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "rawMessage": "วันที่ 9/9/2026 - DONE  \n\nปป ไป เสียมเรียบ\nSUV - 1 คัน\nรับที่ M1 เวลา 03.00 น. \nVIP ขาออกเสียมเรียบ - 2คน ค่ะ",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "HR369 - Sokha",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1033",
-    "customerName": "ประสานงานรถ VIP ทัวร์ Sokha",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អេសយូវី (SUV)"
     ],
-    "vipService": "យក VIP",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "សៀមរាប",
     "date": "2026-09-09",
     "time": "04:30",
-    "status": "active",
     "notes": "📍 Map: https://www.google.com/maps/place/13%C2%B039'29.8%22N+102%C2%B033'19.1%22E/@13.6582757,102.552743,17z/data=!3m1!4b1!4m4!3m3!8m2!3d13.6582757!4d102.5553179?entry=ttu&g_ep=EgoyMDI2MDkwMi4wIKXMDSoASAFQAw%3D%3D",
-    "rawMessage": "***จองรถจากตึกหลีโฮ (ตึก 84) - สนามบินเสียมเรียบ (ราคา และ VIP ขาออก (ราคา \n\nเดินทางวันที่ 9/9/2026\nจำนวน 1 คน\nเวลาที่รับ : เวลา 04.30 น.\nสถานที่รับ : ตึกหลีโฮ (ตึก 84)\nไฟท์บิน วันที่ 9/9/2026 เวลา 09.40 - 11.00 น.\n \nhttps://www.google.com/maps/place/13%C2%B039'29.8%22N+102%C2%B033'19.1%22E/@13.6582757,102.552743,17z/data=!3m1!4b1!4m4!3m3!8m2!3d13.6582757!4d102.5553179?entry=ttu&g_ep=EgoyMDI2MDkwMi4wIKXMDSoASAFQAw%3D%3D",
     "images": [
       {
         "id": "IMG-TG-678569226",
-        "name": "telegram_photo_678569226.jpg",
-        "category": "សំបុត្រយន្តហោះ",
         "url": "/telegram_images/tg_photo_678569226_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:25"
+        "date": "08/09/2026 16:25",
+        "name": "telegram_photo_678569226.jpg",
+        "category": "សំបុត្រយន្តហោះ"
       },
       {
         "id": "IMG-TG-678569227",
-        "name": "telegram_photo_678569227.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569227_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:25"
+        "date": "08/09/2026 16:25",
+        "name": "telegram_photo_678569227.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569228",
-        "name": "telegram_photo_678569228.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569228_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:25"
+        "date": "08/09/2026 16:25",
+        "name": "telegram_photo_678569228.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "rawMessage": "***จองรถจากตึกหลีโฮ (ตึก 84) - สนามบินเสียมเรียบ (ราคา และ VIP ขาออก (ราคา \n\nเดินทางวันที่ 9/9/2026\nจำนวน 1 คน\nเวลาที่รับ : เวลา 04.30 น.\nสถานที่รับ : ตึกหลีโฮ (ตึก 84)\nไฟท์บิน วันที่ 9/9/2026 เวลา 09.40 - 11.00 น.\n \nhttps://www.google.com/maps/place/13%C2%B039'29.8%22N+102%C2%B033'19.1%22E/@13.6582757,102.552743,17z/data=!3m1!4b1!4m4!3m3!8m2!3d13.6582757!4d102.5553179?entry=ttu&g_ep=EgoyMDI2MDkwMi4wIKXMDSoASAFQAw%3D%3D",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "ประสานงานรถ VIP ทัวร์ Sokha",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1025",
-    "customerName": "88S - GMP",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អាលផាត (Alphard)"
     ],
-    "vipService": "យក VIP",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "សៀមរាប",
     "date": "2026-09-09",
     "time": "06:00",
-    "status": "active",
     "notes": "Flight: PG0906 | 📍 Map: https://maps.app.goo.gl/jciTtmESqKgrriQr9",
-    "rawMessage": "",
     "images": [
       {
         "id": "IMG-TG-678569192",
-        "name": "telegram_photo_678569192.jpg",
-        "category": "សំបុត្រយន្តហោះ",
         "url": "/telegram_images/tg_photo_678569192_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:06"
+        "date": "08/09/2026 16:06",
+        "name": "telegram_photo_678569192.jpg",
+        "category": "សំបុត្រយន្តហោះ"
       },
       {
         "id": "IMG-TG-678569193",
-        "name": "telegram_photo_678569193.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569193_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:06"
+        "date": "08/09/2026 16:06",
+        "name": "telegram_photo_678569193.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569194",
-        "name": "telegram_photo_678569194.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569194_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:06"
+        "date": "08/09/2026 16:06",
+        "name": "telegram_photo_678569194.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569195",
-        "name": "telegram_photo_678569195.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569195_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:06"
+        "date": "08/09/2026 16:06",
+        "name": "telegram_photo_678569195.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569196",
-        "name": "telegram_photo_678569196.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569196_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:06"
+        "date": "08/09/2026 16:06",
+        "name": "telegram_photo_678569196.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569197",
-        "name": "telegram_photo_678569197.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569197_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:06"
+        "date": "08/09/2026 16:06",
+        "name": "telegram_photo_678569197.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569198",
-        "name": "telegram_photo_678569198.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569198_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:06"
+        "date": "08/09/2026 16:06",
+        "name": "telegram_photo_678569198.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "rawMessage": "",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "88S - GMP",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1027",
-    "customerName": "จองรถ MKT",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អេសយូវី (SUV)"
     ],
-    "vipService": "យក VIP",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "សៀមរាប",
     "date": "2026-09-09",
     "time": "06:00",
-    "status": "active",
     "notes": "",
-    "rawMessage": "บริษัท 656 วันที่ 09/09/2026\nรับจากปอยเปตไปส่ง สนามเสียมราฐ\nVIP 2 คน  \nมารับจากตึกM เวลา 06.00 น. \nจองรถ รถตู้เก๋ง 1 คัน\nไฟล์บิน 11.55 น.  - 13.00  น.",
     "images": [
       {
         "id": "IMG-TG-678569213",
-        "name": "telegram_photo_678569213.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569213_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:12"
+        "date": "08/09/2026 16:12",
+        "name": "telegram_photo_678569213.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569214",
-        "name": "telegram_photo_678569214.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569214_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:12"
+        "date": "08/09/2026 16:12",
+        "name": "telegram_photo_678569214.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569215",
-        "name": "telegram_photo_678569215.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569215_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:12"
+        "date": "08/09/2026 16:12",
+        "name": "telegram_photo_678569215.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "rawMessage": "บริษัท 656 วันที่ 09/09/2026\nรับจากปอยเปตไปส่ง สนามเสียมราฐ\nVIP 2 คน  \nมารับจากตึกM เวลา 06.00 น. \nจองรถ รถตู้เก๋ง 1 คัน\nไฟล์บิน 11.55 น.  - 13.00  น.",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "จองรถ MKT",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1037",
-    "customerName": "HR 169",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "Phinin",
     "cars": [
       "អាលផាត (Alphard)"
     ],
-    "vipService": "យក VIP",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "សៀមរាប",
     "date": "2026-09-09",
     "time": "06:00",
-    "status": "active",
     "notes": "",
-    "rawMessage": "รายละเอียดการเดินทางโดยสายการบิน  ขาออก\nวันที่ 09/09/2026\nจำนวน : 4 คน (ผู้บริหาร)\nThai AirAsia FD-611\nSiem Reap -DMK\n11.55- 13.00 น.\nVIP+รถรับส่ง Alphad 80$\n\nรับที่โรงแรม Holliday เวลา 06.00 น.\n\n1. PHUWADET\n2. PONGSORN\n3. THANABADEE\n4. EKAPONG\n\nเพิ่ม 1 คนค่ะ",
     "images": [
       {
         "id": "IMG-TG-678569249",
-        "name": "telegram_photo_678569249.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569249_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:46"
+        "date": "08/09/2026 16:46",
+        "name": "telegram_photo_678569249.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569250",
-        "name": "telegram_photo_678569250.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569250_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:46"
+        "date": "08/09/2026 16:46",
+        "name": "telegram_photo_678569250.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569251",
-        "name": "telegram_photo_678569251.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569251_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:46"
+        "date": "08/09/2026 16:46",
+        "name": "telegram_photo_678569251.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569252",
-        "name": "telegram_photo_678569252.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569252_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:46"
+        "date": "08/09/2026 16:46",
+        "name": "telegram_photo_678569252.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569253",
-        "name": "telegram_photo_678569253.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569253_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:46"
+        "date": "08/09/2026 16:46",
+        "name": "telegram_photo_678569253.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "rawMessage": "รายละเอียดการเดินทางโดยสายการบิน  ขาออก\nวันที่ 09/09/2026\nจำนวน : 4 คน (ผู้บริหาร)\nThai AirAsia FD-611\nSiem Reap -DMK\n11.55- 13.00 น.\nVIP+รถรับส่ง Alphad 80$\n\nรับที่โรงแรม Holliday เวลา 06.00 น.\n\n1. PHUWADET\n2. PONGSORN\n3. THANABADEE\n4. EKAPONG\n\nเพิ่ม 1 คนค่ะ",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "HR 169",
+    "customerPhone": "",
+    "driverTelegram": "Phinin",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1026",
-    "customerName": "จองรถ MKT",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អាលផាត (Alphard)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "ភ្នំពេញ",
     "date": "2026-09-09",
     "time": "08:00",
-    "status": "active",
     "notes": "",
-    "rawMessage": "",
     "images": [
       {
         "id": "IMG-TG-678569206",
-        "name": "telegram_photo_678569206.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569206_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:10"
+        "date": "08/09/2026 16:10",
+        "name": "telegram_photo_678569206.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569207",
-        "name": "telegram_photo_678569207.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569207_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:10"
+        "date": "08/09/2026 16:10",
+        "name": "telegram_photo_678569207.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569208",
-        "name": "telegram_photo_678569208.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569208_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:10"
+        "date": "08/09/2026 16:10",
+        "name": "telegram_photo_678569208.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569209",
-        "name": "telegram_photo_678569209.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569209_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:10"
+        "date": "08/09/2026 16:10",
+        "name": "telegram_photo_678569209.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569210",
-        "name": "telegram_photo_678569210.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569210_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:10"
+        "date": "08/09/2026 16:10",
+        "name": "telegram_photo_678569210.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569211",
-        "name": "telegram_photo_678569211.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569211_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:10"
+        "date": "08/09/2026 16:10",
+        "name": "telegram_photo_678569211.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569212",
-        "name": "telegram_photo_678569212.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569212_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:10"
+        "date": "08/09/2026 16:10",
+        "name": "telegram_photo_678569212.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
+    "rawMessage": "",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "จองรถ MKT",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1030",
-    "customerName": "HR369 - Sokha",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អេសយូវី (SUV)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "ភ្នំពេញ",
     "date": "2026-09-09",
     "time": "09:00",
-    "status": "active",
     "notes": "",
-    "rawMessage": "วันที่9/9/2026\nเวลา 09.00น.\nจองรถ SUV 1 คัน\nมารับตึกฟ้า\nไปสนามบินเตโช",
     "images": [
       {
         "id": "IMG-TG-678569221",
-        "name": "telegram_photo_678569221.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569221_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:19"
+        "date": "08/09/2026 16:19",
+        "name": "telegram_photo_678569221.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
+    "rawMessage": "วันที่9/9/2026\nเวลา 09.00น.\nจองรถ SUV 1 คัน\nมารับตึกฟ้า\nไปสนามบินเตโช",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "HR369 - Sokha",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1017",
-    "customerName": "911BAM.HR",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អេសយូវី (SUV)"
     ],
-    "vipService": "យក VIP",
-    "borderClear": "យកក្លៀដាន",
-    "pickupLoc": "សៀមរាប",
-    "dropoffLoc": "ប៉ោយប៉ែត",
     "date": "2026-09-09",
     "time": "11:00",
-    "status": "active",
     "notes": "",
-    "rawMessage": "",
     "images": [
       {
         "id": "IMG-TG-678569162",
-        "name": "telegram_photo_678569162.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569162_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:35"
+        "date": "08/09/2026 15:35",
+        "name": "telegram_photo_678569162.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569163",
-        "name": "telegram_photo_678569163.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569163_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:35"
+        "date": "08/09/2026 15:35",
+        "name": "telegram_photo_678569163.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "សៀមរាប",
+    "dropoffLoc": "ប៉ោយប៉ែត",
+    "rawMessage": "",
+    "vipService": "យក VIP",
+    "borderClear": "យកក្លៀដាន",
+    "customerName": "911BAM.HR",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1024",
+    "cars": [
+      "🚫 មិនយកឡាន"
+    ],
+    "date": "2026-09-09",
+    "time": "11:00",
+    "notes": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569189",
+        "url": "/telegram_images/tg_photo_678569189_AgACAgUAAx.jpg",
+        "date": "08/09/2026 16:03",
+        "name": "telegram_photo_678569189.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569190",
+        "url": "/telegram_images/tg_photo_678569190_AgACAgUAAx.jpg",
+        "date": "08/09/2026 16:03",
+        "name": "telegram_photo_678569190.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569191",
+        "url": "/telegram_images/tg_photo_678569191_AgACAgUAAx.jpg",
+        "date": "08/09/2026 16:03",
+        "name": "telegram_photo_678569191.jpg",
+        "category": "ប៉ាស្ព័រ"
+      }
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "rawMessage": "",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "ติดต่อตัวแทน VIP",
+    "customerPhone": "",
+    "driverTelegram": "",
+    "customerTelegram": ""
+  },
+  {
+    "id": "BK-1090",
     "customerName": "ติดต่อตัวแทน VIP",
     "customerPhone": "",
     "customerTelegram": "",
@@ -1538,13 +2953,13 @@
     ],
     "vipService": "យក VIP",
     "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
+    "pickupLoc": "សៀមរាប",
     "dropoffLoc": "សៀមរាប",
     "date": "2026-09-09",
     "time": "11:00",
     "status": "active",
     "notes": "",
-    "rawMessage": "",
+    "rawMessage": "จอง VIP ขาออก เสียมเรียบ\nวันที่ 09/09/2026 เวลา 11.55\nจำนวน 2 คน\n\nไม่รับรถนะคะ",
     "images": [
       {
         "id": "IMG-TG-678569189",
@@ -1571,41 +2986,104 @@
   },
   {
     "id": "BK-1014",
-    "customerName": "HR369🎌office 𝓥𝖎𝖊𝖜 🎌",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "កក់ឡាន",
     "cars": [
       "អេសយូវី (SUV)"
     ],
-    "vipService": "យក VIP",
-    "borderClear": "យកក្លៀដាន",
-    "pickupLoc": "ភ្នំពេញ",
-    "dropoffLoc": "ប៉ោយប៉ែត",
     "date": "2026-09-09",
     "time": "12:00",
-    "status": "active",
     "notes": "",
-    "rawMessage": "",
     "images": [
       {
         "id": "IMG-TG-678569156",
-        "name": "telegram_photo_678569156.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569156_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:23"
+        "date": "08/09/2026 15:23",
+        "name": "telegram_photo_678569156.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569157",
-        "name": "telegram_photo_678569157.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569157_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:23"
+        "date": "08/09/2026 15:23",
+        "name": "telegram_photo_678569157.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ភ្នំពេញ",
+    "dropoffLoc": "ប៉ោយប៉ែត",
+    "rawMessage": "",
+    "vipService": "យក VIP",
+    "borderClear": "យកក្លៀដាន",
+    "customerName": "HR369🎌office 𝓥𝖎𝖊𝖜 🎌",
+    "customerPhone": "",
+    "driverTelegram": "កក់ឡាន",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1023",
+    "cars": [
+      "អាលផាត (Alphard)"
+    ],
+    "date": "2026-09-09",
+    "time": "13:00",
+    "notes": "",
+    "images": [
+      {
+        "id": "IMG-TG-678569187",
+        "url": "/telegram_images/tg_photo_678569187_AgACAgUAAx.jpg",
+        "date": "08/09/2026 16:00",
+        "name": "telegram_photo_678569187.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569188",
+        "url": "/telegram_images/tg_photo_678569188_AgACAgUAAx.jpg",
+        "date": "08/09/2026 16:00",
+        "name": "telegram_photo_678569188.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569182",
+        "url": "/telegram_images/tg_photo_678569182_AgACAgUAAx.jpg",
+        "date": "08/09/2026 16:00",
+        "name": "telegram_photo_678569182.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569183",
+        "url": "/telegram_images/tg_photo_678569183_AgACAgUAAx.jpg",
+        "date": "08/09/2026 16:00",
+        "name": "telegram_photo_678569183.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569184",
+        "url": "/telegram_images/tg_photo_678569184_AgACAgUAAx.jpg",
+        "date": "08/09/2026 16:00",
+        "name": "telegram_photo_678569184.jpg",
+        "category": "ប៉ាស្ព័រ"
+      },
+      {
+        "id": "IMG-TG-678569185",
+        "url": "/telegram_images/tg_photo_678569185_AgACAgUAAx.jpg",
+        "date": "08/09/2026 16:00",
+        "name": "telegram_photo_678569185.jpg",
+        "category": "ប៉ាស្ព័រ"
+      }
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "សៀមរាប",
+    "rawMessage": "",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "HR_007_CHOMVIEW_",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
+  },
+  {
+    "id": "BK-1089",
     "customerName": "HR_007_CHOMVIEW_",
     "customerPhone": "",
     "customerTelegram": "",
@@ -1615,8 +3093,8 @@
     ],
     "vipService": "យក VIP",
     "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "សៀមរាប",
+    "pickupLoc": "សៀមរាប",
+    "dropoffLoc": "ប៉ោយប៉ែត",
     "date": "2026-09-09",
     "time": "13:00",
     "status": "active",
@@ -1669,136 +3147,136 @@
   },
   {
     "id": "BK-1036",
-    "customerName": "TK inter02",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "",
     "cars": [
       "🚫 មិនយកឡាន"
     ],
-    "vipService": "យក VIP",
-    "borderClear": "",
-    "pickupLoc": "សៀមរាប",
-    "dropoffLoc": "ប៉ោយប៉ែត",
     "date": "2026-09-09",
     "time": "13:15",
-    "status": "active",
     "notes": "",
-    "rawMessage": "",
     "images": [
       {
         "id": "IMG-TG-678569246",
-        "name": "telegram_photo_678569246.jpg",
-        "category": "សំបុត្រយន្តហោះ",
         "url": "/telegram_images/tg_photo_678569246_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:37"
+        "date": "08/09/2026 16:37",
+        "name": "telegram_photo_678569246.jpg",
+        "category": "សំបុត្រយន្តហោះ"
       },
       {
         "id": "IMG-TG-678569247",
-        "name": "telegram_photo_678569247.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569247_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:37"
+        "date": "08/09/2026 16:37",
+        "name": "telegram_photo_678569247.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569248",
-        "name": "telegram_photo_678569248.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569248_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:37"
+        "date": "08/09/2026 16:37",
+        "name": "telegram_photo_678569248.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "សៀមរាប",
+    "dropoffLoc": "ប៉ោយប៉ែត",
+    "rawMessage": "",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "TK inter02",
+    "customerPhone": "",
+    "driverTelegram": "",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1019",
-    "customerName": "จองรถ คุณ Sokha GMP",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "ហៃយាស់ (Hiace)"
     ],
-    "vipService": "យក VIP",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "ភ្នំពេញ",
     "date": "2026-09-09",
     "time": "17:00",
-    "status": "active",
     "notes": "📍 Map: https://maps.app.goo.gl/2pFeXZNU9ygQGmQS7?g_st=al",
-    "rawMessage": "",
     "images": [
       {
         "id": "IMG-TG-678569165",
-        "name": "telegram_photo_678569165.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569165_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:42"
+        "date": "08/09/2026 15:42",
+        "name": "telegram_photo_678569165.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569166",
-        "name": "telegram_photo_678569166.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569166_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:42"
+        "date": "08/09/2026 15:42",
+        "name": "telegram_photo_678569166.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569167",
-        "name": "telegram_photo_678569167.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569167_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:42"
+        "date": "08/09/2026 15:42",
+        "name": "telegram_photo_678569167.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569168",
-        "name": "telegram_photo_678569168.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569168_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:42"
+        "date": "08/09/2026 15:42",
+        "name": "telegram_photo_678569168.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569169",
-        "name": "telegram_photo_678569169.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569169_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:42"
+        "date": "08/09/2026 15:42",
+        "name": "telegram_photo_678569169.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569170",
-        "name": "telegram_photo_678569170.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569170_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:42"
+        "date": "08/09/2026 15:42",
+        "name": "telegram_photo_678569170.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569171",
-        "name": "telegram_photo_678569171.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569171_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:42"
+        "date": "08/09/2026 15:42",
+        "name": "telegram_photo_678569171.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569172",
-        "name": "telegram_photo_678569172.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569172_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:42"
+        "date": "08/09/2026 15:42",
+        "name": "telegram_photo_678569172.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569173",
-        "name": "telegram_photo_678569173.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569173_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:42"
+        "date": "08/09/2026 15:42",
+        "name": "telegram_photo_678569173.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569174",
-        "name": "telegram_photo_678569174.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569174_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:43"
+        "date": "08/09/2026 15:43",
+        "name": "telegram_photo_678569174.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
+    "rawMessage": "",
+    "vipService": "យក VIP",
+    "borderClear": "",
+    "customerName": "จองรถ คุณ Sokha GMP",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1012",
@@ -1844,349 +3322,258 @@
   },
   {
     "id": "BK-1038",
-    "customerName": "Ast_IT_Bow",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អេសយូវី (SUV)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "ភ្នំពេញ",
     "date": "2026-09-09",
     "time": "23:00",
-    "status": "active",
     "notes": "📍 Map: https://maps.app.goo.gl/SJnvjdPK8GNAx3C96?g_st=it",
-    "rawMessage": "https://maps.app.goo.gl/SJnvjdPK8GNAx3C96?g_st=it\n\nพี่โสคาคะ จองรถ SUV 1 คันจากปอยเปตไปสนามบินเตโชค่ะ\n\nรถมารับวันที่ 9/9/2026  รถมารับเวลา 02.00 น. ค่ะ 🙇🏻‍♀️",
     "images": [
       {
         "id": "IMG-TG-678569262",
-        "name": "telegram_photo_678569262.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569262_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:55"
+        "date": "08/09/2026 16:55",
+        "name": "telegram_photo_678569262.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569259",
-        "name": "telegram_photo_678569259.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569259_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:55"
+        "date": "08/09/2026 16:55",
+        "name": "telegram_photo_678569259.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569260",
-        "name": "telegram_photo_678569260.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569260_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:55"
+        "date": "08/09/2026 16:55",
+        "name": "telegram_photo_678569260.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
+    "rawMessage": "https://maps.app.goo.gl/SJnvjdPK8GNAx3C96?g_st=it\n\nพี่โสคาคะ จองรถ SUV 1 คันจากปอยเปตไปสนามบินเตโชค่ะ\n\nรถมารับวันที่ 9/9/2026  รถมารับเวลา 02.00 น. ค่ะ 🙇🏻‍♀️",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "Ast_IT_Bow",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1032",
-    "customerName": "HR222 - Sokha",
-    "customerPhone": "",
-    "customerTelegram": "@Sokhalion",
-    "driverTelegram": "J Heng",
     "cars": [
       "អេសយូវី (SUV)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "ភ្នំពេញ",
     "date": "2026-09-09",
     "time": "23:50",
-    "status": "active",
     "notes": "",
+    "images": [],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
     "rawMessage": "เส้นทาง : ปอยเปต - เตโช\nวันที่ : 8/9/2026\nเวลา : 23.50 น. (คืนนี้)\nจำนวน : 3 คน\nจองรถ : รถ SUV 1 คัน\nรับที่หน้าโรงแรม Holiday\n\nหมายเหตุ ไม่รับ VIP ค่ะ @Sokhalion",
-    "images": []
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "HR222 - Sokha",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": "@Sokhalion"
   },
   {
     "id": "BK-1018",
-    "customerName": "จองรถ คุณ Sokha GMP",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "អេសយូវី (SUV)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "ភ្នំពេញ",
     "date": "2026-09-09",
     "time": "24:00",
-    "status": "active",
     "notes": "",
-    "rawMessage": "",
     "images": [
       {
         "id": "IMG-TG-678569164",
-        "name": "telegram_photo_678569164.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569164_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:40"
+        "date": "08/09/2026 15:40",
+        "name": "telegram_photo_678569164.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
-  },
-  {
-    "id": "BK-1020",
-    "customerName": "จองรถ คุณ Sokha GMP",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
-    "cars": [
-      "អាលផាត (Alphard)"
     ],
-    "vipService": "",
-    "borderClear": "",
+    "status": "active",
     "pickupLoc": "ប៉ោយប៉ែត",
     "dropoffLoc": "ភ្នំពេញ",
-    "date": "2026-09-09",
-    "time": "24:00",
-    "status": "active",
-    "notes": "📍 Map: https://maps.app.goo.gl/EjBNSTHG6NKJfYXd6",
     "rawMessage": "",
-    "images": [
-      {
-        "id": "IMG-TG-678569175",
-        "name": "telegram_photo_678569175.jpg",
-        "category": "រូបឡាន",
-        "url": "/telegram_images/tg_photo_678569175_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:45"
-      },
-      {
-        "id": "IMG-TG-678569176",
-        "name": "telegram_photo_678569176.jpg",
-        "category": "ប៉ាស្ព័រ",
-        "url": "/telegram_images/tg_photo_678569176_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:45"
-      }
-    ]
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "จองรถ คุณ Sokha GMP",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1021",
-    "customerName": "HR356",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "ហៃយាស់ (Hiace)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "ភ្នំពេញ",
     "date": "2026-09-09",
     "time": "24:00",
-    "status": "active",
     "notes": "📍 Map: https://maps.app.goo.gl/hCgMQAXUXfrrchha7?g_st=il",
-    "rawMessage": "",
     "images": [
       {
         "id": "IMG-TG-678569179",
-        "name": "telegram_photo_678569179.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569179_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:49"
+        "date": "08/09/2026 15:49",
+        "name": "telegram_photo_678569179.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569177",
-        "name": "telegram_photo_678569177.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569177_AgACAgUAAx.jpg",
-        "date": "08/09/2026 15:49"
+        "date": "08/09/2026 15:49",
+        "name": "telegram_photo_678569177.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
+    "rawMessage": "",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "HR356",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1028",
-    "customerName": "💬Mayming 🍭🍿",
-    "customerPhone": "",
-    "customerTelegram": "",
-    "driverTelegram": "J Heng",
     "cars": [
       "ហៃយាស់ (Hiace)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "ភ្នំពេញ",
     "date": "2026-09-09",
     "time": "24:00",
-    "status": "active",
     "notes": "📍 Map: https://maps.app.goo.gl/WrLWAMYMDGp5Yo8q6?g_st=ic",
-    "rawMessage": "https://maps.app.goo.gl/WrLWAMYMDGp5Yo8q6?g_st=ic\n\nប៉ោយប៉ែតទៅភ្នំពេញ ម៉ោង 24:00 ថ្ងៃទី09\nឡានទី11",
     "images": [
       {
         "id": "IMG-TG-678569218",
-        "name": "telegram_photo_678569218.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569218_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:16"
+        "date": "08/09/2026 16:16",
+        "name": "telegram_photo_678569218.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569219",
-        "name": "telegram_photo_678569219.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569219_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:16"
+        "date": "08/09/2026 16:16",
+        "name": "telegram_photo_678569219.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569216",
-        "name": "telegram_photo_678569216.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569216_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:16"
+        "date": "08/09/2026 16:16",
+        "name": "telegram_photo_678569216.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "ភ្នំពេញ",
+    "rawMessage": "https://maps.app.goo.gl/WrLWAMYMDGp5Yo8q6?g_st=ic\n\nប៉ោយប៉ែតទៅភ្នំពេញ ម៉ោង 24:00 ថ្ងៃទី09\nឡានទី11",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "💬Mayming 🍭🍿",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": ""
   },
   {
     "id": "BK-1035",
-    "customerName": "169 Car with driver",
-    "customerPhone": "",
-    "customerTelegram": "@Sokhalion",
-    "driverTelegram": "J Heng",
     "cars": [
       "ហៃយាស់ (Hiace)",
       "អេសយូវី (SUV)"
     ],
-    "vipService": "",
-    "borderClear": "",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "តេជោ",
     "date": "2026-09-09",
     "time": "24:00",
-    "status": "active",
     "notes": "📍 Map: https://maps.app.goo.gl/YbMZNhqTYE1UGa6M8",
-    "rawMessage": "",
     "images": [
       {
         "id": "IMG-TG-678569236",
-        "name": "telegram_photo_678569236.jpg",
-        "category": "សំបុត្រយន្តហោះ",
         "url": "/telegram_images/tg_photo_678569236_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:34"
+        "date": "08/09/2026 16:34",
+        "name": "telegram_photo_678569236.jpg",
+        "category": "សំបុត្រយន្តហោះ"
       },
       {
         "id": "IMG-TG-678569237",
-        "name": "telegram_photo_678569237.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569237_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:34"
+        "date": "08/09/2026 16:34",
+        "name": "telegram_photo_678569237.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569238",
-        "name": "telegram_photo_678569238.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569238_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:34"
+        "date": "08/09/2026 16:34",
+        "name": "telegram_photo_678569238.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569239",
-        "name": "telegram_photo_678569239.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569239_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:34"
+        "date": "08/09/2026 16:34",
+        "name": "telegram_photo_678569239.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569240",
-        "name": "telegram_photo_678569240.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569240_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:34"
+        "date": "08/09/2026 16:34",
+        "name": "telegram_photo_678569240.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569241",
-        "name": "telegram_photo_678569241.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569241_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:34"
+        "date": "08/09/2026 16:34",
+        "name": "telegram_photo_678569241.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569242",
-        "name": "telegram_photo_678569242.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569242_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:34"
+        "date": "08/09/2026 16:34",
+        "name": "telegram_photo_678569242.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569243",
-        "name": "telegram_photo_678569243.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569243_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:34"
+        "date": "08/09/2026 16:34",
+        "name": "telegram_photo_678569243.jpg",
+        "category": "ប៉ាស្ព័រ"
       },
       {
         "id": "IMG-TG-678569244",
-        "name": "telegram_photo_678569244.jpg",
-        "category": "ប៉ាស្ព័រ",
         "url": "/telegram_images/tg_photo_678569244_AgACAgUAAx.jpg",
-        "date": "08/09/2026 16:34"
+        "date": "08/09/2026 16:34",
+        "name": "telegram_photo_678569244.jpg",
+        "category": "ប៉ាស្ព័រ"
       }
-    ]
+    ],
+    "status": "active",
+    "pickupLoc": "ប៉ោយប៉ែត",
+    "dropoffLoc": "តេជោ",
+    "rawMessage": "",
+    "vipService": "",
+    "borderClear": "",
+    "customerName": "169 Car with driver",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
+    "customerTelegram": "@Sokhalion"
   },
   {
     "id": "BK-1013",
-    "cars": [
-      "ហៃយាស់ (Hiace)"
-    ],
-    "date": "2026-09-07",
-    "time": "08:00",
-    "notes": "",
-    "images": [
-      {
-        "id": "IMG-TG-678568753",
-        "url": "/telegram_images/tg_photo_678568753_AgACAgUAAx.jpg",
-        "date": "06/09/2026 23:38",
-        "name": "telegram_photo_678568753.jpg",
-        "category": "ប៉ាស្ព័រ"
-      }
-    ],
-    "status": "active",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "ភ្នំពេញ",
-    "rawMessage": "จองรถ 7-12  ที่นั่ง 1 คัน\nPoi Pet →   Techo\n\nผู้โดยสาร จำนวน  7 คน  \nวันที่ 7/9/2026\n\n📍รับที่ตึก52 จำนวน 2 คน\n📍รับที่ตึก32 จำนวน 2 คน\n📍รับที่ตึก95 จำนวน 3 คน\n\n⏰รถมารับเวลา 00.30 น. (เที่ยงคืนสามสิบนาที)",
-    "vipService": "",
-    "borderClear": "",
-    "customerName": "จองรถ คุณ Sokha GMP",
-    "customerPhone": "",
-    "driverTelegram": "J Heng",
-    "customerTelegram": ""
-  },
-  {
-    "id": "BK-1013-dup14",
-    "cars": [
-      "ហៃយាស់ (Hiace)"
-    ],
-    "date": "2026-09-07",
-    "time": "08:00",
-    "notes": "",
-    "images": [
-      {
-        "id": "IMG-TG-678568753",
-        "url": "/telegram_images/tg_photo_678568753_AgACAgUAAx.jpg",
-        "date": "06/09/2026 23:38",
-        "name": "telegram_photo_678568753.jpg",
-        "category": "ប៉ាស្ព័រ"
-      }
-    ],
-    "status": "active",
-    "pickupLoc": "ប៉ោយប៉ែត",
-    "dropoffLoc": "ភ្នំពេញ",
-    "rawMessage": "จองรถ 7-12  ที่นั่ง 1 คัน\nPoi Pet →   Techo\n\nผู้โดยสาร จำนวน  7 คน  \nวันที่ 7/9/2026\n\n📍รับที่ตึก52 จำนวน 2 คน\n📍รับที่ตึก32 จำนวน 2 คน\n📍รับที่ตึก95 จำนวน 3 คน\n\n⏰รถมารับเวลา 00.30 น. (เที่ยงคืนสามสิบนาที)",
-    "vipService": "",
-    "borderClear": "",
-    "customerName": "จองรถ คุณ Sokha GMP",
-    "customerPhone": "",
-    "driverTelegram": "J Heng",
-    "customerTelegram": ""
-  },
-  {
-    "id": "BK-1013-dup3",
     "cars": [
       "ហៃយាស់ (Hiace)"
     ],
@@ -2555,7 +3942,7 @@
     "customerTelegram": ""
   },
   {
-    "id": "BK-TEST-99",
+    "id": "BK-1091",
     "cars": [
       "អាលផាត (Alphard)"
     ],

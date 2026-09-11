@@ -4398,9 +4398,14 @@ input[type="date"] {
                             <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #0f172a;">បញ្ជីអតិថិជន (Customers Directory)</h3>
                             <p style="margin: 0; font-size: 12px; color: #64748b;">ប្រវត្តិភ្ញៀវ រូបថតអត្តសញ្ញាណប័ណ្ណ លិខិតឆ្លងដែន និងលេខទំនាក់ទំនង</p>
                         </div>
-                        <button type="button" class="btn-ar btn-ar-primary" onclick="openNewCustomerModal()">
-                            <i class="fa-solid fa-user-plus"></i> បន្ថែមអតិថិជនថ្មី
-                        </button>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <button type="button" class="btn-ar" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800;" onclick="cleanDuplicateCustomers()" title="សម្អាត និងច្រោះឈ្មោះដែលជាន់គ្នាស្វ័យប្រវត្តិ">
+                                <i class="fa-solid fa-broom"></i> សម្អាតឈ្មោះជាន់គ្នា
+                            </button>
+                            <button type="button" class="btn-ar btn-ar-primary" onclick="openNewCustomerModal()">
+                                <i class="fa-solid fa-user-plus"></i> បន្ថែមអតិថិជនថ្មី
+                            </button>
+                        </div>
                     </div>
 
                     <div class="filter-toolbar">
@@ -4579,11 +4584,21 @@ input[type="date"] {
                                             <div style="flex: 1.1; min-width: 145px;">
                                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
                                                     <label style="font-size: 11px; font-weight: 700; margin: 0;">ភ្ញៀវចាស់ :</label>
-                                                    <button type="button" class="btn-ar" style="padding: 1px 7px; font-size: 10px; font-weight: 800; background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;" onclick="openQuickAddCustomerModal()" title="ចុចដើម្បីបញ្ចូលភ្ញៀវថ្មី">
-                                                        <i class="fa-solid fa-user-plus text-primary"></i> + ភ្ញៀវថ្មី
+                                                    <div style="display: flex; gap: 4px;">
+                                                        <button type="button" class="btn-ar" style="padding: 1px 7px; font-size: 10px; font-weight: 800; background: #fef3c7; color: #b45309; border: 1px solid #fde68a; border-radius: 5px; cursor: pointer;" onclick="cleanDuplicateCustomers()" title="សម្អាត និងច្រោះឈ្មោះដែលជាន់គ្នាស្វ័យប្រវត្តិ">
+                                                            <i class="fa-solid fa-broom"></i> សម្អាតជាន់គ្នា
+                                                        </button>
+                                                        <button type="button" class="btn-ar" style="padding: 1px 7px; font-size: 10px; font-weight: 800; background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;" onclick="openQuickAddCustomerModal()" title="ចុចដើម្បីបញ្ចូលភ្ញៀវថ្មី">
+                                                            <i class="fa-solid fa-user-plus text-primary"></i> + ភ្ញៀវថ្មី
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div style="display: flex; gap: 4px; align-items: center;">
+                                                    <select id="bookingCustomerSelect" class="form-control font-weight-bold" onchange="handleCustomerDropdownChange(this)"></select>
+                                                    <button type="button" id="btnDeleteSelectedCustomer" class="btn-ar" style="display: none; padding: 4px 8px; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 6px; cursor: pointer; white-space: nowrap; font-size: 11px; font-weight: 800;" onclick="deleteSelectedCustomerFromDropdown()" title="លុបឈ្មោះភ្ញៀវដែលបានជ្រើសរើសនេះចេញពីបញ្ជី">
+                                                        <i class="fa-solid fa-trash"></i> លុប
                                                     </button>
                                                 </div>
-                                                <select id="bookingCustomerSelect" class="form-control font-weight-bold" onchange="handleCustomerDropdownChange(this)"></select>
                                             </div>
                                             <div style="flex: 1; min-width: 125px;">
                                                 <label style="font-size: 11px; font-weight: 700; color: #0f172a;"><i class="fa-solid fa-phone text-primary"></i> លេខទូរស័ព្ទ :</label>
@@ -5248,9 +5263,12 @@ input[type="date"] {
                                 <textarea id="customerNotes" rows="2" class="form-control" placeholder="ឧ. ភ្ញៀវប្រចាំ..."></textarea>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('customerModal')">បោះបង់</button>
-                            <button type="submit" class="btn-ar btn-ar-primary"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកព័ត៌មានភ្ញៀវ</button>
+                        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                            <button type="button" id="btnDeleteCustomerModal" class="btn-ar" style="display: none; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; font-weight: 800;" onclick="deleteCustomerFromModal()"><i class="fa-solid fa-trash"></i> លុបភ្ញៀវនេះ</button>
+                            <div style="display: flex; gap: 8px; margin-left: auto;">
+                                <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('customerModal')">បោះបង់</button>
+                                <button type="submit" class="btn-ar btn-ar-primary"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកព័ត៌មានភ្ញៀវ</button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -11740,9 +11758,10 @@ document.addEventListener('paste', function(e) {
                     ${c.telegram ? `<div style="font-size: 11.5px; margin-bottom: 3px;"><a href="https://t.me/${c.telegram.replace('@','')}" target="_blank" style="color: #0088cc; font-weight: 700; text-decoration: none;"><i class="fa-brands fa-telegram"></i> ${c.telegram}</a></div>` : ''}
                     <div style="font-size: 11px; color: #64748b;"><i class="fa-solid fa-id-card"></i> ${c.idCard || 'គ្មានអត្តសញ្ញាណប័ណ្ណ'}</div>
                     <div style="font-size: 11px; color: #64748b; margin-top: 2px;"><i class="fa-solid fa-location-dot"></i> ${c.address || ''}</div>
-                    <div style="display: flex; gap: 6px; margin-top: 10px;">
-                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 4px 8px; font-size: 11px;" onclick="openEditCustomerModal('${c.id}')"><i class="fa-solid fa-pen text-primary"></i></button>
-                        <button type="button" class="btn-ar btn-ar-primary" style="padding: 4px 10px; font-size: 11px;" onclick="openNewBookingModal({ customerName: '${c.name}', customerPhone: '${c.phone}', customerTelegram: '${c.telegram || ''}' })"><i class="fa-solid fa-plus"></i> កក់ឡាន</button>
+                    <div style="display: flex; gap: 6px; margin-top: 10px; align-items: center;">
+                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 4px 8px; font-size: 11px;" onclick="openEditCustomerModal('${c.id}')" title="កែប្រែ"><i class="fa-solid fa-pen text-primary"></i></button>
+                        <button type="button" class="btn-ar" style="padding: 4px 8px; font-size: 11px; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; font-weight: 800;" onclick="deleteCustomer('${c.id}')" title="លុបភ្ញៀវនេះចេញពីបញ្ជី"><i class="fa-solid fa-trash"></i> លុប</button>
+                        <button type="button" class="btn-ar btn-ar-primary" style="padding: 4px 10px; font-size: 11px; margin-left: auto;" onclick="openNewBookingModal({ customerName: '${c.name}', customerPhone: '${c.phone}', customerTelegram: '${c.telegram || ''}' })"><i class="fa-solid fa-plus"></i> កក់ឡាន</button>
                     </div>
                 </div>
             </div>
@@ -12040,6 +12059,7 @@ document.addEventListener('paste', function(e) {
         const custs = getCustomers();
         const el = document.getElementById('bookingCustomerSelect');
         if (!el) return;
+        const curVal = el.value;
         if (!custs || custs.length === 0) {
             el.innerHTML = '<option value="">-- គ្មានភ្ញៀវចាស់ --</option>';
         } else {
@@ -12048,11 +12068,22 @@ document.addEventListener('paste', function(e) {
                 return `<option value="${c.id}">👤 ${c.name}${p}</option>`;
             }).join('');
         }
+        if (curVal && custs.some(x => x.id === curVal)) {
+            el.value = curVal;
+        }
+        const delBtn = document.getElementById('btnDeleteSelectedCustomer');
+        if (delBtn) {
+            delBtn.style.display = (el.value) ? 'inline-flex' : 'none';
+        }
     }
 
     window.handleCustomerDropdownChange = function(el) {
+        const delBtn = document.getElementById('btnDeleteSelectedCustomer');
+        if (delBtn) {
+            delBtn.style.display = (el && el.value) ? 'inline-flex' : 'none';
+        }
         const custs = getCustomers();
-        const c = custs.find(x => x.id === el.value);
+        const c = custs.find(x => x.id === (el ? el.value : ''));
         if (c) {
             document.getElementById('bookingCustomerName').value = c.name;
             const phoneEl = document.getElementById('bookingCustomerPhone');
@@ -14100,6 +14131,10 @@ document.addEventListener('paste', function(e) {
         const f = document.getElementById('customerForm');
         if (f) f.reset();
         document.getElementById('customerId').value = '';
+
+        const modalDelBtn = document.getElementById('btnDeleteCustomerModal');
+        if (modalDelBtn) modalDelBtn.style.display = 'none';
+
         openModal('customerModal');
     };
 
@@ -14119,6 +14154,9 @@ document.addEventListener('paste', function(e) {
         document.getElementById('customerIdCardNumber').value = c.idCard || '';
         document.getElementById('customerAddress').value = c.address || '';
         document.getElementById('customerNotes').value = c.notes || '';
+
+        const modalDelBtn = document.getElementById('btnDeleteCustomerModal');
+        if (modalDelBtn) modalDelBtn.style.display = 'inline-block';
 
         openModal('customerModal');
     };
@@ -14183,6 +14221,99 @@ document.addEventListener('paste', function(e) {
             }
             showToast(`🎉 បានជ្រើសរើសភ្ញៀវ «${newCust.name}» ចូលការកក់ស្វ័យប្រវត្តិ!`);
         }
+    };
+
+    // Delete Customer from system (individual removal)
+    window.deleteCustomer = function(id) {
+        let custs = getCustomers();
+        const c = custs.find(x => x.id === id);
+        if (!c) return;
+        const name = c.name || id;
+        if (!confirm(`តើអ្នកប្រាកដជាចង់លុបភ្ញៀវ «${name}» នេះចេញពីបញ្ជីមែនទេ? (ភ្ញៀវឈប់ប្រើ ឬឈ្មោះជាន់គ្នា)`)) {
+            return;
+        }
+        custs = custs.filter(x => x.id !== id);
+        setCustomers(custs);
+
+        const el = document.getElementById('bookingCustomerSelect');
+        if (el && el.value === id) {
+            el.value = '';
+            const delBtn = document.getElementById('btnDeleteSelectedCustomer');
+            if (delBtn) delBtn.style.display = 'none';
+        }
+
+        populateCustomerDropdown();
+        if (typeof renderCustomers === 'function') renderCustomers();
+        showToast(`🗑️ បានលុបភ្ញៀវ «${name}» ចេញពីបញ្ជីជោគជ័យ!`);
+    };
+
+    window.deleteSelectedCustomerFromDropdown = function() {
+        const el = document.getElementById('bookingCustomerSelect');
+        if (!el || !el.value) {
+            showToast('⚠️ សូមជ្រើសរើសឈ្មោះភ្ញៀវដែលចង់លុបជាមុនសិន!');
+            return;
+        }
+        deleteCustomer(el.value);
+    };
+
+    window.deleteCustomerFromModal = function() {
+        if (!editingCustomerId) return;
+        const idToDelete = editingCustomerId;
+        closeModal('customerModal');
+        deleteCustomer(idToDelete);
+    };
+
+    // Clean & Deduplicate Customers automatically
+    window.cleanDuplicateCustomers = function() {
+        const custs = getCustomers();
+        if (!custs || custs.length === 0) {
+            showToast('⚠️ មិនមានបញ្ជីភ្ញៀវសម្រាប់សម្អាតឡើយ!');
+            return;
+        }
+
+        const beforeCount = custs.length;
+        const map = {};
+
+        custs.forEach(c => {
+            let name = (c.name || '').trim();
+            // 1. Remove (X Pax), (X នាក់), (Xp), etc.
+            name = name.replace(/\s*\(\s*\d+\s*(?:Pax|pax|នាក់|p|PAX)\s*\)/gi, '');
+            name = name.replace(/\s+/g, ' ').trim();
+            if (!name || name.length < 2) return;
+
+            const key = name.toLowerCase();
+            if (!map[key]) {
+                map[key] = {
+                    id: 'CUST-' + String(Object.keys(map).length + 1).padStart(3, '0'),
+                    name: name,
+                    phone: (c.phone || '').trim(),
+                    telegram: (c.telegram || '').trim(),
+                    idCard: (c.idCard || '').trim(),
+                    address: (c.address || '').trim(),
+                    notes: (c.notes || '').trim()
+                };
+            } else {
+                if (!map[key].phone && c.phone) map[key].phone = c.phone.trim();
+                if (!map[key].telegram && c.telegram) map[key].telegram = c.telegram.trim();
+                if (!map[key].idCard && c.idCard) map[key].idCard = c.idCard.trim();
+            }
+        });
+
+        const cleaned = Object.values(map);
+        // Sort alphabetically by name
+        cleaned.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'km'));
+        // Re-index IDs
+        cleaned.forEach((c, idx) => {
+            c.id = 'CUST-' + String(idx + 1).padStart(3, '0');
+        });
+
+        setCustomers(cleaned);
+        populateCustomerDropdown();
+        if (typeof renderCustomers === 'function') renderCustomers();
+
+        const diff = beforeCount - cleaned.length;
+        alert(`🎉 បានសម្អាត និងច្រោះឈ្មោះជាន់គ្នារួចរាល់!\n\n• ចំនួនឈ្មោះដើម៖ ${beforeCount} នាក់\n• បានលុបឈ្មោះជាន់គ្នា៖ ${diff} នាក់\n• ចំនួនភ្ញៀវស្អាតនៅសល់៖ ${cleaned.length} នាក់`);
+        showToast(`🧹 បានសម្អាតឈ្មោះជាន់គ្នា ${diff} ចេញដោយជោគជ័យ!`);
     };
 
     // Telegram Inbox Modal
