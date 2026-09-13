@@ -1,14 +1,5 @@
 [
   {
-    "id": "CUST-001",
-    "name": "Panther EAT",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "សៀមរាប",
-    "notes": "កក់ឡាន 2026-09-17 ប៉ោយប៉ែត -> សៀមរាប"
-  },
-  {
     "id": "CUST-002",
     "name": "Koy🌻1🐶",
     "phone": "",
@@ -45,15 +36,6 @@
     "notes": "កក់ឡាន 2026-09-13 តេជោ -> ប៉ោយប៉ែត"
   },
   {
-    "id": "CUST-006",
-    "name": "carrot rnd",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "เสียมเรียบ",
-    "notes": "កក់ឡាន 2026-09-13 ប៉ោយប៉ែត -> เสียมเรียบ"
-  },
-  {
     "id": "CUST-007",
     "name": "จองรถ คุณ Sokha GMP",
     "phone": "",
@@ -79,15 +61,6 @@
     "idCard": "",
     "address": "ប៉ោយប៉ែត",
     "notes": "កក់ឡាន 2026-09-12 សៀមរាប -> ប៉ោយប៉ែត"
-  },
-  {
-    "id": "CUST-010",
-    "name": "169 Car with driver",
-    "phone": "",
-    "telegram": "@Sokhalion",
-    "idCard": "",
-    "address": "សៀមរាប",
-    "notes": "កក់ឡាន 2026-09-12 ប៉ោយប៉ែត -> សៀមរាប"
   },
   {
     "id": "CUST-011",
@@ -135,15 +108,6 @@
     "notes": "កក់ឡាន 2026-09-11 សៀមរាប -> ប៉ោយប៉ែត"
   },
   {
-    "id": "CUST-016",
-    "name": "GA MKT03 Snack",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "តេជោ",
-    "notes": "កក់ឡាន 2026-09-11 ប៉ោយប៉ែត -> តេជោ"
-  },
-  {
     "id": "CUST-017",
     "name": "A. HR 88INTER",
     "phone": "",
@@ -151,15 +115,6 @@
     "idCard": "",
     "address": "សៀមរាប",
     "notes": "កក់ឡាន 2026-09-11 ប៉ោយប៉ែត -> សៀមរាប"
-  },
-  {
-    "id": "CUST-018",
-    "name": "VIPตม. +รถ จองโซคา (กรณีบินเอง)",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "តេជោ",
-    "notes": "កក់ឡាន 2026-09-11 ភ្នំពេញ -> តេជោ"
   },
   {
     "id": "CUST-019",
@@ -171,15 +126,6 @@
     "notes": "កក់ឡាន 2026-09-10 ប៉ោយប៉ែត -> ភ្នំពេញ"
   },
   {
-    "id": "CUST-020",
-    "name": "HR369🎌office 𝓥𝖎𝖊𝖜 🎌",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "ប៉ោយប៉ែត",
-    "notes": "កក់ឡាន 2026-09-10 សៀមរាប -> ប៉ោយប៉ែត"
-  },
-  {
     "id": "CUST-021",
     "name": "HR222 - Sokha",
     "phone": "",
@@ -187,33 +133,6 @@
     "idCard": "",
     "address": "ប៉ោយប៉ែត",
     "notes": "កក់ឡាន 2026-09-10 សៀមរាប -> ប៉ោយប៉ែត"
-  },
-  {
-    "id": "CUST-022",
-    "name": "จองรถขาออกPP +VISA K.",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "ប៉ោយប៉ែត",
-    "notes": "កក់ឡាន 2026-09-10 សៀមរាប -> ប៉ោយប៉ែត"
-  },
-  {
-    "id": "CUST-023",
-    "name": "NARUBODIN CHAENGWATTANAKUN",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "ប៉ោយប៉ែត",
-    "notes": "កក់ឡាន 2026-09-10 សៀមរាប -> ប៉ោយប៉ែត"
-  },
-  {
-    "id": "CUST-024",
-    "name": "จองรถ SOKHA",
-    "phone": "",
-    "telegram": "@Sokhalion",
-    "idCard": "",
-    "address": "ប៉ោយប៉ែត",
-    "notes": "កក់ឡាន 2026-09-10 តេជោ -> ប៉ោយប៉ែត"
   },
   {
     "id": "CUST-025",
@@ -234,24 +153,6 @@
     "notes": "កក់ឡាន 2026-09-10 ប៉ោយប៉ែត -> សៀមរាប"
   },
   {
-    "id": "CUST-027",
-    "name": "GA10​ 🎋 ธุรการ Center​ 🎐🐼",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "សៀមរាប",
-    "notes": "កក់ឡាន 2026-09-10 ប៉ោយប៉ែត -> សៀមរាប"
-  },
-  {
-    "id": "CUST-028",
-    "name": "💬Mayming 🍭🍿",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "ភ្នំពេញ",
-    "notes": "កក់ឡាន 2026-09-09 ប៉ោយប៉ែត -> ភ្នំពេញ"
-  },
-  {
     "id": "CUST-029",
     "name": "Ast_IT_Bow",
     "phone": "",
@@ -259,24 +160,6 @@
     "idCard": "",
     "address": "ភ្នំពេញ",
     "notes": "កក់ឡាន 2026-09-09 ប៉ោយប៉ែត -> ភ្នំពេញ"
-  },
-  {
-    "id": "CUST-030",
-    "name": "TK inter02",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "ប៉ោយប៉ែត",
-    "notes": "កក់ឡាន 2026-09-09 សៀមរាប -> ប៉ោយប៉ែត"
-  },
-  {
-    "id": "CUST-031",
-    "name": "HR_007_CHOMVIEW_",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "សៀមរាប",
-    "notes": "កក់ឡាន 2026-09-09 ប៉ោយប៉ែត -> សៀមរាប"
   },
   {
     "id": "CUST-032",
@@ -304,15 +187,6 @@
     "idCard": "",
     "address": "សៀមរាប",
     "notes": "កក់ឡាន 2026-09-09 ប៉ោយប៉ែត -> សៀមរាប"
-  },
-  {
-    "id": "CUST-035",
-    "name": "Sokha Test VIP",
-    "phone": "012 888 999",
-    "telegram": "",
-    "idCard": "",
-    "address": "ភ្នំពេញ",
-    "notes": "កក់ឡាន 2026-09-06 សៀមរាប -> ភ្នំពេញ"
   },
   {
     "id": "CUST-036",
@@ -362,15 +236,6 @@
   {
     "id": "CUST-041",
     "name": "Ct🐱",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "",
-    "notes": "ភ្ញៀវពីវិក្កយបត្រ (Invoices)"
-  },
-  {
-    "id": "CUST-042",
-    "name": "HR_222_PEI",
     "phone": "",
     "telegram": "",
     "idCard": "",
@@ -513,15 +378,6 @@
     "notes": "ភ្ញៀវពីវិក្កយបត្រ (Invoices)"
   },
   {
-    "id": "CUST-058",
-    "name": "Karn_HR3",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "",
-    "notes": "ភ្ញៀវពីវិក្កយបត្រ (Invoices)"
-  },
-  {
     "id": "CUST-059",
     "name": "HR MKT 1",
     "phone": "",
@@ -549,35 +405,8 @@
     "notes": "ភ្ញៀវពីវិក្កយបត្រ (Invoices)"
   },
   {
-    "id": "CUST-062",
-    "name": "HR369🎌office 𝓥𝖎𝖊𝖜",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "",
-    "notes": "ភ្ញៀវពីវិក្កយបត្រ (Invoices)"
-  },
-  {
-    "id": "CUST-063",
-    "name": "HR.2 UCOM Prow",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "",
-    "notes": "ភ្ញៀវពីវិក្កយបត្រ (Invoices)"
-  },
-  {
     "id": "CUST-064",
     "name": "MAC - OFFICE - 11K",
-    "phone": "",
-    "telegram": "",
-    "idCard": "",
-    "address": "",
-    "notes": "ភ្ញៀវពីវិក្កយបត្រ (Invoices)"
-  },
-  {
-    "id": "CUST-065",
-    "name": "HR800 Office (Call",
     "phone": "",
     "telegram": "",
     "idCard": "",
@@ -682,5 +511,14 @@
     "idCard": "",
     "address": "",
     "notes": "ភ្ញៀវពីវិក្កយបត្រ (Invoices)"
+  },
+  {
+    "id": "CUST-058",
+    "name": "តេស",
+    "phone": "",
+    "telegram": "",
+    "idCard": "",
+    "address": "តេជោ",
+    "notes": "ភ្ញៀវបានមកពីការកក់ឡាន"
   }
 ]

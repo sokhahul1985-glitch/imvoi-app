@@ -1023,7 +1023,7 @@ textarea.form-control {
    CMP Golden Mekong Commercial Service - Exact Desktop App Web UI Replica
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&family=Noto+Sans+Khmer:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&family=Noto+Sans+Khmer:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap');
 
 :root {
     --bg-main: #f8fafc;
@@ -1666,15 +1666,15 @@ input[type="date"] {
 .cmp-receipt-paper, #printableReceiptArea {
     background: #ffffff !important;
     color: #000000 !important;
-    width: 720px !important;
-    min-width: 720px !important;
-    max-width: 720px !important;
+    width: 780px !important;
+    min-width: 780px !important;
+    max-width: 780px !important;
     margin: 0 auto !important;
-    padding: 36px 42px !important;
+    padding: 36px 44px !important;
     border-radius: 8px !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
     font-family: 'Kantumruy Pro', 'Noto Sans Khmer', 'Noto Sans Thai', system-ui, -apple-system, sans-serif !important;
-    letter-spacing: 0.01px !important;
+    letter-spacing: normal !important;
     word-spacing: normal !important;
     font-variant-ligatures: normal !important;
     text-rendering: optimizeLegibility !important;
@@ -1686,7 +1686,7 @@ input[type="date"] {
 
 .cmp-receipt-paper *, #printableReceiptArea * {
     font-family: inherit !important;
-    letter-spacing: inherit !important;
+    letter-spacing: normal !important;
     word-spacing: inherit !important;
     text-rendering: optimizeLegibility !important;
     -webkit-font-smoothing: antialiased !important;
@@ -4785,7 +4785,7 @@ input[type="date"] {
                                     </div>
                                     <div style="margin-top: 8px;">
                                         <label style="font-size: 11px; font-weight: 700; color: #475569;">📝 ចំណាំបន្ថែម (Flight / Map / Dropoff Note) :</label>
-                                        <input type="text" id="bookingNotes" class="form-control font-weight-bold" placeholder="ព័ត៌មានជើងហោះហើរ ទីតាំងទម្លាក់ជាក់ស្តែង ឬ Link Google Maps...">
+                                        <textarea id="bookingNotes" rows="2" class="form-control font-weight-bold" style="font-size: 12px; min-height: 42px; resize: vertical;" placeholder="ព័ត៌មានជើងហោះហើរ ទីតាំងទទួលច្រើនកន្លែង ឬ Link Google Maps..."></textarea>
                                     </div>
 
                                     <!-- Document & Photo Attachments (Passport, Flight Ticket, Car, Other) -->
@@ -5231,66 +5231,18 @@ input[type="date"] {
                                 <textarea id="carNotes" rows="2" class="form-control" placeholder="ព័ត៌មានបន្ថែមអំពីឡាន..."></textarea>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('carModal')">បោះបង់</button>
-                            <button type="submit" class="btn-ar btn-ar-primary"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកព័ត៌មានឡាន</button>
+                        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                            <button type="button" id="btnDeleteCarModal" class="btn-ar btn-ar-outline" style="color: #dc2626; border-color: #fca5a5; background: #fef2f2; font-weight: 800; display: none;" onclick="deleteCar(editingCarId)"><i class="fa-solid fa-trash-can"></i> លុបរថយន្តនេះ</button>
+                            <div style="display: flex; gap: 8px; margin-left: auto;">
+                                <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('carModal')">បោះបង់</button>
+                                <button type="submit" class="btn-ar btn-ar-primary"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកព័ត៌មានឡាន</button>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <!-- 4. NEW / EDIT CUSTOMER MODAL -->
-            <div class="modal-backdrop" id="customerModal">
-                <div class="modal-dialog">
-                    <div class="modal-header">
-                        <h3 id="customerModalTitle"><i class="fa-solid fa-user-plus text-primary"></i> បន្ថែមអតិថិជនថ្មី</h3>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <button type="button" class="btn-ar btn-ar-primary" onclick="handleSaveCustomerDirect()"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុក</button>
-                            <button type="button" class="modal-close-btn" onclick="closeModal('customerModal')"><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                    </div>
-                    <form id="customerForm" onsubmit="handleSaveCustomer(event); return false;">
-                        <input type="hidden" id="customerId">
-                        <div class="modal-body">
-                            <div class="form-row-2">
-                                <div class="form-group">
-                                    <label>ឈ្មោះភ្ញៀវ *</label>
-                                    <input type="text" id="customerName" required placeholder="ឧ. សុខ ចាន់ដារ៉ា" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>លេខទូរស័ព្ទ (បើមាន)</label>
-                                    <input type="tel" id="customerPhone" placeholder="ឧ. 012 345 678" class="form-control font-weight-bold">
-                                </div>
-                            </div>
-                            <div class="form-row-2">
-                                <div class="form-group">
-                                    <label><i class="fa-brands fa-telegram text-info"></i> Telegram</label>
-                                    <input type="text" id="customerTelegram" placeholder="@username" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>លេខអត្តសញ្ញាណប័ណ្ណ / លិខិតឆ្លងដែន</label>
-                                    <input type="text" id="customerIdCardNumber" placeholder="ឧ. 010293847" class="form-control">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>អាសយដ្ឋាន</label>
-                                <input type="text" id="customerAddress" placeholder="ឧ. ភ្នំពេញ..." class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label>កំណត់សម្គាល់អំពីភ្ញៀវ</label>
-                                <textarea id="customerNotes" rows="2" class="form-control" placeholder="ឧ. ភ្ញៀវប្រចាំ..."></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
-                            <button type="button" id="btnDeleteCustomerModal" class="btn-ar" style="display: none; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; font-weight: 800;" onclick="deleteCustomerFromModal()"><i class="fa-solid fa-trash"></i> លុបភ្ញៀវនេះ</button>
-                            <div style="display: flex; gap: 8px; margin-left: auto;">
-                                <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('customerModal')">បោះបង់</button>
-                                <button type="submit" class="btn-ar btn-ar-primary"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកព័ត៌មានភ្ញៀវ</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <!-- (customerModal moved to top-level below mainWorkspaceContainer) -->
 
             <!-- 5. TELEGRAM FORWARD INBOX MODAL -->
             <div class="modal-backdrop" id="telegramInboxModal">
@@ -5369,6 +5321,7 @@ input[type="date"] {
                 <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #64748b, #475569); color: #ffffff; font-size: 12px; padding: 5px 10px; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; height: 32px;" onclick="backupDataJSON()">💾 Backup</button>
                 <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #d97706, #f59e0b); color: #ffffff; font-size: 12px; padding: 5px 10px; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; height: 32px;" onclick="document.getElementById('restoreJsonInput').click()">📤 Restore</button>
                 <input type="file" id="restoreJsonInput" accept=".json" style="display:none;" onchange="restoreDataJSON(event)">
+                <button type="button" class="btn-sys" style="background: #fff1f2; color: #e11d48; border: 1.5px solid #fecdd3; font-size: 12px; padding: 5px 10px; font-weight: 800; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; height: 32px;" onclick="openSenderManagerModal()" title="គ្រប់គ្រង កែសម្រួល ឬលុបឈ្មោះអតិថិជនដែលជាន់គ្នា ឬឈប់ប្រើ"><i class="fa-solid fa-users-gear"></i> សម្អាតឈ្មោះអតិថិជន</button>
                 <span id="totalRecordsLabel" style="display: none;"></span>
             </div>
         </div>
@@ -5394,7 +5347,130 @@ input[type="date"] {
             </table>
         </div>
     </div>
-    <!-- End mainWorkspaceContainer -->
+    <!-- 4. NEW / EDIT CUSTOMER MODAL (Global modal accessible from all views) -->
+    <div class="modal-backdrop" id="customerModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="customerModalTitle"><i class="fa-solid fa-user-plus text-primary"></i> បន្ថែមអតិថិជនថ្មី</h3>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" class="btn-ar btn-ar-primary" onclick="handleSaveCustomerDirect()"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុក</button>
+                    <button type="button" class="modal-close-btn" onclick="closeModal('customerModal')"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            <form id="customerForm" onsubmit="handleSaveCustomer(event); return false;">
+                <input type="hidden" id="customerId">
+                <div class="modal-body">
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>ឈ្មោះភ្ញៀវ *</label>
+                            <input type="text" id="customerName" required placeholder="ឧ. សុខ ចាន់ដារ៉ា" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>លេខទូរស័ព្ទ (បើមាន)</label>
+                            <input type="tel" id="customerPhone" placeholder="ឧ. 012 345 678" class="form-control font-weight-bold">
+                        </div>
+                    </div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label><i class="fa-brands fa-telegram text-info"></i> Telegram</label>
+                            <input type="text" id="customerTelegram" placeholder="@username" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>លេខអត្តសញ្ញាណប័ណ្ណ / លិខិតឆ្លងដែន</label>
+                            <input type="text" id="customerIdCardNumber" placeholder="ឧ. 010293847" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>អាសយដ្ឋាន</label>
+                        <input type="text" id="customerAddress" placeholder="ឧ. ភ្នំពេញ..." class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>កំណត់សម្គាល់អំពីភ្ញៀវ</label>
+                        <textarea id="customerNotes" rows="2" class="form-control" placeholder="ឧ. ភ្ញៀវប្រចាំ..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                    <button type="button" id="btnDeleteCustomerModal" class="btn-ar" style="display: none; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; font-weight: 800;" onclick="deleteCustomerFromModal()"><i class="fa-solid fa-trash"></i> លុបភ្ញៀវនេះ</button>
+                    <div style="display: flex; gap: 8px; margin-left: auto;">
+                        <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('customerModal')">បោះបង់</button>
+                        <button type="submit" class="btn-ar btn-ar-primary"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកព័ត៌មានភ្ញៀវ</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4.1 SENDER & CUSTOMER MANAGER MODAL (Manage, Clean, & Delete Duplicates/Unused) -->
+    <div class="modal-backdrop" id="senderManagerModal" style="z-index: 1000010;">
+        <div class="modal-dialog modal-lg" style="max-width: 860px; max-height: 90vh;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="font-size: 1.5rem; background: rgba(255,255,255,0.2); width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-users-gear"></i>
+                    </div>
+                    <div>
+                        <h3 style="color: #ffffff; margin: 0; font-size: 1.15rem; font-weight: 800;">គ្រប់គ្រង & សម្អាតបញ្ជីឈ្មោះអតិថិជន/អ្នកនាំ</h3>
+                        <p style="margin: 2px 0 0 0; font-size: 12px; color: #e0f2fe; font-weight: 600;">លុបឈ្មោះដែលជាន់គ្នា ឬឈ្មោះចាស់ៗដែលឈប់ប្រើប្រាស់</p>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" style="color: #ffffff; font-size: 20px;" onclick="closeModal('senderManagerModal')" title="បិទ">✖</button>
+            </div>
+            <div class="modal-body" style="padding: 16px;">
+                <!-- Filter & Action Toolbar -->
+                <div style="display: flex; gap: 8px; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 12px; background: #f8fafc; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; gap: 8px; align-items: center; flex: 1; min-width: 250px;">
+                        <input type="text" id="smSearchInput" class="form-input" placeholder="🔍 ស្វែងរកឈ្មោះអតិថិជន..." onkeyup="renderSenderManagerList()" style="height: 34px; padding: 4px 10px; font-size: 13px; font-weight: 700; flex: 1;">
+                        <select id="smFilterType" class="form-input" onchange="renderSenderManagerList()" style="height: 34px; padding: 4px 8px; font-size: 12.5px; font-weight: 700; color: #0284c7; background: #ffffff; width: 155px; cursor: pointer;">
+                            <option value="all">ទាំងអស់ (សកម្ម)</option>
+                            <option value="duplicates">⚠️ ជាន់គ្នា (Duplicates)</option>
+                            <option value="unused">💤 មិនដែលប្រើ (Unused)</option>
+                            <option value="used">✅ កំពុងប្រើ (In Use)</option>
+                            <option value="hidden">🗑️ បានលុប/បានលាក់ (Deleted)</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <button type="button" class="btn-sys" style="height: 34px; padding: 0 10px; font-size: 12px; font-weight: 800; background: #fef3c7; color: #b45309; border: 1px solid #fde68a; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="handleAutoDeduplicateSenders()" title="ច្រោះ និងផ្គុំឈ្មោះដែលស្រដៀង ឬជាន់គ្នាស្វ័យប្រវត្តិ">
+                            <i class="fa-solid fa-broom"></i> សម្អាតឈ្មោះជាន់គ្នា
+                        </button>
+                        <button type="button" class="btn-sys" style="height: 34px; padding: 0 10px; font-size: 12px; font-weight: 800; background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="handleDeleteAllUnusedSenders()" title="លុបឈ្មោះដែលមិនធ្លាប់ប្រើសោះចេញពីបញ្ជី">
+                            <i class="fa-solid fa-trash-can"></i> លុបដែលមិនប្រើ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats summary bar -->
+                <div style="display: flex; gap: 12px; align-items: center; font-size: 12px; font-weight: 800; color: #475569; margin-bottom: 10px; padding: 0 4px;" id="smStatsBar">
+                    <span>📊 កំពុងទាញយកស្ថិតិ...</span>
+                </div>
+
+                <!-- Table Container -->
+                <div style="max-height: 420px; overflow-y: auto; border: 1.5px solid #e2e8f0; border-radius: 8px;">
+                    <table class="app-table" style="width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12.5px;">
+                        <thead style="position: sticky; top: 0; z-index: 10; background: #f1f5f9;">
+                            <tr>
+                                <th style="width: 40px; text-align: center; padding: 8px;">ល.រ</th>
+                                <th style="text-align: left; padding: 8px;">ឈ្មោះអតិថិជន / អ្នកនាំ</th>
+                                <th style="width: 130px; text-align: center; padding: 8px;">ការប្រើប្រាស់</th>
+                                <th style="width: 110px; text-align: center; padding: 8px;">ប្រភព</th>
+                                <th style="width: 140px; text-align: center; padding: 8px;">សកម្មភាព (Actions)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="senderManagerTableBody">
+                            <tr><td colspan="5" style="text-align: center; padding: 24px; color: #64748b;">កំពុងផ្ទុកបញ្ជីឈ្មោះ...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer" style="background: #f8fafc; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 12px; color: #64748b; font-weight: 600;">
+                    💡 ការលុបឈ្មោះនឹងដកឈ្មោះនោះចេញពីប្រអប់ជ្រើសរើស (Dropdown) ស្វ័យប្រវត្តិ
+                </div>
+                <button type="button" class="btn-ar btn-ar-primary" style="padding: 6px 16px; font-weight: 800;" onclick="closeModal('senderManagerModal'); updateGmmSenderDatalist();">
+                    រួចរាល់ (Done)
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Group Members Management Modal -->
     <div id="groupMembersModal" class="modal-overlay">
@@ -5424,9 +5500,19 @@ input[type="date"] {
                             <label style="font-weight: 800; font-size: 13.5px; color: #0f172a; white-space: nowrap;">💱 អត្រាប្តូរប្រាក់:</label>
                             <input type="number" step="0.1" id="gmmExchangeRate" class="form-input highlight-input" placeholder="33.90" value="33.90" oninput="saveLatestExchangeRate(this.value); if(typeof gmmCalcTotals==='function') gmmCalcTotals();" onchange="saveLatestExchangeRate(this.value); if(typeof gmmCalcTotals==='function') gmmCalcTotals();" style="height: 34px; font-weight: 800; border: 2px solid #eab308; border-radius: 6px; padding: 3px 8px; font-size: 14px; width: 75px; text-align: center; background: #fef9c3; color: #854d0e;" onfocus="this.select()" onkeydown="handleGmmHeaderKeydown(event, this)">
                         </div>
-                        <div style="display: flex; align-items: center; gap: 5px; flex: 1; min-width: 230px;">
+                        <div style="display: flex; align-items: center; gap: 6px; flex: 1; min-width: 320px;">
                             <label style="font-weight: 800; font-size: 13.5px; color: #0f172a; white-space: nowrap;">👤 អ្នកនាំ/បញ្ជូន <span style="color: #ef4444; font-size: 15px;">*</span>:</label>
-                            <input type="text" id="gmmSenderName" class="form-input" placeholder="បញ្ចូលឈ្មោះអ្នកនាំ..." required style="height: 34px; font-weight: 800; border: 2px solid #0284c7; border-radius: 6px; padding: 3px 12px; font-size: 14px; flex: 1; width: 100%; min-width: 180px; color: #0f172a;" onfocus="this.select()" onkeydown="handleGmmHeaderKeydown(event, this)">
+                            <input type="text" id="gmmSenderName" list="gmmSenderList" class="form-input" placeholder="បញ្ចូលឈ្មោះអ្នកនាំ..." required style="height: 34px; font-weight: 800; border: 2px solid #0284c7; border-radius: 6px; padding: 3px 12px; font-size: 14px; flex: 1; min-width: 140px; color: #0f172a;" onfocus="this.select()" oninput="const s=document.getElementById('gmmSenderSelect'); if(s) s.value=this.value;" onkeydown="handleGmmHeaderKeydown(event, this)">
+                            <datalist id="gmmSenderList"></datalist>
+                            <select id="gmmSenderSelect" class="form-input" style="height: 34px; font-weight: 800; border: 2px solid #0284c7; border-radius: 6px; padding: 3px 8px; font-size: 13px; color: #0369a1; background: #e0f2fe; cursor: pointer; max-width: 210px; flex-shrink: 0;" onchange="handleGmmSenderSelect(this.value)" title="ជ្រើសរើសអ្នកនាំ ឬអតិថិជនដែលមានស្រាប់">
+                                <option value="">📋 រើសអ្នកនាំដែលមានស្រាប់...</option>
+                            </select>
+                            <button type="button" id="btnGmmNewCustomer" class="btn-sys" style="height: 34px; padding: 0 10px; font-size: 12.5px; font-weight: 800; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border: none; border-radius: 6px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 4px rgba(2,132,199,0.25); flex-shrink: 0;" onclick="openNewCustomerModalFromGmm()" title="បង្កើត ឬបញ្ចូលព័ត៌មានអតិថិជនថ្មី">
+                                <i class="fa-solid fa-user-plus"></i> បង្កើតអតិថិជនថ្មី
+                            </button>
+                            <button type="button" id="btnGmmManageSenders" class="btn-sys" style="height: 34px; padding: 0 10px; font-size: 12px; font-weight: 800; background: #fff1f2; color: #e11d48; border: 1.5px solid #fecdd3; border-radius: 6px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(225,29,72,0.15); flex-shrink: 0;" onclick="openSenderManagerModal()" title="គ្រប់គ្រង កែសម្រួល ឬលុបឈ្មោះអតិថិជនដែលជាន់គ្នា ឬឈប់ប្រើ">
+                                <i class="fa-solid fa-users-gear"></i> សម្អាត/លុបឈ្មោះ
+                            </button>
                         </div>
                     </div>
 
@@ -5544,7 +5630,8 @@ input[type="date"] {
             </div>
 
             <!-- Receipt Document Content -->
-            <div id="printableReceiptArea" style="background: #ffffff; color: #0f172a; padding: 40px 48px; border-radius: 12px; box-sizing: border-box; width: 100%; max-width: 850px; margin: 0 auto;">
+            <div class="receipt-paper-wrapper" style="width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 10px 4px; display: flex; justify-content: center; background: #e2e8f0; border-radius: 8px; box-sizing: border-box;">
+                <div id="printableReceiptArea" style="background: #ffffff; color: #0f172a; padding: 36px 44px; border-radius: 8px; box-sizing: border-box; width: 780px; min-width: 780px; max-width: 780px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);">
                 <div style="border-bottom: 2px double #cbd5e1; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between;">
 
                     <div>
@@ -5628,6 +5715,7 @@ input[type="date"] {
 
 
 
+            </div>
             </div>
 
         </div>
@@ -7239,6 +7327,10 @@ input[type="date"] {
                     const agencyInp = document.getElementById('gmmAgencyCompany');
                     if (agencyInp) agencyInp.value = '';
 
+                    if (typeof updateGmmSenderDatalist === 'function') {
+                        updateGmmSenderDatalist();
+                    }
+
                     // Clear tbody first
                     const tbody = document.getElementById('gmmMembersBody');
                     if (tbody) tbody.innerHTML = '';
@@ -8366,12 +8458,574 @@ input[type="date"] {
 
             switchGmmMode(initialMode, members);
 
+            if (typeof updateGmmSenderDatalist === 'function') {
+                updateGmmSenderDatalist();
+            }
+
             const modal = document.getElementById('groupMembersModal');
             if (modal) {
                 modal.classList.add('active');
                 modal.style.display = 'flex';
             }
         }
+
+        window.updateGmmSenderDatalist = function() {
+            const dl = document.getElementById('gmmSenderList');
+            const sel = document.getElementById('gmmSenderSelect');
+            const namesSet = new Set();
+
+            if (typeof getCustomers === 'function') {
+                try {
+                    getCustomers().forEach(c => {
+                        if (c && c.name && typeof c.name === 'string') namesSet.add(c.name.trim());
+                    });
+                } catch (e) {}
+            }
+
+            const allRecs = (typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) 
+                ? allDatabaseRecords 
+                : ((typeof records !== 'undefined' && Array.isArray(records)) ? records : []);
+            allRecs.forEach(r => {
+                const s = r.sender || r.sender_name || (r.group_data && (r.group_data.sender_name || r.group_data.sender)) || (r.group_info && (r.group_info.sender_name || r.group_info.group_name));
+                if (s && typeof s === 'string' && s.trim()) namesSet.add(s.trim());
+            });
+
+            if (typeof loadData === 'function' && typeof STORAGE_KEY_BOOKINGS !== 'undefined') {
+                try {
+                    const bks = loadData(STORAGE_KEY_BOOKINGS, []);
+                    if (Array.isArray(bks)) {
+                        bks.forEach(b => {
+                            if (b && b.customerName && typeof b.customerName === 'string') namesSet.add(b.customerName.trim());
+                        });
+                    }
+                } catch(e) {}
+            }
+
+            const hiddenSet = new Set(getHiddenSenders().map(x => (x || '').toLowerCase().trim()));
+            const sortedNames = Array.from(namesSet)
+                .filter(n => n && n !== 'N/A' && n !== '-' && n !== 'null' && !hiddenSet.has(n.toLowerCase().trim()))
+                .sort((a, b) => a.localeCompare(b));
+
+            if (dl) {
+                dl.innerHTML = sortedNames.map(n => `<option value="${n}">`).join('');
+            }
+
+            if (sel) {
+                const currentVal = document.getElementById('gmmSenderName')?.value?.trim() || '';
+                let optionsHtml = `<option value="">📋 រើសអ្នកនាំដែលមានស្រាប់ (${sortedNames.length} នាក់)...</option>`;
+                optionsHtml += sortedNames.map(n => {
+                    const isSelected = (currentVal && n.toLowerCase() === currentVal.toLowerCase()) ? 'selected' : '';
+                    return `<option value="${n}" ${isSelected}>👤 ${n}</option>`;
+                }).join('');
+                sel.innerHTML = optionsHtml;
+            }
+        };
+
+        window.getHiddenSenders = function() {
+            try {
+                return JSON.parse(localStorage.getItem('imvoi_hidden_senders') || '[]');
+            } catch(e) { return []; }
+        };
+
+        window.setHiddenSenders = function(list) {
+            const cleanList = Array.from(new Set((list || []).map(x => String(x || '').trim()).filter(Boolean)));
+            localStorage.setItem('imvoi_hidden_senders', JSON.stringify(cleanList));
+            try {
+                fetch('/api/hidden_senders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ hidden_senders: cleanList })
+                }).catch(() => {});
+            } catch(e) {}
+        };
+
+        // Auto-load hidden senders from server on startup
+        try {
+            fetch('/api/hidden_senders')
+                .then(r => r.json())
+                .then(res => {
+                    if (res && res.success && Array.isArray(res.hidden_senders)) {
+                        const local = getHiddenSenders();
+                        const merged = Array.from(new Set([...local, ...res.hidden_senders]));
+                        localStorage.setItem('imvoi_hidden_senders', JSON.stringify(merged));
+                        if (typeof updateGmmSenderDatalist === 'function') updateGmmSenderDatalist();
+                    }
+                })
+                .catch(() => {});
+        } catch(e) {}
+
+        window.openSenderManagerModal = function() {
+            const modal = document.getElementById('senderManagerModal');
+            if (modal) {
+                modal.style.zIndex = '1000010';
+                modal.style.display = 'flex';
+                modal.classList.add('show');
+            }
+            const sInp = document.getElementById('smSearchInput');
+            if (sInp) sInp.value = '';
+            const fType = document.getElementById('smFilterType');
+            if (fType) fType.value = 'all';
+            renderSenderManagerList();
+        };
+
+        window.getAllSenderUsageMap = function() {
+            const usageMap = {};
+            const allRecs = (typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) 
+                ? allDatabaseRecords 
+                : ((typeof records !== 'undefined' && Array.isArray(records)) ? records : []);
+            
+            allRecs.forEach(r => {
+                const s = r.sender || r.sender_name || (r.group_data && (r.group_data.sender_name || r.group_data.sender)) || (r.group_info && (r.group_info.sender_name || r.group_info.group_name));
+                if (s && typeof s === 'string' && s.trim()) {
+                    const k = s.trim();
+                    usageMap[k] = (usageMap[k] || 0) + 1;
+                }
+            });
+
+            if (typeof loadData === 'function' && typeof STORAGE_KEY_BOOKINGS !== 'undefined') {
+                try {
+                    const bks = loadData(STORAGE_KEY_BOOKINGS, []);
+                    if (Array.isArray(bks)) {
+                        bks.forEach(b => {
+                            if (b && b.customerName && typeof b.customerName === 'string') {
+                                const k = b.customerName.trim();
+                                usageMap[k] = (usageMap[k] || 0) + 1;
+                            }
+                        });
+                    }
+                } catch(e) {}
+            }
+            return usageMap;
+        };
+
+        window.renderSenderManagerList = function() {
+            const tbody = document.getElementById('senderManagerTableBody');
+            const statsBar = document.getElementById('smStatsBar');
+            if (!tbody) return;
+
+            const searchKw = (document.getElementById('smSearchInput')?.value || '').trim().toLowerCase();
+            const filterType = document.getElementById('smFilterType')?.value || 'all';
+
+            const usageMap = getAllSenderUsageMap();
+            const hiddenSet = new Set(getHiddenSenders().map(x => (x || '').toLowerCase().trim()));
+
+            const allNamesMap = {};
+            
+            if (typeof getCustomers === 'function') {
+                try {
+                    getCustomers().forEach(c => {
+                        if (c && c.name && typeof c.name === 'string' && c.name.trim()) {
+                            const raw = c.name.trim();
+                            const lk = raw.toLowerCase();
+                            if (!allNamesMap[lk]) {
+                                allNamesMap[lk] = {
+                                    name: raw,
+                                    usage: usageMap[raw] || 0,
+                                    inCustomers: true,
+                                    inInvoices: Boolean(usageMap[raw]),
+                                    phone: c.phone || '',
+                                    id: c.id || ''
+                                };
+                            } else {
+                                allNamesMap[lk].inCustomers = true;
+                                if (!allNamesMap[lk].phone && c.phone) {
+                                    allNamesMap[lk].phone = c.phone;
+                                }
+                            }
+                        }
+                    });
+                } catch(e) {}
+            }
+
+            Object.keys(usageMap).forEach(k => {
+                if (k && k !== 'N/A' && k !== '-' && k !== 'null') {
+                    const lk = k.toLowerCase();
+                    if (!allNamesMap[lk]) {
+                        allNamesMap[lk] = {
+                            name: k,
+                            usage: usageMap[k],
+                            inCustomers: false,
+                            inInvoices: true,
+                            phone: '',
+                            id: ''
+                        };
+                    } else {
+                        allNamesMap[lk].inInvoices = true;
+                    }
+                }
+            });
+
+            // Find duplicate groups (normalize spacing, pax tags)
+            const normGroups = {};
+            Object.values(allNamesMap).forEach(item => {
+                // Ignore hidden names when finding duplicates
+                if (hiddenSet.has(item.name.toLowerCase())) return;
+                const norm = item.name.toLowerCase().replace(/\s*(?:pax|នាក់|p)\s*/gi, '').replace(/[^a-z0-9\u1780-\u17ff]/gi, '');
+                if (norm) {
+                    normGroups[norm] = normGroups[norm] || [];
+                    normGroups[norm].push(item.name);
+                }
+            });
+
+            const dupNamesSet = new Set();
+            Object.values(normGroups).forEach(group => {
+                if (group.length > 1) {
+                    group.forEach(n => dupNamesSet.add(n.toLowerCase()));
+                }
+            });
+
+            let allActiveList = Object.values(allNamesMap).filter(item => !hiddenSet.has(item.name.toLowerCase()));
+            let hiddenList = Object.values(allNamesMap).filter(item => hiddenSet.has(item.name.toLowerCase()));
+
+            const totalActiveCount = allActiveList.length;
+            const duplicateCount = allActiveList.filter(item => dupNamesSet.has(item.name.toLowerCase())).length;
+            const unusedCount = allActiveList.filter(item => item.usage === 0).length;
+            const deletedCount = hiddenList.length;
+
+            if (statsBar) {
+                statsBar.innerHTML = `
+                    <span>📊 បញ្ជីសរុប៖ <strong style="color: #0284c7;">${totalActiveCount} នាក់</strong></span>
+                    <span>•</span>
+                    <span style="color: #d97706;">⚠️ ជាន់គ្នា៖ <strong>${duplicateCount} នាក់</strong></span>
+                    <span>•</span>
+                    <span style="color: #64748b;">💤 មិនដែលប្រើ៖ <strong>${unusedCount} នាក់</strong></span>
+                    <span>•</span>
+                    <span style="color: #dc2626;">🗑️ បានលុប៖ <strong>${deletedCount} នាក់</strong></span>
+                `;
+            }
+
+            let list = [];
+            // Apply Primary Filter:
+            if (filterType === 'hidden') {
+                list = hiddenList;
+            } else {
+                // STRICTLY EXCLUDE all deleted/hidden names!
+                list = allActiveList;
+                if (filterType === 'duplicates') {
+                    list = list.filter(item => dupNamesSet.has(item.name.toLowerCase()));
+                } else if (filterType === 'unused') {
+                    list = list.filter(item => item.usage === 0);
+                } else if (filterType === 'used') {
+                    list = list.filter(item => item.usage > 0);
+                }
+            }
+
+            if (searchKw) {
+                list = list.filter(item => item.name.toLowerCase().includes(searchKw) || (item.phone && item.phone.includes(searchKw)));
+            }
+
+            list.sort((a, b) => a.name.localeCompare(b.name, 'km'));
+
+            if (list.length === 0) {
+                const emptyMsg = filterType === 'hidden' 
+                    ? '🔍 ពុំមានឈ្មោះដែលបានលុប ឬលាក់ទុកឡើយ!' 
+                    : (filterType === 'duplicates' ? '🎉 ពុំមានឈ្មោះជាន់គ្នាឡើយ! បញ្ជីទាំងអស់គឺស្អាតល្អ។' : '🔍 មិនមានឈ្មោះដែលត្រូវនឹងលក្ខខណ្ឌស្វែងរកឡើយ!');
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: #94a3b8; font-weight: 700;">${emptyMsg}</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            list.forEach((item, idx) => {
+                const isDup = dupNamesSet.has(item.name.toLowerCase());
+                const isHidden = hiddenSet.has(item.name.toLowerCase());
+                const rowBg = isHidden ? '#fef2f2' : (isDup ? '#fefce8' : '#ffffff');
+                const usageBadge = item.usage > 0 
+                    ? `<span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 6px; font-weight: 800; font-size: 11.5px;"><i class="fa-solid fa-check"></i> ប្រើ ${item.usage} ដង</span>`
+                    : `<span style="background: #f1f5f9; color: #64748b; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 11px;">មិនដែលប្រើ</span>`;
+                
+                const sourceBadge = item.inCustomers 
+                    ? `<span style="background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700;">អតិថិជន</span>`
+                    : `<span style="background: #f3e8ff; color: #7e22ce; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700;">វិក្កយបត្រ</span>`;
+
+                const escName = item.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+                let actionBtns = '';
+                if (isHidden) {
+                    actionBtns = `
+                        <button type="button" class="btn-sys" style="padding: 3px 8px; font-size: 11px; font-weight: 700; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-radius: 4px; cursor: pointer;" onclick="handleRestoreSingleSender('${escName}')" title="ស្តារឈ្មោះនេះមកប្រើប្រាស់វិញ">
+                            <i class="fa-solid fa-rotate-left"></i> ស្តារឡើងវិញ
+                        </button>
+                    `;
+                } else {
+                    actionBtns = `
+                        <button type="button" class="btn-sys" style="padding: 3px 7px; font-size: 11px; font-weight: 700; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; border-radius: 4px; cursor: pointer;" onclick="handleRenameSenderName('${escName}')" title="កែប្រែឈ្មោះ">
+                            <i class="fa-solid fa-pen"></i> កែប្រែ
+                        </button>
+                        <button type="button" class="btn-sys" style="padding: 3px 7px; font-size: 11px; font-weight: 700; background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; border-radius: 4px; cursor: pointer;" onclick="handleDeleteSingleSender('${escName}')" title="លុបឈ្មោះនេះចេញពីបញ្ជី">
+                            <i class="fa-solid fa-trash"></i> លុប
+                        </button>
+                    `;
+                }
+
+                html += `
+                    <tr style="background: ${rowBg}; border-bottom: 1px solid #f1f5f9;" id="smRow-${idx}">
+                        <td style="text-align: center; padding: 8px; font-weight: 700; color: #64748b;">${idx + 1}</td>
+                        <td style="padding: 8px; font-weight: 800; color: #0f172a;">
+                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                <span>${item.name}</span>
+                                ${isDup ? '<span style="background: #fef08a; color: #854d0e; font-size: 10.5px; padding: 1px 6px; border-radius: 4px; font-weight: 800;">⚠️ ជាន់គ្នា</span>' : ''}
+                                ${isHidden ? '<span style="background: #fee2e2; color: #b91c1c; font-size: 10px; padding: 1px 5px; border-radius: 4px; font-weight: 800;">បានលុប</span>' : ''}
+                            </div>
+                            ${item.phone ? `<div style="font-size: 11px; color: #64748b; font-weight: 600;"><i class="fa-solid fa-phone"></i> ${item.phone}</div>` : ''}
+                        </td>
+                        <td style="text-align: center; padding: 8px;">${usageBadge}</td>
+                        <td style="text-align: center; padding: 8px;">${sourceBadge}</td>
+                        <td style="text-align: center; padding: 8px;">
+                            <div style="display: flex; gap: 4px; justify-content: center;">
+                                ${actionBtns}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        };
+
+        window.handleDeleteSingleSender = function(name) {
+            if (!name) return;
+            if (!confirm(`តើអ្នកប្រាកដជាចង់លុបឈ្មោះ «${name}» នេះចេញពីបញ្ជីអតិថិជន/អ្នកនាំមែនទេ?`)) return;
+
+            // 1. Remove from customers
+            if (typeof getCustomers === 'function' && typeof setCustomers === 'function') {
+                const custs = getCustomers();
+                const filtered = custs.filter(c => c && c.name && c.name.trim().toLowerCase() !== name.trim().toLowerCase());
+                if (filtered.length !== custs.length) {
+                    setCustomers(filtered);
+                }
+            }
+
+            // 2. Add to hidden/deleted senders
+            const hidden = getHiddenSenders();
+            const lower = name.trim().toLowerCase();
+            if (!hidden.some(x => (x || '').toLowerCase() === lower)) {
+                hidden.push(name.trim());
+                setHiddenSenders(hidden);
+            }
+
+            // 3. Clear from gmmSenderName if currently selected
+            const curInp = document.getElementById('gmmSenderName');
+            if (curInp && curInp.value.trim().toLowerCase() === name.trim().toLowerCase()) {
+                curInp.value = '';
+            }
+
+            // 4. Update dropdowns & table immediately
+            updateGmmSenderDatalist();
+            renderSenderManagerList();
+            showToast(`🗑️ បានលុបឈ្មោះ «${name}» ចេញពីបញ្ជីជោគជ័យ!`);
+        };
+
+        window.handleRestoreSingleSender = function(name) {
+            if (!name) return;
+            const hidden = getHiddenSenders();
+            const lower = name.trim().toLowerCase();
+            const filtered = hidden.filter(x => (x || '').toLowerCase() !== lower);
+            setHiddenSenders(filtered);
+            updateGmmSenderDatalist();
+            renderSenderManagerList();
+            showToast(`✅ បានស្តារឈ្មោះ «${name}» ចូលក្នុងបញ្ជីវិញ!`);
+        };
+
+        window.handleRenameSenderName = function(oldName) {
+            if (!oldName) return;
+            const newName = prompt(`កែប្រែឈ្មោះ «${oldName}» ទៅជាឈ្មោះថ្មី៖`, oldName);
+            if (!newName || !newName.trim() || newName.trim() === oldName.trim()) return;
+
+            const trimmedNew = newName.trim();
+
+            if (typeof getCustomers === 'function' && typeof setCustomers === 'function') {
+                const custs = getCustomers();
+                let updated = false;
+                custs.forEach(c => {
+                    if (c && c.name && c.name.trim().toLowerCase() === oldName.trim().toLowerCase()) {
+                        c.name = trimmedNew;
+                        updated = true;
+                    }
+                });
+                if (updated) {
+                    setCustomers(custs);
+                }
+            }
+
+            if (typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) {
+                allDatabaseRecords.forEach(r => {
+                    if (r.sender && r.sender.trim().toLowerCase() === oldName.trim().toLowerCase()) r.sender = trimmedNew;
+                    if (r.sender_name && r.sender_name.trim().toLowerCase() === oldName.trim().toLowerCase()) r.sender_name = trimmedNew;
+                    if (r.group_data && r.group_data.sender_name && r.group_data.sender_name.trim().toLowerCase() === oldName.trim().toLowerCase()) r.group_data.sender_name = trimmedNew;
+                    if (r.group_info && r.group_info.sender_name && r.group_info.sender_name.trim().toLowerCase() === oldName.trim().toLowerCase()) r.group_info.sender_name = trimmedNew;
+                });
+            }
+
+            const curInp = document.getElementById('gmmSenderName');
+            if (curInp && curInp.value.trim().toLowerCase() === oldName.trim().toLowerCase()) {
+                curInp.value = trimmedNew;
+            }
+
+            updateGmmSenderDatalist();
+            renderSenderManagerList();
+            showToast(`✏️ បានកែប្រែឈ្មោះទៅជា «${trimmedNew}» ជោគជ័យ!`);
+        };
+
+        window.handleAutoDeduplicateSenders = function() {
+            const usageMap = getAllSenderUsageMap();
+            const hidden = getHiddenSenders();
+            let mergedCount = 0;
+
+            if (typeof cleanDuplicateCustomers === 'function') {
+                cleanDuplicateCustomers();
+            }
+
+            const allNames = new Set();
+            if (typeof getCustomers === 'function') {
+                getCustomers().forEach(c => { if (c && c.name) allNames.add(c.name.trim()); });
+            }
+            const allRecs = (typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) ? allDatabaseRecords : [];
+            allRecs.forEach(r => {
+                const s = r.sender || r.sender_name || (r.group_data && (r.group_data.sender_name || r.group_data.sender)) || (r.group_info && (r.group_info.sender_name || r.group_info.group_name));
+                if (s && typeof s === 'string' && s.trim()) allNames.add(s.trim());
+            });
+
+            const groups = {};
+            Array.from(allNames).forEach(n => {
+                const norm = n.toLowerCase().replace(/\s*(?:pax|នាក់|p)\s*/gi, '').replace(/[^a-z0-9\u1780-\u17ff]/gi, '');
+                if (norm) {
+                    groups[norm] = groups[norm] || [];
+                    groups[norm].push(n);
+                }
+            });
+
+            Object.values(groups).forEach(grp => {
+                if (grp.length > 1) {
+                    grp.sort((a, b) => (usageMap[b] || 0) - (usageMap[a] || 0) || a.length - b.length);
+                    const canonical = grp[0];
+                    for (let i = 1; i < grp.length; i++) {
+                        const dup = grp[i];
+                        if (dup !== canonical) {
+                            const lk = dup.toLowerCase();
+                            if (!hidden.some(x => (x || '').toLowerCase() === lk)) {
+                                hidden.push(dup);
+                            }
+                            allRecs.forEach(r => {
+                                if (r.sender && r.sender.trim() === dup) r.sender = canonical;
+                                if (r.sender_name && r.sender_name.trim() === dup) r.sender_name = canonical;
+                                if (r.group_data && r.group_data.sender_name && r.group_data.sender_name.trim() === dup) r.group_data.sender_name = canonical;
+                                if (r.group_info && r.group_info.sender_name && r.group_info.sender_name.trim() === dup) r.group_info.sender_name = canonical;
+                            });
+                            mergedCount++;
+                        }
+                    }
+                }
+            });
+
+            setHiddenSenders(hidden);
+            updateGmmSenderDatalist();
+            renderSenderManagerList();
+            alert(`🎉 បានសម្អាត និងផ្គុំឈ្មោះជាន់គ្នាស្វ័យប្រវត្តិរួចរាល់!\n\n• បានផ្គុំ និងលុបឈ្មោះជាន់គ្នា៖ ${mergedCount} ឈ្មោះ`);
+            showToast(`🧹 បានផ្គុំឈ្មោះជាន់គ្នា ${mergedCount} ចេញដោយជោគជ័យ!`);
+        };
+
+        window.handleDeleteAllUnusedSenders = function() {
+            const usageMap = getAllSenderUsageMap();
+            let unusedCusts = [];
+            if (typeof getCustomers === 'function') {
+                unusedCusts = getCustomers().filter(c => c && c.name && !usageMap[c.name.trim()]);
+            }
+
+            if (unusedCusts.length === 0) {
+                alert('ពុំមានឈ្មោះដែលមិនធ្លាប់ប្រើសម្រាប់លុបឡើយ!');
+                return;
+            }
+
+            if (!confirm(`តើអ្នកប្រាកដជាចង់លុបឈ្មោះដែលមិនដែលធ្លាប់ប្រើចំនួន ${unusedCusts.length} នាក់មែនទេ?`)) return;
+
+            const unusedNames = new Set(unusedCusts.map(c => c.name.trim().toLowerCase()));
+            const custs = getCustomers().filter(c => !unusedNames.has(c.name.trim().toLowerCase()));
+            setCustomers(custs);
+
+            const hidden = getHiddenSenders();
+            unusedCusts.forEach(c => {
+                const lk = c.name.trim().toLowerCase();
+                if (!hidden.some(x => (x || '').toLowerCase() === lk)) hidden.push(c.name.trim());
+            });
+            setHiddenSenders(hidden);
+
+            updateGmmSenderDatalist();
+            renderSenderManagerList();
+            showToast(`🗑️ បានលុបឈ្មោះមិនដែលប្រើចំនួន ${unusedCusts.length} នាក់ជោគជ័យ!`);
+        };
+
+        window.handleGmmSenderSelect = function(val) {
+            if (!val) return;
+            const senderInp = document.getElementById('gmmSenderName');
+            if (senderInp) {
+                senderInp.value = val;
+                senderInp.focus();
+                senderInp.style.border = '2px solid #10b981';
+                senderInp.style.boxShadow = '0 0 8px rgba(16, 185, 129, 0.4)';
+                setTimeout(() => {
+                    senderInp.style.border = '2px solid #0284c7';
+                    senderInp.style.boxShadow = '';
+                }, 1800);
+            }
+
+            // Try auto-filling agency if available
+            let foundAgency = '';
+            const allRecs = (typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) 
+                ? allDatabaseRecords 
+                : ((typeof records !== 'undefined' && Array.isArray(records)) ? records : []);
+            const match = allRecs.find(r => {
+                const s = r.sender || r.sender_name || (r.group_data && (r.group_data.sender_name || r.group_data.sender)) || (r.group_info && (r.group_info.sender_name || r.group_info.group_name));
+                return s && s.trim().toLowerCase() === val.trim().toLowerCase();
+            });
+            if (match) {
+                foundAgency = match.agency_company || match.group_info?.agency_company || match.group_data?.agency_company || '';
+            }
+            if (foundAgency) {
+                const agencyInp = document.getElementById('gmmAgencyCompany');
+                if (agencyInp) agencyInp.value = foundAgency;
+                const subTitleElem = document.getElementById('gmmSubTitle');
+                if (subTitleElem) {
+                    subTitleElem.textContent = `👤 អ្នកនាំ: ${val} | 🏢 ក្រុមហ៊ុន: ${foundAgency}`;
+                }
+            }
+
+            showToast(`✅ បានជ្រើសរើសអ្នកនាំ៖ «${val}»`);
+        };
+
+        window.openNewCustomerModalFromGmm = function() {
+            const senderInp = document.getElementById('gmmSenderName');
+            const typedName = senderInp ? senderInp.value.trim() : '';
+
+            if (typeof window.openNewCustomerModal === 'function') {
+                window.openNewCustomerModal();
+            } else {
+                const cModal = document.getElementById('customerModal');
+                if (cModal) {
+                    cModal.style.display = 'flex';
+                    cModal.classList.add('show');
+                }
+            }
+
+            const cModal = document.getElementById('customerModal');
+            if (cModal) {
+                cModal.style.zIndex = '1000005';
+            }
+
+            if (typedName) {
+                const nameInp = document.getElementById('customerName');
+                if (nameInp) {
+                    nameInp.value = typedName;
+                }
+            }
+
+            setTimeout(() => {
+                const nameInp = document.getElementById('customerName');
+                if (nameInp) {
+                    nameInp.focus();
+                    if (typedName) nameInp.select();
+                }
+            }, 60);
+        };
 
         function handleGmmHeaderKeydown(event, input) {
             const headerIds = ['gmmTravelDate', 'gmmReceiptNo', 'gmmExchangeRate', 'gmmSenderName'];
@@ -9283,6 +9937,7 @@ input[type="date"] {
            Printable Receipt Modal & Sharing Controls
            ========================================================================== */
         function openReceiptModal(rNoEnc, idx) {
+            if (typeof invalidateReceiptCache === 'function') invalidateReceiptCache();
             const item = getItemByRef(rNoEnc, idx);
             if (!item) {
                 alert('⚠️ មិនអាចស្វែងរកទិន្នន័យវិក្កយបត្រនេះបានទេ!');
@@ -9518,47 +10173,75 @@ input[type="date"] {
             window.open('/view_receipt.html?no=' + encodeURIComponent(rNo), '_blank');
         }
 
+        // ==========================================
+        // Fast In-Memory Receipt Rendering & Caching
+        // ==========================================
+        let _cachedReceiptBlob = null;
+        let _cachedReceiptKey = null;
+
+        function invalidateReceiptCache() {
+            _cachedReceiptBlob = null;
+            _cachedReceiptKey = null;
+        }
+
         async function captureReceiptCanvas(receiptEl) {
             if (!receiptEl) return null;
             if (document.fonts && document.fonts.ready) {
                 try {
-                    await document.fonts.ready;
-                } catch (e) {
-                    console.warn("document.fonts.ready error:", e);
-                }
+                    await Promise.race([
+                        document.fonts.ready,
+                        new Promise(resolve => setTimeout(resolve, 200))
+                    ]);
+                } catch (e) {}
             }
             return await html2canvas(receiptEl, {
-                scale: 3,
-                letterRendering: true,
+                scale: 2,
+                letterRendering: false,
                 backgroundColor: '#ffffff',
                 useCORS: true,
                 logging: false,
+                windowWidth: 1024,
+                scrollX: 0,
+                scrollY: 0,
                 onclone: (clonedDoc) => {
-                    const fontLink = clonedDoc.createElement('link');
-                    fontLink.rel = 'stylesheet';
-                    fontLink.href = 'https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&family=Noto+Sans+Khmer:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap';
-                    clonedDoc.head.appendChild(fontLink);
-
-                    if (document.fonts && clonedDoc.fonts) {
-                        try {
-                            document.fonts.forEach(font => clonedDoc.fonts.add(font));
-                        } catch (e) {}
-                    }
                     const clonedReceipt = clonedDoc.getElementById('printableReceiptArea') || clonedDoc.querySelector('.cmp-receipt-paper');
                     if (clonedReceipt) {
-                        clonedReceipt.style.fontFamily = "'Kantumruy Pro', 'Noto Sans Khmer', 'Noto Sans Thai', system-ui, -apple-system, sans-serif";
-                        clonedReceipt.style.letterSpacing = '0.01px';
+                        clonedReceipt.style.width = '780px';
+                        clonedReceipt.style.minWidth = '780px';
+                        clonedReceipt.style.maxWidth = '780px';
+                        clonedReceipt.style.boxSizing = 'border-box';
+                        clonedReceipt.style.padding = '36px 44px';
+                        clonedReceipt.style.margin = '0 auto';
+                        clonedReceipt.style.letterSpacing = 'normal';
                         clonedReceipt.style.wordSpacing = 'normal';
                         clonedReceipt.style.fontVariantLigatures = 'normal';
+                        clonedReceipt.style.fontFamily = "'Kantumruy Pro', 'Noto Sans Khmer', 'Noto Sans Thai', system-ui, -apple-system, sans-serif";
+
                         const allElems = clonedReceipt.getElementsByTagName('*');
                         for (let i = 0; i < allElems.length; i++) {
-                            allElems[i].style.letterSpacing = '0.01px';
+                            allElems[i].style.letterSpacing = 'normal';
                             allElems[i].style.wordSpacing = 'normal';
                             allElems[i].style.fontVariantLigatures = 'normal';
                         }
                     }
                 }
             });
+        }
+
+        async function getOrCaptureReceiptBlob(receiptEl) {
+            const currentRNo = document.getElementById('mReceiptNo')?.textContent?.trim() || '';
+            const currentTotal = document.getElementById('mGrandUSD')?.textContent?.trim() || '';
+            const key = `${currentRNo}_${currentTotal}`;
+            if (_cachedReceiptBlob && _cachedReceiptKey === key) {
+                return _cachedReceiptBlob;
+            }
+            const canvas = await captureReceiptCanvas(receiptEl);
+            if (!canvas) throw new Error("Could not create receipt canvas");
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            if (!blob) throw new Error("Could not create image blob");
+            _cachedReceiptBlob = blob;
+            _cachedReceiptKey = key;
+            return blob;
         }
 
         async function downloadReceiptPNG() {
@@ -9579,51 +10262,24 @@ input[type="date"] {
             const receiptEl = document.getElementById('printableReceiptArea');
             if (!receiptEl) return;
 
-            // 1. Call showSaveFilePicker IMMEDIATELY while user click gesture is 100% active
-            if ('showSaveFilePicker' in window) {
-                let fileHandle = null;
-                try {
-                    fileHandle = await window.showSaveFilePicker({
-                        suggestedName: defaultFileName,
-                        types: [{
-                            description: 'PNG Image (*.png)',
-                            accept: { 'image/png': ['.png'] }
-                        }]
-                    });
-                } catch (err) {
-                    if (err.name === 'AbortError') {
-                        // User cancelled the file picker dialog
-                        return;
-                    }
-                    console.warn('showSaveFilePicker error:', err);
-                }
-
-                if (fileHandle) {
-                    try {
-                        const canvas = await captureReceiptCanvas(receiptEl);
-                        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                        const writable = await fileHandle.createWritable();
-                        await writable.write(blob);
-                        await writable.close();
-                        if (typeof showToast === 'function') {
-                            showToast('🎉 បានរក្សាទុករូបភាពវិក្កយបត្រដោយជោគជ័យ!');
-                        }
-                        return;
-                    } catch (err) {
-                        console.error('Error writing to fileHandle:', err);
-                        alert('កំហុសក្នុងការសរសេរទិន្នន័យរូបភាព៖ ' + (err.message || err));
-                        return;
-                    }
-                }
+            if (typeof showToast === 'function') {
+                showToast('⏳ កំពុងបង្កើតរូបភាពវិក្កយបត្រ...', true);
             }
 
-            // 2. Fallback for older browsers & mobile
             try {
-                const canvas = await captureReceiptCanvas(receiptEl);
+                const blob = await getOrCaptureReceiptBlob(receiptEl);
+                const blobUrl = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.download = defaultFileName;
-                link.href = canvas.toDataURL('image/png');
+                link.href = blobUrl;
+                document.body.appendChild(link);
                 link.click();
+                document.body.removeChild(link);
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+
+                if (typeof showToast === 'function') {
+                    showToast('🎉 បានរក្សាទុករូបភាពវិក្កយបត្រដោយជោគជ័យ!');
+                }
             } catch (err) {
                 console.error("Error generating receipt PNG:", err);
                 alert('កំហុសក្នុងការបង្កើតរូបភាព៖ ' + (err.message || err));
@@ -9643,38 +10299,24 @@ input[type="date"] {
             if (!receiptEl) throw new Error("Receipt element not found");
             window.focus();
 
-            // Attempt 1: Modern Chromium ClipboardItem with Promise (maintains user gesture without expiration)
-            if (navigator.clipboard && window.ClipboardItem) {
-                try {
-                    const clipboardPromise = new Promise(async (resolve, reject) => {
-                        try {
-                            const canvas = await captureReceiptCanvas(receiptEl);
-                            canvas.toBlob(blob => {
-                                if (blob) resolve(blob);
-                                else reject(new Error("toBlob returned empty"));
-                            }, 'image/png');
-                        } catch (err) {
-                            reject(err);
-                        }
-                    });
-                    const item = new ClipboardItem({ 'image/png': clipboardPromise });
-                    await navigator.clipboard.write([item]);
-                    return true;
-                } catch (e1) {
-                    console.warn("Promise-based clipboard write failed, trying direct blob write:", e1);
-                }
-            }
-
-            // Attempt 2: Direct blob write
-            const canvas = await captureReceiptCanvas(receiptEl);
-            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            const blob = await getOrCaptureReceiptBlob(receiptEl);
             if (!blob) throw new Error("Could not create PNG blob");
 
             if (navigator.clipboard && window.ClipboardItem) {
-                window.focus();
-                const item = new ClipboardItem({ 'image/png': blob });
-                await navigator.clipboard.write([item]);
-                return true;
+                try {
+                    const item = new ClipboardItem({ 'image/png': blob });
+                    await navigator.clipboard.write([item]);
+                    return true;
+                } catch (err) {
+                    console.warn("Direct blob clipboard write failed, trying promise fallback:", err);
+                    try {
+                        const item = new ClipboardItem({ 'image/png': Promise.resolve(blob) });
+                        await navigator.clipboard.write([item]);
+                        return true;
+                    } catch (e2) {
+                        console.warn("Clipboard write failed:", e2);
+                    }
+                }
             }
 
             throw new Error("Clipboard API not supported");
@@ -9694,17 +10336,17 @@ input[type="date"] {
             }
 
             if (typeof showToast === 'function') {
-                showToast('⏳ កំពុង Copy រូបភាពវិក្កយបត្រ...', true);
+                showToast('⏳ កំពុងដំណើរការ Copy រូបភាពវិក្កយបត្រ...', true);
             }
 
             const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-            // 1. Android & Mobile Native Share
-            if (isMobileDevice && navigator.share && navigator.canShare) {
-                try {
-                    const canvas = await captureReceiptCanvas(receiptEl);
-                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                    if (blob) {
+            try {
+                const blob = await getOrCaptureReceiptBlob(receiptEl);
+
+                // 1. Android & Mobile Native Share
+                if (isMobileDevice && navigator.share && navigator.canShare && blob) {
+                    try {
                         const file = new File([blob], `Receipt_${rNo.replace(/[^a-zA-Z0-9_-]/g, '_')}.png`, { type: 'image/png' });
                         if (navigator.canShare({ files: [file] })) {
                             await navigator.share({
@@ -9715,25 +10357,29 @@ input[type="date"] {
                             if (typeof showToast === 'function') showToast('✅ បាន Share វិក្កយបត្ររួចរាល់!');
                             return;
                         }
+                    } catch (err) {
+                        if (err.name === 'AbortError') return;
+                        console.log('Mobile share canceled or rejected:', err);
                     }
-                } catch (err) {
-                    console.log('Mobile share canceled or rejected:', err);
                 }
-            }
 
-            // 2. Desktop PC Clipboard Copy & Direct Telegram Launch
-            try {
-                await copyReceiptToClipboard(receiptEl);
-                if (typeof showToast === 'function') {
-                    showToast('📋 បាន Copy រូបភាពវិក្កយបត្ររួចរាល់! ចុច <b>Ctrl + V</b> ក្នុង Telegram ដើម្បី Paste ផ្ញើ', true);
+                // 2. Desktop PC Clipboard Copy & Direct Telegram Launch
+                try {
+                    await copyReceiptToClipboard(receiptEl);
+                    if (typeof showToast === 'function') {
+                        showToast('📋 បាន Copy រូបភាពវិក្កយបត្ររួចរាល់! ចុច <b>Ctrl + V</b> ក្នុង Telegram ដើម្បី Paste ផ្ញើ', true);
+                    }
+                    window.location.href = 'tg://msg';
+                } catch (err) {
+                    console.warn('Clipboard write failed:', err);
+                    if (typeof showToast === 'function') {
+                        showToast('⚠️ បានបើក Telegram! (ប្រសិនមិនទាន់ជាប់ សូម Right-click លើវិក្កយបត្រ រើស "Copy image" រួច Ctrl+V)', false);
+                    }
+                    window.location.href = 'tg://msg';
                 }
-                window.location.href = 'tg://msg';
-            } catch (err) {
-                console.warn('Clipboard write failed:', err);
-                if (typeof showToast === 'function') {
-                    showToast('⚠️ បានបើក Telegram! (ប្រសិនមិនទាន់ជាប់ សូម Right-click លើវិក្កយបត្រ រើស "Copy image" រួច Ctrl+V)', false);
-                }
-                window.location.href = 'tg://msg';
+            } catch (e) {
+                console.error("shareReceiptTelegram error:", e);
+                alert("កំហុសក្នុងការចែករំលែកវិក្កយបត្រ៖ " + (e.message || e));
             }
         }
 
@@ -10610,7 +11256,18 @@ document.addEventListener('paste', function(e) {
     function setBookings(b) { saveData(STORAGE_KEY_BOOKINGS, b); }
 
     function getCars() { return loadData(STORAGE_KEY_CARS, DEFAULT_CARS); }
-    function setCars(c) { saveData(STORAGE_KEY_CARS, c); }
+    function setCars(c) {
+        saveData(STORAGE_KEY_CARS, c);
+        try {
+            fetch('/api/cars', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cars: c })
+            }).catch(() => {});
+        } catch (e) {}
+    }
+    window.getCars = getCars;
+    window.setCars = setCars;
 
     function getCustomers() {
         let list = loadData(STORAGE_KEY_CUSTOMERS, []);
@@ -10652,6 +11309,8 @@ document.addEventListener('paste', function(e) {
             }).catch(() => {});
         } catch (e) {}
     }
+    window.getCustomers = getCustomers;
+    window.setCustomers = setCustomers;
 
     function getTgInbox() {
         return loadData(STORAGE_KEY_INBOX, [
@@ -11632,7 +12291,10 @@ document.addEventListener('paste', function(e) {
                                     ${b.driverTelegram ? `<a href="https://t.me/${b.driverTelegram.replace('@','')}" target="_blank" style="font-weight:700; color:#0284c7; text-decoration:none;"><i class="fa-brands fa-telegram"></i> ${b.driverTelegram}</a>` : '<span style="color:#94a3b8;">--</span>'}
                                 </td>
                                 <td style="padding: 10px; text-align: center;">
-                                    <button type="button" class="btn-ar btn-ar-outline" style="padding: 3px 8px; font-size: 11px;" onclick="closeModal('carScheduleModal'); viewBookingDetails('${b.id}');" title="មើលព័ត៌មានលម្អិត"><i class="fa-solid fa-eye text-primary"></i></button>
+                                    <div style="display: inline-flex; gap: 4px; align-items: center;">
+                                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 3px 8px; font-size: 11px;" onclick="closeModal('carScheduleModal'); viewBookingDetails('${b.id}');" title="មើលព័ត៌មានលម្អិត"><i class="fa-solid fa-eye text-primary"></i></button>
+                                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 3px 8px; font-size: 11px; color: #dc2626; border-color: #fca5a5; background: #fef2f2;" onclick="closeModal('carScheduleModal'); deleteBooking('${b.id}');" title="លុបការកក់"><i class="fa-solid fa-trash-can text-danger"></i></button>
+                                    </div>
                                 </td>
                             </tr>
                         `;
@@ -11762,6 +12424,7 @@ document.addEventListener('paste', function(e) {
                                 <i class="fa-solid fa-calendar-days"></i> កាលវិភាគកក់ (${sched.all.length})
                             </button>
                             <div style="display: flex; gap: 5px;">
+                                <button type="button" class="btn-ar btn-ar-outline" onclick="deleteCar('${c.id}')" style="padding: 5px 8px; font-size: 11px; color: #dc2626; border-color: #fca5a5; background: #fef2f2;" title="លុបរថយន្តនេះ"><i class="fa-solid fa-trash-can text-danger"></i></button>
                                 <button type="button" class="btn-ar btn-ar-outline" onclick="openEditCarModal('${c.id}')" style="padding: 5px 8px; font-size: 11px;" title="កែប្រែ"><i class="fa-solid fa-pen text-primary"></i></button>
                                 <button type="button" class="btn-ar btn-ar-primary" onclick="quickBookCar('${c.model}')" style="padding: 5px 10px; font-size: 11.5px; font-weight: 800;" title="កក់ឡាននេះ"><i class="fa-solid fa-calendar-plus"></i> កក់</button>
                             </div>
@@ -11892,6 +12555,9 @@ document.addEventListener('paste', function(e) {
         if (m) {
             m.style.display = 'none';
             m.classList.remove('show');
+            if (id === 'customerModal' || id === 'senderManagerModal') {
+                m.style.zIndex = '';
+            }
         }
     };
 
@@ -12953,20 +13619,36 @@ document.addEventListener('paste', function(e) {
         }
     };
 
-    window.deleteBooking = function(id) {
+    window.deleteBooking = async function(id) {
+        if (!id) return;
+        window.syncCooldownUntil = Date.now() + 10000;
         if (!confirm(`តើអ្នកប្រាកដជាចង់លុបការកក់លេខ ${id} នេះមែនទេ?`)) return;
+        window.syncCooldownUntil = Date.now() + 10000;
+
+        const strId = String(id).trim().toLowerCase();
         let bookings = getBookings();
-        bookings = bookings.filter(b => b.id !== id);
+        bookings = bookings.filter(b => String(b.id || '').trim().toLowerCase() !== strId);
         setBookings(bookings);
+
         try {
-            fetch('/api/bookings', {
+            await fetch('/api/bookings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ bookings: bookings })
-            }).catch(e => {});
-        } catch (e) {}
-        showToast('បានលុបការកក់រួចរាល់ 🗑️');
-        switchTab(currentTab);
+            });
+        } catch (e) {
+            console.error('Error deleting booking:', e);
+        }
+
+        closeModal('bookingDetailsModal');
+        closeModal('carScheduleModal');
+        showToast('បានលុបការកក់លេខ ' + id + ' រួចរាល់ 🗑️');
+        if (typeof renderDashboard === 'function') renderDashboard();
+        if (typeof renderBookings === 'function') renderBookings(currentBookingFilter);
+        if (typeof renderCalendar === 'function') renderCalendar();
+        if (typeof renderFleetSchedule === 'function') renderFleetSchedule();
+        if (typeof renderCars === 'function') renderCars(currentCarFilter);
+        if (typeof switchTab === 'function') switchTab(currentTab);
     };
 
     window.viewBookingDetails = function(id) {
@@ -13078,14 +13760,19 @@ document.addEventListener('paste', function(e) {
 
         if (footer) {
             footer.innerHTML = `
-                <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('bookingDetailsModal')">បិទ</button>
-                <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                    <button type="button" class="btn-ar" style="${b.invoiceDone ? 'background: #dcfce7; color: #15803d; border: 1.5px solid #86efac;' : 'background: #f8fafc; color: #475569; border: 1.5px solid #cbd5e1;'} font-weight: 800;" onclick="toggleBookingInvoice('${b.id}', event); viewBookingDetails('${b.id}');" title="ចុចដើម្បីប្តូរស្ថានភាព Invoice">
-                        <i class="fa-solid fa-file-invoice-dollar"></i> ${b.invoiceDone ? 'ធ្វើ Invoice ហើយ ✅' : 'ធិចថាធ្វើ Invoice ⬜'}
-                    </button>
-                    <button type="button" class="btn-ar btn-ar-primary" style="font-weight: 800; background: #0284c7;" onclick="closeModal('bookingDetailsModal'); openDispatchDriverModal('${b.id}');"><i class="fa-brands fa-telegram"></i> ចាត់ចែង & បញ្ជូនតៃកុង</button>
-                    <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('bookingDetailsModal'); openEditBookingModal('${b.id}');"><i class="fa-solid fa-pen"></i> កែប្រែ</button>
-                    <button type="button" class="btn-ar btn-ar-success" onclick="markBookingCompleted('${b.id}')"><i class="fa-solid fa-check"></i> បញ្ចប់ការកក់</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 8px;">
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('bookingDetailsModal')">បិទ</button>
+                        <button type="button" class="btn-ar btn-ar-outline" style="color: #dc2626; border-color: #fca5a5; background: #fef2f2; font-weight: 800;" onclick="deleteBooking('${b.id}')" title="លុបការកក់នេះ"><i class="fa-solid fa-trash-can"></i> លុបការកក់</button>
+                    </div>
+                    <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                        <button type="button" class="btn-ar" style="${b.invoiceDone ? 'background: #dcfce7; color: #15803d; border: 1.5px solid #86efac;' : 'background: #f8fafc; color: #475569; border: 1.5px solid #cbd5e1;'} font-weight: 800;" onclick="toggleBookingInvoice('${b.id}', event); viewBookingDetails('${b.id}');" title="ចុចដើម្បីប្តូរស្ថានភាព Invoice">
+                            <i class="fa-solid fa-file-invoice-dollar"></i> ${b.invoiceDone ? 'ធ្វើ Invoice ហើយ ✅' : 'ធិចថាធ្វើ Invoice ⬜'}
+                        </button>
+                        <button type="button" class="btn-ar btn-ar-primary" style="font-weight: 800; background: #0284c7;" onclick="closeModal('bookingDetailsModal'); openDispatchDriverModal('${b.id}');"><i class="fa-brands fa-telegram"></i> ចាត់ចែង & បញ្ជូនតៃកុង</button>
+                        <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('bookingDetailsModal'); openEditBookingModal('${b.id}');"><i class="fa-solid fa-pen"></i> កែប្រែ</button>
+                        <button type="button" class="btn-ar btn-ar-success" onclick="markBookingCompleted('${b.id}')"><i class="fa-solid fa-check"></i> បញ្ចប់ការកក់</button>
+                    </div>
                 </div>
             `;
         }
@@ -13277,7 +13964,13 @@ document.addEventListener('paste', function(e) {
         msg += `🏁 ទីតាំងទម្លាក់ (Dropoff): ${b.dropoffLoc || 'ប៉ោយប៉ែត'}\n`;
         if (b.vipService) msg += `⭐ សេវា VIP: ${b.vipService}\n`;
         if (b.borderClear) msg += `🚀 សេវាច្រកទ្វារ: ${b.borderClear}\n`;
-        if (b.notes) msg += `📝 ចំណាំ / ទីតាំង Location:\n${b.notes}\n`;
+        if (b.notes) {
+            let notesText = String(b.notes).trim();
+            if (notesText.includes(' | ')) {
+                notesText = notesText.split(/\s*\|\s*/).join('\n');
+            }
+            msg += `📝 ចំណាំ / ទីតាំង Location:\n${notesText}\n`;
+        }
         msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
         msg += `🙏 សូមអ្នកបើកបរពិនិត្យមើលម៉ោង និងទីតាំងអោយបានច្បាស់លាស់។ សូមអរគុណ!`;
 
@@ -13699,20 +14392,22 @@ document.addEventListener('paste', function(e) {
             else if (rx_phnompenh.test(right)) matchedDropoff = 'ភ្នំពេញ';
         }
 
-        // Capture specific pickup place: e.g. "รับที่ตึก55", "มารับตึกฟ้า", "รับที่ M1", "มารับที่ ตึก 40", "รับ : M1", "จุดรับ M1", "ទទួលនៅ M1"
+        // Capture specific pickup place: supports multiple pickup points (e.g. 2-4 locations)
         const rxSpecificPickup = /(?:มารับที่|มารับ|รับที่|รับ(?!\s*\d{1,2}[:.]\d{2}|\s*\d{1,2}\s*(?:น\.|am|pm|ตี|[.:]\d{2})|[ทร]ាប|งาน|แขก|ส่ง|เหมา)|จุดรับ(?:ที่)?|สถานที่รับ(?:ที่)?|รับ\s*[:៖]|มารับ\s*[:៖]|pickup\s*(?:at|from)?|ទទួលនៅ|ទៅទទួលនៅ|យកពី|ទទួលពី)[\s:៖]*([A-Za-z0-9\u0E00-\u0E7F\s\-_#\.\(\)]+?)(?=\s*(?:เวลา|ម៉ោង|time|\d{1,2}[:.]\d{2}|วันที่|ថ្ងៃ|VIP|vip|ขา|pax|คน|\n|\r|$))/gi;
-        let specificPickupPlace = '';
+        let specificPickupPlaces = [];
         let spMatch;
         while ((spMatch = rxSpecificPickup.exec(text)) !== null) {
             if (spMatch[1]) {
                 let cand = spMatch[1].trim().replace(/^(?:ที่|at|from|จาก)\s*/i, '').trim();
                 cand = cand.replace(/(ตึก)(\d+)/g, '$1 $2');
                 if (cand && !/^(?:รถ[A-Za-z0-9\s]*|คน|ผู้โดยสาร|ลูกค้า|สนามบิน|airport|ព្រលាន|\d+)$/i.test(cand)) {
-                    specificPickupPlace = cand;
-                    break;
+                    if (!specificPickupPlaces.some(p => p.toLowerCase() === cand.toLowerCase())) {
+                        specificPickupPlaces.push(cand);
+                    }
                 }
             }
         }
+        let specificPickupPlace = specificPickupPlaces.join(' + ');
 
         // Capture specific dropoff or destination: e.g. "send to สนามบินเดโช", "ไปสนามบินเตโช", "ไป...", "ส่งที่ ...", "มาส่งที่ ...", "ទៅកាន់...", "ជូនទៅ ..."
         const rxSpecificDropoff = /(?:(?:send\s*to|ไป\s*ส่ง(?:ที่)?|มา\s*ส่ง(?:ที่)?|ส่ง\s*ที่|ไป\s*ที่|ទៅកាន់|ទៅ\s*ដល់|ទៅ|ជូនទៅ|ដាក់នៅ|dropoff\s*(?:at|to)?)\s*[:៖]*|(?:^|\n)\s*(?:ไป|ส่ง)\s*[:៖]?\s*)([A-Za-z0-9\u0E00-\u0E7F\s\-_#\.\(\)]+?)(?=\s*(?:เวลา|ម៉ោង|time|\d{1,2}[:.]\d{2}|วันที่|ថ្ងៃ|VIP|vip|ขา|pax|คน|\n|\r|$))/im;
@@ -14033,17 +14728,90 @@ document.addEventListener('paste', function(e) {
             }
         }
 
-        // 9. Notes, Flight & Maps link
+        // 9. Notes, Flight, Multiple Pickup Locations & All Maps links
         const flightMatch = text.match(/flight[\s:៖]*([A-Za-z0-9]+)/i);
-        const mapsMatch = text.match(/https?:\/\/[^\s]+/);
         const dropoffPlaceMatch = text.match(/มาส่ง\s*[:៖]\s*([^\n\r]+)/i);
 
+        // Find ALL URLs in text (Google Maps & others)
+        const rawUrls = text.match(/https?:\/\/[^\s]+/g) || [];
+        const uniqueUrls = [];
+        for (const u of rawUrls) {
+            const cleanU = u.trim().replace(/[\.,;:\)\]]+$/, '');
+            if (cleanU && !uniqueUrls.includes(cleanU)) {
+                uniqueUrls.push(cleanU);
+            }
+        }
+
+        // Detect context label for each URL from surrounding text
+        const textLines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+        const mappedUrls = [];
+        for (const u of uniqueUrls) {
+            let label = '';
+            for (let idx = 0; idx < textLines.length; idx++) {
+                const line = textLines[idx];
+                if (line.includes(u)) {
+                    let pre = line.split(u)[0].trim().replace(/^[📍🏢🏠\s:\-]+/, '').trim();
+                    if (pre && pre.length < 90 && !/^(?:https?|link|map|ផែនទី)/i.test(pre)) {
+                        label = pre;
+                    } else if (idx > 0) {
+                        const prevLine = textLines[idx - 1];
+                        if (!prevLine.includes('http') && prevLine.length < 100) {
+                            let prevClean = prevLine.replace(/^[📍🏢🏠\s:\-]+/, '').trim();
+                            if (!/^(?:time|date|customer|car|vip|flight|ราคา|វេលា|ម៉ោង|ថ្ងៃ|combodia|bangkok|airways)/i.test(prevClean)) {
+                                label = prevClean;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+            mappedUrls.push({ url: u, label: label });
+        }
+
+        // If specificPickupPlaces was empty, check if mappedUrls have pickup labels (e.g. "House 15", "ตึก 32", etc.)
+        if (specificPickupPlaces.length === 0) {
+            for (const mu of mappedUrls) {
+                if (mu.label && !/^(?:ส่ง|ไปส่ง|to|dropoff|สนามบิน)/i.test(mu.label)) {
+                    specificPickupPlaces.push(mu.label);
+                }
+            }
+            if (specificPickupPlaces.length > 0) {
+                specificPickupPlace = specificPickupPlaces.join(' + ');
+                if (!matchedPickup || matchedPickup === 'ប៉ោយប៉ែត' || matchedPickup === 'ភ្នំពេញ') {
+                    matchedPickup = specificPickupPlace;
+                    if (pickupEl) {
+                        if (typeof setLocationDropdownVal === 'function') setLocationDropdownVal(pickupEl, matchedPickup);
+                        else pickupEl.value = matchedPickup;
+                    }
+                }
+            }
+        }
+
         let notesParts = [];
-        if (specificPickupPlace) notesParts.push(`ទទួលនៅ: ${specificPickupPlace}`);
+        if (flightMatch) notesParts.push(`Flight: ${flightMatch[1]}`);
+
+        if (specificPickupPlaces.length === 1) {
+            notesParts.push(`ទទួលនៅ: ${specificPickupPlaces[0]}`);
+        } else if (specificPickupPlaces.length > 1) {
+            notesParts.push(`ទទួល ${specificPickupPlaces.length} កន្លែង: ${specificPickupPlaces.join(' | ')}`);
+        }
+
         if (dropoffPlaceMatch) notesParts.push(`ជូនទៅ: ${dropoffPlaceMatch[1].trim()}`);
         else if (specificDropoffPlace) notesParts.push(`ជូនទៅ: ${specificDropoffPlace}`);
-        if (flightMatch) notesParts.push(`Flight: ${flightMatch[1]}`);
-        if (mapsMatch) notesParts.push(`📍 Map: ${mapsMatch[0]}`);
+
+        // Add ALL Google Maps links with their respective location labels
+        if (mappedUrls.length === 1) {
+            const mu = mappedUrls[0];
+            const lbl = mu.label ? ` (${mu.label})` : '';
+            notesParts.push(`📍 Map${lbl}: ${mu.url}`);
+        } else if (mappedUrls.length > 1) {
+            mappedUrls.forEach((mu, idx) => {
+                const isDropoffUrl = mu.label && /^(?:ส่ง|ไปส่ง|to|dropoff|สนามบิน)/i.test(mu.label);
+                const icon = isDropoffUrl ? '🏁 Dropoff Map' : `📍 Map ${idx + 1}`;
+                const lbl = mu.label ? ` (${mu.label})` : '';
+                notesParts.push(`${icon}${lbl}: ${mu.url}`);
+            });
+        }
 
         // Pax count e.g. "10คน", "10 នាក់"
         const paxMatch = text.match(/(\d+)\s*(?:คน|នាក់|pax|guests?|passengers?)/i);
@@ -14100,6 +14868,8 @@ document.addEventListener('paste', function(e) {
         const f = document.getElementById('carForm');
         if (f) f.reset();
         document.getElementById('carId').value = '';
+        const delBtn = document.getElementById('btnDeleteCarModal');
+        if (delBtn) delBtn.style.display = 'none';
         openModal('carModal');
     };
 
@@ -14124,6 +14894,9 @@ document.addEventListener('paste', function(e) {
         document.getElementById('carTransmission').value = c.transmission || 'អូតូ (Auto)';
         document.getElementById('carStatus').value = c.status || 'available';
         document.getElementById('carNotes').value = c.notes || '';
+
+        const delBtn = document.getElementById('btnDeleteCarModal');
+        if (delBtn) delBtn.style.display = 'inline-flex';
 
         openModal('carModal');
     };
@@ -14172,6 +14945,34 @@ document.addEventListener('paste', function(e) {
         closeModal('carModal');
         showToast('រក្សាទុកព័ត៌មានឡានជោគជ័យ! 🚗');
         renderCars(currentCarFilter);
+    };
+
+    window.deleteCar = async function(id) {
+        if (!id) return;
+        window.syncCooldownUntil = Date.now() + 10000;
+        const cars = getCars();
+        const c = cars.find(x => x.id === id);
+        const label = c ? `${c.model} (${c.plate})` : id;
+        if (!confirm(`តើអ្នកប្រាកដជាចង់លុបរថយន្ត «${label}» នេះចេញពីប្រព័ន្ធមែនទេ?`)) return;
+        window.syncCooldownUntil = Date.now() + 10000;
+
+        const updated = cars.filter(x => x.id !== id);
+        setCars(updated);
+
+        try {
+            await fetch('/api/cars', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cars: updated })
+            });
+        } catch (e) {
+            console.error('Error deleting car on server:', e);
+        }
+
+        closeModal('carModal');
+        renderCars(currentCarFilter);
+        if (typeof populateCarDropdowns === 'function') populateCarDropdowns();
+        showToast(`🗑️ បានលុបរថយន្ត «${label}» រួចរាល់!`);
     };
 
     // Customer Modal
@@ -14272,29 +15073,68 @@ document.addEventListener('paste', function(e) {
             }
             showToast(`🎉 បានជ្រើសរើសភ្ញៀវ «${newCust.name}» ចូលការកក់ស្វ័យប្រវត្តិ!`);
         }
+
+        // If groupMembersModal is currently open, automatically update sender/customer name
+        const gmmModal = document.getElementById('groupMembersModal');
+        if (gmmModal && (gmmModal.classList.contains('active') || gmmModal.style.display === 'flex' || gmmModal.style.display === 'block')) {
+            const gmmSender = document.getElementById('gmmSenderName');
+            if (gmmSender) {
+                gmmSender.value = newCust.name;
+                gmmSender.focus();
+                gmmSender.style.border = '2px solid #10b981';
+                gmmSender.style.boxShadow = '0 0 8px rgba(16, 185, 129, 0.4)';
+                setTimeout(() => {
+                    gmmSender.style.border = '2px solid #0284c7';
+                    gmmSender.style.boxShadow = '';
+                }, 2000);
+            }
+            if (typeof window.updateGmmSenderDatalist === 'function') {
+                window.updateGmmSenderDatalist();
+            }
+            showToast(`🎉 បានបំពេញឈ្មោះអ្នកនាំ/ភ្ញៀវ «${newCust.name}» ចូលក្នុងក្រុមជោគជ័យ!`);
+        }
     };
 
     // Delete Customer from system (individual removal)
-    window.deleteCustomer = function(id) {
+    window.deleteCustomer = async function(id) {
+        if (!id) return;
+        window.syncCooldownUntil = Date.now() + 10000;
         let custs = getCustomers();
-        const c = custs.find(x => x.id === id);
-        if (!c) return;
-        const name = c.name || id;
+        const strId = String(id).trim().toLowerCase();
+        const c = custs.find(x => String(x.id || '').trim().toLowerCase() === strId || String(x.name || '').trim().toLowerCase() === strId);
+        const name = c ? (c.name || id) : id;
         if (!confirm(`តើអ្នកប្រាកដជាចង់លុបភ្ញៀវ «${name}» នេះចេញពីបញ្ជីមែនទេ? (ភ្ញៀវឈប់ប្រើ ឬឈ្មោះជាន់គ្នា)`)) {
             return;
         }
-        custs = custs.filter(x => x.id !== id);
+        window.syncCooldownUntil = Date.now() + 10000;
+
+        custs = custs.filter(x => {
+            const xId = String(x.id || '').trim().toLowerCase();
+            const xName = String(x.name || '').trim().toLowerCase();
+            return xId !== strId && xName !== strId && (!c || xName !== String(c.name || '').trim().toLowerCase());
+        });
         setCustomers(custs);
 
+        // Also add to hiddenSenders on server to prevent re-emergence from raw telegram/bookings extraction
+        try {
+            await fetch('/api/hidden_senders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sender_name: name })
+            });
+        } catch (e) {}
+
         const el = document.getElementById('bookingCustomerSelect');
-        if (el && el.value === id) {
+        if (el && (el.value === id || el.value === name)) {
             el.value = '';
             const delBtn = document.getElementById('btnDeleteSelectedCustomer');
             if (delBtn) delBtn.style.display = 'none';
         }
 
+        closeModal('customerModal');
         populateCustomerDropdown();
         if (typeof renderCustomers === 'function') renderCustomers();
+        if (typeof renderSenderManagerList === 'function') renderSenderManagerList();
         showToast(`🗑️ បានលុបភ្ញៀវ «${name}» ចេញពីបញ្ជីជោគជ័យ!`);
     };
 
@@ -15652,10 +16492,12 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
 
     // Global Server Synchronization Function (Syncs PC & Phone in real-time)
     window.syncBookingsWithServer = async function() {
+        if (Date.now() < (window.syncCooldownUntil || 0)) return;
         try {
             const resp = await fetch('/api/bookings');
             if (!resp.ok) return;
             const data = await resp.json();
+            if (Date.now() < (window.syncCooldownUntil || 0)) return;
             if (data && data.success && Array.isArray(data.bookings)) {
                 if (data.bookings.length > 0) {
                     const localBks = getBookings();
@@ -15688,26 +16530,32 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
 
     // Global Customer Server Synchronization (Syncs PC & Phone in real-time)
     window.syncCustomersWithServer = async function() {
+        if (Date.now() < (window.syncCooldownUntil || 0)) return;
         try {
             const resp = await fetch('/api/customers');
             if (!resp.ok) return;
             const data = await resp.json();
+            if (Date.now() < (window.syncCooldownUntil || 0)) return;
             if (data && data.success && Array.isArray(data.customers)) {
-                if (data.customers.length > 0) {
-                    const localCusts = loadData(STORAGE_KEY_CUSTOMERS, []);
-                    const merged = [...data.customers];
-                    const existingNames = new Set(merged.map(x => (x.name || '').trim().toLowerCase()));
-                    (Array.isArray(localCusts) ? localCusts : []).forEach(lc => {
-                        const lName = (lc.name || '').trim().toLowerCase();
-                        if (lName && !existingNames.has(lName)) {
-                            existingNames.add(lName);
-                            merged.push(lc);
+                // Query hidden senders to make sure deleted customers stay deleted
+                let hiddenSet = new Set();
+                try {
+                    const hResp = await fetch('/api/hidden_senders');
+                    if (hResp.ok) {
+                        const hData = await hResp.json();
+                        if (hData && Array.isArray(hData.hidden_senders)) {
+                            hiddenSet = new Set(hData.hidden_senders.map(s => String(s || '').trim().toLowerCase()));
                         }
-                    });
-                    const sStr = JSON.stringify(merged);
+                    }
+                } catch (e) {}
+
+                const cleanServerCusts = data.customers.filter(c => !hiddenSet.has(String(c.name || '').trim().toLowerCase()));
+                if (cleanServerCusts.length > 0) {
+                    const localCusts = loadData(STORAGE_KEY_CUSTOMERS, []);
+                    const sStr = JSON.stringify(cleanServerCusts);
                     const lStr = JSON.stringify(localCusts);
                     if (sStr !== lStr) {
-                        saveData(STORAGE_KEY_CUSTOMERS, merged);
+                        saveData(STORAGE_KEY_CUSTOMERS, cleanServerCusts);
                         if (typeof populateCustomerDropdown === 'function') populateCustomerDropdown();
                         if (currentTab === 'customers' && typeof renderCustomers === 'function') renderCustomers();
                     }
@@ -15725,24 +16573,50 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
         } catch (e) {}
     };
 
+    // Global Cars Server Synchronization (Syncs fleet across devices)
+    window.syncCarsWithServer = async function() {
+        if (Date.now() < (window.syncCooldownUntil || 0)) return;
+        try {
+            const resp = await fetch('/api/cars');
+            if (!resp.ok) return;
+            const data = await resp.json();
+            if (Date.now() < (window.syncCooldownUntil || 0)) return;
+            if (data && data.success && Array.isArray(data.cars) && data.cars.length > 0) {
+                const localCars = getCars();
+                const sStr = JSON.stringify(data.cars);
+                const lStr = JSON.stringify(localCars);
+                if (sStr !== lStr) {
+                    saveData(STORAGE_KEY_CARS, data.cars);
+                    if (currentTab === 'cars' && typeof renderCars === 'function') renderCars(currentCarFilter);
+                    if (typeof populateCarDropdowns === 'function') populateCarDropdowns();
+                }
+            }
+        } catch (e) {}
+    };
+
     function renderCurrentTabQuietly() {
         try {
             if (currentTab === 'dashboard') renderDashboard();
             else if (currentTab === 'bookings') renderBookings(currentBookingFilter);
             else if (currentTab === 'calendar') renderCalendar();
+            else if (currentTab === 'cars') renderCars(currentCarFilter);
         } catch(e) {}
     }
 
     // Auto-sync whenever user returns to browser tab on Phone or PC
     document.addEventListener('visibilitychange', function() {
         if (!document.hidden) {
+            if (Date.now() < (window.syncCooldownUntil || 0)) return;
             if (typeof window.syncBookingsWithServer === 'function') window.syncBookingsWithServer();
             if (typeof window.syncCustomersWithServer === 'function') window.syncCustomersWithServer();
+            if (typeof window.syncCarsWithServer === 'function') window.syncCarsWithServer();
         }
     });
     window.addEventListener('focus', function() {
+        if (Date.now() < (window.syncCooldownUntil || 0)) return;
         if (typeof window.syncBookingsWithServer === 'function') window.syncBookingsWithServer();
         if (typeof window.syncCustomersWithServer === 'function') window.syncCustomersWithServer();
+        if (typeof window.syncCarsWithServer === 'function') window.syncCarsWithServer();
     });
 
     // Auto initialize if DOM is already loaded or when ready

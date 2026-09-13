@@ -1056,6 +1056,22 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json_response({'success': True, 'customers': custs})
             return
 
+        elif path == '/api/cars':
+            car_file = os.path.join(DATA_DIR, 'autorent_cars.json')
+            if not os.path.exists(car_file):
+                car_file = os.path.join(BASE_DIR, 'autorent_cars.json')
+            cars = load_json(car_file, [])
+            self.send_json_response({'success': True, 'cars': cars})
+            return
+
+        elif path == '/api/hidden_senders':
+            hf = os.path.join(DATA_DIR, 'hidden_senders.json')
+            if not os.path.exists(hf):
+                hf = os.path.join(BASE_DIR, 'hidden_senders.json')
+            h_list = load_json(hf, [])
+            self.send_json_response({'success': True, 'hidden_senders': h_list})
+            return
+
         elif path == '/api/delete_telegram_message':
             msg_id = query.get('id', [None])[0]
             msg_text = query.get('text', [None])[0]
@@ -2745,6 +2761,37 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json_response({'success': True, 'customer': customer, 'count': len(current_custs)})
             else:
                 self.send_json_response({'success': False, 'error': 'Invalid customer data'}, status=400)
+            return
+
+        elif path == '/api/cars':
+            car_file = os.path.join(DATA_DIR, 'autorent_cars.json')
+            if not os.path.exists(os.path.dirname(car_file)):
+                car_file = os.path.join(BASE_DIR, 'autorent_cars.json')
+            cars = req_data.get('cars')
+            if isinstance(cars, list):
+                save_json(car_file, cars)
+                self.send_json_response({'success': True, 'count': len(cars)})
+            else:
+                self.send_json_response({'success': False, 'error': 'Invalid cars data'}, status=400)
+            return
+
+        elif path == '/api/hidden_senders':
+            hf = os.path.join(DATA_DIR, 'hidden_senders.json')
+            if not os.path.exists(os.path.dirname(hf)):
+                hf = os.path.join(BASE_DIR, 'hidden_senders.json')
+            current_h = load_json(hf, [])
+            if not isinstance(current_h, list):
+                current_h = []
+            if 'sender_name' in req_data:
+                s_nm = str(req_data['sender_name']).strip()
+                if s_nm and s_nm not in current_h:
+                    current_h.append(s_nm)
+                save_json(hf, current_h)
+                self.send_json_response({'success': True, 'hidden_senders': current_h})
+            else:
+                h_list = req_data.get('hidden_senders', [])
+                save_json(hf, h_list)
+                self.send_json_response({'success': True, 'count': len(h_list)})
             return
 
         elif path == '/api/save_telegram_photo':
