@@ -90,7 +90,8 @@ try:
     from telegram_utils import (
         get_telegram_config, save_telegram_config, send_telegram_photo_bot,
         send_telegram_text_bot, get_telegram_bot_info, telegram_bot_listener,
-        launch_telegram_desktop, get_telegram_exe_path, _handle_chat_migration
+        launch_telegram_desktop, get_telegram_exe_path, _handle_chat_migration,
+        download_telegram_image_by_file_id
     )
 except Exception as e:
     def get_telegram_config(): return {"bot_token": "8884318593:AAEipEVki9o1YFL0_8IYoUeSn3Xif4dlVOk", "chat_id": "8985821312"}
@@ -101,6 +102,7 @@ except Exception as e:
     def get_telegram_bot_info(t): return {"ok": False}
     def launch_telegram_desktop(): return False
     def get_telegram_exe_path(): return None
+    def download_telegram_image_by_file_id(f, d=None, t=None, data_dir=None): return None
     telegram_bot_listener = None
 
 
@@ -1295,6 +1297,65 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json_response({'success': True, 'groups': groups})
             return
 
+        # Serve Telegram Images with Auto-Recovery & Multi-directory Fallback
+        if path.startswith('/telegram_images/'):
+            clean_rel = path.lstrip('/').replace('/', os.sep)
+            img_filename = os.path.basename(clean_rel)
+            
+            candidates = [
+                os.path.join(DATA_DIR, clean_rel),
+                os.path.join(BASE_DIR, clean_rel),
+                os.path.join(BASE_DIR, 'UPLOAD_TO_GITHUB', clean_rel),
+                os.path.join(BASE_DIR, 'READY_FOR_GITHUB', clean_rel),
+            ]
+            
+            local_path = None
+            for c in candidates:
+                if os.path.exists(c) and os.path.isfile(c) and os.path.getsize(c) > 0:
+                    local_path = c
+                    break
+                    
+            # If missing on disk, try on-demand auto-download via file_id
+            if not local_path:
+                target_file_id = None
+                for src_file in [SAVED_BOOKINGS_FILE, os.path.join(DATA_DIR, 'received_telegram_messages.json')]:
+                    if os.path.exists(src_file):
+                        try:
+                            records = load_json(src_file, [])
+                            for r in records:
+                                for im in r.get('images', []):
+                                    im_url = im.get('url', '') if isinstance(im, dict) else str(im)
+                                    if img_filename in im_url and isinstance(im, dict) and im.get('file_id'):
+                                        target_file_id = im.get('file_id')
+                                        break
+                                if target_file_id: break
+                        except Exception: pass
+                    if target_file_id: break
+                
+                if target_file_id and download_telegram_image_by_file_id:
+                    fetched = download_telegram_image_by_file_id(target_file_id, dest_filename=img_filename, data_dir=DATA_DIR)
+                    if fetched and os.path.exists(fetched):
+                        local_path = fetched
+
+            if local_path and os.path.exists(local_path):
+                ext = os.path.splitext(local_path)[1].lower()
+                mime = 'image/jpeg'
+                if ext == '.png': mime = 'image/png'
+                elif ext == '.webp': mime = 'image/webp'
+                elif ext == '.pdf': mime = 'application/pdf'
+                self.send_response(200)
+                self.send_header('Content-Type', mime)
+                self.send_header('Cache-Control', 'public, max-age=86400')
+                self.end_headers()
+                with open(local_path, 'rb') as f:
+                    self.wfile.write(f.read())
+                return
+            else:
+                self.send_response(404)
+                self.send_header('Content-Type', 'text/plain; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(b'Image not found')
+                return
 
         # Serve static web assets
         if path.startswith('/assets/'):
@@ -2048,8 +2109,33 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                             counter["last_number"] = num_val
                             save_json(INVOICE_COUNTER_FILE, counter)
 
+            # Synchronize with saved_bookings.json so booking invoice status turns into 'ធ្វើរួច' immediately
+            try:
+                bk_file = os.path.join(DATA_DIR, 'saved_bookings.json')
+                if not os.path.exists(os.path.dirname(bk_file)):
+                    bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
+                bks = load_json(bk_file, [])
+                req_b_id = str(req_data.get('booking_id') or '').strip()
+                target_booking = None
+                if req_b_id:
+                    target_booking = next((b for b in bks if str(b.get('id', '')).strip() == req_b_id), None)
+                if not target_booking and clean_r_no:
+                    target_booking = next((b for b in bks if str(b.get('invoiceNo', '')).strip().lower() == clean_r_no.lower()), None)
+                
+                if target_booking:
+                    target_booking['invoiceDone'] = True
+                    target_booking['invoiceNo'] = clean_r_no
+                    save_json(bk_file, bks)
+                    if supabase_db and supabase_db.is_configured():
+                        try:
+                            threading.Thread(target=supabase_db.save_bookings, args=(bks,), daemon=True).start()
+                        except Exception:
+                            pass
+            except Exception as e_bk_sync:
+                print(f"[update_members] Error syncing booking invoice status: {e_bk_sync}")
+
             save_json(SAVED_CUSTOMERS_FILE, all_invoices)
-            self.send_json_response({'success': True, 'invoice': updated_item})
+            self.send_json_response({'success': True, 'receipt_no': clean_r_no, 'invoice': updated_item})
             return
 
         elif path == '/api/split_group':
@@ -2893,11 +2979,15 @@ def download_telegram_photo_file(token, file_id, update_id):
 
 def detect_photo_category(caption_text, img_path=None):
     text_lower = (caption_text or "").lower()
-    if any(k in text_lower for k in ['flight', '✈', '✈️', 'dmk', 'bkk', 'sai', 'airasia', 'air', 'fd', 'fd-', 'fd ', 'we', 'sl', 'v9', 'k6', 'pg', 'tg', 'qv', 'ហោះហើរ', 'សំបុត្រ', 'ตั๋วเครื่องบิน', 'ไฟลท์', 'ขาเข้า', 'ขาออก', 'สนามบิน', 'airport', 'pnr', 'boarding']):
+    has_passport_kw = any(k in text_lower for k in ['passport', 'បាសស្ព័រ', 'ប៉ាស្ព័រ', 'លិខិតឆ្លងដែន', 'พาสปอร์ต', 'pass', 'pp'])
+    has_flight_kw = any(k in text_lower for k in ['flight', '✈', '✈️', 'dmk', 'bkk', 'sai', 'airasia', 'air', 'fd', 'fd-', 'fd ', 'we', 'sl', 'v9', 'k6', 'pg', 'tg', 'qv', 'ហោះហើរ', 'សំបុត្រ', 'ตั๋วเครื่องบิน', 'ไฟลท์', 'ขาเข้า', 'ขาออก', 'สนามบิน', 'airport', 'pnr', 'boarding'])
+    has_car_kw = any(k in text_lower for k in ['alphard', 'hiace', 'staria', 'suv', 'lexus', 'car', 'ឡាន', 'រថយន្ត', 'ជួល', 'ទៅមក', 'ដឹក', 'កក់', 'សៀមរាប', 'ប៉ោយប៉ែត', 'ភ្នំពេញ', 'តេជោ', 'รถ', 'ตู้', 'เก๋ง', 'เหมา', 'คนขับ', 'តៃកុង'])
+
+    if has_flight_kw:
         return 'សំបុត្រយន្តហោះ'
-    elif any(k in text_lower for k in ['passport', 'បាសស្ព័រ', 'ប៉ាស្ព័រ', 'លិខិតឆ្លងដែន', 'พาสปอร์ต', 'pass', 'pp']):
+    elif has_passport_kw:
         return 'ប៉ាស្ព័រ'
-    elif any(k in text_lower for k in ['alphard', 'hiace', 'staria', 'ឡានជួល']):
+    elif has_car_kw:
         return 'រូបឡាន'
     
     if img_path and os.path.exists(img_path):
@@ -2907,13 +2997,19 @@ def detect_photo_category(caption_text, img_path=None):
                 w, h = im.size
                 aspect = max(w, h) / max(min(w, h), 1)
                 if h > w and aspect >= 1.62:
-                    if any(k in text_lower for k in ['flight', '✈', 'dmk', 'sai', 'bkk', 'airasia', 'ขาเข้า', 'ขาออก', 'pnr']):
+                    if has_flight_kw:
                         return 'សំបុត្រយន្តហោះ'
-                elif 1.20 <= aspect <= 1.58:
+                elif h > w and 1.20 <= aspect <= 1.58 and has_passport_kw:
                     return 'ប៉ាស្ព័រ'
+                elif w >= h:
+                    # Landscape photos (cars, driver standing with car, scenery)
+                    if not has_passport_kw:
+                        return 'រូបឡាន'
         except Exception:
             pass
-    # In VIP border/airport transport system, default customer photos without car/flight text are passports
+    # If landscape or contains general booking text, default to car
+    if has_car_kw or not has_passport_kw:
+        return 'រូបឡាន'
     return 'ប៉ាស្ព័រ'
 
 def start_telegram_bot_message_poller():
@@ -3001,26 +3097,15 @@ def start_telegram_bot_message_poller():
                                 send_telegram_text_bot(token, c_id_str, greet_msg)
                                 continue
 
-                            # 🛑 Chat Filter: allow configured chat OR any known connected groups
+                            # 🛑 Strict Chat Room Filter: Allow ONLY the designated Telegram room (e.g. 8985821312)
                             cfg_tg = get_telegram_config()
                             allowed_chat_id = str(cfg_tg.get("chat_id", "")).strip()
                             allowed_chat_ids = [str(x).strip() for x in cfg_tg.get("allowed_chat_ids", []) if str(x).strip()]
                             if allowed_chat_id and allowed_chat_id not in allowed_chat_ids:
                                 allowed_chat_ids.append(allowed_chat_id)
 
-                            is_known = False
-                            for g_dir in [DATA_DIR, BASE_DIR]:
-                                gf = os.path.join(g_dir, "known_telegram_groups.json")
-                                if os.path.exists(gf):
-                                    try:
-                                        with open(gf, "r", encoding="utf-8") as f_g:
-                                            if c_id_str in json.load(f_g):
-                                                is_known = True
-                                                break
-                                    except Exception:
-                                        pass
-
-                            if allowed_chat_ids and c_id_str not in allowed_chat_ids and not is_known:
+                            # Strictly reject any message that is NOT from the designated room!
+                            if allowed_chat_ids and c_id_str not in allowed_chat_ids:
                                 continue
 
                             txt = (m.get('text') or m.get('caption') or '').strip()
@@ -3078,6 +3163,7 @@ def start_telegram_bot_message_poller():
                                         img_list.append({
                                             'id': f"IMG-TG-{u['update_id']}",
                                             'name': f"telegram_photo_{u['update_id']}.jpg",
+                                            'file_id': f_id,
                                             'category': cat,
                                             'url': img_url,
                                             'date': dt_str
@@ -3087,11 +3173,13 @@ def start_telegram_bot_message_poller():
                                 if f_id:
                                     img_url = download_telegram_photo_file(token, f_id, u['update_id'])
                                     if img_url:
+                                        # Refine category with actual downloaded image dimensions
                                         full_local_path = os.path.join(BASE_DIR, img_url.lstrip('/'))
                                         cat = detect_photo_category(txt, full_local_path)
                                         img_list.append({
                                             'id': f"IMG-TG-{u['update_id']}",
                                             'name': doc.get('file_name') or f"telegram_doc_{u['update_id']}.jpg",
+                                            'file_id': f_id,
                                             'category': cat,
                                             'url': img_url,
                                             'date': dt_str

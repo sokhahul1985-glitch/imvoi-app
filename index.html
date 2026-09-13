@@ -52,6 +52,9 @@
     margin-bottom: 14px;
     flex-wrap: nowrap;
     overflow-x: auto;
+    position: sticky;
+    top: 56px;
+    z-index: 990;
 }
 
 .ar-logo-wrap {
@@ -219,12 +222,9 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Stats Cards Grid */
+/* Stats Cards Grid (Hidden per user request) */
 .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 14px;
-    margin-bottom: 18px;
+    display: none !important;
 }
 
 .stat-card {
@@ -324,34 +324,61 @@
 /* Schedule & Bookings Table */
 .table-responsive {
     width: 100%;
-    overflow-x: auto;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    border-radius: 8px;
+    height: calc(100vh - 275px);
+    max-height: calc(100vh - 275px);
+    margin-bottom: 45px;
+    border-bottom: 2px solid #cbd5e1;
+}
+
+.table-responsive::-webkit-scrollbar {
+    width: 8px;
+    height: 12px;
+}
+.table-responsive::-webkit-scrollbar-track {
+    background: #e2e8f0;
+    border-radius: 6px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 6px;
+    border: 2px solid #e2e8f0;
+}
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #0284c7;
 }
 
 .schedule-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    font-size: 14px;
+    font-size: 13.5px;
 }
 
 .schedule-table th {
     background: #e2e8f0;
     color: #0f172a;
     font-weight: 900;
-    font-size: 13.5px;
-    padding: 12px 14px;
+    font-size: 13px;
+    padding: 9px 10px;
     text-align: left;
     border-bottom: 2px solid #94a3b8;
     white-space: nowrap;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
+    position: sticky;
+    top: 0;
+    z-index: 25;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .schedule-table td {
-    padding: 12px 14px;
+    padding: 9px 10px;
     border-bottom: 1.5px solid #e2e8f0;
     vertical-align: middle;
     color: #0f172a;
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 800;
     white-space: nowrap;
 }
@@ -1050,7 +1077,15 @@ html, body {
     min-height: 100vh;
     height: auto;
     overflow-y: auto !important;
-    overflow-x: hidden;
+    overflow-x: hidden !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar, #mainWorkspaceContainer::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
 }
 
 body {
@@ -2125,10 +2160,15 @@ input[type="date"] {
             border: none !important;
         }
 
-        body.mode-quote #mainWorkspaceContainer {
+        body.mode-quote:not(.submode-autorent) #mainWorkspaceContainer {
             overflow-y: auto !important;
             height: auto !important;
             min-height: 100vh !important;
+        }
+        body.mode-quote.submode-autorent #mainWorkspaceContainer {
+            overflow: hidden !important;
+            height: 100vh !important;
+            max-height: 100vh !important;
         }
 
     
@@ -3209,10 +3249,15 @@ input[type="date"] {
             border: none !important;
         }
 
-        body.mode-quote #mainWorkspaceContainer {
+        body.mode-quote:not(.submode-autorent) #mainWorkspaceContainer {
             overflow-y: auto !important;
             height: auto !important;
             min-height: 100vh !important;
+        }
+        body.mode-quote.submode-autorent #mainWorkspaceContainer {
+            overflow: hidden !important;
+            height: 100vh !important;
+            max-height: 100vh !important;
         }
 
     
@@ -3547,8 +3592,11 @@ input[type="date"] {
             <button type="button" class="btn-sys btn-top-home cat-nav-tab home-nav-tab" onclick="showCategorySelectionModal()" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 220px; height: 42px; border-radius: 9px; font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border: none; cursor: pointer; box-shadow: 0 3px 10px rgba(2, 132, 199, 0.35);">
                 🏠 ផ្ទាំងដើម
             </button>
-            <button type="button" id="mainActiveCategoryTabBtn" class="cat-nav-tab active-tab-car" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 220px; height: 42px; border-radius: 9px; font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: none; cursor: pointer; box-shadow: 0 3px 10px rgba(5, 150, 105, 0.35);">
-                🚗 សេវាឡាន (Car)
+            <button type="button" id="mainActiveCategoryTabBtn" class="cat-nav-tab active-tab-car" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 200px; height: 42px; border-radius: 9px; font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: none; cursor: pointer; box-shadow: 0 3px 10px rgba(5, 150, 105, 0.35);">
+                🚗 សេវាឡាន & ធ្វើវិក្កយបត្រ
+            </button>
+            <button type="button" class="cat-nav-tab" onclick="selectServiceCategory('quote')" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 220px; height: 42px; border-radius: 9px; font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #1e293b, #0f172a); color: #38bdf8; border: 2px solid #0284c7; cursor: pointer; box-shadow: 0 3px 10px rgba(2, 132, 199, 0.35);" title="ត្រឡប់ទៅកាន់ការគ្រប់គ្រងការកក់ឡាន">
+                <i class="fa-solid fa-car-side" style="color: #38bdf8;"></i> 📋 គ្រប់គ្រងការកក់ឡាន
             </button>
         </div>
 
@@ -3699,13 +3747,14 @@ input[type="date"] {
         <div id="quoteStudioContainer" style="display: none; flex-direction: column; gap: 14px; margin-bottom: 24px; padding: 6px 4px; align-items: stretch; width: 100%;">
             
                         <!-- Top Action Toolbar with Quotation Categories -->
-            <div class="quote-top-bar" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 18px; background: #ffffff; border: 1.5px solid var(--border-color); border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); width: 100%; max-width: 100%; box-sizing: border-box; flex-wrap: wrap;">
+            <div class="quote-top-bar" style="position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 18px; background: #ffffff; border: 1.5px solid var(--border-color); border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); width: 100%; max-width: 100%; box-sizing: border-box; flex-wrap: wrap;">
                 
                 <!-- Main Category Tabs: Home | Car Quotation | VIP Quotation | Visa Quotation -->
                 <!-- Main Category Tabs: Home | Car Quotation | VIP Quotation | Visa Quotation -->
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                     <button type="button" class="cat-nav-tab home-nav-tab" onclick="showCategorySelectionModal()" style="padding: 8px 16px; font-weight: 800; border-radius: 9px; cursor: pointer; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b;">🏠 ទំព័រដើម</button>
                     <button type="button" class="cat-nav-tab" id="btnTabQuoteAutorent" onclick="window.selectQuoteCategoryTab('autorent', true)" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: #38bdf8; border: 2px solid #0284c7; font-weight: 900; border-radius: 9px; padding: 8px 18px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35); font-size: 13.5px;"><i class="fa-solid fa-car-side" style="color: #38bdf8;"></i> 📋 គ្រប់គ្រងការកក់ឡាន</button>
+                    <button type="button" class="cat-nav-tab" id="btnTabQuoteMakeInvoice" onclick="selectServiceCategory('car')" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: 2px solid #047857; font-weight: 900; border-radius: 9px; padding: 8px 18px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35); font-size: 13.5px;" title="ចូលទៅកាន់ផ្ទាំងស្កេន និងបង្កើតវិក្កយបត្រ"><i class="fa-solid fa-file-invoice-dollar" style="color: #ffffff;"></i> 🧾 ធ្វើវិក្កយបត្រ (Invoice)</button>
                     
                     <div style="width: 1.5px; height: 26px; background: #cbd5e1; margin: 0 4px;"></div>
 
@@ -4118,6 +4167,9 @@ input[type="date"] {
                         <button type="button" class="ar-nav-item" data-tab="settings" onclick="switchTab('settings')">
                             <i class="fa-solid fa-sliders"></i> <span>កំណត់ & Backup</span>
                         </button>
+                        <button type="button" class="ar-nav-item" onclick="selectServiceCategory('car')" style="background: #ecfdf5; color: #047857; border: 1.5px solid #6ee7b7; font-weight: 800;" title="ចូលទៅកាន់ផ្ទាំងស្កេន និងបង្កើតវិក្កយបត្រ">
+                            <i class="fa-solid fa-file-invoice-dollar" style="color: #059669;"></i> <span>ធ្វើវិក្កយបត្រ</span>
+                        </button>
                         <button type="button" class="ar-nav-item" onclick="window.selectQuoteCategoryTab('car', true)" style="display: none; background: #fef3c7; color: #b45309; border: 1px solid #fde68a;">
                             <i class="fa-solid fa-image"></i> <span>ស្ទីកឃើស្នើតម្លៃ (Posters)</span>
                         </button>
@@ -4152,8 +4204,8 @@ input[type="date"] {
 
                 <!-- 1. DASHBOARD TAB VIEW -->
                 <div class="tab-view active" id="ar-view-dashboard">
-                    <!-- 4 Quick Stats -->
-                    <div class="stats-grid">
+                    <!-- 4 Quick Stats (Hidden per user request) -->
+                    <div class="stats-grid" style="display: none !important;">
                         <div class="stat-card total-cars" onclick="switchTab('bookings')">
                             <div class="stat-icon"><i class="fa-solid fa-car-side"></i></div>
                             <div class="stat-meta">
@@ -4190,7 +4242,7 @@ input[type="date"] {
 
                     <!-- Today's Trips Card -->
                     <div class="dashboard-card">
-                        <div class="card-header">
+                        <div class="card-header" style="display: none !important;">
                             <div class="card-title">
                                 <i class="fa-solid fa-calendar-day text-primary" style="font-size: 1.3rem;"></i>
                                 <div>
@@ -4232,6 +4284,24 @@ input[type="date"] {
                                 </button>
                             </div>
 
+                            <!-- Calendar Date Picker & Daily Count Widget (ប្រតិទិនមើលចំនួនតាមថ្ងៃនីមួយៗ) -->
+                            <div id="dashScheduleCalendarWrapper" style="display: inline-flex; align-items: center; gap: 4px; background: #ffffff; border: 1.5px solid #0284c7; border-radius: 8px; padding: 2px 7px; box-shadow: 0 1px 3px rgba(2,132,199,0.12); flex-shrink: 0;">
+                                <button type="button" class="btn-ar" onclick="stepDashScheduleDate(-1)" style="padding: 2px 7px; font-size: 11px; height: 26px; line-height: 1; border-radius: 5px; background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; cursor: pointer;" title="ថ្ងៃមុន (Previous Day)">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                <div style="display: inline-flex; align-items: center; gap: 5px; cursor: pointer;" onclick="const inp=document.getElementById('dashScheduleDateInput'); if(inp && inp.showPicker){inp.showPicker();}else if(inp){inp.focus();}">
+                                    <i class="fa-regular fa-calendar-days" style="color: #0284c7; font-size: 14px;"></i>
+                                    <input type="date" id="dashScheduleDateInput" onchange="onDashScheduleDateSelected(this.value)" style="border: none; outline: none; font-size: 13px; font-weight: 800; color: #0f172a; background: transparent; cursor: pointer; padding: 2px 0; width: 115px; color-scheme: light;" title="ចុចរើសថ្ងៃលើប្រតិទិនដើម្បីមើលចំនួន និងជើងឡាន">
+                                </div>
+                                <button type="button" class="btn-ar" onclick="stepDashScheduleDate(1)" style="padding: 2px 7px; font-size: 11px; height: 26px; line-height: 1; border-radius: 5px; background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; cursor: pointer;" title="ថ្ងៃបន្ទាប់ (Next Day)">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                                <span id="dashScheduleDateCountBadge" style="background: #0284c7; color: #ffffff; font-weight: 900; font-size: 11.5px; padding: 2px 8px; border-radius: 10px; white-space: nowrap; margin-left: 2px;" title="ចំនួនជើងឡានសរុបក្នុងថ្ងៃនេះ">0 ជើង</span>
+                                <button type="button" id="dashScheduleDateResetBtn" onclick="resetDashScheduleDateFilter()" style="display: none; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 5px; padding: 2px 6px; font-size: 11px; cursor: pointer; line-height: 1; margin-left: 2px;" title="សម្អាតប្រតិទិន និងត្រឡប់មកថ្ងៃនេះ">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+
                             <div class="filter-search-box" style="margin-left: auto; position: relative; display: flex; align-items: center; min-width: 260px; max-width: 380px;">
                                 <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; color: #0284c7; cursor: pointer;" onclick="document.getElementById('dashScheduleSearch').focus(); renderDashboard();" title="ចុចដើម្បីស្វែងរក"></i>
                                 <input type="text" id="dashScheduleSearch" oninput="renderDashboard()" onkeyup="if(event.key==='Escape')clearDashScheduleSearch(); else renderDashboard();" placeholder="🔍 ស្វែងរក (ឈ្មោះ, ម៉ោង, ឡាន, ផ្លូវ, Telegram, VIP...)" autocomplete="off" spellcheck="false" style="padding-left: 32px; padding-right: 28px; width: 100%;">
@@ -4246,16 +4316,14 @@ input[type="date"] {
                                 <thead>
                                     <tr>
                                         <th style="width: 44px; text-align: center; font-size: 11.5px; padding: 6px 4px;"><i class="fa-solid fa-hashtag text-primary" style="font-size: 10px;"></i> ល.រ</th>
-                                        <th style="min-width: 155px; cursor: pointer; user-select: none;" onclick="toggleBookingSortDateTime()" title="ចុចដើម្បីប្តូរលំដាប់ ម៉ោង និងថ្ងៃខែ (ថ្ងៃអនាគត ឬ ថ្ងៃចាស់ នៅលើគេ)">
+                                        <th style="min-width: 140px; cursor: pointer; user-select: none;" onclick="toggleBookingSortDateTime()" title="ចុចដើម្បីប្តូរលំដាប់ ម៉ោង និងថ្ងៃខែ">
                                             <i class="fa-regular fa-clock text-primary"></i> ម៉ោង / កាលបរិច្ឆេទ
-                                            <span id="dashBookingSortIndicator" class="badge" style="font-size: 10px; padding: 2px 6px; background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; border-radius: 4px; margin-left: 4px; font-weight: 800;">
-                                                <i class="fa-solid fa-arrow-down-wide-short"></i> ថ្ងៃអនាគត (លើគេ)
-                                            </span>
                                         </th>
+                                        <th style="width: 110px; text-align: center;"><i class="fa-solid fa-file-invoice-dollar text-primary"></i> វិក្កយបត្រ</th>
                                         <th style="min-width: 160px;"><i class="fa-solid fa-user text-primary"></i> ភ្ញៀវ / អ្នកកក់</th>
                                         <th style="min-width: 180px;"><i class="fa-solid fa-car text-primary"></i> ប្រភេទរថយន្ត</th>
                                         <th style="min-width: 200px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅធ្វើដំណើរ (Route)</th>
-                                        <th style="width: 130px; text-align: center;"><i class="fa-brands fa-telegram text-info"></i> តេលេក្រាមភ្ញៀវ</th>
+                                        <th style="width: 130px; text-align: center;"><i class="fa-solid fa-eye text-primary"></i> មើលលម្អិត</th>
                                         <th style="width: 130px; text-align: center;"><i class="fa-brands fa-telegram text-primary"></i> តេលេក្រាមតៃកុង</th>
                                         <th style="width: 120px; text-align: center;"><i class="fa-solid fa-sliders text-primary"></i> សកម្មភាព</th>
                                     </tr>
@@ -4305,16 +4373,14 @@ input[type="date"] {
                                 <thead>
                                     <tr>
                                         <th style="width: 48px; text-align: center;"><i class="fa-solid fa-hashtag text-primary"></i> ល.រ</th>
-                                        <th style="min-width: 155px; cursor: pointer; user-select: none;" onclick="toggleBookingSortDateTime()" title="ចុចដើម្បីប្តូរលំដាប់ ម៉ោង និងថ្ងៃខែ (ថ្ងៃអនាគត ឬ ថ្ងៃចាស់ នៅលើគេ)">
-                                            <i class="fa-regular fa-clock text-primary"></i> ម៉ោង / កាលបរិច្ឆេទ 
-                                            <span id="bookingSortIndicator" class="badge" style="font-size: 10px; padding: 2px 6px; background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; border-radius: 4px; margin-left: 4px; font-weight: 800;">
-                                                <i class="fa-solid fa-arrow-down-wide-short"></i> ថ្ងៃអនាគត (លើគេ)
-                                            </span>
+                                        <th style="min-width: 140px; cursor: pointer; user-select: none;" onclick="toggleBookingSortDateTime()" title="ចុចដើម្បីប្តូរលំដាប់ ម៉ោង និងថ្ងៃខែ">
+                                            <i class="fa-regular fa-clock text-primary"></i> ម៉ោង / កាលបរិច្ឆេទ
                                         </th>
+                                        <th style="width: 110px; text-align: center;"><i class="fa-solid fa-file-invoice-dollar text-primary"></i> វិក្កយបត្រ</th>
                                         <th style="min-width: 160px;"><i class="fa-solid fa-user text-primary"></i> ភ្ញៀវ / អ្នកកក់</th>
                                         <th style="min-width: 180px;"><i class="fa-solid fa-car text-primary"></i> ប្រភេទរថយន្ត</th>
                                         <th style="min-width: 200px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅធ្វើដំណើរ (Route)</th>
-                                        <th style="width: 130px; text-align: center;"><i class="fa-brands fa-telegram text-info"></i> តេលេក្រាមភ្ញៀវ</th>
+                                        <th style="width: 130px; text-align: center;"><i class="fa-solid fa-eye text-primary"></i> មើលលម្អិត</th>
                                         <th style="width: 130px; text-align: center;"><i class="fa-brands fa-telegram text-primary"></i> តេលេក្រាមតៃកុង</th>
                                         <th style="width: 120px; text-align: center;"><i class="fa-solid fa-sliders text-primary"></i> សកម្មភាព</th>
                                     </tr>
@@ -4628,7 +4694,8 @@ input[type="date"] {
                                             </div>
                                             <div style="flex: 1; min-width: 130px;">
                                                 <label style="font-size: 11px; font-weight: 700;"><i class="fa-brands fa-telegram text-primary"></i> ឆាតតៃកុង :</label>
-                                                <input type="text" id="bookingDriverTelegram" class="form-control" placeholder="@driver">
+                                                <input type="text" id="bookingDriverTelegram" class="form-control font-weight-bold" placeholder="@driver ឬឈ្មោះគ្រុប" list="bookingDriverDatalist" onfocus="if (typeof populateDriverDatalist==='function') populateDriverDatalist()">
+                                                <datalist id="bookingDriverDatalist"></datalist>
                                             </div>
                                             <div style="min-width: 95px;">
                                                 <label style="font-size: 11px; font-weight: 700; color: #d97706;">⭐ VIP :</label>
@@ -5066,6 +5133,7 @@ input[type="date"] {
                 </div>
             </div>
 
+
             <!-- 2.05 INDIVIDUAL CAR SCHEDULE MODAL -->
             <div class="modal-backdrop" id="carScheduleModal">
                 <div class="modal-dialog modal-lg" style="max-width: 900px;">
@@ -5473,88 +5541,164 @@ input[type="date"] {
     </div>
 
     <!-- Group Members Management Modal -->
-    <div id="groupMembersModal" class="modal-overlay">
-        <div class="modal-card" style="max-width: 1100px; width: 95%;">
-            <div class="modal-toolbar" style="background: #f8fafc; border-bottom: 1px solid var(--border-color); padding: 12px 20px; flex-wrap: wrap; gap: 12px;">
-                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; width: 100%;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="font-size: 1.6rem;">👥</div>
-                        <div>
-                            <div style="font-weight: 800; font-size: 16.5px; color: #0284c7;" id="gmmTitle">📋 គ្រប់គ្រងសមាជិកក្រុម</div>
-                            <div style="font-size: 12.5px; color: #475569; font-weight: 700;" id="gmmSubTitle">👤 គ្រប់គ្រងសមាជិកក្រុម: -</div>
+    <div id="groupMembersModal" class="modal-overlay" style="padding: 12px 20px !important; box-sizing: border-box !important;">
+        <div class="modal-card" id="gmmModalCard" style="max-width: 100%; width: 100%; height: 100%; max-height: 100%; display: flex; flex-direction: row; padding: 0 !important; overflow: hidden !important; border-radius: 12px; box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.45); background: #f1f5f9; box-sizing: border-box;">
+            
+            <!-- LEFT COLUMN: ផ្នែកវិក្កយបត្រទាំងអស់ (ALL INVOICE PARTS: Toolbar, Bulk Fees, Members Table & Actions) -->
+            <div id="gmmLeftInvoiceContainer" style="flex: 1 1 0; width: 33.33%; min-width: 0; display: flex; flex-direction: column; background: #ffffff; border-right: 2px solid #cbd5e1; height: 100%; overflow: hidden; box-sizing: border-box;">
+                
+                <!-- 1. Left Toolbar: Header, Date, Receipt No, Exchange Rate, Sender & Bulk Fees Box -->
+                <div style="background: #f8fafc; border-bottom: 1.5px solid #cbd5e1; padding: 9px 12px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
+                    <!-- Row 1: Title + Date + Receipt No + Rate (Flexible wrap to fit container) -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                            <div style="font-size: 1.5rem;">👥</div>
+                            <div>
+                                <div style="font-weight: 900; font-size: 17px; color: #0284c7; white-space: nowrap;" id="gmmTitle">📋 គ្រប់គ្រងសមាជិកក្រុម</div>
+                                <div style="font-size: 13.5px; color: #475569; font-weight: 700; white-space: nowrap;" id="gmmSubTitle">👤 គ្រប់គ្រងសមាជិកក្រុម: -</div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="gmmAgencyCompany" value="">
+
+                        <div style="display: flex; align-items: center; gap: 6px; background: #ffffff; border: 1.5px solid #0284c7; border-radius: 8px; padding: 3px 8px; flex-wrap: wrap; flex-shrink: 0;">
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <label id="gmmLblTravelDate" style="font-weight: 800; font-size: 14px; color: #0f172a; white-space: nowrap;">📅 ថ្ងៃ:</label>
+                                <input type="date" id="gmmTravelDate" class="form-input" style="height: 35px; width: 125px; font-weight: 800; border: 1.5px solid #38bdf8; border-radius: 6px; padding: 2px 5px; font-size: 14px; color-scheme: light; cursor: pointer; color: #0f172a;" onclick="this.showPicker()" onkeydown="handleGmmHeaderKeydown(event, this)">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <label style="font-weight: 800; font-size: 14px; color: #0f172a; white-space: nowrap;">🧾 លេខ:</label>
+                                <input type="text" id="gmmReceiptNo" class="form-input highlight-input" placeholder="INV 00001" style="height: 35px; font-weight: 900; border: 1.5px solid #0284c7; border-radius: 6px; padding: 2px 8px; font-size: 15px; width: 100px; background: #e0f2fe; color: #0369a1; text-align: center;" onfocus="this.select()" onkeydown="handleGmmHeaderKeydown(event, this)">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <label style="font-weight: 800; font-size: 14px; color: #0f172a; white-space: nowrap;">💱</label>
+                                <input type="number" step="0.1" id="gmmExchangeRate" class="form-input highlight-input" placeholder="33.90" value="33.90" oninput="saveLatestExchangeRate(this.value); if(typeof gmmCalcTotals==='function') gmmCalcTotals();" onchange="saveLatestExchangeRate(this.value); if(typeof gmmCalcTotals==='function') gmmCalcTotals();" style="height: 35px; font-weight: 800; border: 1.5px solid #eab308; border-radius: 6px; padding: 2px 5px; font-size: 14px; width: 62px; text-align: center; background: #fef9c3; color: #854d0e;" onfocus="this.select()" onkeydown="handleGmmHeaderKeydown(event, this)" title="អត្រាប្តូរប្រាក់">
+                            </div>
                         </div>
                     </div>
 
-                    <input type="hidden" id="gmmAgencyCompany" value="">
-
-                    <div style="display: flex; align-items: center; gap: 10px; background: #ffffff; border: 2px solid #0284c7; border-radius: 8px; padding: 6px 12px; box-shadow: 0 2px 5px rgba(2,132,199,0.1); flex-wrap: wrap; flex: 1;">
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <label id="gmmLblTravelDate" style="font-weight: 800; font-size: 13.5px; color: #0f172a; white-space: nowrap;">📅 ថ្ងៃធ្វើដំណើរ:</label>
-                            <input type="date" id="gmmTravelDate" class="form-input" style="height: 34px; font-weight: 800; border: 1.5px solid #38bdf8; border-radius: 6px; padding: 3px 8px; font-size: 13.5px; color-scheme: light; cursor: pointer; color: #0f172a;" onclick="this.showPicker()" onkeydown="handleGmmHeaderKeydown(event, this)">
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <label style="font-weight: 800; font-size: 13.5px; color: #0f172a; white-space: nowrap;">🧾 លេខវិក្កយបត្រ:</label>
-                            <input type="text" id="gmmReceiptNo" class="form-input highlight-input" placeholder="INV 00001" style="height: 34px; font-weight: 800; border: 2px solid #0284c7; border-radius: 6px; padding: 3px 10px; font-size: 14px; width: 110px; background: #e0f2fe; color: #0369a1; text-align: center;" onfocus="this.select()" onkeydown="handleGmmHeaderKeydown(event, this)">
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <label style="font-weight: 800; font-size: 13.5px; color: #0f172a; white-space: nowrap;">💱 អត្រាប្តូរប្រាក់:</label>
-                            <input type="number" step="0.1" id="gmmExchangeRate" class="form-input highlight-input" placeholder="33.90" value="33.90" oninput="saveLatestExchangeRate(this.value); if(typeof gmmCalcTotals==='function') gmmCalcTotals();" onchange="saveLatestExchangeRate(this.value); if(typeof gmmCalcTotals==='function') gmmCalcTotals();" style="height: 34px; font-weight: 800; border: 2px solid #eab308; border-radius: 6px; padding: 3px 8px; font-size: 14px; width: 75px; text-align: center; background: #fef9c3; color: #854d0e;" onfocus="this.select()" onkeydown="handleGmmHeaderKeydown(event, this)">
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 6px; flex: 1; min-width: 320px;">
-                            <label style="font-weight: 800; font-size: 13.5px; color: #0f172a; white-space: nowrap;">👤 អ្នកនាំ/បញ្ជូន <span style="color: #ef4444; font-size: 15px;">*</span>:</label>
-                            <input type="text" id="gmmSenderName" list="gmmSenderList" class="form-input" placeholder="បញ្ចូលឈ្មោះអ្នកនាំ..." required style="height: 34px; font-weight: 800; border: 2px solid #0284c7; border-radius: 6px; padding: 3px 12px; font-size: 14px; flex: 1; min-width: 140px; color: #0f172a;" onfocus="this.select()" oninput="const s=document.getElementById('gmmSenderSelect'); if(s) s.value=this.value;" onkeydown="handleGmmHeaderKeydown(event, this)">
+                    <!-- Row 2: Sender + Sender Select/New/Clean -->
+                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #ffffff; border: 1.5px solid #0284c7; border-radius: 8px; padding: 4px 9px; flex: 1 1 auto; flex-wrap: wrap; min-width: 0;">
+                            <label style="font-weight: 800; font-size: 14.5px; color: #0f172a; white-space: nowrap;">👤 អ្នកនាំ <span style="color: #ef4444; font-size: 16px;">*</span>:</label>
+                            <input type="text" id="gmmSenderName" list="gmmSenderList" class="form-input" placeholder="បញ្ចូលឈ្មោះ..." required style="height: 36px; font-weight: 800; border: 1.5px solid #0284c7; border-radius: 6px; padding: 2px 10px; font-size: 15px; width: 120px; min-width: 90px; flex: 1 1 auto; color: #0f172a;" onfocus="this.select()" oninput="const s=document.getElementById('gmmSenderSelect'); if(s) s.value=this.value;" onkeydown="handleGmmHeaderKeydown(event, this)">
                             <datalist id="gmmSenderList"></datalist>
-                            <select id="gmmSenderSelect" class="form-input" style="height: 34px; font-weight: 800; border: 2px solid #0284c7; border-radius: 6px; padding: 3px 8px; font-size: 13px; color: #0369a1; background: #e0f2fe; cursor: pointer; max-width: 210px; flex-shrink: 0;" onchange="handleGmmSenderSelect(this.value)" title="ជ្រើសរើសអ្នកនាំ ឬអតិថិជនដែលមានស្រាប់">
-                                <option value="">📋 រើសអ្នកនាំដែលមានស្រាប់...</option>
+                            <select id="gmmSenderSelect" class="form-input" style="height: 36px; font-weight: 800; border: 1.5px solid #0284c7; border-radius: 6px; padding: 2px 8px; font-size: 13.5px; color: #0369a1; background: #e0f2fe; cursor: pointer; width: 130px; max-width: 145px; flex-shrink: 0;" onchange="handleGmmSenderSelect(this.value)" title="ជ្រើសរើសអ្នកនាំ ឬអតិថិជនដែលមានស្រាប់">
+                                <option value="">📋 រើសអ្នកនាំ...</option>
                             </select>
-                            <button type="button" id="btnGmmNewCustomer" class="btn-sys" style="height: 34px; padding: 0 10px; font-size: 12.5px; font-weight: 800; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border: none; border-radius: 6px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 4px rgba(2,132,199,0.25); flex-shrink: 0;" onclick="openNewCustomerModalFromGmm()" title="បង្កើត ឬបញ្ចូលព័ត៌មានអតិថិជនថ្មី">
-                                <i class="fa-solid fa-user-plus"></i> បង្កើតអតិថិជនថ្មី
+                            <button type="button" id="btnGmmNewCustomer" class="btn-sys" style="height: 36px; padding: 0 10px; font-size: 13px; font-weight: 800; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border: none; border-radius: 6px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;" onclick="openNewCustomerModalFromGmm()" title="បង្កើត ឬបញ្ចូលព័ត៌មានអតិថិជនថ្មី">
+                                <i class="fa-solid fa-user-plus"></i> បង្កើតថ្មី
                             </button>
-                            <button type="button" id="btnGmmManageSenders" class="btn-sys" style="height: 34px; padding: 0 10px; font-size: 12px; font-weight: 800; background: #fff1f2; color: #e11d48; border: 1.5px solid #fecdd3; border-radius: 6px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(225,29,72,0.15); flex-shrink: 0;" onclick="openSenderManagerModal()" title="គ្រប់គ្រង កែសម្រួល ឬលុបឈ្មោះអតិថិជនដែលជាន់គ្នា ឬឈប់ប្រើ">
-                                <i class="fa-solid fa-users-gear"></i> សម្អាត/លុបឈ្មោះ
+                            <button type="button" id="btnGmmManageSenders" class="btn-sys" style="height: 36px; padding: 0 10px; font-size: 13px; font-weight: 800; background: #fff1f2; color: #e11d48; border: 1.5px solid #fecdd3; border-radius: 6px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;" onclick="openSenderManagerModal()" title="គ្រប់គ្រង កែសម្រួល ឬលុបឈ្មោះអតិថិជនដែលជាន់គ្នា ឬឈប់ប្រើ">
+                                <i class="fa-solid fa-users-gear"></i> សម្អាត
                             </button>
                         </div>
                     </div>
 
-                    <!-- Dynamic Bulk Fee Controls (Customized per Department) -->
-                    <div id="gmmBulkFeeBox" style="display: flex; align-items: center; gap: 8px; background: #ffffff; border: 2px solid #0284c7; border-radius: 8px; padding: 6px 12px; box-shadow: 0 2px 5px rgba(2,132,199,0.1); flex-wrap: wrap;">
-                        <!-- Rendered dynamically -->
+                    <!-- Row 3: Dynamic Bulk Fee Controls -->
+                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                        <div id="gmmBulkFeeBox" style="display: flex; align-items: center; gap: 6px; background: #ffffff; border: 1.5px solid #0284c7; border-radius: 8px; padding: 5px 10px; flex-wrap: wrap; width: 100%; box-sizing: border-box; overflow-x: auto;">
+                            <!-- Rendered dynamically -->
+                        </div>
                     </div>
+                </div>
 
-                    <div style="margin-left: auto;">
-                        <button type="button" style="background: none; border: none; font-size: 22px; color: #64748b; cursor: pointer; padding: 4px 8px; border-radius: 6px;" onclick="closeGroupMembersModal()" title="បិទ">✖</button>
+                <!-- 2. Left Middle: Invoice Table Container (Scrollable) -->
+                <div style="flex: 1; min-height: 0; padding: 8px 10px; overflow: hidden; display: flex; flex-direction: column;">
+                    <div class="table-container" style="flex: 1; height: 100%; overflow-x: auto; overflow-y: auto; border: 1.5px solid #cbd5e1; border-radius: 8px; background: #ffffff;">
+                        <table class="app-table" id="gmmMainTable" style="width: 100%; min-width: 540px;">
+                            <thead id="gmmTableHead">
+                                <!-- Rendered dynamically based on mode -->
+                            </thead>
+                            <tbody id="gmmMembersBody">
+                                <!-- Dynamic member rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. Left Footer: Grand Total & Actions -->
+                <div style="background: #f8fafc; padding: 9px 12px; border-top: 1.5px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; flex-shrink: 0;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <div style="font-weight: 900; font-size: 17px; color: #059669;" id="gmmGrandTotalDisplay">💵 សរុប: $0.00</div>
+                        <div id="gmmSelectedSummary" style="display: none; font-size: 13px; font-weight: 800; color: #0284c7; background: #e0f2fe; padding: 2px 7px; border-radius: 6px; border: 1px solid #bae6fd; align-items: center; gap: 3px;">
+                            <span>☑️</span>
+                            <span id="gmmSelectedCount" style="color: #0369a1; font-size: 14px;">0</span> នាក់
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 7px; flex-wrap: wrap;">
+                        <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #0284c7, #0ea5e9); color: #ffffff; padding: 7px 14px; font-size: 13.5px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 3px rgba(2,132,199,0.25); white-space: nowrap;" id="btnGmmSplit" onclick="openSplitGroupModal()" title="ជ្រើសរើសសមាជិកដើម្បីបំបែកបង្កើតគ្រុប/វិក្កយបត្រថ្មី">
+                            <span>✂️ បំបែក</span>
+                            <span id="gmmSelectedBadge" style="display: none; background: #ffffff; color: #0284c7; padding: 1px 5px; border-radius: 10px; font-size: 12px; font-weight: 900;">0</span>
+                        </button>
+                        <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; padding: 7px 18px; font-size: 14px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 3px rgba(5,150,105,0.25); white-space: nowrap;" id="btnGmmSave" onclick="saveGroupMembersChanges()">💾 រក្សាទុក</button>
+                        <button type="button" class="btn-sys btn-dark" style="padding: 7px 14px; font-size: 13.5px; font-weight: 800; border-radius: 6px; white-space: nowrap;" onclick="closeGroupMembersModal()">❌ បិទ</button>
                     </div>
                 </div>
             </div>
 
-            <div style="padding: 16px 20px;">
-                <div class="table-container" style="max-height: 400px; overflow-x: auto; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
-                    <table class="app-table" style="width: 100%; min-width: 800px;">
-                        <thead id="gmmTableHead">
-                            <!-- Rendered dynamically based on mode -->
-                        </thead>
-                        <tbody id="gmmMembersBody">
-                            <!-- Dynamic member rows -->
-                        </tbody>
-                    </table>
+            <!-- CENTER COLUMN: ផ្ទាំងបង្ហាញរូបភាពធំ (LARGE PASSPORT & DOCUMENT VIEWER) -->
+            <div id="gmmCenterDocViewer" style="flex: 1 1 0; width: 33.33%; min-width: 0; display: flex; flex-direction: column; background: #ffffff; height: 100%; overflow: hidden; border-right: 2px solid #cbd5e1; position: relative; box-sizing: border-box;">
+                <!-- Header of Viewer -->
+                <div style="background: #f8fafc; border-bottom: 1.5px solid #cbd5e1; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; min-height: 40px; box-sizing: border-box; gap: 6px;">
+                    <div style="display: flex; align-items: center; gap: 6px; overflow: hidden; min-width: 0;">
+                        <span style="font-size: 13.5px; font-weight: 800; color: #0284c7; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+                            📷 <span id="gmmDocViewerTitle">រូបភាពក្នុងគ្រុប</span>
+                        </span>
+                        <span id="gmmDocViewerCountBadge" style="background: #0284c7; color: #ffffff; font-size: 12px; font-weight: 800; padding: 2px 7px; border-radius: 10px; white-space: nowrap; display: none;">0 រូប</span>
+                    </div>
+                    <!-- Viewer controls toolbar (visible only when images exist) -->
+                    <div id="gmmDocControlsBar" style="display: none; align-items: center; gap: 3px; flex-shrink: 0; flex-wrap: wrap;">
+                        <button type="button" class="btn-sys" onclick="gmmDocViewer.prev()" id="btnGmmPrevDoc" style="height: 28px; padding: 0 7px; font-size: 12.5px; background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 5px; cursor: pointer;" title="រូបមុន (Previous Photo)">◀</button>
+                        <button type="button" class="btn-sys" onclick="gmmDocViewer.next()" id="btnGmmNextDoc" style="height: 28px; padding: 0 7px; font-size: 12.5px; background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 5px; cursor: pointer;" title="រូបបន្ទាប់ (Next Photo)">▶</button>
+                        <div style="width: 1px; height: 16px; background: #cbd5e1; margin: 0 2px;"></div>
+                        <button type="button" class="btn-sys" onclick="gmmDocViewer.zoomOut()" style="height: 28px; padding: 0 7px; font-size: 12.5px; background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 5px; cursor: pointer;" title="បង្រួម (Zoom Out)">🔍-</button>
+                        <button type="button" class="btn-sys" onclick="gmmDocViewer.resetZoom()" style="height: 28px; padding: 0 6px; font-size: 12px; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 5px; cursor: pointer;" id="btnGmmZoomLevel" title="កំណត់ទំហំដើម 100% (Reset Zoom)">100%</button>
+                        <button type="button" class="btn-sys" onclick="gmmDocViewer.zoomIn()" style="height: 28px; padding: 0 7px; font-size: 12.5px; background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 5px; cursor: pointer;" title="ពង្រីក (Zoom In)">🔍+</button>
+                        <button type="button" class="btn-sys" onclick="gmmDocViewer.rotate()" style="height: 28px; padding: 0 7px; font-size: 12.5px; background: #ffffff; color: #0284c7; border: 1px solid #cbd5e1; border-radius: 5px; cursor: pointer;" title="បង្វិលរូប 90° (Rotate 90 deg)">🔄</button>
+                        <button type="button" class="btn-sys" onclick="gmmDocViewer.openLightbox()" style="height: 28px; padding: 0 8px; font-size: 12.5px; font-weight: 800; background: #0284c7; color: #ffffff; border: none; border-radius: 5px; cursor: pointer;" title="បើកពេញអេក្រង់ (Fullscreen Lightbox)">🪟 ពេញ</button>
+                        <button type="button" id="btnGmmShowVerifFromViewer" onclick="toggleGmmVerifPanelCollapse()" style="display: none; height: 28px; padding: 0 7px; font-size: 12px; font-weight: 800; background: #e0f2fe; color: #0284c7; border: 1px solid #38bdf8; border-radius: 5px; cursor: pointer; white-space: nowrap;" title="បង្ហាញព័ត៌មានការកក់ឡាន">📋 ការកក់</button>
+                    </div>
+                </div>
+
+                <!-- Main Large Image Canvas / Viewport (Clean open canvas, leaves space open/blank when no photos) -->
+                <div id="gmmDocViewerStage" style="flex: 1; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; background: #f8fafc; cursor: default; user-select: none;" onwheel="gmmDocViewer.handleWheel(event)" onmousedown="gmmDocViewer.handleMouseDown(event)">
+                    <!-- The big high-resolution image element -->
+                    <img id="gmmDocMainImg" src="" alt="Group Document" style="max-width: 96%; max-height: 96%; object-fit: contain; transition: transform 0.15s ease-out; box-shadow: 0 6px 20px rgba(0,0,0,0.12); border-radius: 6px; display: none; background: #ffffff;">
+                    
+                    <!-- Category & Caption Badge Floating on Image -->
+                    <div id="gmmDocCaptionBadge" style="position: absolute; top: 8px; left: 10px; background: rgba(15, 23, 42, 0.85); color: #f8fafc; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(4px); pointer-events: none; display: none;">
+                        🛂 ប៉ាស្ព័រ
+                    </div>
+
+                    <!-- Open/Blank Space when no photos exist (ករណីមិនមានរូបថត ចំហរចោល) -->
+                    <div id="gmmDocEmptyState" style="display: none;"></div>
+                </div>
+
+                <!-- Bottom Thumbnail Strip (Visible only when multiple images exist) -->
+                <div id="gmmDocThumbStrip" style="background: #ffffff; border-top: 1.5px solid #cbd5e1; padding: 4px 8px; display: none; gap: 5px; overflow-x: auto; flex-shrink: 0; min-height: 40px; align-items: center;">
+                    <!-- Thumbnails rendered dynamically -->
                 </div>
             </div>
 
-            <div class="modal-footer" style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 12px;">
-                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                    <div style="font-weight: 800; font-size: 15px; color: #059669;" id="gmmGrandTotalDisplay">💵 សរុបទឹកប្រាក់ក្នុងក្រុម: $0.00</div>
-                    <div id="gmmSelectedSummary" style="display: none; font-size: 12.5px; font-weight: 800; color: #0284c7; background: #e0f2fe; padding: 4px 10px; border-radius: 6px; border: 1.5px solid #bae6fd; align-items: center; gap: 4px;">
-                        <span>☑️ បានជ្រើសរើស:</span>
-                        <span id="gmmSelectedCount" style="color: #0369a1; font-size: 13px;">0</span> នាក់
+            <!-- RIGHT COLUMN: ផ្នែកទិន្នន័យពីការកក់ឡាន (ALL BOOKING DATA FOR VERIFICATION) -->
+            <div id="gmmVerificationSidePanel" style="flex: 1 1 0; width: 33.34%; min-width: 0; display: flex; flex-direction: column; background: #ffffff; height: 100%; overflow: hidden; box-sizing: border-box;">
+                <!-- Header of Right Panel: Matches bookingDetailsModal header -->
+                <div id="gmmVerificationHeader" style="background: #ffffff; border-bottom: 1.5px solid #e2e8f0; padding: 7px 12px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); gap: 6px;">
+                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0;">
+                        <span id="gmmVerifBookingId" style="font-size: 1.35rem; font-weight: 900; color: #0f172a; white-space: nowrap;">BK-0000</span>
+                        <span id="gmmVerifStatusBadge" style="background: #10b981; color: #ffffff; font-weight: 800; font-size: 13px; padding: 3px 9px; border-radius: 6px; white-space: nowrap;">កំពុងជួល</span>
+                        <span id="gmmVerifInvoiceBadge" style="background: #f1f5f9; color: #64748b; border: 1.2px solid #cbd5e1; font-weight: 800; font-size: 13px; padding: 3px 9px; border-radius: 6px; white-space: nowrap;"><i class="fa-regular fa-square"></i> មិនទាន់ធ្វើ</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+                        <button type="button" id="btnToggleGmmVerifCollapse" onclick="toggleGmmVerifPanelCollapse()" style="background: #f1f5f9; border: 1.2px solid #cbd5e1; border-radius: 6px; padding: 3px 8px; font-size: 12.5px; font-weight: 800; color: #475569; cursor: pointer; white-space: nowrap;" title="លាក់ផ្ទាំងនេះដើម្បីពង្រីករូបភាពឱ្យកាន់តែធំ">▶ លាក់</button>
+                        <button type="button" class="modal-close-btn" style="background: none; border: none; font-size: 22px; color: #64748b; cursor: pointer; padding: 2px 6px; line-height: 1;" onclick="closeGroupMembersModal()" title="បិទផ្ទាំង">✖</button>
                     </div>
                 </div>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #0284c7, #0ea5e9); color: #ffffff; padding: 8px 18px; font-size: 13.5px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3); transition: all 0.2s;" id="btnGmmSplit" onclick="openSplitGroupModal()" title="ជ្រើសរើសសមាជិកដើម្បីបំបែកបង្កើតគ្រុប/វិក្កយបត្រថ្មី">
-                        <span>✂️ បំបែកគ្រុបថ្មី (Split Group)</span>
-                        <span id="gmmSelectedBadge" style="display: none; background: #ffffff; color: #0284c7; padding: 1px 7px; border-radius: 10px; font-size: 11.5px; font-weight: 900; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">0</span>
-                    </button>
-                    <button type="button" class="btn-sys" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; padding: 8px 20px; font-size: 14px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(5,150,105,0.3);" id="btnGmmSave" onclick="saveGroupMembersChanges()">💾 កែប្រែ & រក្សាទុក (Update & Save)</button>
-                    <button type="button" class="btn-sys btn-dark" style="padding: 8px 16px; font-size: 14px; font-weight: 700; border-radius: 6px;" onclick="closeGroupMembersModal()">❌ បិទផ្ទាំង (Close)</button>
+
+                <!-- Scrollable Body for all Booking Info & Passports (Exact clone of bookingDetailsModal body) -->
+                <div id="gmmVerificationBody" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; background: #ffffff; word-break: break-word; overflow-wrap: anywhere; box-sizing: border-box;">
+                    <!-- Dynamically populated by populateGmmVerificationPanel -->
                 </div>
             </div>
         </div>
@@ -7491,8 +7635,8 @@ input[type="date"] {
             const box = document.getElementById('gmmBulkFeeBox');
             if (!box) return;
 
-            const inputStyle = `height: 28px; width: 62px; font-weight: 800; border: 1.2px solid #0284c7; border-radius: 5px; padding: 2px 4px; font-size: 12px; text-align: right; color: #0f172a; background: #ffffff;`;
-            const lblStyle = `font-weight: 700; font-size: 11.5px; color: #0f172a; white-space: nowrap;`;
+            const inputStyle = `height: 35px; width: 75px; font-weight: 800; border: 1.5px solid #0284c7; border-radius: 6px; padding: 2px 8px; font-size: 15px; text-align: right; color: #0f172a; background: #ffffff;`;
+            const lblStyle = `font-weight: 800; font-size: 14px; color: #0f172a; white-space: nowrap;`;
 
             const defPassport = sampleMember ? formatNumNoZero(parseFloat(sampleMember.passport_fee || 0)) : '';
             const defNamelist = sampleMember ? formatNumNoZero(parseFloat(sampleMember.namelist_fee || 0)) : '';
@@ -7557,19 +7701,19 @@ input[type="date"] {
                 box.innerHTML = `
                     <div style="display: flex; align-items: center; gap: 3px;">
                         <label style="${lblStyle}">ថ្លៃ VIP ($):</label>
-                        <input type="number" step="0.01" id="gmmFeeVip" class="form-input num-input" placeholder="0" style="${inputStyle}" value="${defVip}" oninput="updateGmmMemberFeesDefaults('vip')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
+                        <input type="number" step="0.01" id="gmmFeeVip" class="form-input num-input" placeholder="" style="${inputStyle}" value="${defVip}" oninput="updateGmmMemberFeesDefaults('vip')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
                     </div>
                     <div style="display: flex; align-items: center; gap: 3px;">
                         <label style="${lblStyle}">ថ្លៃក្លៀផ្លូវ ($):</label>
-                        <input type="number" step="0.01" id="gmmFeeClearance" class="form-input num-input" placeholder="0" style="${inputStyle}" value="${defClearance}" oninput="updateGmmMemberFeesDefaults('clearance')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
+                        <input type="number" step="0.01" id="gmmFeeClearance" class="form-input num-input" placeholder="" style="${inputStyle}" value="${defClearance}" oninput="updateGmmMemberFeesDefaults('clearance')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
                     </div>
                     <div style="display: flex; align-items: center; gap: 3px;">
                         <label style="${lblStyle}">ថ្លៃឡាន ($):</label>
-                        <input type="number" step="0.01" id="gmmFeeCar" class="form-input num-input" placeholder="0" style="${inputStyle}" value="${defCar}" oninput="updateGmmMemberFeesDefaults('car')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
+                        <input type="number" step="0.01" id="gmmFeeCar" class="form-input num-input" placeholder="" style="${inputStyle}" value="${defCar}" oninput="updateGmmMemberFeesDefaults('car')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
                     </div>
                     <div style="display: flex; align-items: center; gap: 3px;">
                         <label style="${lblStyle}">ថ្លៃពិន័យ ($):</label>
-                        <input type="number" step="0.01" id="gmmFeeFine" class="form-input num-input" placeholder="0" style="${inputStyle}" value="${defFine}" oninput="updateGmmMemberFeesDefaults('fine')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
+                        <input type="number" step="0.01" id="gmmFeeFine" class="form-input num-input" placeholder="" style="${inputStyle}" value="${defFine}" oninput="updateGmmMemberFeesDefaults('fine')" onfocus="this.select()" onkeydown="handleGmmBulkKeydown(event, this)">
                     </div>
                 `;
             }
@@ -7825,8 +7969,7 @@ input[type="date"] {
                     <tr style="background: #e2e8f0; color: #0f172a; font-size: 12px; font-weight: 800;">
                         <th style="width: 30px; text-align: center; padding: 4px 2px; white-space: nowrap;">ល.រ</th>
                         <th style="width: 34px; text-align: center; padding: 4px 2px; white-space: nowrap;"><input type="checkbox" id="gmmSelectAll" onchange="toggleGmmSelectAll(this)" style="cursor: pointer; width: 15px; height: 15px; vertical-align: middle; accent-color: #0284c7;" title="ជ្រើសរើសទាំងអស់"></th>
-                        <th style="min-width: 170px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
-                        <th style="width: 48px; text-align: center; padding: 4px 2px; white-space: nowrap;">📷 រូបថត</th>
+                        <th style="width: 270px; max-width: 280px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
                         <th style="width: 75px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃប៉ាស្ព័រ (฿)</th>
                         <th style="width: 75px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃនែមលិស (฿)</th>
                         <th style="width: 75px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃវីសា (฿)</th>
@@ -7841,8 +7984,7 @@ input[type="date"] {
                     <tr style="background: #e2e8f0; color: #0f172a; font-size: 12px; font-weight: 800;">
                         <th style="width: 30px; text-align: center; padding: 4px 2px; white-space: nowrap;">ល.រ</th>
                         <th style="width: 34px; text-align: center; padding: 4px 2px; white-space: nowrap;"><input type="checkbox" id="gmmSelectAll" onchange="toggleGmmSelectAll(this)" style="cursor: pointer; width: 15px; height: 15px; vertical-align: middle; accent-color: #0284c7;" title="ជ្រើសរើសទាំងអស់"></th>
-                        <th style="min-width: 190px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
-                        <th style="width: 48px; text-align: center; padding: 4px 2px; white-space: nowrap;">📷 រូបថត</th>
+                        <th style="width: 270px; max-width: 280px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
                         <th style="width: 65px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃ VISA ($)</th>
                         <th style="width: 58px; text-align: center; padding: 4px 2px; color: #0369a1; white-space: nowrap;">ចំនួនខែ</th>
                         <th style="width: 65px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃវើក ($)</th>
@@ -7855,17 +7997,16 @@ input[type="date"] {
                 `;
             } else {
                 head.innerHTML = `
-                    <tr style="background: #e2e8f0; color: #0f172a; font-size: 12px; font-weight: 800;">
-                        <th style="width: 30px; text-align: center; padding: 4px 2px; white-space: nowrap;">ល.រ</th>
-                        <th style="width: 34px; text-align: center; padding: 4px 2px; white-space: nowrap;"><input type="checkbox" id="gmmSelectAll" onchange="toggleGmmSelectAll(this)" style="cursor: pointer; width: 15px; height: 15px; vertical-align: middle; accent-color: #0284c7;" title="ជ្រើសរើសទាំងអស់"></th>
-                        <th style="min-width: 200px; text-align: left; padding: 4px 8px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
-                        <th style="width: 48px; text-align: center; padding: 4px 2px; white-space: nowrap;">📷 រូបថត</th>
-                        <th style="width: 68px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃ VIP ($)</th>
-                        <th style="width: 72px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃក្លៀផ្លូវ ($)</th>
-                        <th style="width: 68px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃឡាន ($)</th>
-                        <th style="width: 68px; text-align: center; padding: 4px 2px; white-space: nowrap;">ថ្លៃពិន័យ ($)</th>
-                        <th style="width: 68px; text-align: center; padding: 4px 2px; white-space: nowrap;">សរុប ($)</th>
-                        <th style="width: 58px; text-align: center; padding: 4px 2px; white-space: nowrap;">សកម្មភាព</th>
+                    <tr style="background: #e2e8f0; color: #0f172a; font-size: 14.5px; font-weight: 900;">
+                        <th style="width: 34px; text-align: center; padding: 7px 2px; white-space: nowrap;">ល.រ</th>
+                        <th style="width: 36px; text-align: center; padding: 7px 2px; white-space: nowrap;"><input type="checkbox" id="gmmSelectAll" onchange="toggleGmmSelectAll(this)" style="cursor: pointer; width: 17px; height: 17px; vertical-align: middle; accent-color: #0284c7;" title="ជ្រើសរើសទាំងអស់"></th>
+                        <th style="width: 270px; max-width: 280px; text-align: left; padding: 7px 10px; white-space: nowrap;">ឈ្មោះសមាជិក (Passport Name)</th>
+                        <th style="width: 74px; text-align: center; padding: 7px 2px; white-space: nowrap;">ថ្លៃ VIP ($)</th>
+                        <th style="width: 78px; text-align: center; padding: 7px 2px; white-space: nowrap;">ថ្លៃក្លៀផ្លូវ ($)</th>
+                        <th style="width: 74px; text-align: center; padding: 7px 2px; white-space: nowrap;">ថ្លៃឡាន ($)</th>
+                        <th style="width: 74px; text-align: center; padding: 7px 2px; white-space: nowrap;">ថ្លៃពិន័យ ($)</th>
+                        <th style="width: 74px; text-align: center; padding: 7px 2px; white-space: nowrap;">សរុប ($)</th>
+                        <th style="width: 64px; text-align: center; padding: 7px 2px; white-space: nowrap;">សកម្មភាព</th>
                     </tr>
                 `;
             }
@@ -7875,9 +8016,9 @@ input[type="date"] {
             const tbody = document.getElementById('gmmMembersBody');
             if (!tbody) return;
 
-            const inputStyleName = `width:100%; height:26px; padding:1px 8px; font-size:12.5px; background:#ffffff; border:1px solid #94a3b8; color:#0f172a; font-weight:700; border-radius:4px; box-sizing:border-box;`;
-            const inputStyleFee = `width:100%; height:26px; padding:1px 2px; font-size:12px; background:#ffffff; border:1px solid #94a3b8; color:#0284c7; font-weight:700; text-align:center; border-radius:4px; box-sizing:border-box;`;
-            const inputStyleUsd = `width:100%; height:26px; padding:1px 2px; font-size:12px; background:#ecfdf5; border:1px solid #10b981; color:#047857; font-weight:800; text-align:center; border-radius:4px; box-sizing:border-box;`;
+            const inputStyleName = `width:100%; height:35px; padding:3px 10px; font-size:14.5px; background:#ffffff; border:1.5px solid #94a3b8; color:#0f172a; font-weight:800; border-radius:6px; box-sizing:border-box;`;
+            const inputStyleFee = `width:100%; height:35px; padding:3px 4px; font-size:14.5px; background:#ffffff; border:1.5px solid #94a3b8; color:#0284c7; font-weight:800; text-align:center; border-radius:6px; box-sizing:border-box;`;
+            const inputStyleUsd = `width:100%; height:35px; padding:3px 4px; font-size:14.5px; background:#ecfdf5; border:1.5px solid #10b981; color:#047857; font-weight:900; text-align:center; border-radius:6px; box-sizing:border-box;`;
 
             if (!members || members.length === 0) {
                 if (mode === 'passport') {
@@ -7898,8 +8039,10 @@ input[type="date"] {
                         <tr class="gmm-row" data-mode="passport">
                             <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">1</td>
                             <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
-                            <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell('')}</td>
+                            <td style="width: 270px; max-width: 280px; padding: 1.5px 3px;">
+                                <input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)">
+                                <input type="hidden" class="gmm-input-photo" value="">
+                            </td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-passport" placeholder="" style="${inputStyleFee}" value="${rawPassport ? formatNumNoZero(defPassport) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-namelist" placeholder="" style="${inputStyleFee}" value="${rawNamelist ? formatNumNoZero(defNamelist) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${rawVisa ? formatNumNoZero(defVisa) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -7928,8 +8071,10 @@ input[type="date"] {
                         <tr class="gmm-row" data-mode="visa">
                             <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">1</td>
                             <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
-                            <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell('')}</td>
+                            <td style="width: 270px; max-width: 280px; padding: 1.5px 3px;">
+                                <input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)">
+                                <input type="hidden" class="gmm-input-photo" value="">
+                            </td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${rawVisa ? formatNumNoZero(defVisa) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${rawMonths}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-permit" placeholder="" style="${inputStyleFee}" value="${rawWork ? formatNumNoZero(defWork) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -7963,8 +8108,10 @@ input[type="date"] {
                         <tr class="gmm-row" data-mode="line">
                             <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">1</td>
                             <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
-                            <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell('')}</td>
+                            <td style="width: 270px; max-width: 280px; padding: 1.5px 3px;">
+                                <input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)">
+                                <input type="hidden" class="gmm-input-photo" value="">
+                            </td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${rawVip ? formatNumNoZero(defVip) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${rawClearance ? formatNumNoZero(defClearance) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-car" placeholder="" style="${inputStyleFee}" value="${rawCar ? formatNumNoZero(defCar) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -8009,8 +8156,10 @@ input[type="date"] {
                         <tr class="gmm-row" data-mode="passport">
                             <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${idx + 1}</td>
                             <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
-                            <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell(photoData)}</td>
+                            <td style="width: 270px; max-width: 280px; padding: 1.5px 3px;">
+                                <input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)">
+                                <input type="hidden" class="gmm-input-photo" value="${(photoData || '').replace(/"/g, '&quot;')}">
+                            </td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-passport" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(passportFee)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-namelist" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(namelistFee)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(visa)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -8027,8 +8176,10 @@ input[type="date"] {
                         <tr class="gmm-row" data-mode="visa">
                             <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${idx + 1}</td>
                             <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
-                            <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell(photoData)}</td>
+                            <td style="width: 270px; max-width: 280px; padding: 1.5px 3px;">
+                                <input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)">
+                                <input type="hidden" class="gmm-input-photo" value="${(photoData || '').replace(/"/g, '&quot;')}">
+                            </td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(visa)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${monthsVal}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-permit" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(permit)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -8051,8 +8202,10 @@ input[type="date"] {
                         <tr class="gmm-row" data-mode="line">
                             <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${idx + 1}</td>
                             <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
-                            <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                            <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell(photoData)}</td>
+                            <td style="width: 270px; max-width: 280px; padding: 1.5px 3px;">
+                                <input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="${safeName}" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)">
+                                <input type="hidden" class="gmm-input-photo" value="${(photoData || '').replace(/"/g, '&quot;')}">
+                            </td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(vip)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(clearance)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                             <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-car" placeholder="" style="${inputStyleFee}" value="${formatNumNoZero(car)}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -8381,8 +8534,51 @@ input[type="date"] {
             currentGmmReceiptNo = rNo;
             const item = getItemByRef(rNoEnc, idx);
             currentGmmCachedItem = item;
+
+            // Check if there is an associated booking for side-by-side verification
+            let matchedBooking = null;
+            const getBks = (typeof getBookings === 'function') ? getBookings : (typeof window.getBookings === 'function' ? window.getBookings : null);
+            if (getBks) {
+                try {
+                    const bks = getBks() || [];
+                    if (window.activeBookingForGroupInvoice) {
+                        matchedBooking = bks.find(b => String(b.id).trim().toLowerCase() === String(window.activeBookingForGroupInvoice).trim().toLowerCase());
+                    }
+                    if (!matchedBooking && rNo) {
+                        matchedBooking = bks.find(b => b.invoiceNo && b.invoiceNo.trim().toLowerCase() === rNo.trim().toLowerCase());
+                    }
+                    if (!matchedBooking && item && item.booking_id) {
+                        matchedBooking = bks.find(b => String(b.id).trim().toLowerCase() === String(item.booking_id).trim().toLowerCase());
+                    }
+                    if (!matchedBooking && item) {
+                        const sName = (item.group_info?.sender_name || item.group_data?.sender_name || item.sender_name || item.sender || item.customer_name || '').trim().toLowerCase();
+                        if (sName) {
+                            matchedBooking = bks.find(b => b.customerName && b.customerName.trim().toLowerCase() === sName);
+                        }
+                    }
+                } catch(e) {
+                    console.error('Error matching booking in openGroupMembersModal:', e);
+                }
+            }
+            if (typeof populateGmmVerificationPanel === 'function') {
+                populateGmmVerificationPanel(matchedBooking, item);
+            }
             
             if (item) {
+                // If no booking images found, load member photos into gmmDocViewer
+                if (!matchedBooking || !matchedBooking.images || matchedBooking.images.length === 0) {
+                    const memberPhotos = (item.members || [])
+                        .filter(m => m.photo_data || m.photo || m.image_url)
+                        .map((m, i) => ({
+                            url: m.photo_data || m.photo || m.image_url,
+                            title: m.full_english_name || m.name || ('សមាជិក ' + (i + 1)),
+                            category: 'ប៉ាស្ព័រ'
+                        }));
+                    if (window.gmmDocViewer) {
+                        window.gmmDocViewer.setImages(memberPhotos);
+                    }
+                }
+
                 const titleElem = document.getElementById('gmmTitle');
                 const subTitleElem = document.getElementById('gmmSubTitle');
                 const sender = item.group_info?.sender_name || item.group_data?.sender_name || item.group_info?.group_name || item.sender || item.customer_name || item.customer?.full_english_name || 'N/A';
@@ -8450,10 +8646,10 @@ input[type="date"] {
 
             const members = (item && item.members && item.members.length > 0) ? item.members : [];
 
-            // Set button text to: 💾 កែប្រែ & រក្សាទុក (Update & Save)
+            // Set button text to: 💾 រក្សាទុក
             const btnSave = document.getElementById('btnGmmSave');
             if (btnSave) {
-                btnSave.textContent = '💾 កែប្រែ & រក្សាទុក (Update & Save)';
+                btnSave.textContent = '💾 រក្សាទុក';
             }
 
             switchGmmMode(initialMode, members);
@@ -9429,9 +9625,9 @@ input[type="date"] {
             const tbody = document.getElementById('gmmMembersBody');
             if (!tbody) return;
 
-            const inputStyleName = `width:100%; height:26px; padding:1px 8px; font-size:12.5px; background:#ffffff; border:1px solid #94a3b8; color:#0f172a; font-weight:700; border-radius:4px; box-sizing:border-box;`;
-            const inputStyleFee = `width:100%; height:26px; padding:1px 2px; font-size:12px; background:#ffffff; border:1px solid #94a3b8; color:#0284c7; font-weight:700; text-align:center; border-radius:4px; box-sizing:border-box;`;
-            const inputStyleUsd = `width:100%; height:26px; padding:1px 2px; font-size:12px; background:#ecfdf5; border:1px solid #10b981; color:#047857; font-weight:800; text-align:center; border-radius:4px; box-sizing:border-box;`;
+            const inputStyleName = `width:100%; height:35px; padding:3px 10px; font-size:14.5px; background:#ffffff; border:1.5px solid #94a3b8; color:#0f172a; font-weight:800; border-radius:6px; box-sizing:border-box;`;
+            const inputStyleFee = `width:100%; height:35px; padding:3px 4px; font-size:14.5px; background:#ffffff; border:1.5px solid #94a3b8; color:#0284c7; font-weight:800; text-align:center; border-radius:6px; box-sizing:border-box;`;
+            const inputStyleUsd = `width:100%; height:35px; padding:3px 4px; font-size:14.5px; background:#ecfdf5; border:1.5px solid #10b981; color:#047857; font-weight:900; text-align:center; border-radius:6px; box-sizing:border-box;`;
 
             const currentCount = tbody.querySelectorAll('.gmm-row').length;
             const tr = document.createElement('tr');
@@ -9455,8 +9651,10 @@ input[type="date"] {
                 tr.innerHTML = `
                     <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${currentCount + 1}</td>
                     <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
-                    <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                    <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell('')}</td>
+                    <td style="width: 270px; max-width: 280px; padding: 1.5px 3px;">
+                        <input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)">
+                        <input type="hidden" class="gmm-input-photo" value="">
+                    </td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-passport" placeholder="" style="${inputStyleFee}" value="${rawPassport ? formatNumNoZero(defPassport) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-namelist" placeholder="" style="${inputStyleFee}" value="${rawNamelist ? formatNumNoZero(defNamelist) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${rawVisa ? formatNumNoZero(defVisa) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -9484,8 +9682,10 @@ input[type="date"] {
                 tr.innerHTML = `
                     <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${currentCount + 1}</td>
                     <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
-                    <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                    <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell('')}</td>
+                    <td style="width: 270px; max-width: 280px; padding: 1.5px 3px;">
+                        <input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)">
+                        <input type="hidden" class="gmm-input-photo" value="">
+                    </td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-visa" placeholder="" style="${inputStyleFee}" value="${rawVisa ? formatNumNoZero(defVisa) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                     <td style="padding: 1.5px 2px;"><input type="text" class="input-sys gmm-input-months" placeholder="ឧ. 1ខែ" style="${inputStyleFee}; color:#0f172a;" value="${rawMonths}" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-permit" placeholder="" style="${inputStyleFee}" value="${rawWork ? formatNumNoZero(defWork) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -9518,8 +9718,10 @@ input[type="date"] {
                 tr.innerHTML = `
                     <td style="text-align:center; font-weight:800; font-size:12.5px; color:#0284c7; padding: 1.5px 2px;" class="gmm-row-num">${currentCount + 1}</td>
                     <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;"><input type="checkbox" class="gmm-row-select" onchange="onGmmRowSelectionChange(this)" style="cursor:pointer; width:15px; height:15px; margin:0; accent-color:#0284c7;"></td>
-                    <td style="padding: 1.5px 3px;"><input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)"></td>
-                    <td style="text-align:center; vertical-align:middle; padding: 1.5px 2px;">${renderGmmPhotoCell('')}</td>
+                    <td style="width: 270px; max-width: 280px; padding: 1.5px 3px;">
+                        <input type="text" class="input-sys gmm-input-name" placeholder="ឈ្មោះសមាជិក" style="${inputStyleName}" value="" oninput="calculateGmmTotal()" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)" onpaste="handleGmmNamePaste(event, this)">
+                        <input type="hidden" class="gmm-input-photo" value="">
+                    </td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-vip" placeholder="" style="${inputStyleFee}" value="${rawVip ? formatNumNoZero(defVip) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-clearance" placeholder="" style="${inputStyleFee}" value="${rawClearance ? formatNumNoZero(defClearance) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
                     <td style="padding: 1.5px 2px;"><input type="number" step="0.01" class="input-sys gmm-input-car" placeholder="" style="${inputStyleFee}" value="${rawCar ? formatNumNoZero(defCar) : ''}" oninput="onGmmRowFeeChanged(this)" onfocus="this.select()" onkeydown="handleGmmRowKeydown(event, this)"></td>
@@ -9653,6 +9855,7 @@ input[type="date"] {
 
             pendingGmmSavePayload = {
                 receipt_no: editedReceiptNo,
+                booking_id: window.activeBookingForGroupInvoice || null,
                 exchange_rate: exchangeRate,
                 members: members,
                 travel_date: travelDate,
@@ -9702,11 +9905,42 @@ input[type="date"] {
             .then(res => {
                 if (btnSave) {
                     btnSave.disabled = false;
-                    btnSave.textContent = '💾 កែប្រែ & រក្សាទុក (Update & Save)';
+                    btnSave.textContent = '💾 រក្សាទុក';
                 }
                 if (res && res.success) {
                     const catNameKh = chosenCategory === 'car' ? 'ផ្នែកឡាន (Car)' : (chosenCategory === 'passport' ? 'ផ្នែកប៉ាសស្ព័រ & ផ្សេងៗ (Passport)' : 'ផ្នែកវីសា (Visa)');
-                    alert(`🎉 បានរក្សាទុកទិន្នន័យទៅក្នុង${catNameKh} បានជោគជ័យ!`);
+                    const savedNo = res.receipt_no || (pendingGmmSavePayload && pendingGmmSavePayload.receipt_no) || currentGmmReceiptNo;
+                    
+                    // Immediate Booking Auto-Link & Update
+                    try {
+                        let bookings = getBookings();
+                        let targetBooking = null;
+
+                        if (window.activeBookingForGroupInvoice) {
+                            targetBooking = bookings.find(x => String(x.id).trim() === String(window.activeBookingForGroupInvoice).trim());
+                        }
+                        if (!targetBooking && savedNo) {
+                            targetBooking = bookings.find(x => String(x.invoiceNo || '').trim().toLowerCase() === String(savedNo).trim().toLowerCase());
+                        }
+
+                        if (targetBooking) {
+                            targetBooking.invoiceDone = true;
+                            if (savedNo) targetBooking.invoiceNo = savedNo;
+                            setBookings(bookings);
+                            fetch('/api/bookings', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ bookings: bookings })
+                            }).catch(() => {});
+                            if (typeof renderDashboard === 'function') renderDashboard();
+                            if (typeof renderBookings === 'function') renderBookings(currentBookingFilter);
+                        }
+                    } catch(e_sync) {
+                        console.warn('Booking sync error:', e_sync);
+                    }
+                    window.activeBookingForGroupInvoice = null;
+
+                    alert(`🎉 បានរក្សាទុកទិន្នន័យទៅក្នុង${catNameKh} បានជោគជ័យ! (${savedNo})`);
                     pendingGmmSavePayload = null;
                     closeGroupMembersModal();
                     loadDatabaseRecords();
@@ -9717,7 +9951,7 @@ input[type="date"] {
             .catch(err => {
                 if (btnSave) {
                     btnSave.disabled = false;
-                    btnSave.textContent = '💾 កែប្រែ & រក្សាទុក (Update & Save)';
+                    btnSave.textContent = '💾 រក្សាទុក';
                 }
                 alert('កំហុសក្នុងការផ្ញើទិន្នន័យ៖ ' + (err.message || err));
             });
@@ -9728,6 +9962,10 @@ input[type="date"] {
             if (modal) {
                 modal.classList.remove('active');
                 modal.style.display = 'none';
+            }
+            window.activeBookingForGroupInvoice = null;
+            if (typeof populateGmmVerificationPanel === 'function') {
+                populateGmmVerificationPanel(null);
             }
         }
 
@@ -10691,6 +10929,7 @@ document.addEventListener('paste', function(e) {
             if (postVisa) postVisa.style.display = 'none';
 
             if (cur === 'autorent') {
+                document.body.classList.add('submode-autorent');
                 activeBtn(btnAutorent, '#0284c7', 'rgba(2, 132, 199, 0.4)');
                 if (btnAutorent) btnAutorent.style.color = '#38bdf8';
                 if (posterSplitRow) posterSplitRow.style.display = 'none';
@@ -10701,7 +10940,11 @@ document.addEventListener('paste', function(e) {
                 if (typeof window.initAutoRentSystem === 'function') {
                     window.initAutoRentSystem();
                 }
+                if (typeof fitAutoRentTableToViewport === 'function') {
+                    fitAutoRentTableToViewport();
+                }
             } else {
+                document.body.classList.remove('submode-autorent');
                 if (autorentContainer) autorentContainer.style.display = 'none';
                 if (posterSplitRow) posterSplitRow.style.display = 'flex';
                 if (quoteRightActions) quoteRightActions.style.display = 'flex';
@@ -11254,6 +11497,8 @@ document.addEventListener('paste', function(e) {
         return loadData(STORAGE_KEY_BOOKINGS, getInitialBookings());
     }
     function setBookings(b) { saveData(STORAGE_KEY_BOOKINGS, b); }
+    window.getBookings = getBookings;
+    window.setBookings = setBookings;
 
     function getCars() { return loadData(STORAGE_KEY_CARS, DEFAULT_CARS); }
     function setCars(c) {
@@ -11598,11 +11843,69 @@ document.addEventListener('paste', function(e) {
         renderDashboard();
     };
 
-    // Dashboard Schedule Filtering (ទាំងអស់, 🕒 ថ្ងៃនេះ, 🌅 ថ្ងៃស្អែក, កក់ទុកមុន, បានបញ្ចប់)
+    // Dashboard Schedule Filtering (ទាំងអស់, 🕒 ថ្ងៃនេះ, 🌅 ថ្ងៃស្អែក, កក់ទុកមុន, បានបញ្ចប់, ប្រតិទិនតាមថ្ងៃ)
     let currentDashScheduleFilter = 'dueToday';
+    let currentDashCustomDate = '';
+
+    window.onDashScheduleDateSelected = function(val) {
+        if (!val) {
+            resetDashScheduleDateFilter();
+            return;
+        }
+        currentDashCustomDate = val;
+        currentDashScheduleFilter = 'customDate';
+        document.querySelectorAll('#dashScheduleTabs .filter-tab').forEach(b => b.classList.remove('active'));
+        const resetBtn = document.getElementById('dashScheduleDateResetBtn');
+        if (resetBtn) resetBtn.style.display = 'inline-block';
+        const calWrap = document.getElementById('dashScheduleCalendarWrapper');
+        if (calWrap) {
+            calWrap.style.borderColor = '#059669';
+            calWrap.style.boxShadow = '0 0 0 2px rgba(16, 185, 129, 0.2)';
+        }
+        renderDashboard();
+    };
+
+    window.stepDashScheduleDate = function(offsetDays) {
+        const inp = document.getElementById('dashScheduleDateInput');
+        let baseDateStr = currentDashCustomDate || (inp ? inp.value : '') || (typeof getTodayStr === 'function' ? getTodayStr(0) : new Date().toISOString().slice(0, 10));
+        const parts = baseDateStr.split('-');
+        let d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        d.setDate(d.getDate() + offsetDays);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const nextDateStr = `${y}-${m}-${day}`;
+        if (inp) inp.value = nextDateStr;
+        onDashScheduleDateSelected(nextDateStr);
+    };
+
+    window.resetDashScheduleDateFilter = function() {
+        currentDashCustomDate = '';
+        const today = typeof getTodayStr === 'function' ? getTodayStr(0) : new Date().toISOString().slice(0, 10);
+        const inp = document.getElementById('dashScheduleDateInput');
+        if (inp) inp.value = today;
+        const resetBtn = document.getElementById('dashScheduleDateResetBtn');
+        if (resetBtn) resetBtn.style.display = 'none';
+        const calWrap = document.getElementById('dashScheduleCalendarWrapper');
+        if (calWrap) {
+            calWrap.style.borderColor = '#0284c7';
+            calWrap.style.boxShadow = '0 1px 3px rgba(2,132,199,0.12)';
+        }
+        setDashboardScheduleFilter('dueToday');
+    };
 
     window.setDashboardScheduleFilter = function(filter) {
         currentDashScheduleFilter = filter || 'dueToday';
+        if (currentDashScheduleFilter !== 'customDate') {
+            currentDashCustomDate = '';
+            const resetBtn = document.getElementById('dashScheduleDateResetBtn');
+            if (resetBtn) resetBtn.style.display = 'none';
+            const calWrap = document.getElementById('dashScheduleCalendarWrapper');
+            if (calWrap) {
+                calWrap.style.borderColor = '#0284c7';
+                calWrap.style.boxShadow = '0 1px 3px rgba(2,132,199,0.12)';
+            }
+        }
         document.querySelectorAll('#dashScheduleTabs .filter-tab').forEach(b => {
             b.classList.toggle('active', b.getAttribute('data-dash-filter') === currentDashScheduleFilter);
         });
@@ -11739,7 +12042,24 @@ document.addEventListener('paste', function(e) {
         const clearBtn = document.getElementById('dashScheduleSearchClearBtn');
         if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
 
+        // 1. Calendar Picker Count Badge (Live update for whatever date is selected or today)
+        const calInp = document.getElementById('dashScheduleDateInput');
+        if (calInp && !calInp.value) {
+            calInp.value = todayStr;
+        }
+        const activeCalDate = currentDashCustomDate || (calInp ? calInp.value : '') || todayStr;
+        const normActiveCalDate = normalizeBookingDate(activeCalDate);
+        const countForCalDate = bookings.filter(b => normalizeBookingDate(b.date) === normActiveCalDate).length;
+        const calBadge = document.getElementById('dashScheduleDateCountBadge');
+        if (calBadge) {
+            calBadge.textContent = `${countForCalDate} ជើង`;
+            calBadge.title = `ថ្ងៃទី ${activeCalDate} មានចំនួនសរុប ${countForCalDate} ជើងឡាន`;
+        }
+
         let filteredTrips = bookings.filter(b => {
+            if (currentDashScheduleFilter === 'customDate' && currentDashCustomDate) {
+                return normalizeBookingDate(b.date) === normalizeBookingDate(currentDashCustomDate);
+            }
             if (currentDashScheduleFilter === 'dueToday' || currentDashScheduleFilter === 'today') {
                 return (b.date === todayStr && b.status !== 'completed');
             }
@@ -11774,6 +12094,9 @@ document.addEventListener('paste', function(e) {
             if (q) {
                 cardTitleEl.innerHTML = `<i class="fa-solid fa-magnifying-glass text-primary"></i> លទ្ធផលស្វែងរក៖ "${escapeHtml(q)}"`;
                 if (cardSubEl) cardSubEl.textContent = `រកឃើញការកក់សរុប ${filteredTrips.length} ជើង ដែលត្រូវគ្នានឹងពាក្យគន្លឹះគ្រប់ជួរឈរ`;
+            } else if (currentDashScheduleFilter === 'customDate' && currentDashCustomDate) {
+                cardTitleEl.innerHTML = `<i class="fa-regular fa-calendar-days text-primary"></i> កាលវិភាគចេញដំណើរថ្ងៃទី ${currentDashCustomDate} (${countForCalDate} ជើង)`;
+                if (cardSubEl) cardSubEl.textContent = `ជើងឡានដែលត្រូវចេញដំណើរ និងទទួលភ្ញៀវក្នុងថ្ងៃទី ${currentDashCustomDate} សរុប ${countForCalDate} ជើង`;
             } else if (currentDashScheduleFilter === 'dueToday' || currentDashScheduleFilter === 'today') {
                 cardTitleEl.textContent = 'កាលវិភាគចេញដំណើរថ្ងៃនេះ (Today\'s Trips)';
                 if (cardSubEl) cardSubEl.textContent = 'ជើងឡានដែលត្រូវចេញដំណើរ និងទទួលភ្ញៀវទាំងអស់ក្នុងថ្ងៃនេះ';
@@ -11824,8 +12147,30 @@ document.addEventListener('paste', function(e) {
         if (typeof renderTelegramAnalysis === 'function') {
             renderTelegramAnalysis();
         }
+        fitAutoRentTableToViewport();
     }
     window.renderDashboard = renderDashboard;
+
+    function fitAutoRentTableToViewport() {
+        requestAnimationFrame(() => {
+            const tableContainers = document.querySelectorAll('.table-responsive');
+            tableContainers.forEach(container => {
+                if (!container.offsetParent) return;
+                const rect = container.getBoundingClientRect();
+                // Dock bottom of table precisely 48px above the bottom of the viewport
+                const availableHeight = Math.floor(window.innerHeight - rect.top - 48);
+                if (availableHeight > 180) {
+                    container.style.height = availableHeight + 'px';
+                    container.style.maxHeight = availableHeight + 'px';
+                    container.style.overflowY = 'auto';
+                    container.style.overflowX = 'auto';
+                }
+            });
+        });
+    }
+    window.fitAutoRentTableToViewport = fitAutoRentTableToViewport;
+    window.addEventListener('resize', fitAutoRentTableToViewport);
+    window.addEventListener('orientationchange', fitAutoRentTableToViewport);
 
     function renderBookingRow(b, idx) {
         const carChips = (b.cars && b.cars.length > 0 ? b.cars : ['អាលផាត (Alphard)']).map(c => {
@@ -11837,22 +12182,33 @@ document.addEventListener('paste', function(e) {
         const vipBadge = b.vipService ? `<span class="table-badge-car badge-vip" style="white-space: nowrap; font-size: 13px; font-weight: 900; color: #9a3412; background: #fef3c7; border: 1.5px solid #f59e0b; padding: 4px 10px;">⭐ ${b.vipService}</span>` : '';
         const borderBadge = b.borderClear ? `<span class="table-badge-car" style="background:#dcfce7;color:#166534;border: 1.5px solid #16a34a;white-space: nowrap; font-size: 13px; font-weight: 900; padding: 4px 10px;">🚀 ${b.borderClear}</span>` : '';
 
-        const isInvDone = !!b.invoiceDone;
-        const invoiceBtn = isInvDone ? `
-            <button type="button" class="btn-ar" onclick="toggleBookingInvoice('${b.id}', event)" 
-                title="ចុចដើម្បីដក ឬប្តូរ (បច្ចុប្បន្ន៖ ធ្វើ Invoice ហើយ ✅)"
-                style="padding: 4px 10px; font-size: 12.5px; font-weight: 800; border-radius: 6px; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; background: #dcfce7; color: #15803d; border: 1.5px solid #86efac; box-shadow: 0 1px 2px rgba(22,101,52,0.12);">
-                <i class="fa-solid fa-square-check" style="font-size: 14px; color: #16a34a;"></i> <span>ធ្វើរួច</span>
+        const invoiceBtn = b.invoiceNo ? `
+            <button type="button" class="btn-ar" onclick="openCarInvoiceForBooking('${b.id}', event)" 
+                title="ចុចដើម្បីពិនិត្យ ឬកែប្រែវិក្កយបត្រ (${b.invoiceNo})"
+                style="padding: 4px 10px; font-size: 12.5px; font-weight: 800; border-radius: 6px; white-space: nowrap; cursor: pointer; background: #ecfdf5; color: #15803d; border: 1.5px solid #86efac; box-shadow: 0 1px 2px rgba(22,101,52,0.1); display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-file-invoice-dollar" style="font-size: 13px; color: #16a34a;"></i> <span>${b.invoiceNo}</span>
             </button>
         ` : `
-            <button type="button" class="btn-ar" onclick="toggleBookingInvoice('${b.id}', event)" 
-                title="ចុចដើម្បីធិចថាបានធ្វើវិក្កយបត្ររួច (Mark Invoice as Done)"
-                style="padding: 4px 10px; font-size: 12.5px; font-weight: 700; border-radius: 6px; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; background: #f8fafc; color: #64748b; border: 1.5px dashed #cbd5e1;">
-                <i class="fa-regular fa-square" style="font-size: 14px; color: #94a3b8;"></i> <span>មិនទាន់</span>
+            <button type="button" class="btn-ar" onclick="openCarInvoiceForBooking('${b.id}', event)" 
+                title="ចុចដើម្បីបំពេញ និងចេញវិក្កយបត្រសេវាកម្មឡាន"
+                style="padding: 4px 10px; font-size: 12px; font-weight: 700; border-radius: 6px; white-space: nowrap; cursor: pointer; background: #f8fafc; color: #64748b; border: 1.5px dashed #cbd5e1; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fa-regular fa-square" style="font-size: 13px; color: #94a3b8;"></i> <span>មិនទាន់</span>
             </button>
         `;
 
-        const custTg = b.customerTelegram ? `<a href="https://t.me/${b.customerTelegram.replace('@','')}" target="_blank" class="btn-ar btn-ar-telegram" style="padding: 4px 12px; font-size: 12.5px; font-weight: 800; white-space: nowrap; border-radius: 6px;"><i class="fa-brands fa-telegram"></i> ${b.customerTelegram}</a>` : '<span style="color:#64748b; font-weight: 700;">--</span>';
+        const invDetailsBtn = b.invoiceNo ? `
+            <button type="button" class="btn-ar" onclick="openCarInvoiceForBooking('${b.id}', event)" 
+                title="ចុចដើម្បីមើលលម្អិត និងកែប្រែវិក្កយបត្រ (${b.invoiceNo})"
+                style="padding: 5px 12px; font-size: 13px; font-weight: 800; border-radius: 7px; white-space: nowrap; cursor: pointer; background: linear-gradient(135deg, #0284c7, #2563eb); border: 1.5px solid #38bdf8; color: #ffffff; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(2,132,199,0.25); transition: all 0.15s ease;">
+                <i class="fa-solid fa-eye" style="font-size: 12px;"></i> <span>មើលលម្អិត</span>
+            </button>
+        ` : `
+            <button type="button" class="btn-ar" onclick="openCarInvoiceForBooking('${b.id}', event)" 
+                title="មិនទាន់មានវិក្កយបត្រទេ (ចុចដើម្បីបង្កើត និងបំពេញវិក្កយបត្រ)"
+                style="padding: 5px 10px; font-size: 12px; font-weight: 700; border-radius: 7px; white-space: nowrap; cursor: pointer; background: #f8fafc; color: #94a3b8; border: 1.5px dashed #cbd5e1; display: inline-flex; align-items: center; gap: 5px;">
+                <i class="fa-regular fa-file-lines" style="color: #cbd5e1;"></i> <span>គ្មានវិក្កយបត្រ</span>
+            </button>
+        `;
         const driverTg = b.driverTelegram ? `
             <button type="button" class="btn-ar btn-ar-primary" style="padding: 4px 10px; font-size: 12.5px; font-weight: 800; white-space: nowrap; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(2,132,199,0.25);" onclick="openDispatchDriverModal('${b.id}')" title="ចុចដើម្បីបញ្ជូន ឬចាត់ចែងតៃកុង">
                 <i class="fa-brands fa-telegram"></i> ${b.driverTelegram} <i class="fa-solid fa-paper-plane" style="font-size: 10px; opacity: 0.85;"></i>
@@ -11872,8 +12228,10 @@ document.addEventListener('paste', function(e) {
                     <span style="font-weight: 900; color: #0284c7; font-size: 14.5px; letter-spacing: 0.3px;"><i class="fa-regular fa-clock"></i> ${b.time || '--:--'}</span>
                     <span style="font-size: 12.5px; font-weight: 800; color: #334155; margin-left: 8px;"><i class="fa-regular fa-calendar" style="color:#0284c7;"></i> ${b.date || ''}</span>
                 </td>
+                <td style="text-align: center; white-space: nowrap; padding: 12px 14px;">${invoiceBtn}</td>
                 <td style="white-space: nowrap; padding: 12px 14px;">
                     <span style="font-weight: 900; color: #0f172a; font-size: 14.5px;">${b.customerName || 'អតិថិជន'}</span>
+                    ${b.customerTelegram ? ` <a href="https://t.me/${b.customerTelegram.replace('@','')}" target="_blank" class="badge" style="background:#eff6ff;color:#0284c7;border:1px solid #bae6fd;font-size:11px;font-weight:800;text-decoration:none;margin-left:4px;" title="Telegram ភ្ញៀវ"><i class="fa-brands fa-telegram"></i> ${b.customerTelegram}</a>` : ''}
                     ${b.images && b.images.length > 0 ? ` <span class="badge" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;font-size:11px;font-weight:700;margin-left:4px;cursor:pointer;" onclick="viewBookingDetails('${b.id}')" title="${b.images.length} រូបភាពភ្ជាប់"><i class="fa-solid fa-camera"></i> ${b.images.length}</span>` : ''}
                 </td>
                 <td style="white-space: nowrap; padding: 12px 14px;">
@@ -11890,12 +12248,12 @@ document.addEventListener('paste', function(e) {
                         <span>🏁 ${b.dropoffLoc || 'ប៉ោយប៉ែត'}</span>
                     </span>
                 </td>
-                <td style="text-align: center; white-space: nowrap; padding: 12px 14px;">${custTg}</td>
+                <td style="text-align: center; white-space: nowrap; padding: 12px 14px;">${invDetailsBtn}</td>
                 <td style="text-align: center; white-space: nowrap; padding: 12px 14px;">${driverTg}</td>
                 <td style="text-align: center; white-space: nowrap; padding: 12px 14px;">
                     <div style="display: inline-flex; gap: 6px; align-items: center;">
                         <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #7dd3fc; color: #0284c7; background: #e0f2fe;" onclick="openDispatchDriverModal('${b.id}')" title="បញ្ជូនទិន្នន័យ & ទីតាំងទៅ Telegram តៃកុង"><i class="fa-solid fa-share-nodes"></i></button>
-                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #cbd5e1;" onclick="viewBookingDetails('${b.id}')" title="មើលព័ត៌មានលម្អិត"><i class="fa-solid fa-eye text-primary"></i></button>
+                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #cbd5e1;" onclick="viewBookingDetails('${b.id}')" title="ព័ត៌មានកក់ឡាន (Booking Info)"><i class="fa-solid fa-circle-info text-primary"></i></button>
                         <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #cbd5e1;" onclick="openEditBookingModal('${b.id}')" title="កែប្រែ"><i class="fa-solid fa-pen-to-square text-primary"></i></button>
                         <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #cbd5e1;" onclick="deleteBooking('${b.id}')" title="លុប"><i class="fa-solid fa-trash-can text-danger"></i></button>
                     </div>
@@ -11961,6 +12319,7 @@ document.addEventListener('paste', function(e) {
         }
 
         tbody.innerHTML = filtered.map((b, idx) => renderBookingRow(b, idx)).join('');
+        fitAutoRentTableToViewport();
     }
     window.renderBookings = renderBookings;
 
@@ -12570,6 +12929,7 @@ document.addEventListener('paste', function(e) {
         // Populate Car options
         populateCarDropdowns();
         populateCustomerDropdown();
+        if (typeof populateDriverDatalist === 'function') populateDriverDatalist();
 
         // Reset inputs
         const f = document.getElementById('bookingForm');
@@ -12652,6 +13012,7 @@ document.addEventListener('paste', function(e) {
 
         populateCarDropdowns();
         populateCustomerDropdown();
+        if (typeof populateDriverDatalist === 'function') populateDriverDatalist();
 
         document.getElementById('bookingId').value = b.id;
         document.getElementById('bookingCustomerName').value = b.customerName || '';
@@ -13516,7 +13877,12 @@ document.addEventListener('paste', function(e) {
         const bookings = getBookings();
         const existingBookingForSave = editingBookingId ? bookings.find(b => b.id === editingBookingId) : null;
         const invSelectEl = document.getElementById('bookingInvoiceDone');
-        const isInvDoneVal = invSelectEl ? (invSelectEl.value === 'true') : (existingBookingForSave ? !!existingBookingForSave.invoiceDone : false);
+        let isInvDoneVal = invSelectEl ? (invSelectEl.value === 'true') : (existingBookingForSave ? !!existingBookingForSave.invoiceDone : false);
+        let existingInvNo = existingBookingForSave ? (existingBookingForSave.invoiceNo || null) : null;
+
+        if (existingInvNo && !isInvDoneVal && (!invSelectEl || invSelectEl.value !== 'false')) {
+            isInvDoneVal = true;
+        }
 
         const newBooking = {
             id: editingBookingId || ('BK-' + (1000 + bookings.length + 1)),
@@ -13533,6 +13899,7 @@ document.addEventListener('paste', function(e) {
             time: document.getElementById('bookingTime').value || '08:00',
             status: 'active',
             invoiceDone: isInvDoneVal,
+            invoiceNo: existingInvNo,
             notes: document.getElementById('bookingNotes') ? document.getElementById('bookingNotes').value.trim() : '',
             rawMessage: document.getElementById('telegramPasteInput') ? document.getElementById('telegramPasteInput').value : '',
             images: currentBookingImages ? [...currentBookingImages] : []
@@ -13619,6 +13986,774 @@ document.addEventListener('paste', function(e) {
         }
     };
 
+    // Helper to filter only existing images that actually exist on disk/network
+    window.filterExistingImages = function(imageList) {
+        if (!Array.isArray(imageList) || imageList.length === 0) {
+            return Promise.resolve([]);
+        }
+        const promises = imageList.map(item => {
+            const url = (typeof item === 'string' ? item : item?.url) || '';
+            if (!url) return Promise.resolve(null);
+            if (url.startsWith('data:image/')) return Promise.resolve(item);
+            return new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => resolve(item);
+                img.onerror = () => resolve(null);
+                img.src = url;
+                setTimeout(() => resolve(null), 800);
+            });
+        });
+        return Promise.all(promises).then(results => results.filter(Boolean));
+    };
+
+    // =========================================================================
+    // LARGE PASSPORT & DOCUMENT VIEWER CONTROLLER FOR GROUP INVOICE MODAL
+    // =========================================================================
+    window.gmmDocViewer = {
+        images: [],
+        currentIndex: 0,
+        scale: 1,
+        rotation: 0,
+        panX: 0,
+        panY: 0,
+        isDragging: false,
+        startX: 0,
+        startY: 0,
+
+        setImages: function(list, activeIdx) {
+            this.images = Array.isArray(list) ? list.filter(Boolean) : [];
+            this.currentIndex = Math.max(0, Math.min(activeIdx || 0, this.images.length - 1));
+            this.resetTransform();
+            this.render();
+        },
+
+        resetTransform: function() {
+            this.scale = 1;
+            this.rotation = 0;
+            this.panX = 0;
+            this.panY = 0;
+            this.updateTransform();
+            const zoomLevelBtn = document.getElementById('btnGmmZoomLevel');
+            if (zoomLevelBtn) zoomLevelBtn.textContent = '100%';
+        },
+
+        updateTransform: function() {
+            const img = document.getElementById('gmmDocMainImg');
+            if (img) {
+                img.style.transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.scale}) rotate(${this.rotation}deg)`;
+            }
+        },
+
+        render: function() {
+            const titleEl = document.getElementById('gmmDocViewerTitle');
+            const countBadge = document.getElementById('gmmDocViewerCountBadge');
+            const controlsBar = document.getElementById('gmmDocControlsBar');
+            const imgEl = document.getElementById('gmmDocMainImg');
+            const captionBadge = document.getElementById('gmmDocCaptionBadge');
+            const thumbStrip = document.getElementById('gmmDocThumbStrip');
+            const prevBtn = document.getElementById('btnGmmPrevDoc');
+            const nextBtn = document.getElementById('btnGmmNextDoc');
+
+            // ករណីមិនមានរូបថត: ចំហរចោលស្អាតបាត (Open / Blank space, no errors, no warnings)
+            if (!this.images || this.images.length === 0) {
+                if (imgEl) { imgEl.style.display = 'none'; imgEl.src = ''; }
+                if (captionBadge) captionBadge.style.display = 'none';
+                if (controlsBar) controlsBar.style.display = 'none';
+                if (countBadge) countBadge.style.display = 'none';
+                if (titleEl) titleEl.textContent = 'រូបភាពក្នុងគ្រុប';
+                if (thumbStrip) { thumbStrip.style.display = 'none'; thumbStrip.innerHTML = ''; }
+                return;
+            }
+
+            const cur = this.images[this.currentIndex] || {};
+            const url = (typeof cur === 'string' ? cur : cur.url) || '';
+            const title = (typeof cur === 'string' ? '' : (cur.title || cur.name || cur.category)) || 'ឯកសារ';
+            const category = (typeof cur === 'string' ? 'រូបភាព' : (cur.category || 'ឯកសារ')) || 'ឯកសារ';
+
+            if (titleEl) titleEl.textContent = `📷 ${category}${title && title !== category ? ': ' + title : ''}`;
+            if (countBadge) {
+                countBadge.style.display = 'inline-block';
+                countBadge.textContent = `${this.currentIndex + 1} / ${this.images.length}`;
+            }
+            if (controlsBar) controlsBar.style.display = 'flex';
+            if (captionBadge) {
+                captionBadge.style.display = 'block';
+                captionBadge.textContent = `📷 ${category} (${this.currentIndex + 1}/${this.images.length})`;
+            }
+
+            if (imgEl) {
+                imgEl.onerror = () => {
+                    // If image fails to load, simply remove it and render remaining or leave blank (no error cards!)
+                    this.images.splice(this.currentIndex, 1);
+                    if (this.currentIndex >= this.images.length) {
+                        this.currentIndex = Math.max(0, this.images.length - 1);
+                    }
+                    this.render();
+                };
+                imgEl.onload = () => {
+                    imgEl.style.display = 'block';
+                };
+                imgEl.src = url;
+            }
+
+            if (prevBtn) prevBtn.disabled = (this.currentIndex <= 0);
+            if (nextBtn) nextBtn.disabled = (this.currentIndex >= this.images.length - 1);
+
+            // Thumbnail strip only if more than 1 existing image
+            if (thumbStrip) {
+                if (this.images.length > 1) {
+                    thumbStrip.style.display = 'flex';
+                    thumbStrip.innerHTML = this.images.map((item, idx) => {
+                        const iUrl = (typeof item === 'string' ? item : item.url) || '';
+                        const iCat = (typeof item === 'string' ? 'រូប' : (item.category || 'ឯកសារ'));
+                        const isActive = (idx === this.currentIndex);
+                        return `
+                            <div style="position: relative; width: 50px; height: 40px; border-radius: 4px; overflow: hidden; border: 2px solid ${isActive ? '#0284c7' : '#cbd5e1'}; background: #f8fafc; cursor: pointer; flex-shrink: 0; box-shadow: ${isActive ? '0 0 6px rgba(2,132,199,0.4)' : 'none'}; transition: all 0.15s ease;"
+                                 onclick="gmmDocViewer.showImage(${idx})" title="${iCat} (${idx + 1})">
+                                <img src="${iUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+                                <span style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15,23,42,0.8); color: #fff; font-size: 8.5px; text-align: center; font-weight: 700; white-space: nowrap; overflow: hidden;">${idx + 1}</span>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    thumbStrip.style.display = 'none';
+                    thumbStrip.innerHTML = '';
+                }
+            }
+        },
+
+        showImage: function(idx) {
+            if (idx >= 0 && idx < this.images.length) {
+                this.currentIndex = idx;
+                this.resetTransform();
+                this.render();
+            }
+        },
+
+        next: function() {
+            if (this.currentIndex < this.images.length - 1) {
+                this.showImage(this.currentIndex + 1);
+            }
+        },
+
+        prev: function() {
+            if (this.currentIndex > 0) {
+                this.showImage(this.currentIndex - 1);
+            }
+        },
+
+        zoomIn: function() {
+            this.scale = Math.min(4.0, this.scale + 0.3);
+            this.updateTransform();
+            const zoomLevelBtn = document.getElementById('btnGmmZoomLevel');
+            if (zoomLevelBtn) zoomLevelBtn.textContent = Math.round(this.scale * 100) + '%';
+        },
+
+        zoomOut: function() {
+            this.scale = Math.max(0.6, this.scale - 0.3);
+            this.updateTransform();
+            const zoomLevelBtn = document.getElementById('btnGmmZoomLevel');
+            if (zoomLevelBtn) zoomLevelBtn.textContent = Math.round(this.scale * 100) + '%';
+        },
+
+        resetZoom: function() {
+            this.resetTransform();
+        },
+
+        rotate: function() {
+            this.rotation = (this.rotation + 90) % 360;
+            this.updateTransform();
+        },
+
+        openLightbox: function() {
+            const cur = this.images[this.currentIndex];
+            if (!cur) return;
+            const url = typeof cur === 'string' ? cur : cur.url;
+            const title = typeof cur === 'string' ? '' : (cur.title || cur.category);
+            if (typeof window.openImageLightbox === 'function') {
+                window.openImageLightbox(url, title, this.images, this.currentIndex);
+            }
+        },
+
+        handleWheel: function(e) {
+            if (!this.images || this.images.length === 0) return;
+            e.preventDefault();
+            if (e.deltaY < 0) {
+                this.zoomIn();
+            } else {
+                this.zoomOut();
+            }
+        },
+
+        handleMouseDown: function(e) {
+            if (!this.images || this.images.length === 0) return;
+            if (e.button !== 0) return;
+            this.isDragging = true;
+            this.startX = e.clientX - this.panX;
+            this.startY = e.clientY - this.panY;
+            const stage = document.getElementById('gmmDocViewerStage');
+            if (stage) stage.style.cursor = 'grabbing';
+
+            const onMouseMove = (ev) => {
+                if (!this.isDragging) return;
+                this.panX = ev.clientX - this.startX;
+                this.panY = ev.clientY - this.startY;
+                this.updateTransform();
+            };
+
+            const onMouseUp = () => {
+                this.isDragging = false;
+                if (stage) stage.style.cursor = 'default';
+                window.removeEventListener('mousemove', onMouseMove);
+                window.removeEventListener('mouseup', onMouseUp);
+            };
+
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+        },
+
+        handleFileSelect: function(files) {
+            if (!files || files.length === 0) return;
+            Array.from(files).forEach((file, idx) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const base64 = e.target.result;
+                    this.images.push({
+                        url: base64,
+                        title: file.name,
+                        category: 'ឯកសារ'
+                    });
+                    if (idx === 0) {
+                        this.showImage(this.images.length - 1);
+                    } else {
+                        this.render();
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    };
+
+    window.toggleGmmVerifPanelCollapse = function() {
+        const p = document.getElementById('gmmVerificationSidePanel');
+        const b = document.getElementById('btnToggleGmmVerifCollapse');
+        const showBtn = document.getElementById('btnGmmShowVerifFromViewer');
+        if (!p) return;
+        if (p.style.display === 'none') {
+            p.style.display = 'flex';
+            if (b) b.textContent = '▶ លាក់';
+            if (showBtn) showBtn.style.display = 'none';
+        } else {
+            p.style.display = 'none';
+            if (b) b.textContent = '▶ លាក់';
+            if (showBtn) showBtn.style.display = 'inline-flex';
+        }
+    };
+
+    // =========================================================================
+    // CAR SERVICE GROUP INVOICE MODAL SYSTEM FOR BOOKINGS (ទម្រង់ចេញវិក្កយបត្រសេវាកម្មឡាន)
+    // =========================================================================
+    window.populateGmmVerificationPanel = function(b, item) {
+        const sidePanel = document.getElementById('gmmVerificationSidePanel');
+        const showBtn = document.getElementById('btnGmmShowVerifFromViewer');
+        if (!sidePanel) return;
+
+        // Automatically resolve booking b if not provided
+        if (!b) {
+            const getBks = (typeof getBookings === 'function') ? getBookings : (typeof window.getBookings === 'function' ? window.getBookings : null);
+            if (getBks) {
+                try {
+                    const bks = getBks() || [];
+                    if (window.activeBookingForGroupInvoice) {
+                        b = bks.find(x => String(x.id).trim().toLowerCase() === String(window.activeBookingForGroupInvoice).trim().toLowerCase());
+                    }
+                    if (!b && typeof currentGmmReceiptNo !== 'undefined' && currentGmmReceiptNo) {
+                        b = bks.find(x => x.invoiceNo && x.invoiceNo.trim().toLowerCase() === currentGmmReceiptNo.trim().toLowerCase());
+                    }
+                    if (!b && item && item.booking_id) {
+                        b = bks.find(x => String(x.id).trim().toLowerCase() === String(item.booking_id).trim().toLowerCase());
+                    }
+                    if (!b && item) {
+                        const sName = (item.group_info?.sender_name || item.group_data?.sender_name || item.sender_name || item.sender || item.customer_name || '').trim().toLowerCase();
+                        if (sName) {
+                            b = bks.find(x => x.customerName && x.customerName.trim().toLowerCase() === sName);
+                        }
+                    }
+                } catch(e) {
+                    console.error('Error resolving booking in populateGmmVerificationPanel:', e);
+                }
+            }
+        }
+
+        if (!b && !item) {
+            sidePanel.style.display = 'none';
+            if (showBtn) showBtn.style.display = 'none';
+            if (window.gmmDocViewer) {
+                window.gmmDocViewer.setImages([]);
+            }
+            return;
+        }
+
+        sidePanel.style.display = 'flex';
+        const toggleBtn = document.getElementById('btnToggleGmmVerifCollapse');
+        if (toggleBtn) toggleBtn.textContent = '▶ លាក់';
+        if (showBtn) showBtn.style.display = 'none';
+
+        const idEl = document.getElementById('gmmVerifBookingId');
+        const statusEl = document.getElementById('gmmVerifStatusBadge');
+        const invBadgeEl = document.getElementById('gmmVerifInvoiceBadge');
+        const bodyEl = document.getElementById('gmmVerificationBody');
+        if (!bodyEl) return;
+
+        if (b) {
+            // 1. Header (BK-ID | Status | Invoice Badge)
+            if (idEl) idEl.textContent = b.id || 'BK-????';
+
+            if (statusEl) {
+                const isCompleted = b.status === 'completed';
+                statusEl.textContent = isCompleted ? 'បានបញ្ចប់' : 'កំពុងជួល';
+                statusEl.style.background = isCompleted ? '#0284c7' : '#10b981';
+            }
+
+            if (invBadgeEl) {
+                if (b.invoiceDone) {
+                    invBadgeEl.style.cssText = 'background: #dcfce7; color: #15803d; border: 1.5px solid #86efac; font-weight: 800; font-size: 10.5px; padding: 2px 6px; border-radius: 6px; white-space: nowrap;';
+                    invBadgeEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${b.invoiceNo || 'ធ្វើ Invoice ហើយ'}`;
+                } else {
+                    invBadgeEl.style.cssText = 'background: #f1f5f9; color: #64748b; border: 1.5px solid #cbd5e1; font-weight: 800; font-size: 10.5px; padding: 2px 6px; border-radius: 6px; white-space: nowrap;';
+                    invBadgeEl.innerHTML = '<i class="fa-regular fa-square"></i> មិនទាន់ធ្វើ';
+                }
+            }
+
+            // 2. Body (Exact layout from bookingDetailsModal)
+            const carList = (b.cars && b.cars.length > 0 ? b.cars : ['អាលផាត (Alphard)']);
+            const carsHtml = carList.map(c => {
+                if (c === 'no_car' || String(c).includes('មិនយកឡាន')) {
+                    return `<span class="table-badge-car" style="font-size: 13px; padding: 4px 9px; background: #fef2f2; color: #dc2626; border: 1.2px solid #fca5a5; font-weight: 800; border-radius: 6px;">🚫 មិនយកឡាន</span>`;
+                }
+                return `<span class="table-badge-car" style="font-size: 13px; padding: 4px 9px; background: #f8fafc; color: #0f172a; border: 1.2px solid #cbd5e1; border-radius: 6px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">🚗 ${c}</span>`;
+            }).join(' ');
+
+            const noteText = b.notes || '';
+            const notesHtml = noteText ? `
+                <div style="margin-bottom: 9px; max-width: 100%; box-sizing: border-box;">
+                    <b style="color: #0f172a; font-size: 14.5px;">📝 ចំណាំបន្ថែម (Flight / Map / Dropoff):</b>
+                    <div style="margin-top: 4px; font-size: 14px; background: #e0f2fe; color: #0369a1; padding: 8px 12px; border-radius: 7px; border: 1.2px solid #bae6fd; font-weight: 700; line-height: 1.6; word-break: break-word; overflow-wrap: anywhere; max-width: 100%; box-sizing: border-box;">
+                        ${noteText.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color: #0284c7; text-decoration: underline; font-weight: 800; word-break: break-all;">📍 Google Maps ➔</a>')}
+                    </div>
+                </div>` : '';
+
+            const rawMessageText = b.rawMessage || b.notes || '';
+            const rawMsgHtml = rawMessageText ? `
+                <div style="max-width: 100%; box-sizing: border-box;">
+                    <b style="color: #0f172a; font-size: 14.5px;"><i class="fa-brands fa-telegram text-info"></i> សារដើម Telegram:</b>
+                    <pre style="background: #f8fafc; padding: 10px 14px; border-radius: 8px; font-size: 13.5px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; margin-top: 4px; border: 1.2px solid #cbd5e1; color: #0f172a; font-family: 'Khmer OS Siemreap', 'Segoe UI', monospace; max-height: 320px; overflow-y: auto; max-width: 100%; box-sizing: border-box;">${rawMessageText}</pre>
+                </div>` : '';
+
+            bodyEl.innerHTML = `
+                <!-- Top Customer Card -->
+                <div style="background: #f8fafc; border-radius: 8px; padding: 10px 14px; border: 1.2px solid #e2e8f0; margin-bottom: 9px; max-width: 100%; box-sizing: border-box;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 5px;">
+                        <h4 style="margin: 0; color: #0284c7; font-size: 1.35rem; font-weight: 900; word-break: break-word;">👤 ${b.customerName || '-'}</h4>
+                        <span style="font-weight: 800; font-size: 13.5px; color: #475569; white-space: nowrap;">📅 ${b.date || ''} | ⏰ ${b.time || ''}</span>
+                    </div>
+                    <div style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 13.5px; color: #334155; word-break: break-word;">
+                        <div><i class="fa-solid fa-phone"></i> ${b.customerPhone || 'គ្មានលេខ'}</div>
+                        <div><i class="fa-brands fa-telegram text-info"></i> ${b.customerTelegram || 'គ្មាន Tg'}</div>
+                        <div><i class="fa-brands fa-telegram text-primary"></i> តៃកុង៖ <b>${b.driverTelegram || 'មិនទាន់'}</b></div>
+                    </div>
+                </div>
+
+                <!-- Route -->
+                <div style="margin-bottom: 9px; max-width: 100%; box-sizing: border-box;">
+                    <b style="color: #0f172a; font-size: 14.5px;">🛣️ ទិសដៅធ្វើដំណើរ៖</b>
+                    <div style="margin-top: 4px; font-size: 15.5px; font-weight: 900; color: #0284c7; word-break: break-word;">
+                        📍 ${b.pickupLoc || 'ភ្នំពេញ'} ➔ 🏁 ${b.dropoffLoc || 'ប៉ោយប៉ែត'}
+                    </div>
+                </div>
+
+                <!-- Car -->
+                <div style="margin-bottom: 9px; max-width: 100%; box-sizing: border-box;">
+                    <b style="color: #0f172a; font-size: 14.5px;">🚗 រថយន្ត៖</b>
+                    <div style="margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap;">
+                        ${carsHtml}
+                        ${b.vipService ? `<span class="table-badge-car badge-vip" style="font-size: 13px; padding: 3px 9px; background: #fef3c7; color: #9a3412; border: 1.2px solid #f59e0b; border-radius: 6px; font-weight: 800;">⭐ ${b.vipService}</span>` : ''}
+                        ${b.borderClear ? `<span class="table-badge-car" style="font-size: 13px; padding: 3px 9px; background: #dcfce7; color: #166534; border: 1.2px solid #16a34a; border-radius: 6px; font-weight: 800;">🚀 ${b.borderClear}</span>` : ''}
+                        ${(b.paxCount || b.pax) ? `<span style="font-size: 13px; padding: 3px 9px; background: #f3e8ff; color: #7e22ce; border: 1.2px solid #d8b4fe; border-radius: 6px; font-weight: 800;">👥 ${b.paxCount || b.pax} នាក់</span>` : ''}
+                        ${(b.price != null && b.price !== '') ? `<span style="font-size: 13px; padding: 3px 9px; background: #dcfce7; color: #15803d; border: 1.2px solid #86efac; border-radius: 6px; font-weight: 800;">💵 $${b.price}</span>` : ''}
+                    </div>
+                </div>
+
+                <!-- Additional Notes (Flight / Map / Dropoff) -->
+                ${notesHtml}
+
+                <!-- Attached Passports & Photos (Only existing ones rendered) -->
+                <div id="gmmVerifImagesContainer" style="display: none; margin-bottom: 9px;"></div>
+
+                <!-- Telegram Raw Message -->
+                ${rawMsgHtml}
+            `;
+
+            // Filter ONLY existing images that actually exist on disk/network!
+            const rawImages = Array.isArray(b.images) ? b.images : [];
+            if (typeof window.filterExistingImages === 'function') {
+                window.filterExistingImages(rawImages).then(validImages => {
+                    window.activeBookingVerificationImages = validImages.map((img, i) => {
+                        const imgUrl = (typeof img === 'string' ? img : (img?.url || ''));
+                        const cat = (typeof img === 'string' ? 'រូបភាព' : (img?.category || 'រូបភាព'));
+                        return {
+                            url: imgUrl,
+                            title: `${cat} (${i + 1}/${validImages.length}) - ${b.customerName || ''}`,
+                            category: cat
+                        };
+                    });
+
+                    // If existing images found, show them in Center Document Viewer; if none, leave it open/blank!
+                    if (window.gmmDocViewer) {
+                        window.gmmDocViewer.setImages(window.activeBookingVerificationImages);
+                    }
+
+                    // Render thumbnails in right panel ONLY for valid existing images!
+                    const imgContainer = document.getElementById('gmmVerifImagesContainer');
+                    if (imgContainer) {
+                        if (window.activeBookingVerificationImages.length > 0) {
+                            imgContainer.style.display = 'block';
+                            imgContainer.innerHTML = `
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <b style="color: #0f172a; font-size: 13px;">📷 រូបភាព & ឯកសារភ្ជាប់ (${window.activeBookingVerificationImages.length} រូប)៖</b>
+                                </div>
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                    ${window.activeBookingVerificationImages.map((img, idx) => `
+                                        <div style="position: relative; width: 105px; height: 90px; border-radius: 8px; overflow: hidden; border: 1.5px solid #cbd5e1; background: #fff; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.08); transition: transform 0.15s ease;"
+                                             onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'"
+                                             onclick="if(window.gmmDocViewer){window.gmmDocViewer.showImage(${idx});} else {window.openImageLightbox(window.activeBookingVerificationImages[${idx}].url, window.activeBookingVerificationImages[${idx}].title, window.activeBookingVerificationImages, ${idx});}"
+                                             title="ចុចមើលរូបធំ">
+                                            <img src="${img.url}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
+                                            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.82); color: #fff; font-size: 9.5px; font-weight: 700; padding: 2px 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                ${img.category || 'រូបភាព'}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            `;
+                        } else {
+                            imgContainer.style.display = 'none';
+                            imgContainer.innerHTML = '';
+                        }
+                    }
+                });
+            }
+        } else if (item) {
+            // Render from item
+            const rNo = item.receipt_no || (typeof currentGmmReceiptNo !== 'undefined' ? currentGmmReceiptNo : 'INV');
+            if (idEl) idEl.textContent = rNo;
+            if (statusEl) {
+                const isPaid = (item.payment_status || 'UNPAID') === 'PAID';
+                statusEl.textContent = isPaid ? 'បង់រួច' : 'មិនទាន់បង់';
+                statusEl.style.background = isPaid ? '#10b981' : '#f59e0b';
+            }
+            if (invBadgeEl) {
+                invBadgeEl.style.cssText = 'background: #eff6ff; color: #1d4ed8; border: 1.5px solid #93c5fd; font-weight: 800; font-size: 10.5px; padding: 2px 6px; border-radius: 6px; white-space: nowrap;';
+                invBadgeEl.innerHTML = `<i class="fa-solid fa-file-invoice"></i> ${item.service_category || 'វិក្កយបត្រ'}`;
+            }
+
+            const sender = item.sender || item.group_info?.sender_name || item.customer_name || 'អតិថិជន';
+            const agency = item.agency_company || item.group_info?.agency_company || '-';
+            const travelDate = item.travel_date || item.group_info?.travel_date || '-';
+            const totalUsd = item.totals?.usd || 0;
+            const totalBaht = item.totals?.baht || 0;
+            const notes = item.notes || item.raw_message || item.group_info?.notes || '';
+
+            bodyEl.innerHTML = `
+                <div style="background: #f8fafc; border-radius: 8px; padding: 10px 14px; border: 1.2px solid #e2e8f0; margin-bottom: 9px; max-width: 100%; box-sizing: border-box;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 5px;">
+                        <h4 style="margin: 0; color: #0284c7; font-size: 1.35rem; font-weight: 900; word-break: break-word;">👤 ${sender}</h4>
+                        <span style="font-weight: 800; font-size: 13.5px; color: #475569; white-space: nowrap;">📅 ${travelDate}</span>
+                    </div>
+                    <div style="font-size: 13.5px; color: #334155; margin-top: 4px;">
+                        🏢 ក្រុមហ៊ុន/ភ្នាក់ងារ: <b>${agency}</b>
+                    </div>
+                    <div style="font-size: 13.5px; color: #059669; font-weight: 800; margin-top: 4px;">
+                        💵 សរុប: $${totalUsd} ${totalBaht ? `(฿${totalBaht.toLocaleString()})` : ''}
+                    </div>
+                </div>
+                ${notes ? `
+                <div style="margin-bottom: 9px; max-width: 100%; box-sizing: border-box;">
+                    <b style="color: #0f172a; font-size: 14.5px;">📝 កំណត់ចំណាំដើម:</b>
+                    <pre style="background: #f8fafc; padding: 10px 14px; border-radius: 8px; font-size: 13.5px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; margin-top: 4px; border: 1.2px solid #cbd5e1; color: #0f172a; font-family: 'Khmer OS Siemreap', 'Segoe UI', monospace; max-height: 320px; overflow-y: auto; max-width: 100%; box-sizing: border-box;">${notes}</pre>
+                </div>` : ''}
+            `;
+        }
+    };
+
+    // Setup Paste (Ctrl+V) & Drag-Drop listeners for Group Members Modal & Large Doc Viewer
+    document.addEventListener('paste', function(e) {
+        const modal = document.getElementById('groupMembersModal');
+        if (!modal || modal.style.display === 'none') return;
+        const target = e.target;
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') && (!e.clipboardData || !e.clipboardData.files || e.clipboardData.files.length === 0)) {
+            return;
+        }
+        const items = (e.clipboardData || window.clipboardData)?.items;
+        if (!items) return;
+        const imgFiles = [];
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type && items[i].type.indexOf('image') !== -1) {
+                const blob = items[i].getAsFile();
+                if (blob) imgFiles.push(blob);
+            }
+        }
+        if (imgFiles.length > 0 && window.gmmDocViewer) {
+            e.preventDefault();
+            window.gmmDocViewer.handleFileSelect(imgFiles);
+            if (typeof showToast === 'function') showToast(`📋 បាន Paste រូបភាព ${imgFiles.length} សន្លឹកចូលក្នុងគ្រុប!`);
+        }
+    });
+
+    (function initGmmDocViewerDrop() {
+        function attachDrop() {
+            const stage = document.getElementById('gmmDocViewerStage');
+            if (!stage) {
+                setTimeout(attachDrop, 500);
+                return;
+            }
+            stage.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                stage.style.outline = '2px dashed #38bdf8';
+            });
+            stage.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                stage.style.outline = 'none';
+            });
+            stage.addEventListener('drop', function(e) {
+                e.preventDefault();
+                stage.style.outline = 'none';
+                if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    if (window.gmmDocViewer) {
+                        window.gmmDocViewer.handleFileSelect(e.dataTransfer.files);
+                        if (typeof showToast === 'function') showToast(`📁 បានទម្លាក់រូបភាព ${e.dataTransfer.files.length} សន្លឹកចូលក្នុងគ្រុប!`);
+                    }
+                }
+            });
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', attachDrop);
+        } else {
+            attachDrop();
+        }
+    })();
+
+    window.openCarInvoiceForBooking = function(id, evt) {
+        if (evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+        }
+        const bookings = getBookings();
+        const b = bookings.find(x => String(x.id).trim() === String(id).trim());
+        if (!b) return;
+
+        window.activeBookingForGroupInvoice = b.id;
+
+        // Populate side-by-side verification panel (Passports & Original booking data)
+        populateGmmVerificationPanel(b);
+
+        // If this booking already has an invoice number, check if it exists in saved database records to open in edit mode
+        if (b.invoiceNo && typeof openGroupMembersModal === 'function') {
+            const invNo = b.invoiceNo;
+            function doOpen() {
+                openGroupMembersModal(invNo);
+                if (typeof populateGmmVerificationPanel === 'function') {
+                    populateGmmVerificationPanel(b);
+                }
+            }
+            if (typeof allDatabaseRecords === 'undefined' || !allDatabaseRecords || allDatabaseRecords.length === 0) {
+                if (typeof loadDatabaseRecords === 'function') {
+                    loadDatabaseRecords(doOpen);
+                } else {
+                    doOpen();
+                }
+            } else {
+                doOpen();
+            }
+            return;
+        }
+
+        // Otherwise open new group modal in Car Service ('line') mode
+        currentServiceCategory = 'car';
+        fetch('/api/next_no?category=car')
+            .then(r => r.json())
+            .then(d => {
+                const nextNo = (d && d.next_no) ? d.next_no : 'INV 00363';
+                currentGmmReceiptNo = nextNo;
+
+                const titleElem = document.getElementById('gmmTitle');
+                const subTitleElem = document.getElementById('gmmSubTitle');
+                if (titleElem) titleElem.textContent = `📋 បង្កើតទិន្នន័យក្រុមថ្មី (${nextNo})`;
+                if (subTitleElem) subTitleElem.textContent = `👤 បញ្ចូលព័ត៌មានអ្នកនាំ និងសមាជិកក្រុមថ្មី`;
+
+                // Set travel date from booking
+                const dateInput = document.getElementById('gmmTravelDate');
+                if (dateInput) {
+                    if (b.date && b.date.includes('-')) {
+                        dateInput.value = b.date;
+                    } else {
+                        const today = new Date();
+                        const yyyy = today.getFullYear();
+                        const mm = String(today.getMonth() + 1).padStart(2, '0');
+                        const dd = String(today.getDate()).padStart(2, '0');
+                        dateInput.value = `${yyyy}-${mm}-${dd}`;
+                    }
+                }
+
+                const rNoInput = document.getElementById('gmmReceiptNo');
+                if (rNoInput) rNoInput.value = nextNo;
+
+                const rateInput = document.getElementById('gmmExchangeRate');
+                if (rateInput) rateInput.value = getLatestSavedExchangeRate();
+
+                // Sender / Customer name from booking
+                const senderInp = document.getElementById('gmmSenderName');
+                if (senderInp) senderInp.value = b.customerName || '';
+
+                const agencyInp = document.getElementById('gmmAgencyCompany');
+                if (agencyInp) {
+                    let agParts = [];
+                    if (b.customerTelegram) agParts.push(`TG: ${b.customerTelegram}`);
+                    if (b.pickupLoc || b.dropoffLoc) agParts.push(`${b.pickupLoc || ''} ➔ ${b.dropoffLoc || ''}`);
+                    agencyInp.value = agParts.join(' • ');
+                }
+
+                if (typeof updateGmmSenderDatalist === 'function') {
+                    updateGmmSenderDatalist();
+                }
+
+                // Clear tbody first
+                const tbody = document.getElementById('gmmMembersBody');
+                if (tbody) tbody.innerHTML = '';
+
+                // Set to 'line' (Car Service) mode with empty list
+                currentGmmCachedItem = null;
+                currentModalReceiptData = null;
+                switchGmmMode('line', []);
+
+                // Clear bulk fee inputs
+                ['gmmFeePassport', 'gmmFeeNamelist', 'gmmFeeVisa', 'gmmFeeMissingDoc', 'gmmFeeStamping', 'gmmFeeVip', 'gmmFeeCar', 'gmmFeeClearance', 'gmmFeeWork', 'gmmFeeFine'].forEach(bulkId => {
+                    const el = document.getElementById(bulkId);
+                    if (el) el.value = '';
+                });
+
+                // Car price from booking
+                let carPrice = '';
+                if (b.price != null && !isNaN(parseFloat(b.price)) && parseFloat(b.price) > 0) {
+                    carPrice = parseFloat(b.price);
+                } else if (b.feeCar != null && !isNaN(parseFloat(b.feeCar)) && parseFloat(b.feeCar) > 0) {
+                    carPrice = parseFloat(b.feeCar);
+                }
+
+                // Bulk car fee input
+                const bulkCarEl = document.getElementById('gmmFeeCar');
+                if (bulkCarEl && carPrice) bulkCarEl.value = carPrice;
+
+                // Set button text to: 💾 រក្សាទុក (Save Changes)
+                const btnSave = document.getElementById('btnGmmSave');
+                if (btnSave) {
+                    btnSave.textContent = '💾 រក្សាទុក (Save Changes)';
+                }
+
+                // Add 2 initial member rows (row 1 prefilled with customer name and car fee)
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    addNewGmmMemberRow();
+                    addNewGmmMemberRow();
+
+                    const rows = tbody.querySelectorAll('tr');
+                    if (rows && rows.length > 0) {
+                        const firstRow = rows[0];
+                        const nameInp = firstRow.querySelector('.gmm-input-name');
+                        if (nameInp && b.customerName) nameInp.value = b.customerName;
+
+                        if (carPrice) {
+                            const carInp = firstRow.querySelector('.gmm-input-car') || firstRow.querySelector('.gmm-fee-car');
+                            if (carInp) {
+                                carInp.value = carPrice;
+                                const usdInp = firstRow.querySelector('.gmm-input-usd');
+                                if (usdInp) usdInp.value = carPrice;
+                            }
+                        }
+                    }
+                }
+
+                calculateGmmTotal();
+
+                // Open groupMembersModal
+                const modal = document.getElementById('groupMembersModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    modal.classList.add('active');
+                }
+
+                // Focus sender name input
+                setTimeout(() => {
+                    if (senderInp) senderInp.focus();
+                }, 100);
+            })
+            .catch(err => {
+                console.error('Error opening groupMembersModal for booking:', err);
+                if (typeof openNewGroupModal === 'function') openNewGroupModal();
+            });
+    };
+
+    window.viewInvoiceDetailsForBooking = function(id, evt) {
+        if (evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+        }
+        const bookings = getBookings();
+        const b = bookings.find(x => String(x.id).trim() === String(id).trim());
+        if (!b) return;
+
+        if (!b.invoiceNo) {
+            if (confirm(`⚠️ ការកក់លេខ ${b.id} (${b.customerName || 'អតិថិជន'}) មិនទាន់មានវិក្កយបត្រនៅឡើយទេ!\n\nតើលោកអ្នកចង់បំពេញ និងបង្កើតវិក្កយបត្រឥឡូវនេះដែរឬទេ?`)) {
+                openCarInvoiceForBooking(b.id, evt);
+            }
+            return;
+        }
+
+        const invNo = String(b.invoiceNo).trim();
+        function openReceiptNow() {
+            const item = (typeof getItemByRef === 'function') ? getItemByRef(encodeURIComponent(invNo)) : null;
+            if (item) {
+                if (typeof openReceiptModal === 'function') {
+                    openReceiptModal(encodeURIComponent(invNo));
+                }
+            } else {
+                // If not found in memory yet, reload invoices from server
+                if (typeof loadDatabaseRecords === 'function') {
+                    loadDatabaseRecords(function() {
+                        const item2 = (typeof getItemByRef === 'function') ? getItemByRef(encodeURIComponent(invNo)) : null;
+                        if (item2 && typeof openReceiptModal === 'function') {
+                            openReceiptModal(encodeURIComponent(invNo));
+                        } else {
+                            alert(`⚠️ មិនអាចស្វែងរកព័ត៌មានវិក្កយបត្រ "${invNo}" ក្នុងប្រព័ន្ធបានទេ!`);
+                        }
+                    });
+                } else {
+                    alert(`⚠️ មិនអាចស្វែងរកព័ត៌មានវិក្កយបត្រ "${invNo}" ក្នុងប្រព័ន្ធបានទេ!`);
+                }
+            }
+        }
+
+        if (typeof allDatabaseRecords === 'undefined' || !allDatabaseRecords || allDatabaseRecords.length === 0) {
+            if (typeof loadDatabaseRecords === 'function') {
+                loadDatabaseRecords(openReceiptNow);
+            } else {
+                openReceiptNow();
+            }
+        } else {
+            openReceiptNow();
+        }
+    };
+
     window.deleteBooking = async function(id) {
         if (!id) return;
         window.syncCooldownUntil = Date.now() + 10000;
@@ -13683,11 +14818,7 @@ document.addEventListener('paste', function(e) {
             badge.insertAdjacentElement('afterend', invBadgeEl);
         }
 
-        window.activeBookingDetailsImages = (b.images || []).map((img, i) => ({
-            url: img.url,
-            title: `${img.category || 'រូបភាព'} (${i + 1}/${(b.images || []).length}) - ${b.customerName || ''}`,
-            category: img.category || 'រូបភាព'
-        }));
+        window.activeBookingDetailsImages = [];
 
         if (body) {
             body.innerHTML = `
@@ -13734,28 +14865,56 @@ document.addEventListener('paste', function(e) {
                         ${b.notes.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color: #0284c7; text-decoration: underline; font-weight: 800;">📍 បើកមើលទីតាំង Google Maps ➔</a>')}
                     </div>
                 </div>` : ''}
-                ${b.images && b.images.length > 0 ? `
-                <div style="margin-bottom: 14px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <b style="color: #0f172a; font-size: 13px;">📷 រូបភាព & ឯកសារភ្ជាប់ (${b.images.length} រូប)៖</b>
-                    </div>
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        ${b.images.map((img, idx) => `
-                            <div style="position: relative; width: 110px; height: 95px; border-radius: 8px; overflow: hidden; border: 1.5px solid #cbd5e1; background: #fff; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.08); transition: transform 0.15s ease;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'" onclick="window.openImageLightbox(window.activeBookingDetailsImages[${idx}].url, window.activeBookingDetailsImages[${idx}].title, window.activeBookingDetailsImages, ${idx})" title="ចុចមើលរូបធំ">
-                                <img src="${img.url}" style="width: 100%; height: 100%; object-fit: cover;">
-                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.82); color: #fff; font-size: 9.5px; font-weight: 700; padding: 2px 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                    ${img.category || 'រូបភាព'}
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>` : ''}
+                <div id="bookingDetailsImagesContainer"></div>
                 ${b.rawMessage ? `
                 <div>
                     <b style="color: #0f172a; font-size: 12px;"><i class="fa-brands fa-telegram text-info"></i> សារដើម Telegram / Messenger:</b>
                     <pre style="background: #f1f5f9; padding: 10px; border-radius: 8px; font-size: 11px; white-space: pre-wrap; margin-top: 4px; border: 1px solid #cbd5e1;">${b.rawMessage}</pre>
                 </div>` : ''}
             `;
+
+            // Filter ONLY existing images on disk before rendering
+            const rawImgs = Array.isArray(b.images) ? b.images : [];
+            if (typeof window.filterExistingImages === 'function') {
+                window.filterExistingImages(rawImgs).then(validImgs => {
+                    const imgContainer = document.getElementById('bookingDetailsImagesContainer');
+                    if (!imgContainer) return;
+                    window.activeBookingDetailsImages = validImgs.map((img, i) => {
+                        const imgUrl = (typeof img === 'string' ? img : (img?.url || ''));
+                        const cat = (typeof img === 'string' ? 'រូបភាព' : (img?.category || 'រូបភាព'));
+                        return {
+                            url: imgUrl,
+                            title: `${cat} (${i + 1}/${validImgs.length}) - ${b.customerName || ''}`,
+                            category: cat
+                        };
+                    });
+                    if (validImgs.length > 0) {
+                        imgContainer.innerHTML = `
+                            <div style="margin-bottom: 14px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <b style="color: #0f172a; font-size: 13px;">📷 រូបភាព & ឯកសារភ្ជាប់ (${validImgs.length} រូប)៖</b>
+                                </div>
+                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                    ${validImgs.map((img, idx) => {
+                                        const u = (typeof img === 'string' ? img : (img.url || ''));
+                                        const c = (typeof img === 'string' ? 'រូបភាព' : (img.category || 'រូបភាព'));
+                                        return `
+                                            <div style="position: relative; width: 110px; height: 95px; border-radius: 8px; overflow: hidden; border: 1.5px solid #cbd5e1; background: #fff; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.08); transition: transform 0.15s ease;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'" onclick="window.openImageLightbox(window.activeBookingDetailsImages[${idx}].url, window.activeBookingDetailsImages[${idx}].title, window.activeBookingDetailsImages, ${idx})" title="ចុចមើលរូបធំ">
+                                                <img src="${u}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.style.display='none';">
+                                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.82); color: #fff; font-size: 9.5px; font-weight: 700; padding: 2px 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                    ${c}
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        imgContainer.innerHTML = '';
+                    }
+                });
+            }
         }
 
         if (footer) {
@@ -13766,8 +14925,8 @@ document.addEventListener('paste', function(e) {
                         <button type="button" class="btn-ar btn-ar-outline" style="color: #dc2626; border-color: #fca5a5; background: #fef2f2; font-weight: 800;" onclick="deleteBooking('${b.id}')" title="លុបការកក់នេះ"><i class="fa-solid fa-trash-can"></i> លុបការកក់</button>
                     </div>
                     <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                        <button type="button" class="btn-ar" style="${b.invoiceDone ? 'background: #dcfce7; color: #15803d; border: 1.5px solid #86efac;' : 'background: #f8fafc; color: #475569; border: 1.5px solid #cbd5e1;'} font-weight: 800;" onclick="toggleBookingInvoice('${b.id}', event); viewBookingDetails('${b.id}');" title="ចុចដើម្បីប្តូរស្ថានភាព Invoice">
-                            <i class="fa-solid fa-file-invoice-dollar"></i> ${b.invoiceDone ? 'ធ្វើ Invoice ហើយ ✅' : 'ធិចថាធ្វើ Invoice ⬜'}
+                        <button type="button" class="btn-ar" style="${b.invoiceDone ? 'background: #dcfce7; color: #15803d; border: 1.5px solid #86efac;' : 'background: #f8fafc; color: #475569; border: 1.5px solid #cbd5e1;'} font-weight: 800;" onclick="closeModal('bookingDetailsModal'); openCarInvoiceForBooking('${b.id}', event);" title="ចុចដើម្បីចេញ ឬពិនិត្យវិក្កយបត្រសេវាកម្មឡាន">
+                            <i class="fa-solid fa-file-invoice-dollar"></i> ${b.invoiceNo ? b.invoiceNo : (b.invoiceDone ? 'ធ្វើ Invoice ហើយ ✅' : 'ចេញ Invoice ឡាន 🧾')}
                         </button>
                         <button type="button" class="btn-ar btn-ar-primary" style="font-weight: 800; background: #0284c7;" onclick="closeModal('bookingDetailsModal'); openDispatchDriverModal('${b.id}');"><i class="fa-brands fa-telegram"></i> ចាត់ចែង & បញ្ជូនតៃកុង</button>
                         <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('bookingDetailsModal'); openEditBookingModal('${b.id}');"><i class="fa-solid fa-pen"></i> កែប្រែ</button>
@@ -13809,12 +14968,39 @@ document.addEventListener('paste', function(e) {
             !x.username.startsWith('http') &&
             x.username !== 'J Heng' &&
             x.username !== 'កក់ឡាន' &&
-            x.username !== 'CK 2849'
+            x.username !== 'CK 2849' &&
+            x.username !== 'Phinin' &&
+            x.username !== 'Nab' &&
+            x.username !== 'Smey Ap'
         );
     }
     function saveDriversList(drivers) {
         saveData(STORAGE_KEY_DRIVERS, drivers);
     }
+
+    window.populateDriverDatalist = function() {
+        const dl = document.getElementById('bookingDriverDatalist');
+        if (!dl) return;
+        fetch('/api/telegram_groups').then(r => r.json()).then(data => {
+            const groups = (data && data.groups) ? data.groups : [];
+            let html = '';
+            // Add groups first
+            groups.forEach(g => {
+                html += `<option value="${g.title}">👥 គ្រុប ${g.title}</option>`;
+            });
+            // Add custom saved drivers
+            const savedDrivers = getSavedDrivers();
+            savedDrivers.forEach(d => {
+                if (d.name && d.name !== d.username) {
+                    html += `<option value="${d.username}">🚗 ${d.name} (${d.username})</option>`;
+                } else {
+                    html += `<option value="${d.username}">🚗 ${d.username}</option>`;
+                }
+            });
+            dl.innerHTML = html;
+        }).catch(() => {});
+    };
+    setTimeout(() => { if (typeof populateDriverDatalist === 'function') populateDriverDatalist(); }, 500);
 
     let currentDispatchBookingId = null;
 
@@ -14272,6 +15458,26 @@ document.addEventListener('paste', function(e) {
             }
         }
 
+        // Fallback to Telegram sender name if no name was mentioned in text
+        if (!cleanName) {
+            let s = '';
+            if (typeof activeTelegramMessage !== 'undefined' && activeTelegramMessage && activeTelegramMessage.sender) {
+                s = String(activeTelegramMessage.sender || '');
+            } else if (typeof activeTelegramMessage !== 'undefined' && activeTelegramMessage && activeTelegramMessage.idx !== undefined && typeof tgRecentMessages !== 'undefined' && tgRecentMessages[activeTelegramMessage.idx]) {
+                s = String(tgRecentMessages[activeTelegramMessage.idx].sender || '');
+            } else if (typeof tgRecentMessages !== 'undefined' && Array.isArray(tgRecentMessages) && tgRecentMessages.length > 0) {
+                const foundMsg = tgRecentMessages.find(m => m && m.text && text && m.text.trim() === text.trim());
+                if (foundMsg && foundMsg.sender) s = String(foundMsg.sender);
+                else if (tgRecentMessages[0] && tgRecentMessages[0].sender) s = String(tgRecentMessages[0].sender);
+            }
+            if (s) {
+                s = s.replace(/\s*\(Forwarded[^\)]*\)/i, '').replace(/\s*\([^\)]*\)/g, '').trim();
+                if (s && !/^(Telegram User|Bot)$/i.test(s)) {
+                    cleanName = s;
+                }
+            }
+        }
+
         if (cleanName) {
             cleanName = cleanName.replace(/^\s*\d+[\.\-\)]\s*/, '').trim();
             const nameEl = document.getElementById('bookingCustomerName');
@@ -14509,11 +15715,42 @@ document.addEventListener('paste', function(e) {
                 else if (isTecho) { matchedPickup = 'ប៉ោយប៉ែត'; matchedDropoff = 'តេជោ'; }
                 else if (isPhnomPenh) { matchedPickup = 'ប៉ោយប៉ែត'; matchedDropoff = 'ភ្នំពេញ'; }
             } else {
-                if (isSiemReap && isPoipet) { matchedPickup = 'សៀមរាប'; matchedDropoff = 'ប៉ោយប៉ែត'; }
-                else if (isPoipet && isPhnomPenh) { matchedPickup = 'ប៉ោយប៉ែត'; matchedDropoff = 'ភ្នំពេញ'; }
-                else if (isPoipet && isTecho) { matchedPickup = 'តេជោ'; matchedDropoff = 'ប៉ោយប៉ែត'; }
+                if (isSiemReap && isPoipet) {
+                    const posPoipet = text.search(rx_poipet);
+                    const posSiemReap = text.search(rx_siemreap);
+                    if (posPoipet >= 0 && posSiemReap >= 0 && posPoipet < posSiemReap) {
+                        matchedPickup = 'ប៉ោយប៉ែត';
+                        matchedDropoff = 'សៀមរាប';
+                    } else {
+                        matchedPickup = 'សៀមរាប';
+                        matchedDropoff = 'ប៉ោយប៉ែត';
+                    }
+                }
+                else if (isPoipet && isPhnomPenh) {
+                    const posPoipet = text.search(rx_poipet);
+                    const posPP = text.search(rx_phnompenh);
+                    if (posPoipet >= 0 && posPP >= 0 && posPoipet < posPP) {
+                        matchedPickup = 'ប៉ោយប៉ែត';
+                        matchedDropoff = 'ភ្នំពេញ';
+                    } else {
+                        matchedPickup = 'ភ្នំពេញ';
+                        matchedDropoff = 'ប៉ោយប៉ែត';
+                    }
+                }
+                else if (isPoipet && isTecho) {
+                    const posPoipet = text.search(rx_poipet);
+                    const posTecho = text.search(rx_techo);
+                    if (posPoipet >= 0 && posTecho >= 0 && posPoipet < posTecho) {
+                        matchedPickup = 'ប៉ោយប៉ែត';
+                        matchedDropoff = 'តេជោ';
+                    } else {
+                        matchedPickup = 'តេជោ';
+                        matchedDropoff = 'ប៉ោយប៉ែត';
+                    }
+                }
                 else if (isSiemReap) { matchedPickup = 'សៀមរាប'; matchedDropoff = 'ប៉ោយប៉ែត'; }
                 else if (isTecho) { matchedPickup = 'តេជោ'; matchedDropoff = 'ប៉ោយប៉ែត'; }
+                else if (isPoipet) { matchedPickup = 'ប៉ោយប៉ែត'; matchedDropoff = 'សៀមរាប'; }
             }
         } else if (matchedPickup && !matchedDropoff) {
             if (matchedPickup === 'សៀមរាប') matchedDropoff = 'ប៉ោយប៉ែត';
@@ -14553,7 +15790,15 @@ document.addEventListener('paste', function(e) {
             updateBookingRouteStyles();
         }
 
-        // 7. Date (ថ្ងៃខែឆ្នាំ - Supports DD/MM/YYYY e.g. 10/09/2026 or typo 10/09/20266, and YYYY-MM-DD)
+        // Round trip detection
+        if (/ទៅមក|去回|ไปกลับ|round\s*trip/i.test(text)) {
+            const nEl = document.getElementById('bookingNotes');
+            if (nEl && !nEl.value.includes('ទៅមក')) {
+                nEl.value = (nEl.value ? nEl.value + ' | ' : '') + '🔄 ទៅមក (Round Trip)';
+            }
+        }
+
+        // 7. Date (ថ្ងៃខែឆ្នាំ - Supports DD/MM/YYYY e.g. 10/09/2026 or typo 10/09/20266, and YYYY-MM-DD, and ថ្ងៃទី 14)
         const dateEl = document.getElementById('bookingDate');
         if (dateEl) {
             // Prioritize pickup date written near 'มารับ' e.g. "มารับที่ ตึก 41 วันที่ 09/09/2026"
@@ -14562,6 +15807,10 @@ document.addEventListener('paste', function(e) {
             const explicitDateMatch = text.match(/(?:Date|ថ្ងៃ(?:ទី)?|កាលបរិច្ឆេទ|วันที่)[\s:៖]*(\d{1,2})[\/\-](\d{1,2})[\/\-](202\d)/i);
             const dmyMatch = pickupDateMatch || explicitDateMatch || text.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](202\d)/);
             const ymdMatch = text.match(/(202\d)[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+
+            // Single day match e.g. "ថ្ងៃទី 14", "ថ្ងៃ 14", "วันที่ 14", "day 14"
+            const dayOnlyMatch = text.match(/(?:ថ្ងៃ(?:ទី)?|កាលបរិច្ឆេទ|วันที่|day)[\s:៖]*(\d{1,2})(?!\s*[:.]\d{2}|\s*[\/\-]\d{1,2})/i);
+
             if (dmyMatch) {
                 const d = dmyMatch[1].padStart(2, '0');
                 const m = dmyMatch[2].padStart(2, '0');
@@ -14572,6 +15821,21 @@ document.addEventListener('paste', function(e) {
                 const m = ymdMatch[2].padStart(2, '0');
                 const d = ymdMatch[3].padStart(2, '0');
                 dateEl.value = `${y}-${m}-${d}`;
+            } else if (dayOnlyMatch) {
+                const dayNum = parseInt(dayOnlyMatch[1], 10);
+                if (dayNum >= 1 && dayNum <= 31) {
+                    const now = new Date();
+                    let yr = now.getFullYear();
+                    let mo = now.getMonth() + 1; // 1-12
+                    // If target day is earlier than today's day by more than 5 days, assume next month
+                    if (dayNum < now.getDate() - 5) {
+                        mo += 1;
+                        if (mo > 12) { mo = 1; yr += 1; }
+                    }
+                    const dStr = String(dayNum).padStart(2, '0');
+                    const mStr = String(mo).padStart(2, '0');
+                    dateEl.value = `${yr}-${mStr}-${dStr}`;
+                }
             } else if (/ថ្ងៃស្អែក|tomorrow/i.test(text)) {
                 dateEl.value = getTodayStr(1);
             } else if (/ថ្ងៃនេះ|today/i.test(text)) {
@@ -14707,6 +15971,9 @@ document.addEventListener('paste', function(e) {
                 }
             }
 
+            if (!detectedCar) {
+                detectedCar = 'អាលផាត (Alphard)';
+            }
             if (detectedCar) {
                 setCarDropdownVal(s1, detectedCar);
             }
@@ -15391,7 +16658,7 @@ document.addEventListener('paste', function(e) {
             const msgText = newest ? newest.text : '';
             const msgImages = (newest && Array.isArray(newest.images)) ? [...newest.images] : [];
             if (newest) {
-                activeTelegramMessage = { id: newest.id, text: newest.text, images: msgImages };
+                activeTelegramMessage = { id: newest.id, text: newest.text, images: msgImages, sender: newest.sender };
             }
 
             // Check if booking modal is already open
@@ -15399,7 +16666,7 @@ document.addEventListener('paste', function(e) {
             const isModalAlreadyOpen = bModal && (bModal.classList.contains('active') || bModal.style.display === 'flex' || bModal.style.display === 'block');
             
             if (!isModalAlreadyOpen) {
-                openNewBookingModal({ rawMessage: msgText, images: msgImages });
+                openNewBookingModal({ rawMessage: msgText, images: msgImages, sender: newest ? newest.sender : '' });
             } else {
                 const input = document.getElementById('telegramPasteInput');
                 if (input && msgText) {
@@ -15716,6 +16983,15 @@ document.addEventListener('paste', function(e) {
             }
         });
 
+        const mergedSender = selectedItems.map(i => i.sender).filter(Boolean)[0] || 'Telegram User';
+        activeTelegramMessage = {
+            isMerged: true,
+            indices: sortedIndices,
+            text: combinedText,
+            images: combinedImages,
+            sender: mergedSender
+        };
+
         // Fill form
         const input = document.getElementById('telegramPasteInput');
         if (input) {
@@ -15725,13 +17001,6 @@ document.addEventListener('paste', function(e) {
 
         currentBookingImages = [...combinedImages];
         renderBookingImageThumbnails();
-
-        activeTelegramMessage = {
-            isMerged: true,
-            indices: sortedIndices,
-            text: combinedText,
-            images: combinedImages
-        };
 
         const imgMsg = combinedImages.length > 0 ? ` (មានរូបភាពសរុប ${combinedImages.length} សន្លឹក 📷)` : '';
         showToast(`🎉 បានផ្គុំ និងទាញយក ${selectedItems.length} ឈុតចូលទម្រង់កក់ជោគជ័យ!${imgMsg} ⚡`);
@@ -16115,7 +17384,7 @@ document.addEventListener('paste', function(e) {
         }
         const item = tgRecentMessages[idx];
         const itemImages = (item.images && Array.isArray(item.images)) ? [...item.images] : [];
-        activeTelegramMessage = { id: item.id, text: item.text, images: itemImages, idx: parseInt(idx, 10) };
+        activeTelegramMessage = { id: item.id, text: item.text, images: itemImages, sender: item.sender, idx: parseInt(idx, 10) };
 
         // Synchronize hidden select
         const sel = document.getElementById('tgBotRecentSelect');
@@ -16651,6 +17920,7 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
         const effectiveH = Math.round(window.innerHeight / zoomRatio);
         document.documentElement.style.setProperty('--app-effective-vh', effectiveH + 'px');
         document.documentElement.style.setProperty('--app-zoom-factor', zoomRatio);
+        if (typeof fitAutoRentTableToViewport === 'function') fitAutoRentTableToViewport();
     }
     window.updateEffectiveViewportHeight = updateEffectiveViewportHeight;
     window.addEventListener('resize', updateEffectiveViewportHeight);
@@ -16735,7 +18005,7 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
 </script>
 
     <!-- Floating Glassmorphic Zoom Control Widget (Fixed Bottom-Right) -->
-    <div id="floatingZoomWidget" style="position: fixed; bottom: 18px; right: 18px; z-index: 99999; display: flex; align-items: center; background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1.5px solid rgba(255,255,255,0.25); border-radius: 30px; padding: 5px 10px; gap: 5px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); color: #ffffff; user-select: none;">
+    <div id="floatingZoomWidget" style="position: fixed; bottom: 6px; right: 16px; z-index: 99999; display: flex; align-items: center; background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1.5px solid rgba(255,255,255,0.25); border-radius: 30px; padding: 5px 10px; gap: 5px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); color: #ffffff; user-select: none;">
         <span style="font-size: 11px; font-weight: 800; color: #38bdf8; display: flex; align-items: center; gap: 4px; padding-left: 2px;">
             <i class="fa-solid fa-magnifying-glass"></i> <span class="d-none-sm">ពង្រីក/ពង្រួម:</span>
         </span>

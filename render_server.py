@@ -2855,41 +2855,123 @@ def download_telegram_photo_file(token, file_id, update_id):
     """
     Downloads a photo from Telegram Bot API using file_id and saves to telegram_images/ folder.
     Returns the relative web path: /telegram_images/tg_photo_<update_id>_<short_id>.jpg
+    Includes automatic retries and dual-path persistence (BASE_DIR & DATA_DIR).
     """
-    try:
-        tg_img_dir = os.path.join(BASE_DIR, 'telegram_images')
-        os.makedirs(tg_img_dir, exist_ok=True)
+    for attempt in range(3):
+        try:
+            tg_img_dir = os.path.join(BASE_DIR, 'telegram_images')
+            os.makedirs(tg_img_dir, exist_ok=True)
+            tg_img_dir_data = os.path.join(DATA_DIR, 'telegram_images')
+            os.makedirs(tg_img_dir_data, exist_ok=True)
 
-        # 1. Get file path from Telegram
-        get_file_url = f"https://api.telegram.org/bot{token}/getFile?file_id={file_id}"
-        req = urllib.request.Request(get_file_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
-        with urllib.request.urlopen(req, timeout=12) as resp:
-            f_data = json.loads(resp.read().decode('utf-8'))
+            # 1. Get file path from Telegram
+            get_file_url = f"https://api.telegram.org/bot{token}/getFile?file_id={file_id}"
+            req = urllib.request.Request(get_file_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                f_data = json.loads(resp.read().decode('utf-8'))
 
-        if not f_data.get('ok') or not f_data.get('result', {}).get('file_path'):
+            if not f_data.get('ok') or not f_data.get('result', {}).get('file_path'):
+                if attempt < 2:
+                    time.sleep(1)
+                    continue
+                return None
+
+            file_path = f_data['result']['file_path']
+            ext = os.path.splitext(file_path)[1].lower() or '.jpg'
+            if ext not in ['.jpg', '.jpeg', '.png', '.webp']:
+                ext = '.jpg'
+
+            clean_file_id = re.sub(r'[^a-zA-Z0-9]', '', str(file_id))[:10]
+            filename = f"tg_photo_{update_id}_{clean_file_id}{ext}"
+            dest_path = os.path.join(tg_img_dir, filename)
+            dest_path_data = os.path.join(tg_img_dir_data, filename)
+
+            # 2. Download file content
+            dl_url = f"https://api.telegram.org/file/bot{token}/{file_path}"
+            req_dl = urllib.request.Request(dl_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
+            with urllib.request.urlopen(req_dl, timeout=25) as resp_dl:
+                img_bytes = resp_dl.read()
+                with open(dest_path, 'wb') as f:
+                    f.write(img_bytes)
+                if dest_path_data != dest_path:
+                    try:
+                        with open(dest_path_data, 'wb') as f_d:
+                            f_d.write(img_bytes)
+                    except Exception:
+                        pass
+
+            return f"/telegram_images/{filename}"
+        except Exception as e:
+            if attempt < 2:
+                time.sleep(1.2)
+                continue
+            print(f"[TelegramBotPoller] Error downloading photo {file_id}: {e}")
             return None
+    return None
 
-        file_path = f_data['result']['file_path']
-        ext = os.path.splitext(file_path)[1].lower() or '.jpg'
-        if ext not in ['.jpg', '.jpeg', '.png', '.webp']:
-            ext = '.jpg'
+def _auto_attach_photos_to_bookings(new_images, txt, sender, ts):
+    """
+    Automatically attaches newly downloaded Telegram photos to matching bookings in saved_bookings.json.
+    Ensures users NEVER have to manually click download or fetch photos.
+    """
+    if not new_images or not isinstance(new_images, list):
+        return
+    try:
+        bk_file = os.path.join(DATA_DIR, 'saved_bookings.json')
+        if not os.path.exists(bk_file):
+            bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
+        bookings = load_json(bk_file, [])
+        if not bookings:
+            return
 
-        clean_file_id = re.sub(r'[^a-zA-Z0-9]', '', str(file_id))[:10]
-        filename = f"tg_photo_{update_id}_{clean_file_id}{ext}"
-        dest_path = os.path.join(tg_img_dir, filename)
+        modified = False
+        txt_clean = (txt or '').lower()
+        sender_clean = (sender or '').lower()
 
-        # 2. Download file content
-        dl_url = f"https://api.telegram.org/file/bot{token}/{file_path}"
-        req_dl = urllib.request.Request(dl_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
-        with urllib.request.urlopen(req_dl, timeout=20) as resp_dl:
-            img_bytes = resp_dl.read()
-            with open(dest_path, 'wb') as f:
-                f.write(img_bytes)
+        for b in bookings[:25]:
+            c_name = (b.get('customerName') or '').lower().strip()
+            raw_msg = (b.get('rawMessage') or '').lower()
+            b_notes = (b.get('notes') or '').lower()
+            b_tg = (b.get('customerTelegram') or '').lower()
 
-        return f"/telegram_images/{filename}"
+            name_match = (len(c_name) >= 3 and (c_name in txt_clean or txt_clean in c_name))
+            raw_match = (len(raw_msg) >= 15 and (raw_msg[:30] in txt_clean or txt_clean[:30] in raw_msg))
+            is_empty_images = len(b.get('images', [])) == 0
+
+            # Flight number match e.g. PG0903, FD..., K6...
+            flight_match = False
+            f_matches = re.findall(r'[a-zA-Z]{2}\s*\d{3,4}', txt_clean)
+            for f_cand in f_matches:
+                f_norm = f_cand.replace(' ', '')
+                if f_norm in raw_msg.replace(' ', '') or f_norm in b_notes.replace(' ', ''):
+                    flight_match = True
+                    break
+
+            today_str = datetime.date.today().strftime('%Y-%m-%d')
+            b_date = b.get('date', '')
+            recent_empty_match = (b_date == today_str and is_empty_images and (name_match or raw_match or flight_match or (sender_clean and sender_clean in b_tg)))
+
+            if name_match or raw_match or flight_match or recent_empty_match:
+                if 'images' not in b or not isinstance(b['images'], list):
+                    b['images'] = []
+                for img in new_images:
+                    if not any(ex.get('url') == img.get('url') for ex in b['images']):
+                        b['images'].append(img)
+                        modified = True
+                        print(f"[TelegramAutoAttach] ⚡ Auto-linked photo {img.get('name')} to booking {b.get('id')} ({b.get('customerName')})")
+                if modified:
+                    break
+
+        if modified:
+            save_json(bk_file, bookings)
+            if DATA_DIR != BASE_DIR:
+                try:
+                    save_json(os.path.join(BASE_DIR, 'saved_bookings.json'), bookings)
+                except Exception:
+                    pass
     except Exception as e:
-        print(f"[TelegramBotPoller] Error downloading photo {file_id}: {e}")
-        return None
+        print(f"[TelegramAutoAttach] Error: {e}")
+
 
 def detect_photo_category(caption_text, img_path=None):
     text_lower = (caption_text or "").lower()
@@ -3001,26 +3083,14 @@ def start_telegram_bot_message_poller():
                                 send_telegram_text_bot(token, c_id_str, greet_msg)
                                 continue
 
-                            # 🛑 Chat Filter: allow configured chat OR any known connected groups
+                            # 🛑 Strict Chat Room Filter: Allow ONLY the designated Telegram room (e.g. 8985821312)
                             cfg_tg = get_telegram_config()
                             allowed_chat_id = str(cfg_tg.get("chat_id", "")).strip()
                             allowed_chat_ids = [str(x).strip() for x in cfg_tg.get("allowed_chat_ids", []) if str(x).strip()]
                             if allowed_chat_id and allowed_chat_id not in allowed_chat_ids:
                                 allowed_chat_ids.append(allowed_chat_id)
 
-                            is_known = False
-                            for g_dir in [DATA_DIR, BASE_DIR]:
-                                gf = os.path.join(g_dir, "known_telegram_groups.json")
-                                if os.path.exists(gf):
-                                    try:
-                                        with open(gf, "r", encoding="utf-8") as f_g:
-                                            if c_id_str in json.load(f_g):
-                                                is_known = True
-                                                break
-                                    except Exception:
-                                        pass
-
-                            if allowed_chat_ids and c_id_str not in allowed_chat_ids and not is_known:
+                            if allowed_chat_ids and c_id_str not in allowed_chat_ids:
                                 continue
 
                             txt = (m.get('text') or m.get('caption') or '').strip()
@@ -3159,6 +3229,8 @@ def start_telegram_bot_message_poller():
 
                                 msgs = msgs[:100]
                                 save_json(msg_file, msgs)
+                                if img_list:
+                                    _auto_attach_photos_to_bookings(img_list, txt, sender, ts)
                                 print(f"[TelegramBotPoller] ⚡ Received/Updated message from {sender} (Total images: {len(msgs[0].get('images', []))}): {txt[:35]}...")
             except Exception:
                 pass

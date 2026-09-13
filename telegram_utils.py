@@ -443,8 +443,7 @@ class TelegramBotListener:
             chat_id_str = str(chat.get("id", ""))
             group_title = chat.get("title") or ""
 
-            # 🛑 Filter: Only accept incoming messages from the configured Telegram room/chat
-            # Other rooms/groups/chats are strictly rejected and not imported into the app
+            # Filter: STRICTLY accept incoming messages ONLY from the designated room
             cfg = get_telegram_config()
             allowed_chat_id = str(cfg.get("chat_id", "")).strip()
             allowed_chat_ids = [str(x).strip() for x in cfg.get("allowed_chat_ids", []) if str(x).strip()]
@@ -452,13 +451,18 @@ class TelegramBotListener:
                 allowed_chat_ids.append(allowed_chat_id)
 
             if allowed_chat_ids and chat_id_str not in allowed_chat_ids:
-                # Discard message from outside room
                 return
 
             text = (msg.get("text") or msg.get("caption") or "").strip()
             photos = msg.get("photo")
             doc = msg.get("document")
-            has_img = bool(photos) or (doc and (doc.get("mime_type") or "").startswith("image/"))
+            doc_mime = (doc.get("mime_type") or "").lower() if doc else ""
+            doc_name = (doc.get("file_name") or "").lower() if doc else ""
+            is_doc_img = bool(doc) and (
+                doc_mime.startswith("image/") or 
+                any(doc_name.endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.webp', '.bmp', '.heic'])
+            )
+            has_img = bool(photos) or is_doc_img
 
             if not text and not has_img:
                 return
@@ -495,13 +499,13 @@ class TelegramBotListener:
                 sender_name = user_name or "Telegram User"
 
             # Category detection
-            cat = "ប៉ាស្ព័រ"
+            cat = "រូបភាព"
             t_low = text.lower()
             if any(k in t_low for k in ['flight', '✈', '✈️', 'dmk', 'bkk', 'sai', 'airasia', 'air', 'fd', 'fd-', 'fd ', 'we', 'sl', 'v9', 'k6', 'pg', 'tg', 'qv', 'ហោះហើរ', 'សំបុត្រ', 'ตั๋วเครื่องบิน', 'ไฟลท์', 'ขาเข้า', 'ขาออก', 'สนามบิน', 'airport', 'pnr', 'boarding']):
                 cat = 'សំបុត្រយន្តហោះ'
             elif any(k in t_low for k in ['passport', 'បាសស្ព័រ', 'ប៉ាស្ព័រ', 'លិខិតឆ្លងដែន', 'พาสปอร์ต', 'pass', 'pp']):
                 cat = 'ប៉ាស្ព័រ'
-            elif any(k in t_low for k in ['alphard', 'hiace', 'staria', 'ឡានជួល']):
+            elif any(k in t_low for k in ['alphard', 'hiace', 'staria', 'suv', 'car', 'ឡាន', 'រថយន្ត', 'ជួល', 'ទៅមក', 'ដឹក', 'รถ', 'ตู้', 'เก๋ง', 'เหมา', 'คนขับ', 'តៃកុង']):
                 cat = 'រូបឡាន'
 
             img_list = []
@@ -528,31 +532,47 @@ class TelegramBotListener:
                             clean_fid = re.sub(r'[^a-zA-Z0-9]', '', str(file_id))[:10]
                             local_name = f"tg_photo_{update_id}_{clean_fid}.jpg"
                             local_dest = os.path.join(tg_img_dir, local_name)
-                            with urllib.request.urlopen(dl_url, timeout=15) as r_dl:
-                                with open(local_dest, "wb") as f_out:
-                                    f_out.write(r_dl.read())
                             
-                            # Aspect ratio check for passport vs flight ticket
-                            try:
-                                from PIL import Image
-                                with Image.open(local_dest) as im:
-                                    w, h = im.size
-                                    aspect = max(w, h) / max(min(w, h), 1)
-                                    if h > w and aspect >= 1.62:
-                                        if any(k in t_low for k in ['flight', '✈', 'dmk', 'sai', 'bkk', 'airasia', 'ขาเข้า', 'ขาออก', 'pnr']):
-                                            cat = 'សំបុត្រយន្តហោះ'
-                                    elif 1.20 <= aspect <= 1.58:
-                                        cat = 'ប៉ាស្ព័រ'
-                            except Exception:
-                                pass
+                            # Multi-attempt automatic download
+                            dl_success = False
+                            for attempt in range(3):
+                                try:
+                                    with urllib.request.urlopen(dl_url, timeout=20) as r_dl:
+                                        with open(local_dest, "wb") as f_out:
+                                            f_out.write(r_dl.read())
+                                    dl_success = True
+                                    print(f"[TelegramBotListener] ✅ Auto-downloaded image: {local_name}")
+                                    break
+                                except Exception as e_dl:
+                                    time.sleep(1)
 
-                            img_list.append({
-                                "id": f"IMG-TG-{update_id}",
-                                "name": file_name,
-                                "category": cat,
-                                "url": f"/telegram_images/{local_name}",
-                                "date": datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
-                            })
+                            if dl_success and os.path.exists(local_dest):
+                                # Aspect ratio check for passport vs flight ticket vs car photo
+                                try:
+                                    from PIL import Image
+                                    with Image.open(local_dest) as im:
+                                        w, h = im.size
+                                        aspect = max(w, h) / max(min(w, h), 1)
+                                        if h > w and aspect >= 1.62:
+                                            if any(k in t_low for k in ['flight', '✈', 'dmk', 'sai', 'bkk', 'airasia', 'ขาเข้า', 'ขาออก', 'pnr']):
+                                                cat = 'សំបុត្រយន្តហោះ'
+                                        elif h > w and 1.20 <= aspect <= 1.58 and any(k in t_low for k in ['passport', 'បាសស្ព័រ', 'ប៉ាស្ព័រ', 'លិខិតឆ្លងដែន', 'พาสปอร์ต', 'pass', 'pp']):
+                                            cat = 'ប៉ាស្ព័រ'
+                                        elif w >= h:
+                                            # Landscape photos (cars, scenery, drivers)
+                                            if cat != 'សំបុត្រយន្តហោះ' and not any(k in t_low for k in ['passport', 'បាសស្ព័រ', 'ប៉ាស្ព័រ']):
+                                                cat = 'រូបឡាន'
+                                except Exception:
+                                    pass
+
+                                img_list.append({
+                                    "id": f"IMG-TG-{update_id}",
+                                    "name": file_name,
+                                    "file_id": file_id,
+                                    "category": cat,
+                                    "url": f"/telegram_images/{local_name}",
+                                    "date": datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
+                                })
                     except Exception as e_img:
                         print("[TelegramBotListener] Error caching image:", e_img)
 
@@ -731,12 +751,13 @@ class TelegramBotListener:
                     if not msg:
                         continue
 
-                    # 🛑 Chat filter: only process messages from the configured chat room
+                    # Chat filter: STRICTLY allow ONLY the designated room
                     c_id_str = str((msg.get("chat") or {}).get("id", "")).strip()
                     allowed_chat_id = str(cfg.get("chat_id", "")).strip()
                     allowed_chat_ids = [str(x).strip() for x in cfg.get("allowed_chat_ids", []) if str(x).strip()]
                     if allowed_chat_id and allowed_chat_id not in allowed_chat_ids:
                         allowed_chat_ids.append(allowed_chat_id)
+
                     if allowed_chat_ids and c_id_str not in allowed_chat_ids:
                         continue
 
@@ -1656,3 +1677,47 @@ class UniversalShareDialog(QDialog):
             out_file = ReceiptGenerator.export_group_pdf(self.receipt_data, file_path)
             QMessageBox.information(self, "Success", f"🎉 បានទាញយកវិក័យប័ត្រ PDF រួចរាល់!\n\nSaved to:\n{out_file}")
             self.accept()
+
+
+def download_telegram_image_by_file_id(file_id, dest_filename=None, token=None, data_dir=None):
+    """
+    On-demand automatic download of an image from Telegram Cloud via Bot API.
+    Guarantees that if an image is requested by the UI and missing on disk,
+    it is automatically fetched and saved without user intervention.
+    """
+    if not file_id:
+        return None
+    cfg = get_telegram_config()
+    tok = token or cfg.get("bot_token")
+    if not tok:
+        return None
+    base_data = data_dir or os.getcwd()
+    tg_dir = os.path.join(base_data, "telegram_images")
+    os.makedirs(tg_dir, exist_ok=True)
+
+    if not dest_filename:
+        clean_fid = re.sub(r'[^a-zA-Z0-9]', '', str(file_id))[:10]
+        dest_filename = f"tg_photo_ondemand_{clean_fid}.jpg"
+
+    dest_path = os.path.join(tg_dir, dest_filename)
+    if os.path.exists(dest_path) and os.path.getsize(dest_path) > 0:
+        return dest_path
+
+    try:
+        g_url = f"https://api.telegram.org/bot{tok}/getFile?file_id={file_id}"
+        req_f = urllib.request.Request(g_url)
+        with urllib.request.urlopen(req_f, timeout=10) as resp_f:
+            f_info = json.loads(resp_f.read().decode('utf-8'))
+        if f_info.get("ok") and f_info.get("result", {}).get("file_path"):
+            f_path = f_info["result"]["file_path"]
+            dl_url = f"https://api.telegram.org/file/bot{tok}/{f_path}"
+            with urllib.request.urlopen(dl_url, timeout=20) as r_dl:
+                with open(dest_path, "wb") as f_out:
+                    f_out.write(r_dl.read())
+            if os.path.exists(dest_path) and os.path.getsize(dest_path) > 0:
+                print(f"[Telegram] ✅ Auto-downloaded missing image on-demand: {dest_filename}")
+                return dest_path
+    except Exception as e:
+        print(f"[Telegram] Error on-demand downloading {dest_filename}: {e}")
+    return None
+
