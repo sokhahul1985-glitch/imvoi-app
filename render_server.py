@@ -2510,14 +2510,31 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 })
                 return
 
-            # Support HTML formatting for bold (<b>...</b> or **...**)
-            if '**' in text:
-                escaped_text = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-                html_text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', escaped_text)
-                res_text = send_telegram_text_bot(bot_token, chat_id, html_text, parse_mode='HTML')
-                if not res_text.get('ok'):
-                    res_text = send_telegram_text_bot(bot_token, chat_id, text)
-            else:
+            # Support HTML formatting for bold (<b>...</b> or **...**) and distinct time styling
+            def format_time_dispatch(m):
+                prefix = m.group(1)
+                t_str = m.group(2).strip()
+                if 'ព្រឹក' in t_str or 'ថ្ងៃ' in t_str or 'យប់' in t_str:
+                    return f"{prefix}<b><code>{t_str}</code></b>"
+                try:
+                    h = int(t_str.split(':')[0])
+                    if 0 <= h < 5:
+                        tag = 'យប់ 🌙'
+                    elif 5 <= h < 12:
+                        tag = 'ព្រឹក ☀️'
+                    elif 12 <= h < 18:
+                        tag = 'ថ្ងៃត្រង់ ☀️' if h == 12 else 'ថ្ងៃ 🌤️'
+                    else:
+                        tag = 'យប់ 🌙'
+                    return f"{prefix}<b><code>{t_str} ({tag})</code></b>"
+                except Exception:
+                    return f"{prefix}<b><code>{t_str}</code></b>"
+
+            escaped_text = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            html_text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', escaped_text)
+            html_text = re.sub(r'(⏰\s*(?:<b>)?\s*ម៉ោងចេញដំណើរ:\s*)([^<\n]+)((?:</b>)?)', format_time_dispatch, html_text)
+            res_text = send_telegram_text_bot(bot_token, chat_id, html_text, parse_mode='HTML')
+            if not res_text.get('ok'):
                 res_text = send_telegram_text_bot(bot_token, chat_id, text)
             photos_sent = 0
             for img_rel in image_urls:
