@@ -4821,7 +4821,7 @@ input[type="date"] {
                             <button type="button" class="btn-ar btn-ar-outline" style="background: #ffffff; color: #475569; border: 1.5px solid #cbd5e1; font-weight: 800; display: inline-flex; align-items: center; gap: 5px;" onclick="handleClearBookingFormModal()" title="សម្អាតទិន្នន័យទាំងអស់ក្នុងទម្រង់ និងកាឡោត">
                                 <i class="fa-solid fa-broom text-warning"></i> សម្អាត
                             </button>
-                            <button type="button" class="btn-ar btn-ar-primary" onclick="handleSaveBookingDirect()"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុក</button>
+                            <button type="button" class="btn-ar btn-ar-primary" id="btnSaveBookingHeader" onclick="handleSaveBookingDirect()"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុក</button>
                             <button type="button" class="modal-close-btn" onclick="closeModal('bookingModal')"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                     </div>
@@ -5234,6 +5234,9 @@ input[type="date"] {
                             </button>
                             <div style="display: flex; gap: 8px;">
                                 <button type="button" class="btn-ar btn-ar-outline" onclick="closeModal('bookingModal')">បោះបង់</button>
+                                <button type="button" class="btn-ar btn-ar-primary" id="btnSaveBookingFooter" onclick="handleSaveBookingDirect()" style="background: linear-gradient(135deg, #0284c7, #0369a1); font-weight: 800; padding: 7px 22px; font-size: 13.5px; border-radius: 7px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);">
+                                    <i class="fa-solid fa-floppy-disk"></i> រក្សាទុក (Save)
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -14096,7 +14099,7 @@ document.addEventListener('paste', function(e) {
         if (form) form.requestSubmit();
     };
 
-    window.handleSaveBooking = function(e) {
+    window.handleSaveBooking = async function(e) {
         if (e) e.preventDefault();
 
         // 1. Strict validation: Customer name is required to save
@@ -14109,6 +14112,14 @@ document.addEventListener('paste', function(e) {
             showToast('⚠️ មិនអាចរក្សាទុកបានទេ! សូមបំពេញ «ឈ្មោះភ្ញៀវ» ជាមុនសិន!');
             return false;
         }
+
+        const btnH = document.getElementById('btnSaveBookingHeader');
+        const btnF = document.getElementById('btnSaveBookingFooter');
+        if (btnH) { btnH.disabled = true; btnH.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងរក្សាទុក...'; }
+        if (btnF) { btnF.disabled = true; btnF.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងរក្សាទុក...'; }
+
+        // Set 25-second cooldown so background polling will NEVER overwrite this booking
+        window.syncCooldownUntil = Date.now() + 25000;
 
         const custName = document.getElementById('bookingCustomerName').value.trim();
 
@@ -14143,7 +14154,21 @@ document.addEventListener('paste', function(e) {
         }
 
         const bookings = getBookings();
-        const existingBookingForSave = editingBookingId ? bookings.find(b => b.id === editingBookingId) : null;
+
+        function getSafeNextBookingId(bks) {
+            let maxNum = 1000;
+            (bks || []).forEach(b => {
+                const m = String(b.id || '').match(/BK-(\d+)/);
+                if (m) {
+                    const val = parseInt(m[1], 10);
+                    if (!isNaN(val) && val > maxNum) maxNum = val;
+                }
+            });
+            return 'BK-' + (maxNum + 1);
+        }
+
+        const isEditing = Boolean(editingBookingId);
+        const existingBookingForSave = isEditing ? bookings.find(b => b.id === editingBookingId) : null;
         const invSelectEl = document.getElementById('bookingInvoiceDone');
         let isInvDoneVal = invSelectEl ? (invSelectEl.value === 'true') : (existingBookingForSave ? !!existingBookingForSave.invoiceDone : false);
         let existingInvNo = existingBookingForSave ? (existingBookingForSave.invoiceNo || null) : null;
@@ -14152,19 +14177,21 @@ document.addEventListener('paste', function(e) {
             isInvDoneVal = true;
         }
 
+        const targetId = editingBookingId || getSafeNextBookingId(bookings);
+
         const newBooking = {
-            id: editingBookingId || ('BK-' + (1000 + bookings.length + 1)),
+            id: targetId,
             customerName: custName,
             customerPhone: document.getElementById('bookingCustomerPhone') ? document.getElementById('bookingCustomerPhone').value.trim() : '',
-            customerTelegram: document.getElementById('bookingTelegramLink').value.trim(),
-            driverTelegram: document.getElementById('bookingDriverTelegram').value.trim(),
+            customerTelegram: document.getElementById('bookingTelegramLink') ? document.getElementById('bookingTelegramLink').value.trim() : '',
+            driverTelegram: document.getElementById('bookingDriverTelegram') ? document.getElementById('bookingDriverTelegram').value.trim() : '',
             cars: finalCars,
-            vipService: document.getElementById('bookingVipService').value,
-            borderClear: document.getElementById('bookingBorderClear').value,
-            pickupLoc: document.getElementById('bookingPickupLoc').value,
-            dropoffLoc: document.getElementById('bookingDropoffLoc').value,
-            date: document.getElementById('bookingDate').value || getTodayStr(0),
-            time: document.getElementById('bookingTime').value || '08:00',
+            vipService: document.getElementById('bookingVipService') ? document.getElementById('bookingVipService').value : '',
+            borderClear: document.getElementById('bookingBorderClear') ? document.getElementById('bookingBorderClear').value : '',
+            pickupLoc: document.getElementById('bookingPickupLoc') ? document.getElementById('bookingPickupLoc').value : '',
+            dropoffLoc: document.getElementById('bookingDropoffLoc') ? document.getElementById('bookingDropoffLoc').value : '',
+            date: (document.getElementById('bookingDate') && document.getElementById('bookingDate').value) ? document.getElementById('bookingDate').value : getTodayStr(0),
+            time: (document.getElementById('bookingTime') && document.getElementById('bookingTime').value) ? document.getElementById('bookingTime').value : '08:00',
             status: 'active',
             invoiceDone: isInvDoneVal,
             invoiceNo: existingInvNo,
@@ -14173,21 +14200,18 @@ document.addEventListener('paste', function(e) {
             images: currentBookingImages ? [...currentBookingImages] : []
         };
 
-        if (editingBookingId) {
+        if (isEditing) {
             const idx = bookings.findIndex(b => b.id === editingBookingId);
             if (idx >= 0) bookings[idx] = newBooking;
+            else bookings.unshift(newBooking);
         } else {
             bookings.unshift(newBooking);
-            editingBookingId = newBooking.id;
-            const bIdInput = document.getElementById('bookingId');
-            if (bIdInput) bIdInput.value = newBooking.id;
         }
 
+        // 1. Save to LocalStorage immediately
         setBookings(bookings);
-        // Do NOT auto-close modal: Keep open so user can inspect and click "សម្អាត" before closing
-        showToast('រក្សាទុកការកក់ជោគជ័យ! ✅');
 
-        // Auto-save customer to ភ្ញៀវចាស់ (customers directory) if not exists
+        // 2. Auto-save customer to ភ្ញៀវចាស់ (customers directory) if not exists
         try {
             const currentCusts = getCustomers();
             const exists = currentCusts.some(c => (c.name || '').trim().toLowerCase() === custName.toLowerCase());
@@ -14207,19 +14231,35 @@ document.addEventListener('paste', function(e) {
             }
         } catch(e) {}
 
-        // Persist full bookings array to server database for immediate cross-device sync (PC & Mobile)
+        // 3. Persist full bookings array to server database with await for rock-solid reliability
         try {
-            fetch('/api/bookings', {
+            await fetch('/api/bookings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ bookings: bookings })
-            }).catch(e => console.warn('Could not sync booking to server:', e));
-        } catch (e) {}
+            });
+        } catch (e) {
+            console.warn('Could not sync booking to server:', e);
+        }
 
-        // Reset active telegram message reference (keep message in inbox unless user clicks delete)
+        // 4. Clean up state and close modal
+        editingBookingId = null;
+        const bIdInput = document.getElementById('bookingId');
+        if (bIdInput) bIdInput.value = '';
         activeTelegramMessage = null;
 
-        switchTab(currentTab);
+        if (btnH) { btnH.disabled = false; btnH.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> រក្សាទុក'; }
+        if (btnF) { btnF.disabled = false; btnF.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> រក្សាទុក (Save)'; }
+
+        closeModal('bookingModal');
+        showToast(isEditing ? '✅ បានកែប្រែ និងរក្សាទុកការកក់ជោគជ័យ!' : '✅ បានបង្កើត និងរក្សាទុកការកក់ថ្មីជោគជ័យ!');
+
+        if (typeof renderDashboard === 'function') renderDashboard();
+        if (typeof renderBookings === 'function') renderBookings(currentBookingFilter);
+        if (typeof renderCalendar === 'function') renderCalendar();
+        if (typeof renderFleetSchedule === 'function') renderFleetSchedule();
+        if (typeof renderCars === 'function') renderCars(currentCarFilter);
+        switchTab(currentTab || 'dashboard');
     };
 
     // Toggle Booking Invoice Status (ធ្វើរួច / មិនទាន់ធ្វើ)
@@ -14228,6 +14268,7 @@ document.addEventListener('paste', function(e) {
             evt.stopPropagation();
             evt.preventDefault();
         }
+        window.syncCooldownUntil = Date.now() + 20000;
         let bookings = getBookings();
         const b = bookings.find(x => x.id === id);
         if (!b) return;
