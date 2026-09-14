@@ -1056,19 +1056,27 @@ textarea.form-control {
 @media (max-width: 768px) {
     html, body {
         height: auto !important;
-        min-height: 100vh !important;
+        min-height: 100% !important;
         overflow-y: auto !important;
+        overflow-x: hidden !important;
         -webkit-overflow-scrolling: touch !important;
     }
 
     #mainWorkspaceContainer,
+    body.mode-quote #mainWorkspaceContainer,
+    body.mode-quote.submode-autorent #mainWorkspaceContainer,
     #autoRentManagementContainer,
     #quoteStudioContainer {
         height: auto !important;
         min-height: 100vh !important;
         overflow: visible !important;
+        overflow-y: visible !important;
         max-height: none !important;
         padding-top: 2px !important;
+    }
+
+    .dashboard-card, .ar-card {
+        overflow: visible !important;
     }
 
     /* 1. Top Quote Navigation Bar (Home, AutoRent, Invoice, Posters) */
@@ -2366,10 +2374,12 @@ input[type="date"] {
             height: auto !important;
             min-height: 100vh !important;
         }
-        body.mode-quote.submode-autorent #mainWorkspaceContainer {
-            overflow: hidden !important;
-            height: 100vh !important;
-            max-height: 100vh !important;
+        @media (min-width: 769px) {
+            body.mode-quote.submode-autorent #mainWorkspaceContainer {
+                overflow: hidden !important;
+                height: 100vh !important;
+                max-height: 100vh !important;
+            }
         }
 
     
@@ -3455,10 +3465,12 @@ input[type="date"] {
             height: auto !important;
             min-height: 100vh !important;
         }
-        body.mode-quote.submode-autorent #mainWorkspaceContainer {
-            overflow: hidden !important;
-            height: 100vh !important;
-            max-height: 100vh !important;
+        @media (min-width: 769px) {
+            body.mode-quote.submode-autorent #mainWorkspaceContainer {
+                overflow: hidden !important;
+                height: 100vh !important;
+                max-height: 100vh !important;
+            }
         }
 
     
@@ -8716,27 +8728,6 @@ input[type="date"] {
             });
         }
 
-        function onGmmVisaIssuedChange(cb) {
-            if (!cb) return;
-            const parentLabel = cb.closest('label');
-            const lblSpan = parentLabel ? parentLabel.querySelector('.visa-issued-label') : null;
-            if (cb.checked) {
-                if (lblSpan) lblSpan.textContent = '✅ ចេញរួច';
-                if (parentLabel) {
-                    parentLabel.style.background = '#ecfdf5';
-                    parentLabel.style.color = '#047857';
-                    parentLabel.style.borderColor = '#10b981';
-                }
-            } else {
-                if (lblSpan) lblSpan.textContent = '⏳ រង់ចាំ';
-                if (parentLabel) {
-                    parentLabel.style.background = '#f8fafc';
-                    parentLabel.style.color = '#64748b';
-                    parentLabel.style.borderColor = '#cbd5e1';
-                }
-            }
-        }
-
         function openGroupMembersModal(rNoEnc, idx) {
             const rNo = decodeURIComponent(rNoEnc || '');
             currentGmmReceiptNo = rNo;
@@ -10833,8 +10824,19 @@ input[type="date"] {
    Telegram Bot Live Auto-Sync & Global Paste (Ctrl+V) Integration
    ========================================================================== */
 function showToast(message, isSuccess = true) {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.style.position = 'fixed';
+        container.style.bottom = '20px';
+        container.style.right = '20px';
+        container.style.zIndex = '99999';
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        container.style.gap = '8px';
+        document.body.appendChild(container);
+    }
     const toast = document.createElement('div');
     toast.style.background = isSuccess ? '#064e3b' : '#7f1d1d';
     toast.style.color = '#ffffff';
@@ -10853,7 +10855,7 @@ function showToast(message, isSuccess = true) {
         toast.style.opacity = '0';
         toast.style.transform = 'translateY(-10px)';
         setTimeout(() => toast.remove(), 300);
-    }, 4500);
+    }, 4000);
 }
 
 // Global Clipboard Paste Handler (Ctrl + V)
@@ -11704,7 +11706,35 @@ document.addEventListener('paste', function(e) {
     function getBookings() {
         return loadData(STORAGE_KEY_BOOKINGS, getInitialBookings());
     }
-    function setBookings(b) { saveData(STORAGE_KEY_BOOKINGS, b); }
+    function setBookings(b) {
+        if (!Array.isArray(b)) {
+            saveData(STORAGE_KEY_BOOKINGS, b);
+            return;
+        }
+        const seenIds = new Set();
+        let maxNum = 1000;
+        b.forEach(item => {
+            if (!item || !item.id) return;
+            const m = String(item.id).match(/BK-(\d+)/);
+            if (m) {
+                const val = parseInt(m[1], 10);
+                if (!isNaN(val) && val > maxNum) maxNum = val;
+            }
+        });
+        const sanitized = [];
+        b.forEach(item => {
+            if (!item || typeof item !== 'object') return;
+            let bid = String(item.id || '').trim();
+            if (!bid || seenIds.has(bid)) {
+                maxNum++;
+                bid = 'BK-' + maxNum;
+                item = Object.assign({}, item, { id: bid });
+            }
+            seenIds.add(bid);
+            sanitized.push(item);
+        });
+        saveData(STORAGE_KEY_BOOKINGS, sanitized);
+    }
     window.getBookings = getBookings;
     window.setBookings = setBookings;
 
@@ -12526,7 +12556,7 @@ document.addEventListener('paste', function(e) {
                         <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #7dd3fc; color: #0284c7; background: #e0f2fe;" onclick="openDispatchDriverModal('${b.id}')" title="បញ្ជូនទិន្នន័យ & ទីតាំងទៅ Telegram តៃកុង"><i class="fa-solid fa-share-nodes"></i></button>
                         <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #cbd5e1;" onclick="viewBookingDetails('${b.id}')" title="ព័ត៌មានកក់ឡាន (Booking Info)"><i class="fa-solid fa-circle-info text-primary"></i></button>
                         <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #cbd5e1;" onclick="openEditBookingModal('${b.id}')" title="កែប្រែ"><i class="fa-solid fa-pen-to-square text-primary"></i></button>
-                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #cbd5e1;" onclick="deleteBooking('${b.id}')" title="លុប"><i class="fa-solid fa-trash-can text-danger"></i></button>
+                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #cbd5e1;" onclick="deleteBooking('${b.id}', this)" title="លុប"><i class="fa-solid fa-trash-can text-danger"></i></button>
                     </div>
                 </td>
             </tr>
@@ -14096,7 +14126,11 @@ document.addEventListener('paste', function(e) {
             return false;
         }
         const form = document.getElementById('bookingForm');
-        if (form) form.requestSubmit();
+        if (form && typeof form.requestSubmit === 'function') {
+            form.requestSubmit();
+        } else {
+            handleSaveBooking();
+        }
     };
 
     window.handleSaveBooking = async function(e) {
@@ -15063,22 +15097,61 @@ document.addEventListener('paste', function(e) {
         }
     };
 
-    window.deleteBooking = async function(id) {
+    window.deleteBooking = async function(id, btnEl) {
         if (!id) return;
-        window.syncCooldownUntil = Date.now() + 10000;
+        window.syncCooldownUntil = Date.now() + 15000;
         if (!confirm(`តើអ្នកប្រាកដជាចង់លុបការកក់លេខ ${id} នេះមែនទេ?`)) return;
-        window.syncCooldownUntil = Date.now() + 10000;
+        window.syncCooldownUntil = Date.now() + 15000;
 
         const strId = String(id).trim().toLowerCase();
         let bookings = getBookings();
-        bookings = bookings.filter(b => String(b.id || '').trim().toLowerCase() !== strId);
+        
+        let targetIdx = -1;
+        // 1. If btnEl passed from table row, check row text to accurately match customerName if multiple exist
+        if (btnEl && typeof btnEl.closest === 'function') {
+            const tr = btnEl.closest('tr');
+            if (tr) {
+                const matchIndices = [];
+                bookings.forEach((b, i) => {
+                    if (String(b.id || '').trim().toLowerCase() === strId) {
+                        matchIndices.push(i);
+                    }
+                });
+                if (matchIndices.length === 1) {
+                    targetIdx = matchIndices[0];
+                } else if (matchIndices.length > 1) {
+                    const rowText = tr.textContent || '';
+                    for (const mIdx of matchIndices) {
+                        const cust = String(bookings[mIdx].customerName || '').trim();
+                        if (cust && rowText.includes(cust)) {
+                            targetIdx = mIdx;
+                            break;
+                        }
+                    }
+                    if (targetIdx === -1) targetIdx = matchIndices[0];
+                }
+            }
+        }
+
+        // 2. Fallback to standard index lookup
+        if (targetIdx === -1) {
+            targetIdx = bookings.findIndex(b => String(b.id || '').trim().toLowerCase() === strId);
+        }
+
+        // 3. Remove ONLY that specific single booking (never wipe sibling rows)
+        if (targetIdx >= 0) {
+            bookings.splice(targetIdx, 1);
+        } else {
+            bookings = bookings.filter(b => String(b.id || '').trim().toLowerCase() !== strId);
+        }
+        
         setBookings(bookings);
 
         try {
             await fetch('/api/bookings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ bookings: bookings })
+                body: JSON.stringify({ action: 'delete', delete_id: id, bookings: bookings })
             });
         } catch (e) {
             console.error('Error deleting booking:', e);
@@ -16483,7 +16556,11 @@ document.addEventListener('paste', function(e) {
 
     window.handleSaveCarDirect = function() {
         const f = document.getElementById('carForm');
-        if (f) f.requestSubmit();
+        if (f && typeof f.requestSubmit === 'function') {
+            f.requestSubmit();
+        } else {
+            handleSaveCar();
+        }
     };
 
     window.handleSaveCar = function(e) {
@@ -16595,7 +16672,11 @@ document.addEventListener('paste', function(e) {
 
     window.handleSaveCustomerDirect = function() {
         const f = document.getElementById('customerForm');
-        if (f) f.requestSubmit();
+        if (f && typeof f.requestSubmit === 'function') {
+            f.requestSubmit();
+        } else {
+            handleSaveCustomer();
+        }
     };
 
     window.handleSaveCustomer = function(e) {
@@ -16695,8 +16776,13 @@ document.addEventListener('paste', function(e) {
         });
         setCustomers(custs);
 
-        // Also add to hiddenSenders on server to prevent re-emergence from raw telegram/bookings extraction
+        // Also notify server /api/customers and add to hiddenSenders to prevent re-emergence
         try {
+            await fetch('/api/customers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete', delete_id: id, customer_name: name })
+            });
             await fetch('/api/hidden_senders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -17965,36 +18051,6 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
         switchTab(currentTab);
     };
 
-    // Toast notifications
-    function showToast(msg) {
-        let container = document.getElementById('toastContainer');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'toastContainer';
-            container.style.position = 'fixed';
-            container.style.bottom = '20px';
-            container.style.right = '20px';
-            container.style.zIndex = '99999';
-            document.body.appendChild(container);
-        }
-        const toast = document.createElement('div');
-        toast.style.background = '#0f172a';
-        toast.style.color = '#ffffff';
-        toast.style.padding = '10px 18px';
-        toast.style.borderRadius = '8px';
-        toast.style.boxShadow = '0 4px 14px rgba(0,0,0,0.3)';
-        toast.style.fontSize = '13px';
-        toast.style.fontWeight = '700';
-        toast.style.marginTop = '8px';
-        toast.style.transition = 'all 0.3s ease';
-        toast.innerHTML = msg;
-        container.appendChild(toast);
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            setTimeout(() => toast.remove(), 300);
-        }, 2500);
-    }
-
     // Initialization
     window.initAutoRentSystem = function() {
         // Ensure default data exists
@@ -18011,7 +18067,7 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
                     fetch('/api/bookings', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ bookings: curBks })
+                        body: JSON.stringify({ action: 'delete', delete_id: 'BK-1005' })
                     }).catch(() => {});
                 } catch (e) {}
             }
@@ -18096,9 +18152,9 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
                         if (typeof populateCustomerDropdown === 'function') populateCustomerDropdown();
                     }
                 } else {
-                    // If server database is empty but local has bookings, upload to populate server
+                    // If server database is empty but local has genuine bookings, upload to populate server
                     const localBks = getBookings();
-                    if (localBks.length > 0) {
+                    if (localBks.length > 4) {
                         fetch('/api/bookings', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },

@@ -121,183 +121,6 @@ SAVED_BOOKINGS_FILE = os.path.join(DATA_DIR, 'saved_bookings.json')
 AUTORENT_CUSTOMERS_FILE = os.path.join(DATA_DIR, 'autorent_customers.json')
 WEB_DIR = BASE_DIR
 
-# ===========================================================================
-# STARTUP AUTO-RESTORE: Restore Invoices & Bookings from Supabase Cloud / Backups
-# ===========================================================================
-def _startup_restore_invoices():
-    """Auto-restore customer invoice data from local files, backups, or Supabase Cloud."""
-    try:
-        # 1. Check if main local data file is intact first (Fastest!)
-        main_ok = False
-        if os.path.exists(SAVED_CUSTOMERS_FILE):
-            try:
-                with open(SAVED_CUSTOMERS_FILE, 'r', encoding='utf-8') as f:
-                    existing = json.load(f)
-                if isinstance(existing, list) and len(existing) > 0:
-                    main_ok = True
-                    print(f"[DataRestore] Main invoice file OK: {len(existing)} records found.")
-            except Exception:
-                pass
-
-        if main_ok:
-            if supabase_db and supabase_db.is_configured():
-                try:
-                    threading.Thread(target=supabase_db.upsert_invoices, args=(existing,), daemon=True).start()
-                except Exception:
-                    pass
-            return  # Data is intact, nothing to do
-
-        print("[DataRestore] Main invoice data file missing or empty. Searching backups...")
-
-        # 2. Candidate backup paths in priority order
-        backup_candidates = [
-            os.path.join(DATA_DIR, 'backups', 'saved_customers_latest_vault.json'),
-            os.path.join(BASE_DIR, 'backups', 'saved_customers_latest_vault.json'),
-            os.path.join(BASE_DIR, 'saved_customers_live_backup.json'),
-            os.path.join(BASE_DIR, 'saved_customers.json'),
-        ]
-
-        # Also scan backups/ folder for any timestamped auto-backup files
-        for scan_dir in [os.path.join(DATA_DIR, 'backups'), os.path.join(BASE_DIR, 'backups')]:
-            if os.path.isdir(scan_dir):
-                try:
-                    bak_files = sorted(
-                        [os.path.join(scan_dir, f) for f in os.listdir(scan_dir)
-                         if f.endswith('.json') and 'customers' in f.lower()],
-                        key=os.path.getmtime, reverse=True
-                    )
-                    backup_candidates.extend(bak_files)
-                except Exception:
-                    pass
-
-        best_data = None
-        best_path = None
-        best_count = 0
-
-        for bak_path in backup_candidates:
-            if not os.path.exists(bak_path):
-                continue
-            try:
-                if os.path.abspath(bak_path) == os.path.abspath(SAVED_CUSTOMERS_FILE):
-                    continue
-            except Exception:
-                pass
-            try:
-                with open(bak_path, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                if isinstance(data, list) and len(data) > best_count:
-                    best_data = data
-                    best_count = len(data)
-                    best_path = bak_path
-            except Exception as e:
-                print(f"[DataRestore] Could not read backup {bak_path}: {e}")
-
-        if best_data and best_count > 0:
-            os.makedirs(DATA_DIR, exist_ok=True)
-            with open(SAVED_CUSTOMERS_FILE, 'w', encoding='utf-8') as f:
-                json.dump(best_data, f, ensure_ascii=False, indent=2)
-            print(f"[DataRestore] ✅ Restored {best_count} invoice records from: {best_path}")
-            
-            if supabase_db and supabase_db.is_configured():
-                try:
-                    threading.Thread(target=supabase_db.upsert_invoices, args=(best_data,), daemon=True).start()
-                except Exception:
-                    pass
-            return
-
-        # 3. Fallback to Supabase Cloud DB only if local files and backups are missing
-        if supabase_db and supabase_db.is_configured():
-            try:
-                print("[Supabase] Querying Supabase Cloud Database for invoices on startup...")
-                cloud_recs = supabase_db.fetch_all_invoices()
-                if cloud_recs and len(cloud_recs) > 0:
-                    os.makedirs(DATA_DIR, exist_ok=True)
-                    with open(SAVED_CUSTOMERS_FILE, 'w', encoding='utf-8') as f:
-                        json.dump(cloud_recs, f, ensure_ascii=False, indent=2)
-                    print(f"[Supabase] ✅ Successfully restored {len(cloud_recs)} invoice records from Cloud DB!")
-                    
-                    cloud_counters = supabase_db.fetch_counters()
-                    if cloud_counters and isinstance(cloud_counters, dict):
-                        with open(INVOICE_COUNTER_FILE, 'w', encoding='utf-8') as fc:
-                            json.dump(cloud_counters, fc, ensure_ascii=False, indent=2)
-                    return
-                else:
-                    print("[Supabase] Cloud database is empty for invoices.")
-            except Exception as se:
-                print(f"[Supabase] Invoice startup load warning: {se}")
-
-        print("[DataRestore] No invoice backup found. Starting with empty database.")
-    except Exception as e:
-        print(f"[DataRestore] Invoice restore error (non-fatal): {e}")
-
-def _startup_restore_bookings():
-    """Auto-restore car rental bookings from local files, backups, or Supabase Cloud."""
-    try:
-        os.makedirs(DATA_DIR, exist_ok=True)
-        # 1. Local file first (Fastest!)
-        bks_ok = False
-        if os.path.exists(SAVED_BOOKINGS_FILE):
-            try:
-                with open(SAVED_BOOKINGS_FILE, 'r', encoding='utf-8') as f:
-                    b = json.load(f)
-                if isinstance(b, list) and len(b) > 0:
-                    bks_ok = True
-                    print(f"[DataRestore] Bookings file OK: {len(b)} bookings found.")
-            except Exception:
-                pass
-
-        # 2. Local backup fallback
-        if not bks_ok:
-            for cand in [
-                os.path.join(BASE_DIR, 'saved_bookings.json'),
-                os.path.join(DATA_DIR, 'backups', 'latest_data', 'saved_bookings.json'),
-                os.path.join(BASE_DIR, 'backups', 'latest_data', 'saved_bookings.json'),
-            ]:
-                if os.path.exists(cand):
-                    try:
-                        with open(cand, 'r', encoding='utf-8') as f:
-                            cand_bks = json.load(f)
-                        if isinstance(cand_bks, list) and len(cand_bks) > 0:
-                            with open(SAVED_BOOKINGS_FILE, 'w', encoding='utf-8') as f:
-                                json.dump(cand_bks, f, ensure_ascii=False, indent=2)
-                            print(f"[DataRestore] ✅ Restored {len(cand_bks)} bookings from backup: {cand}")
-                            bks_ok = True
-                            break
-                    except Exception:
-                        pass
-
-        # 3. Supabase Cloud DB fallback if neither local nor backup found
-        if not bks_ok and supabase_db and supabase_db.is_configured():
-            try:
-                print("[Supabase] Querying Supabase Cloud for Bookings on startup...")
-                cloud_bks = supabase_db.fetch_bookings()
-                if cloud_bks and isinstance(cloud_bks, list) and len(cloud_bks) > 0:
-                    with open(SAVED_BOOKINGS_FILE, 'w', encoding='utf-8') as fb:
-                        json.dump(cloud_bks, fb, ensure_ascii=False, indent=2)
-                    print(f"[Supabase] ✅ Successfully restored {len(cloud_bks)} bookings from Cloud DB!")
-                    bks_ok = True
-            except Exception as se:
-                print(f"[Supabase] Booking startup load warning: {se}")
-
-        # 4. Seed Supabase Cloud DB in background if local has bookings
-        if bks_ok and supabase_db and supabase_db.is_configured():
-            try:
-                with open(SAVED_BOOKINGS_FILE, 'r', encoding='utf-8') as f:
-                    to_seed = json.load(f)
-                if to_seed:
-                    threading.Thread(target=supabase_db.save_bookings, args=(to_seed,), daemon=True).start()
-            except Exception:
-                pass
-    except Exception as ex:
-        print(f"[DataRestore] Booking restore non-fatal error: {ex}")
-
-def _startup_restore_if_needed():
-    """Auto-restore customer invoices, counters, and car bookings on server startup."""
-    _startup_restore_invoices()
-    _startup_restore_bookings()
-
-_startup_restore_if_needed()
-
 def load_json(filepath, default):
     if not os.path.exists(filepath):
         return default
@@ -308,63 +131,6 @@ def load_json(filepath, default):
         except Exception:
             time.sleep(0.08)
     return default
-
-def cluster_telegram_messages_by_time(msgs, time_window_seconds=240):
-    """Groups telegram messages sent around the same time (same conversation/batch) by the same sender into a single message card."""
-    if not msgs or not isinstance(msgs, list):
-        return msgs
-    
-    clustered = []
-    for m in msgs:
-        sender = (m.get('sender') or 'Telegram User').strip()
-        ts = m.get('timestamp') or 0
-        mg_id = m.get('media_group_id')
-        m_imgs = m.get('images') or []
-        m_text = (m.get('text') or '').strip()
-
-        # Try to find an existing cluster within the time window for the same sender
-        matched = None
-        for c in clustered:
-            c_sender = (c.get('sender') or 'Telegram User').strip()
-            c_ts = c.get('timestamp') or 0
-            c_mg = c.get('media_group_id')
-
-            same_mg = mg_id and c_mg and mg_id == c_mg
-            same_time = (c_sender == sender and abs(ts - c_ts) <= time_window_seconds)
-
-            if same_mg or same_time:
-                matched = c
-                break
-
-        if matched:
-            # 1. Merge images
-            if m_imgs:
-                if 'images' not in matched or not isinstance(matched['images'], list):
-                    matched['images'] = []
-                for img in m_imgs:
-                    if not any(ex.get('url') == img.get('url') for ex in matched['images']):
-                        matched['images'].append(img)
-
-            # 2. Merge texts
-            c_text = (matched.get('text') or '').strip()
-            is_c_placeholder = not c_text or c_text.startswith('📷 រូបភាព') or c_text.startswith('📘 រូបប៉ាស្ព័រ')
-            is_m_placeholder = not m_text or m_text.startswith('📷 រូបភាព') or m_text.startswith('📘 រូបប៉ាស្ព័រ')
-
-            if is_c_placeholder and not is_m_placeholder:
-                matched['text'] = m_text
-            elif not is_c_placeholder and not is_m_placeholder and m_text != c_text:
-                if m_text not in c_text and c_text not in m_text:
-                    matched['text'] = f"{c_text}\n\n{m_text}"
-
-            # Keep latest timestamp
-            matched['timestamp'] = max(ts, matched.get('timestamp', ts))
-            if ts >= matched.get('timestamp', ts):
-                matched['date'] = m.get('date', matched.get('date'))
-        else:
-            # Create a clone so original remains untouched
-            clustered.append(dict(m))
-
-    return clustered
 
 def save_json(filepath, data):
     try:
@@ -854,6 +620,293 @@ def parse_flight_ticket_ocr(img_source):
         print(f"[parse_flight_ticket_ocr] Error: {e}")
         return None
 
+# ===========================================================================
+# STARTUP AUTO-RESTORE: Restore Invoices & Bookings from Supabase Cloud / Backups
+# ===========================================================================
+def _startup_restore_invoices():
+    """Auto-restore customer invoice data from local files, backups, or Supabase Cloud."""
+    try:
+        # 1. Check if main local data file is intact first (Fastest!)
+        main_ok = False
+        if os.path.exists(SAVED_CUSTOMERS_FILE):
+            try:
+                with open(SAVED_CUSTOMERS_FILE, 'r', encoding='utf-8') as f:
+                    existing = json.load(f)
+                if isinstance(existing, list) and len(existing) > 0:
+                    main_ok = True
+                    print(f"[DataRestore] Main invoice file OK: {len(existing)} records found.")
+            except Exception:
+                pass
+
+        if main_ok:
+            if supabase_db and supabase_db.is_configured():
+                try:
+                    threading.Thread(target=supabase_db.upsert_invoices, args=(existing,), daemon=True).start()
+                except Exception:
+                    pass
+            return  # Data is intact, nothing to do
+
+        print("[DataRestore] Main invoice data file missing or empty. Searching backups...")
+
+        # 2. Candidate backup paths in priority order
+        backup_candidates = [
+            os.path.join(DATA_DIR, 'backups', 'saved_customers_latest_vault.json'),
+            os.path.join(BASE_DIR, 'backups', 'saved_customers_latest_vault.json'),
+            os.path.join(BASE_DIR, 'saved_customers_live_backup.json'),
+            os.path.join(BASE_DIR, 'saved_customers.json'),
+        ]
+
+        # Also scan backups/ folder for any timestamped auto-backup files
+        for scan_dir in [os.path.join(DATA_DIR, 'backups'), os.path.join(BASE_DIR, 'backups')]:
+            if os.path.isdir(scan_dir):
+                try:
+                    bak_files = sorted(
+                        [os.path.join(scan_dir, f) for f in os.listdir(scan_dir)
+                         if f.endswith('.json') and 'customers' in f.lower()],
+                        key=os.path.getmtime, reverse=True
+                    )
+                    backup_candidates.extend(bak_files)
+                except Exception:
+                    pass
+
+        best_data = None
+        best_path = None
+        best_count = 0
+
+        for bak_path in backup_candidates:
+            if not os.path.exists(bak_path):
+                continue
+            try:
+                if os.path.abspath(bak_path) == os.path.abspath(SAVED_CUSTOMERS_FILE):
+                    continue
+            except Exception:
+                pass
+            try:
+                with open(bak_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                if isinstance(data, list) and len(data) > best_count:
+                    best_data = data
+                    best_count = len(data)
+                    best_path = bak_path
+            except Exception as e:
+                print(f"[DataRestore] Could not read backup {bak_path}: {e}")
+
+        if best_data and best_count > 0:
+            os.makedirs(DATA_DIR, exist_ok=True)
+            with open(SAVED_CUSTOMERS_FILE, 'w', encoding='utf-8') as f:
+                json.dump(best_data, f, ensure_ascii=False, indent=2)
+            print(f"[DataRestore] ✅ Restored {best_count} invoice records from: {best_path}")
+            
+            if supabase_db and supabase_db.is_configured():
+                try:
+                    threading.Thread(target=supabase_db.upsert_invoices, args=(best_data,), daemon=True).start()
+                except Exception:
+                    pass
+            return
+
+        # 3. Fallback to Supabase Cloud DB only if local files and backups are missing
+        if supabase_db and supabase_db.is_configured():
+            try:
+                print("[Supabase] Querying Supabase Cloud Database for invoices on startup...")
+                cloud_recs = supabase_db.fetch_all_invoices()
+                if cloud_recs and len(cloud_recs) > 0:
+                    os.makedirs(DATA_DIR, exist_ok=True)
+                    with open(SAVED_CUSTOMERS_FILE, 'w', encoding='utf-8') as f:
+                        json.dump(cloud_recs, f, ensure_ascii=False, indent=2)
+                    print(f"[Supabase] ✅ Successfully restored {len(cloud_recs)} invoice records from Cloud DB!")
+                    
+                    cloud_counters = supabase_db.fetch_counters()
+                    if cloud_counters and isinstance(cloud_counters, dict):
+                        with open(INVOICE_COUNTER_FILE, 'w', encoding='utf-8') as fc:
+                            json.dump(cloud_counters, fc, ensure_ascii=False, indent=2)
+                    return
+                else:
+                    print("[Supabase] Cloud database is empty for invoices.")
+            except Exception as se:
+                print(f"[Supabase] Invoice startup load warning: {se}")
+
+        print("[DataRestore] No invoice backup found. Starting with empty database.")
+    except Exception as e:
+        print(f"[DataRestore] Invoice restore error (non-fatal): {e}")
+
+def _merge_booking_records(base_bks, incoming_bks):
+    """Safely merge booking records preserving rich data, updating existing records with newer incoming info, and avoiding duplicates."""
+    bk_map = {}
+    
+    # 1. Seed with base records
+    for b in (base_bks or []):
+        if not isinstance(b, dict): continue
+        bid = str(b.get('id') or '').strip()
+        if bid:
+            bk_map[bid] = dict(b)
+        else:
+            bk_map[f"_anon_{len(bk_map)}"] = dict(b)
+            
+    # 2. Apply incoming records (updating existing or inserting new)
+    for b in (incoming_bks or []):
+        if not isinstance(b, dict): continue
+        bid = str(b.get('id') or '').strip()
+        if bid:
+            if bid in bk_map:
+                existing_item = bk_map[bid]
+                for k, v in b.items():
+                    if v is not None and v != '' and v != []:
+                        existing_item[k] = v
+                    elif k not in existing_item:
+                        existing_item[k] = v
+            else:
+                bk_map[bid] = dict(b)
+        else:
+            bk_map[f"_anon_{len(bk_map)}"] = dict(b)
+            
+    merged = list(bk_map.values())
+    
+    def _parse_bk_min(t_str):
+        if not t_str: return 9999
+        parts = re.split(r'[:.]', str(t_str).strip())
+        try:
+            return int(parts[0]) * 60 + (int(parts[1]) if len(parts) > 1 else 0)
+        except Exception:
+            return 9999
+
+    def _date_sort_key(d_str):
+        if not d_str: return 0
+        d = str(d_str).strip()
+        m_dmy = re.match(r'^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$', d)
+        if m_dmy:
+            norm = f"{m_dmy.group(3)}-{int(m_dmy.group(2)):02d}-{int(m_dmy.group(1)):02d}"
+        else:
+            norm = d
+        digits = re.sub(r'[^0-9]', '', norm)
+        return -int(digits) if digits else 0
+
+    merged = sorted(merged, key=lambda b: (_date_sort_key(b.get('date')), _parse_bk_min(b.get('time')), str(b.get('id', ''))))
+    return merged
+
+
+def _startup_restore_bookings():
+    """Auto-restore car rental bookings from local files, backups, and Supabase Cloud with guaranteed union persistence."""
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        local_bks = []
+        if os.path.exists(SAVED_BOOKINGS_FILE):
+            try:
+                with open(SAVED_BOOKINGS_FILE, 'r', encoding='utf-8') as f:
+                    local_bks = json.load(f)
+            except Exception:
+                local_bks = []
+
+        # Check local backup candidates
+        for cand in [
+            os.path.join(BASE_DIR, 'saved_bookings.json'),
+            os.path.join(DATA_DIR, 'backups', 'saved_bookings_latest_vault.json'),
+            os.path.join(BASE_DIR, 'backups', 'saved_bookings_latest_vault.json'),
+            os.path.join(DATA_DIR, 'backups', 'latest_data', 'saved_bookings.json'),
+            os.path.join(BASE_DIR, 'backups', 'latest_data', 'saved_bookings.json'),
+        ]:
+            if os.path.exists(cand):
+                try:
+                    with open(cand, 'r', encoding='utf-8') as f:
+                        cand_bks = json.load(f)
+                    if isinstance(cand_bks, list) and len(cand_bks) > len(local_bks):
+                        local_bks = _merge_booking_records(local_bks, cand_bks)
+                except Exception:
+                    pass
+
+        # Query Supabase Cloud DB
+        cloud_bks = []
+        if supabase_db and supabase_db.is_configured():
+            try:
+                print("[Supabase] Querying Supabase Cloud for Bookings on startup...")
+                cloud_bks = supabase_db.fetch_bookings() or []
+            except Exception as se:
+                print(f"[Supabase] Booking startup load warning: {se}")
+
+        # Intelligent union merge: never lose bookings from either local or cloud
+        merged = _merge_booking_records(local_bks, cloud_bks)
+
+        if merged:
+            save_json(SAVED_BOOKINGS_FILE, merged)
+            if DATA_DIR != BASE_DIR:
+                try:
+                    save_json(os.path.join(BASE_DIR, 'saved_bookings.json'), merged)
+                except Exception:
+                    pass
+            print(f"[DataRestore] ✅ Bookings restored & merged: {len(merged)} bookings active.")
+
+            # Only update Supabase if we have more bookings than cloud had
+            if supabase_db and supabase_db.is_configured() and len(merged) > len(cloud_bks):
+                try:
+                    threading.Thread(target=supabase_db.save_bookings, args=(merged,), daemon=True).start()
+                except Exception:
+                    pass
+    except Exception as ex:
+        print(f"[DataRestore] Booking restore non-fatal error: {ex}")
+
+def _startup_restore_if_needed():
+    """Auto-restore customer invoices, counters, and car bookings on server startup."""
+    _startup_restore_invoices()
+    _startup_restore_bookings()
+
+_startup_restore_if_needed()
+
+def cluster_telegram_messages_by_time(msgs, time_window_seconds=240):
+    """Groups telegram messages sent around the same time (same conversation/batch) by the same sender into a single message card."""
+    if not msgs or not isinstance(msgs, list):
+        return msgs
+    
+    clustered = []
+    for m in msgs:
+        sender = (m.get('sender') or 'Telegram User').strip()
+        ts = m.get('timestamp') or 0
+        mg_id = m.get('media_group_id')
+        m_imgs = m.get('images') or []
+        m_text = (m.get('text') or '').strip()
+
+        # Try to find an existing cluster within the time window for the same sender
+        matched = None
+        for c in clustered:
+            c_sender = (c.get('sender') or 'Telegram User').strip()
+            c_ts = c.get('timestamp') or 0
+            c_mg = c.get('media_group_id')
+
+            same_mg = mg_id and c_mg and mg_id == c_mg
+            same_time = (c_sender == sender and abs(ts - c_ts) <= time_window_seconds)
+
+            if same_mg or same_time:
+                matched = c
+                break
+
+        if matched:
+            # 1. Merge images
+            if m_imgs:
+                if 'images' not in matched or not isinstance(matched['images'], list):
+                    matched['images'] = []
+                for img in m_imgs:
+                    if not any(ex.get('url') == img.get('url') for ex in matched['images']):
+                        matched['images'].append(img)
+
+            # 2. Merge texts
+            c_text = (matched.get('text') or '').strip()
+            is_c_placeholder = not c_text or c_text.startswith('📷 រូបភាព') or c_text.startswith('📘 រូបប៉ាស្ព័រ')
+            is_m_placeholder = not m_text or m_text.startswith('📷 រូបភាព') or m_text.startswith('📘 រូបប៉ាស្ព័រ')
+
+            if is_c_placeholder and not is_m_placeholder:
+                matched['text'] = m_text
+            elif not is_c_placeholder and not is_m_placeholder and m_text != c_text:
+                if m_text not in c_text and c_text not in m_text:
+                    matched['text'] = f"{c_text}\n\n{m_text}"
+
+            # Keep latest timestamp
+            matched['timestamp'] = max(ts, matched.get('timestamp', ts))
+            if ts >= matched.get('timestamp', ts):
+                matched['date'] = m.get('date', matched.get('date'))
+        else:
+            # Create a clone so original remains untouched
+            clustered.append(dict(m))
+
+    return clustered
+
 class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         effective_dir = WEB_DIR if (os.path.exists(WEB_DIR) and os.path.exists(os.path.join(WEB_DIR, 'index.html'))) else BASE_DIR
@@ -994,6 +1047,9 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
         # API Routes
         if path in ['/api/invoices', '/api/get_database']:
             data = load_json(SAVED_CUSTOMERS_FILE, [])
+            if not data:
+                _startup_restore_invoices()
+                data = load_json(SAVED_CUSTOMERS_FILE, [])
             self.send_json_response({'success': True, 'records': data, 'invoices': data})
             return
 
@@ -1008,55 +1064,136 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
 
         elif path == '/api/bookings':
             bk_file = os.path.join(DATA_DIR, 'saved_bookings.json')
-            if not os.path.exists(bk_file):
+            if not os.path.exists(os.path.dirname(bk_file)):
                 bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
-            bks = load_json(bk_file, [])
 
-            # Auto-sync with Supabase Cloud if configured (only seed if local is empty)
-            if supabase_db and supabase_db.is_configured():
-                try:
-                    if not bks:
-                        cloud_bks = supabase_db.fetch_bookings()
-                        if cloud_bks and isinstance(cloud_bks, list):
-                            bks = cloud_bks
-                            save_json(bk_file, bks)
-                except Exception:
-                    pass
+            bookings = req_data.get('bookings')
+            booking = req_data.get('booking')
+            action = req_data.get('action')
+            delete_id = req_data.get('delete_id')
 
-            self.send_json_response({'success': True, 'bookings': bks})
-            return
+            current_bks = load_json(bk_file, [])
+
+            # 1. Explicit Delete Handler
+            if action == 'delete' or delete_id:
+                target_id = str(delete_id or '').strip().lower()
+                if target_id:
+                    current_bks = [b for b in current_bks if str(b.get('id') or '').strip().lower() != target_id]
+                    save_json(bk_file, current_bks)
+                    if supabase_db and supabase_db.is_configured():
+                        try:
+                            threading.Thread(target=supabase_db.save_bookings, args=(current_bks,), daemon=True).start()
+                        except Exception:
+                            pass
+                self.send_json_response({'success': True, 'count': len(current_bks), 'deleted_id': target_id})
+                return
+
+            # 2. Batch Bookings Update (Safe union merge to prevent stale client truncation)
+            elif isinstance(bookings, list):
+                seen_ids = set()
+                max_num = 1000
+                for item in current_bks:
+                    if isinstance(item, dict):
+                        m = re.match(r'^BK-(\d+)$', str(item.get('id') or '').strip())
+                        if m: max_num = max(max_num, int(m.group(1)))
+                for item in bookings:
+                    if isinstance(item, dict):
+                        m = re.match(r'^BK-(\d+)$', str(item.get('id') or '').strip())
+                        if m: max_num = max(max_num, int(m.group(1)))
+
+                sanitized_bks = []
+                for item in bookings:
+                    if not isinstance(item, dict): continue
+                    bid = str(item.get('id') or '').strip()
+                    if not bid or bid in seen_ids:
+                        max_num += 1
+                        bid = f"BK-{max_num}"
+                        item['id'] = bid
+                    seen_ids.add(bid)
+                    sanitized_bks.append(item)
+
+                # Union merge prevents wiping server records if client only has partial list
+                final_bks = _merge_booking_records(current_bks, sanitized_bks)
+                save_json(bk_file, final_bks)
+                if supabase_db and supabase_db.is_configured():
+                    try:
+                        threading.Thread(target=supabase_db.save_bookings, args=(final_bks,), daemon=True).start()
+                    except Exception:
+                        pass
+                self.send_json_response({'success': True, 'count': len(final_bks)})
+                return
+
+            # 3. Single Booking Update or Insert
+            elif isinstance(booking, dict) and booking.get('id'):
+                target_id = str(booking['id']).strip()
+                idx = next((i for i, b in enumerate(current_bks) if str(b.get('id') or '').strip() == target_id), -1)
+                if idx >= 0:
+                    current_bks[idx].update(booking)
+                else:
+                    current_bks.insert(0, booking)
+                save_json(bk_file, current_bks)
+                if supabase_db and supabase_db.is_configured():
+                    try:
+                        threading.Thread(target=supabase_db.save_bookings, args=(current_bks,), daemon=True).start()
+                    except Exception:
+                        pass
+                self.send_json_response({'success': True, 'booking': booking, 'count': len(current_bks)})
+                return
+            else:
+                self.send_json_response({'success': False, 'error': 'Invalid booking data'}, status=400)
+                return
 
         elif path == '/api/customers':
             cust_file = os.path.join(DATA_DIR, 'autorent_customers.json')
-            if not os.path.exists(cust_file):
+            if not os.path.exists(os.path.dirname(cust_file)):
                 cust_file = os.path.join(BASE_DIR, 'autorent_customers.json')
-            custs = load_json(cust_file, [])
-            if not custs:
-                # auto-extract from bookings
-                bk_file = os.path.join(DATA_DIR, 'saved_bookings.json')
-                if not os.path.exists(bk_file):
-                    bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
-                bks = load_json(bk_file, [])
+
+            customers = req_data.get('customers')
+            customer = req_data.get('customer')
+            action = req_data.get('action')
+            delete_id = req_data.get('delete_id')
+
+            current_custs = load_json(cust_file, [])
+
+            if action == 'delete' or delete_id:
+                target_id = str(delete_id or '').strip().lower()
+                target_name = str(req_data.get('customer_name') or '').strip().lower()
+                current_custs = [c for c in current_custs if str(c.get('id') or '').strip().lower() != target_id and str(c.get('name') or '').strip().lower() != target_id and (not target_name or str(c.get('name') or '').strip().lower() != target_name)]
+                save_json(cust_file, current_custs)
+                self.send_json_response({'success': True, 'count': len(current_custs)})
+                return
+
+            if isinstance(customers, list):
                 cust_map = {}
-                for b in bks:
-                    nm = (b.get('customerName') or '').strip()
-                    ph = (b.get('customerPhone') or '').strip()
-                    tg = (b.get('customerTelegram') or '').strip()
-                    if nm and len(nm) >= 2 and nm.lower() not in cust_map:
-                        cust_map[nm.lower()] = {
-                            'id': f'CUST-{len(cust_map)+1:03d}',
-                            'name': nm,
-                            'phone': ph,
-                            'telegram': tg,
-                            'idCard': '',
-                            'address': (b.get('dropoffLoc') or '').strip(),
-                            'notes': f"កក់ឡាន {b.get('date', '')} {b.get('pickupLoc', '')} -> {b.get('dropoffLoc', '')}"
-                        }
-                if cust_map:
-                    custs = list(cust_map.values())
-                    save_json(cust_file, custs)
-            self.send_json_response({'success': True, 'customers': custs})
-            return
+                for c in current_custs:
+                    if isinstance(c, dict) and c.get('name'):
+                        cust_map[str(c['name']).strip().lower()] = dict(c)
+                for c in customers:
+                    if isinstance(c, dict) and c.get('name'):
+                        nm = str(c['name']).strip().lower()
+                        if nm in cust_map:
+                            cust_map[nm].update(c)
+                        else:
+                            cust_map[nm] = dict(c)
+                final_custs = list(cust_map.values())
+                save_json(cust_file, final_custs)
+                self.send_json_response({'success': True, 'count': len(final_custs)})
+                return
+            elif isinstance(customer, dict) and customer.get('name'):
+                nm = customer['name'].strip()
+                idx = next((i for i, c in enumerate(current_custs) if str(c.get('name') or '').strip().lower() == nm.lower()), -1)
+                if idx >= 0:
+                    current_custs[idx].update(customer)
+                else:
+                    if not customer.get('id'):
+                        customer['id'] = f"CUST-{len(current_custs)+1:03d}"
+                    current_custs.append(customer)
+                save_json(cust_file, current_custs)
+                self.send_json_response({'success': True, 'customer': customer, 'count': len(current_custs)})
+                return
+            else:
+                self.send_json_response({'success': False, 'error': 'Invalid customer data'}, status=400)
+                return
 
         elif path == '/api/cars':
             car_file = os.path.join(DATA_DIR, 'autorent_cars.json')
@@ -1748,7 +1885,8 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         elif path == '/api/update_members':
-            receipt_no = req_data.get('receipt_no', '').strip().lower()
+            clean_r_no = req_data.get('receipt_no', '').strip()
+            receipt_no = clean_r_no.lower()
             members_data = req_data.get('members', [])
             travel_date = req_data.get('travel_date', '').strip()
             sender_name = req_data.get('sender_name', '').strip()
@@ -1767,6 +1905,10 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             for item in all_invoices:
                 r_no = item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or item.get('receipt_no') or ''
                 if r_no.strip().lower() == receipt_no:
+                    if not clean_r_no:
+                        clean_r_no = r_no.strip()
+                    else:
+                        clean_r_no = item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or clean_r_no
                     if travel_date:
                         formatted_tdate = format_display_date(travel_date)
                         item['travel_date'] = formatted_tdate
@@ -2108,6 +2250,9 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                         if num_val > safe_int(counter.get("last_number", 0)):
                             counter["last_number"] = num_val
                             save_json(INVOICE_COUNTER_FILE, counter)
+
+            if updated_item and not clean_r_no:
+                clean_r_no = updated_item.get('receipt_no') or updated_item.get('group_data', {}).get('receipt_no') or updated_item.get('customer', {}).get('receipt_no') or ''
 
             # Synchronize with saved_bookings.json so booking invoice status turns into 'ធ្វើរួច' immediately
             try:
@@ -2805,13 +2950,31 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
 
             current_bks = load_json(bk_file, [])
             if isinstance(bookings, list):
-                save_json(bk_file, bookings)
+                seen_ids = set()
+                max_num = 1000
+                for item in bookings:
+                    if isinstance(item, dict):
+                        m = re.match(r'^BK-(\d+)$', str(item.get('id') or '').strip())
+                        if m:
+                            max_num = max(max_num, int(m.group(1)))
+                sanitized_bks = []
+                for item in bookings:
+                    if not isinstance(item, dict): continue
+                    bid = str(item.get('id') or '').strip()
+                    if not bid or bid in seen_ids:
+                        max_num += 1
+                        bid = f"BK-{max_num}"
+                        item['id'] = bid
+                    seen_ids.add(bid)
+                    sanitized_bks.append(item)
+
+                save_json(bk_file, sanitized_bks)
                 if supabase_db and supabase_db.is_configured():
                     try:
-                        threading.Thread(target=supabase_db.save_bookings, args=(bookings,), daemon=True).start()
+                        threading.Thread(target=supabase_db.save_bookings, args=(sanitized_bks,), daemon=True).start()
                     except Exception:
                         pass
-                self.send_json_response({'success': True, 'count': len(bookings)})
+                self.send_json_response({'success': True, 'count': len(sanitized_bks)})
             elif isinstance(booking, dict) and booking.get('id'):
                 target_id = booking['id']
                 idx = next((i for i, b in enumerate(current_bks) if b.get('id') == target_id), -1)
