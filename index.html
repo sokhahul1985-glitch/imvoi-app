@@ -18257,6 +18257,20 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
         if (typeof window.syncCarsWithServer === 'function') window.syncCarsWithServer();
     });
 
+    // Real-time Live Background Sync (every 4 seconds) so Phone <-> PC sync automatically
+    if (!window.__autoRentSyncTimer) {
+        window.__autoRentSyncTimer = setInterval(() => {
+            if (Date.now() < (window.syncCooldownUntil || 0)) return;
+            // Skip sync if user is currently typing in an input or modal is open
+            if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+            const openModal = document.querySelector('.modal.active, #bookingModal.active, #customerModal.active');
+            if (openModal) return;
+
+            if (typeof window.syncBookingsWithServer === 'function') window.syncBookingsWithServer();
+            if (typeof window.syncCustomersWithServer === 'function') window.syncCustomersWithServer();
+        }, 4000);
+    }
+
     // Auto initialize if DOM is already loaded or when ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {

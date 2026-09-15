@@ -1066,134 +1066,20 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             bk_file = os.path.join(DATA_DIR, 'saved_bookings.json')
             if not os.path.exists(os.path.dirname(bk_file)):
                 bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
-
-            bookings = req_data.get('bookings')
-            booking = req_data.get('booking')
-            action = req_data.get('action')
-            delete_id = req_data.get('delete_id')
-
-            current_bks = load_json(bk_file, [])
-
-            # 1. Explicit Delete Handler
-            if action == 'delete' or delete_id:
-                target_id = str(delete_id or '').strip().lower()
-                if target_id:
-                    current_bks = [b for b in current_bks if str(b.get('id') or '').strip().lower() != target_id]
-                    save_json(bk_file, current_bks)
-                    if supabase_db and supabase_db.is_configured():
-                        try:
-                            threading.Thread(target=supabase_db.save_bookings, args=(current_bks,), daemon=True).start()
-                        except Exception:
-                            pass
-                self.send_json_response({'success': True, 'count': len(current_bks), 'deleted_id': target_id})
-                return
-
-            # 2. Batch Bookings Update (Safe union merge to prevent stale client truncation)
-            elif isinstance(bookings, list):
-                seen_ids = set()
-                max_num = 1000
-                for item in current_bks:
-                    if isinstance(item, dict):
-                        m = re.match(r'^BK-(\d+)$', str(item.get('id') or '').strip())
-                        if m: max_num = max(max_num, int(m.group(1)))
-                for item in bookings:
-                    if isinstance(item, dict):
-                        m = re.match(r'^BK-(\d+)$', str(item.get('id') or '').strip())
-                        if m: max_num = max(max_num, int(m.group(1)))
-
-                sanitized_bks = []
-                for item in bookings:
-                    if not isinstance(item, dict): continue
-                    bid = str(item.get('id') or '').strip()
-                    if not bid or bid in seen_ids:
-                        max_num += 1
-                        bid = f"BK-{max_num}"
-                        item['id'] = bid
-                    seen_ids.add(bid)
-                    sanitized_bks.append(item)
-
-                # Union merge prevents wiping server records if client only has partial list
-                final_bks = _merge_booking_records(current_bks, sanitized_bks)
-                save_json(bk_file, final_bks)
-                if supabase_db and supabase_db.is_configured():
-                    try:
-                        threading.Thread(target=supabase_db.save_bookings, args=(final_bks,), daemon=True).start()
-                    except Exception:
-                        pass
-                self.send_json_response({'success': True, 'count': len(final_bks)})
-                return
-
-            # 3. Single Booking Update or Insert
-            elif isinstance(booking, dict) and booking.get('id'):
-                target_id = str(booking['id']).strip()
-                idx = next((i for i, b in enumerate(current_bks) if str(b.get('id') or '').strip() == target_id), -1)
-                if idx >= 0:
-                    current_bks[idx].update(booking)
-                else:
-                    current_bks.insert(0, booking)
-                save_json(bk_file, current_bks)
-                if supabase_db and supabase_db.is_configured():
-                    try:
-                        threading.Thread(target=supabase_db.save_bookings, args=(current_bks,), daemon=True).start()
-                    except Exception:
-                        pass
-                self.send_json_response({'success': True, 'booking': booking, 'count': len(current_bks)})
-                return
-            else:
-                self.send_json_response({'success': False, 'error': 'Invalid booking data'}, status=400)
-                return
+            data = load_json(bk_file, [])
+            if not data:
+                _startup_restore_bookings()
+                data = load_json(bk_file, [])
+            self.send_json_response({'success': True, 'bookings': data, 'count': len(data)})
+            return
 
         elif path == '/api/customers':
             cust_file = os.path.join(DATA_DIR, 'autorent_customers.json')
             if not os.path.exists(os.path.dirname(cust_file)):
                 cust_file = os.path.join(BASE_DIR, 'autorent_customers.json')
-
-            customers = req_data.get('customers')
-            customer = req_data.get('customer')
-            action = req_data.get('action')
-            delete_id = req_data.get('delete_id')
-
-            current_custs = load_json(cust_file, [])
-
-            if action == 'delete' or delete_id:
-                target_id = str(delete_id or '').strip().lower()
-                target_name = str(req_data.get('customer_name') or '').strip().lower()
-                current_custs = [c for c in current_custs if str(c.get('id') or '').strip().lower() != target_id and str(c.get('name') or '').strip().lower() != target_id and (not target_name or str(c.get('name') or '').strip().lower() != target_name)]
-                save_json(cust_file, current_custs)
-                self.send_json_response({'success': True, 'count': len(current_custs)})
-                return
-
-            if isinstance(customers, list):
-                cust_map = {}
-                for c in current_custs:
-                    if isinstance(c, dict) and c.get('name'):
-                        cust_map[str(c['name']).strip().lower()] = dict(c)
-                for c in customers:
-                    if isinstance(c, dict) and c.get('name'):
-                        nm = str(c['name']).strip().lower()
-                        if nm in cust_map:
-                            cust_map[nm].update(c)
-                        else:
-                            cust_map[nm] = dict(c)
-                final_custs = list(cust_map.values())
-                save_json(cust_file, final_custs)
-                self.send_json_response({'success': True, 'count': len(final_custs)})
-                return
-            elif isinstance(customer, dict) and customer.get('name'):
-                nm = customer['name'].strip()
-                idx = next((i for i, c in enumerate(current_custs) if str(c.get('name') or '').strip().lower() == nm.lower()), -1)
-                if idx >= 0:
-                    current_custs[idx].update(customer)
-                else:
-                    if not customer.get('id'):
-                        customer['id'] = f"CUST-{len(current_custs)+1:03d}"
-                    current_custs.append(customer)
-                save_json(cust_file, current_custs)
-                self.send_json_response({'success': True, 'customer': customer, 'count': len(current_custs)})
-                return
-            else:
-                self.send_json_response({'success': False, 'error': 'Invalid customer data'}, status=400)
-                return
+            data = load_json(cust_file, [])
+            self.send_json_response({'success': True, 'customers': data, 'count': len(data)})
+            return
 
         elif path == '/api/cars':
             car_file = os.path.join(DATA_DIR, 'autorent_cars.json')
@@ -2947,16 +2833,38 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
 
             bookings = req_data.get('bookings')
             booking = req_data.get('booking')
+            action = req_data.get('action')
+            delete_id = req_data.get('delete_id')
 
             current_bks = load_json(bk_file, [])
-            if isinstance(bookings, list):
+
+            # 1. Explicit Delete Handler
+            if action == 'delete' or delete_id:
+                target_id = str(delete_id or '').strip().lower()
+                if target_id:
+                    current_bks = [b for b in current_bks if str(b.get('id') or '').strip().lower() != target_id]
+                    save_json(bk_file, current_bks)
+                    if supabase_db and supabase_db.is_configured():
+                        try:
+                            threading.Thread(target=supabase_db.save_bookings, args=(current_bks,), daemon=True).start()
+                        except Exception:
+                            pass
+                self.send_json_response({'success': True, 'count': len(current_bks), 'deleted_id': target_id})
+                return
+
+            # 2. Batch Bookings Update (Safe union merge to prevent stale client truncation)
+            elif isinstance(bookings, list):
                 seen_ids = set()
                 max_num = 1000
+                for item in current_bks:
+                    if isinstance(item, dict):
+                        m = re.match(r'^BK-(\d+)$', str(item.get('id') or '').strip())
+                        if m: max_num = max(max_num, int(m.group(1)))
                 for item in bookings:
                     if isinstance(item, dict):
                         m = re.match(r'^BK-(\d+)$', str(item.get('id') or '').strip())
-                        if m:
-                            max_num = max(max_num, int(m.group(1)))
+                        if m: max_num = max(max_num, int(m.group(1)))
+
                 sanitized_bks = []
                 for item in bookings:
                     if not isinstance(item, dict): continue
@@ -2968,39 +2876,36 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                     seen_ids.add(bid)
                     sanitized_bks.append(item)
 
-                save_json(bk_file, sanitized_bks)
+                # Union merge prevents wiping server records if client only has partial list
+                final_bks = _merge_booking_records(current_bks, sanitized_bks)
+                save_json(bk_file, final_bks)
                 if supabase_db and supabase_db.is_configured():
                     try:
-                        threading.Thread(target=supabase_db.save_bookings, args=(sanitized_bks,), daemon=True).start()
+                        threading.Thread(target=supabase_db.save_bookings, args=(final_bks,), daemon=True).start()
                     except Exception:
                         pass
-                self.send_json_response({'success': True, 'count': len(sanitized_bks)})
+                self.send_json_response({'success': True, 'count': len(final_bks)})
+                return
+
+            # 3. Single Booking Update or Insert
             elif isinstance(booking, dict) and booking.get('id'):
-                target_id = booking['id']
-                idx = next((i for i, b in enumerate(current_bks) if b.get('id') == target_id), -1)
+                target_id = str(booking['id']).strip()
+                idx = next((i for i, b in enumerate(current_bks) if str(b.get('id') or '').strip() == target_id), -1)
                 if idx >= 0:
-                    old_b = current_bks[idx]
-                    same_cust = (str(old_b.get('customerName') or '').strip().lower() == str(booking.get('customerName') or '').strip().lower())
-                    same_date = (str(old_b.get('date') or '').strip() == str(booking.get('date') or '').strip())
-                    same_time = (str(old_b.get('time') or '').strip() == str(booking.get('time') or '').strip())
-                    if same_cust and (same_date or same_time):
-                        current_bks[idx] = booking
-                    else:
-                        max_num = 1000
-                        for b in current_bks:
-                            m = re.match(r'^BK-(\d+)$', str(b.get('id') or ''))
-                            if m:
-                                max_num = max(max_num, int(m.group(1)))
-                        new_safe_id = f"BK-{max_num + 1}"
-                        booking['id'] = new_safe_id
-                        current_bks.insert(0, booking)
+                    current_bks[idx].update(booking)
                 else:
                     current_bks.insert(0, booking)
                 save_json(bk_file, current_bks)
-                self.send_json_response({'success': True, 'booking': booking})
+                if supabase_db and supabase_db.is_configured():
+                    try:
+                        threading.Thread(target=supabase_db.save_bookings, args=(current_bks,), daemon=True).start()
+                    except Exception:
+                        pass
+                self.send_json_response({'success': True, 'booking': booking, 'count': len(current_bks)})
+                return
             else:
                 self.send_json_response({'success': False, 'error': 'Invalid booking data'}, status=400)
-            return
+                return
 
         elif path == '/api/customers':
             cust_file = os.path.join(DATA_DIR, 'autorent_customers.json')
@@ -3009,11 +2914,35 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
 
             customers = req_data.get('customers')
             customer = req_data.get('customer')
+            action = req_data.get('action')
+            delete_id = req_data.get('delete_id')
 
             current_custs = load_json(cust_file, [])
+
+            if action == 'delete' or delete_id:
+                target_id = str(delete_id or '').strip().lower()
+                target_name = str(req_data.get('customer_name') or '').strip().lower()
+                current_custs = [c for c in current_custs if str(c.get('id') or '').strip().lower() != target_id and str(c.get('name') or '').strip().lower() != target_id and (not target_name or str(c.get('name') or '').strip().lower() != target_name)]
+                save_json(cust_file, current_custs)
+                self.send_json_response({'success': True, 'count': len(current_custs)})
+                return
+
             if isinstance(customers, list):
-                save_json(cust_file, customers)
-                self.send_json_response({'success': True, 'count': len(customers)})
+                cust_map = {}
+                for c in current_custs:
+                    if isinstance(c, dict) and c.get('name'):
+                        cust_map[str(c['name']).strip().lower()] = dict(c)
+                for c in customers:
+                    if isinstance(c, dict) and c.get('name'):
+                        nm = str(c['name']).strip().lower()
+                        if nm in cust_map:
+                            cust_map[nm].update(c)
+                        else:
+                            cust_map[nm] = dict(c)
+                final_custs = list(cust_map.values())
+                save_json(cust_file, final_custs)
+                self.send_json_response({'success': True, 'count': len(final_custs)})
+                return
             elif isinstance(customer, dict) and customer.get('name'):
                 nm = customer['name'].strip()
                 idx = next((i for i, c in enumerate(current_custs) if str(c.get('name') or '').strip().lower() == nm.lower()), -1)
@@ -3025,9 +2954,10 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                     current_custs.append(customer)
                 save_json(cust_file, current_custs)
                 self.send_json_response({'success': True, 'customer': customer, 'count': len(current_custs)})
+                return
             else:
                 self.send_json_response({'success': False, 'error': 'Invalid customer data'}, status=400)
-            return
+                return
 
         elif path == '/api/cars':
             car_file = os.path.join(DATA_DIR, 'autorent_cars.json')
