@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Official Receipt - Golden Mekong Commercial Service</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&family=Noto+Sans+Khmer:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
 /* ==========================================================================
    CMP Golden Mekong Commercial Service - Exact Desktop App Web UI Replica
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&family=Noto+Sans+Khmer:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&family=Noto+Sans+Khmer:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap');
 
 :root {
     --bg-main: #0f172a;
@@ -405,9 +408,24 @@ input[type="date"] {
     padding: 40px 48px;
     border-radius: 8px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-    font-family: 'Kantumruy Pro', 'Noto Sans Khmer', Arial, sans-serif;
+    font-family: 'Kantumruy Pro', 'Noto Sans Khmer', 'Noto Sans Thai', system-ui, -apple-system, sans-serif !important;
+    letter-spacing: normal !important;
+    word-spacing: normal !important;
+    font-variant-ligatures: normal !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
     position: relative;
     box-sizing: border-box;
+}
+
+.cmp-receipt-paper *, #printableReceiptArea * {
+    font-family: inherit !important;
+    letter-spacing: normal !important;
+    word-spacing: inherit !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
 }
 
 
@@ -859,9 +877,9 @@ input[type="date"] {
                 custName = inv.customer?.full_english_name || 'HR(CS)- แอน';
             }
             currentCustomerName = custName;
-            document.getElementById('rCustomerName').textContent = custName;
-
-            const rate = parseFloat(inv.group_data?.exchange_rate || inv.fees?.exchange_rate || 33.90);
+            const custEl = document.getElementById('rCustomerName');
+            if (custEl) custEl.textContent = custName;
+            const rate = parseFloat(inv.exchange_rate || inv.group_data?.exchange_rate || inv.fees?.exchange_rate || 33.90);
             
             // Build items rows
             let rowsData = [];
@@ -993,7 +1011,7 @@ input[type="date"] {
         }
 
 
-        function downloadImage() {
+        async function downloadImage() {
             let tDate = document.getElementById('rDateStr')?.textContent?.trim() || '';
             tDate = tDate.replace(/\//g, '-').replace(/[^a-zA-Z0-9\-]/g, '');
             if (!tDate || tDate === '-') {
@@ -1004,12 +1022,11 @@ input[type="date"] {
                 tDate = `${dd}-${mm}-${yyyy}`;
             }
 
-            html2canvas(document.getElementById('receiptContent'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `${tDate}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
+            const canvas = await renderReceiptCanvas();
+            const link = document.createElement('a');
+            link.download = `${tDate}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
         }
 
 
@@ -1172,12 +1189,46 @@ input[type="date"] {
             });
         }
 
-        function renderReceiptCanvas() {
-            const element = document.getElementById('receiptContent');
-            return html2canvas(element, {
+        async function renderReceiptCanvas() {
+            const element = document.getElementById('receiptContent') || document.getElementById('printableReceiptArea');
+            if (document.fonts && document.fonts.ready) {
+                try {
+                    await Promise.race([
+                        document.fonts.ready,
+                        new Promise(resolve => setTimeout(resolve, 200))
+                    ]);
+                } catch (e) {}
+            }
+            return await html2canvas(element, {
                 scale: 2,
+                letterRendering: false,
                 useCORS: true,
-                backgroundColor: '#ffffff'
+                backgroundColor: '#ffffff',
+                logging: false,
+                windowWidth: 1024,
+                scrollX: 0,
+                scrollY: 0,
+                onclone: (clonedDoc) => {
+                    const clonedReceipt = clonedDoc.getElementById('receiptContent') || clonedDoc.getElementById('printableReceiptArea') || clonedDoc.querySelector('.cmp-receipt-paper');
+                    if (clonedReceipt) {
+                        clonedReceipt.style.width = '780px';
+                        clonedReceipt.style.minWidth = '780px';
+                        clonedReceipt.style.maxWidth = '780px';
+                        clonedReceipt.style.boxSizing = 'border-box';
+                        clonedReceipt.style.padding = '36px 44px';
+                        clonedReceipt.style.margin = '0 auto';
+                        clonedReceipt.style.letterSpacing = 'normal';
+                        clonedReceipt.style.wordSpacing = 'normal';
+                        clonedReceipt.style.fontVariantLigatures = 'normal';
+                        clonedReceipt.style.fontFamily = "'Kantumruy Pro', 'Noto Sans Khmer', 'Noto Sans Thai', system-ui, -apple-system, sans-serif";
+                        const allElems = clonedReceipt.getElementsByTagName('*');
+                        for (let i = 0; i < allElems.length; i++) {
+                            allElems[i].style.letterSpacing = 'normal';
+                            allElems[i].style.wordSpacing = 'normal';
+                            allElems[i].style.fontVariantLigatures = 'normal';
+                        }
+                    }
+                }
             });
         }
 

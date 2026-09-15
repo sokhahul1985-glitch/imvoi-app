@@ -1292,6 +1292,24 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             })
             return
 
+        elif path in ('/api/get_exchange_rate', '/api/exchange_rate'):
+            settings_file = os.path.join(DATA_DIR, 'system_settings.json')
+            if not os.path.exists(settings_file):
+                settings_file = os.path.join(BASE_DIR, 'system_settings.json')
+            settings = load_json(settings_file, {})
+            rate = safe_float(settings.get('exchange_rate'), 0.0)
+            if rate <= 0 and supabase_db and supabase_db.is_configured():
+                try:
+                    sb_val = supabase_db.fetch_system_setting('system_exchange_rate')
+                    if sb_val and isinstance(sb_val, dict):
+                        rate = safe_float(sb_val.get('rate'), 33.90)
+                except Exception:
+                    pass
+            if rate <= 0:
+                rate = 33.90
+            self.send_json_response({'success': True, 'exchange_rate': rate})
+            return
+
         if path == '/api/telegram_groups':
             groups_by_title = {}
             for g_dir in [DATA_DIR, BASE_DIR]:
@@ -1840,7 +1858,11 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                         if 'customer' in item:
                             item['customer']['service_category'] = req_service_category
 
-                    exchange_rate = safe_float(item.get('group_data', {}).get('exchange_rate', 33.90), 33.90)
+                    if req_data.get('exchange_rate') is not None and str(req_data.get('exchange_rate')).strip():
+                        exchange_rate = safe_float(req_data.get('exchange_rate'), 33.90)
+                    else:
+                        exchange_rate = safe_float(item.get('exchange_rate') or item.get('group_data', {}).get('exchange_rate', 33.90), 33.90)
+
                     new_members = []
                     new_items = []
                     grand_usd = 0.0
@@ -1941,13 +1963,18 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                     if 'customer' in item:
                         item['customer']['full_english_name'] = f"GROUP: {group_name} ({pax_count} Pax)"
                         item['customer']['sex'] = f"{pax_count} Pax"
+                    item['exchange_rate'] = exchange_rate
                     if 'group_info' in item:
                         item['group_info']['customer_name'] = first_cust_name
                         item['group_info']['pax_count'] = pax_count
+                        item['group_info']['exchange_rate'] = exchange_rate
                     if 'group_data' in item:
+                        item['group_data']['exchange_rate'] = exchange_rate
                         item['group_data']['items'] = new_items
                         item['group_data']['totals'] = {'usd': grand_usd, 'baht': grand_thb}
                         item['group_data']['group_customer_name'] = first_cust_name
+                    if 'fees' in item:
+                        item['fees']['exchange_rate'] = exchange_rate
                     item['totals'] = {'usd': grand_usd, 'baht': grand_thb}
 
                     found = True
@@ -2167,6 +2194,74 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
 
             save_json(SAVED_CUSTOMERS_FILE, all_invoices)
             self.send_json_response({'success': True, 'receipt_no': clean_r_no, 'invoice': updated_item})
+            return
+
+        elif path == '/api/update_exchange_rate':
+            clean_r_no = req_data.get('receipt_no', '').strip()
+            receipt_no = clean_r_no.lower()
+            new_rate = safe_float(req_data.get('exchange_rate'), 0.0)
+            if not receipt_no or new_rate <= 0:
+                self.send_json_response({'success': False, 'error': 'Invalid receipt_no or exchange_rate'}, status=400)
+                return
+
+            all_invoices = load_json(SAVED_CUSTOMERS_FILE, [])
+            found = False
+            updated_item = None
+            for item in all_invoices:
+                r_no = (item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or item.get('receipt_no') or '').strip().lower()
+                if r_no == receipt_no or r_no.replace(' ', '') == receipt_no.replace(' ', ''):
+                    item['exchange_rate'] = new_rate
+                    if 'group_data' in item:
+                        item['group_data']['exchange_rate'] = new_rate
+                    if 'group_info' in item:
+                        item['group_info']['exchange_rate'] = new_rate
+                    if 'fees' in item:
+                        item['fees']['exchange_rate'] = new_rate
+
+                    service_cat = (item.get('service_category') or item.get('group_info', {}).get('service_category') or 'car').lower()
+                    usd_total = safe_float(item.get('totals', {}).get('usd') or item.get('group_data', {}).get('totals', {}).get('usd', 0.0))
+                    if usd_total == 0:
+                        members = item.get('members', [])
+                        usd_total = sum(safe_float(m.get('usd', 0.0)) for m in members)
+                    baht_total = usd_total if service_cat == 'passport' else round(usd_total * new_rate, 2)
+
+                    item['totals'] = {'usd': usd_total, 'baht': baht_total}
+                    if 'group_data' in item:
+                        item['group_data']['totals'] = {'usd': usd_total, 'baht': baht_total}
+
+                    found = True
+                    updated_item = item
+                    break
+
+            if found:
+                save_json(SAVED_CUSTOMERS_FILE, all_invoices)
+                try:
+                    if supabase_db and supabase_db.is_configured() and updated_item:
+                        threading.Thread(target=supabase_db.upsert_invoices, args=([updated_item],), daemon=True).start()
+                except Exception:
+                    pass
+                self.send_json_response({'success': True, 'exchange_rate': new_rate, 'grand_thb': baht_total, 'grand_usd': usd_total})
+            else:
+                self.send_json_response({'success': False, 'error': 'Receipt not found'}, status=404)
+            return
+
+        elif path in ('/api/save_exchange_rate', '/api/set_exchange_rate'):
+            new_rate = safe_float(req_data.get('exchange_rate'), 0.0)
+            if new_rate <= 0:
+                self.send_json_response({'success': False, 'error': 'Invalid exchange_rate'}, status=400)
+                return
+            settings_file = os.path.join(DATA_DIR, 'system_settings.json')
+            settings = load_json(settings_file, {})
+            settings['exchange_rate'] = new_rate
+            save_json(settings_file, settings)
+            if DATA_DIR != BASE_DIR:
+                save_json(os.path.join(BASE_DIR, 'system_settings.json'), settings)
+            if supabase_db and supabase_db.is_configured():
+                try:
+                    threading.Thread(target=supabase_db.save_system_setting, args=('system_exchange_rate', {'rate': new_rate}), daemon=True).start()
+                except Exception:
+                    pass
+            self.send_json_response({'success': True, 'exchange_rate': new_rate})
             return
 
         elif path == '/api/split_group':

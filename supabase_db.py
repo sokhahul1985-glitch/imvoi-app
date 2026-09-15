@@ -183,6 +183,38 @@ def save_counters(counter_dict):
         print(f"[Supabase] save_counters error: {e}")
         return False
 
+def fetch_system_setting(key, default=None):
+    """Fetch a setting object from app_counters table."""
+    if not is_configured():
+        return default
+    try:
+        rows = _make_request(f'app_counters?key=eq.{key}&select=val')
+        if isinstance(rows, list) and len(rows) > 0:
+            return rows[0].get('val', default)
+    except Exception as e:
+        print(f"[Supabase] fetch_system_setting error: {e}")
+    return default
+
+def save_system_setting(key, val):
+    """Save a setting object to app_counters table."""
+    if not is_configured():
+        return False
+    try:
+        payload = [{
+            'key': key,
+            'val': val
+        }]
+        res = _make_request(
+            'app_counters',
+            method='POST',
+            data=payload,
+            extra_headers={'Prefer': 'resolution=merge-duplicates'}
+        )
+        return res is not None
+    except Exception as e:
+        print(f"[Supabase] save_system_setting error: {e}")
+        return False
+
 def fetch_bookings():
     """Fetch all bookings from Supabase Cloud as first-class rows (identical architecture to invoices)."""
     if not is_configured():

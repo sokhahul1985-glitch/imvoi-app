@@ -6133,6 +6133,8 @@ input[type="date"] {
         let currentServiceCategory = 'all'; // 'car', 'visa', 'passport', 'all'
         let currentTableFilterCategory = 'all'; // 'car', 'visa', 'passport', 'all'
 
+        let _saveExchangeRateTimer = null;
+
         function getLatestSavedExchangeRate() {
             try {
                 const saved = localStorage.getItem('imvoi_last_exchange_rate');
@@ -6160,7 +6162,41 @@ input[type="date"] {
                 if (r2 && r2.value !== strVal && document.activeElement !== r2) {
                     r2.value = strVal;
                 }
+
+                // Debounced server save so all devices & deployments share latest rate
+                clearTimeout(_saveExchangeRateTimer);
+                _saveExchangeRateTimer = setTimeout(() => {
+                    fetch('/api/save_exchange_rate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ exchange_rate: num })
+                    }).catch(function() {});
+                }, 600);
             } catch(e) {}
+        }
+
+        // Fetch persisted global exchange rate from server on startup
+        async function initGlobalExchangeRateFromServer() {
+            try {
+                const resp = await fetch('/api/get_exchange_rate');
+                if (resp.ok) {
+                    const res = await resp.json();
+                    if (res && res.success && res.exchange_rate > 0) {
+                        const num = parseFloat(res.exchange_rate);
+                        const strVal = (num % 1 === 0) ? num.toFixed(2) : String(num);
+                        localStorage.setItem('imvoi_last_exchange_rate', strVal);
+                        const r1 = document.getElementById('exchangeRate');
+                        if (r1 && document.activeElement !== r1) r1.value = strVal;
+                        const r2 = document.getElementById('gmmExchangeRate');
+                        if (r2 && document.activeElement !== r2) r2.value = strVal;
+                    }
+                }
+            } catch(e) {}
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initGlobalExchangeRateFromServer);
+        } else {
+            initGlobalExchangeRateFromServer();
         }
 
         function toggleScannerCollapse() {
@@ -10693,22 +10729,49 @@ input[type="date"] {
                 });
             }
 
-            // 5. Save to server
+            // 5. Save to server with graceful fallback
             try {
-                const resp = await fetch('/api/update_exchange_rate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ receipt_no: rNo, exchange_rate: newRate })
-                });
-                const res = await resp.json();
-                if (res && res.success) {
+                let savedOk = false;
+                try {
+                    const resp = await fetch('/api/update_exchange_rate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ receipt_no: rNo, exchange_rate: newRate })
+                    });
+                    if (resp.ok) {
+                        const res = await resp.json();
+                        if (res && res.success) savedOk = true;
+                    }
+                } catch(e1) {}
+
+                // Fallback for live cloud deployments that might still run an older server build
+                if (!savedOk) {
+                    try {
+                        const membersList = item.members || item.group_data?.members || [];
+                        const fbResp = await fetch('/api/update_members', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                receipt_no: rNo,
+                                exchange_rate: newRate,
+                                members: membersList
+                            })
+                        });
+                        if (fbResp.ok) {
+                            const fbRes = await fbResp.json();
+                            if (fbRes && fbRes.success) savedOk = true;
+                        }
+                    } catch(e2) {}
+                }
+
+                if (savedOk) {
                     if (typeof showToast === 'function') {
                         showToast(`✅ បានកែប្រែអត្រាប្តូរប្រាក់ជា 1 USD = ${newRate.toFixed(2)} THB ជោគជ័យ!`);
                     } else {
                         alert(`✅ បានកែប្រែអត្រាប្តូរប្រាក់ជា 1 USD = ${newRate.toFixed(2)} THB ជោគជ័យ!`);
                     }
                 } else {
-                    alert('⚠️ កំហុសពេលរក្សាទុកទៅ Server៖ ' + (res.error || 'Unknown error'));
+                    alert(`⚠️ មិនអាចរក្សាទុកទៅកាន់ Server បានទេ។ សូមពិនិត្យមើលការភ្ជាប់ ឬរង់ចាំ Server Update!`);
                 }
             } catch(err) {
                 console.error('Error saving exchange rate to server:', err);
