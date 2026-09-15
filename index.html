@@ -331,10 +331,18 @@
     overflow-x: auto !important;
     overflow-y: auto !important;
     border-radius: 8px;
-    height: calc(100vh - 275px);
-    max-height: calc(100vh - 275px);
-    margin-bottom: 45px;
+    height: calc(var(--app-effective-vh, 100vh) - 200px);
+    max-height: calc(var(--app-effective-vh, 100vh) - 200px);
+    margin-bottom: 4px;
     border-bottom: 2px solid #cbd5e1;
+}
+
+body.table-maximized-mode .navbar,
+body.table-maximized-mode .ar-header-bar {
+    display: none !important;
+}
+body.table-maximized-mode #autoRentManagementContainer {
+    margin-top: 0 !important;
 }
 
 .table-responsive::-webkit-scrollbar {
@@ -4521,6 +4529,9 @@ input[type="date"] {
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
+                            <button type="button" class="btn-ar btn-toggle-table-max" onclick="toggleTableMaximize()" style="padding: 5px 10px; font-size: 11.5px; font-weight: 800; background: #f0f9ff; color: #0284c7; border: 1.5px solid #bae6fd; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; white-space: nowrap; flex-shrink: 0; margin-left: 6px;" title="ពង្រីកទិដ្ឋភាពតារាងឱ្យកាន់តែធំ និងវែងចុះក្រោម (Expand Table View)">
+                                <i class="fa-solid fa-up-down"></i> <span class="d-none-sm">ពង្រីកវែង</span>
+                            </button>
                         </div>
 
                         <div class="mobile-table-scroll-hint">
@@ -4581,6 +4592,9 @@ input[type="date"] {
                             <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; color: #0284c7;"></i>
                             <input type="text" id="bookingFilterSearch" placeholder="🔍 ស្វែងរក (ឈ្មោះ, ម៉ោង, ឡាន, ផ្លូវ, Telegram, VIP...)" style="padding-left: 32px; padding-right: 28px; width: 100%;">
                         </div>
+                        <button type="button" class="btn-ar btn-toggle-table-max" onclick="toggleTableMaximize()" style="padding: 5px 10px; font-size: 11.5px; font-weight: 800; background: #f0f9ff; color: #0284c7; border: 1.5px solid #bae6fd; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; white-space: nowrap; flex-shrink: 0; margin-left: 6px;" title="ពង្រីកទិដ្ឋភាពតារាងឱ្យកាន់តែធំ និងវែងចុះក្រោម (Expand Table View)">
+                            <i class="fa-solid fa-up-down"></i> <span class="d-none-sm">ពង្រីកវែង</span>
+                        </button>
                     </div>
 
                     <!-- Bookings Table -->
@@ -5765,7 +5779,7 @@ input[type="date"] {
         <div class="modal-card" id="gmmModalCard" style="max-width: 100%; width: 100%; height: 100%; max-height: 100%; display: flex; flex-direction: row; padding: 0 !important; overflow: hidden !important; border-radius: 12px; box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.45); background: #f1f5f9; box-sizing: border-box;">
             
             <!-- LEFT COLUMN: ផ្នែកវិក្កយបត្រទាំងអស់ (ALL INVOICE PARTS: Toolbar, Bulk Fees, Members Table & Actions) -->
-            <div id="gmmLeftInvoiceContainer" style="flex: 1 1 0; width: 33.33%; min-width: 0; display: flex; flex-direction: column; background: #ffffff; border-right: 2px solid #cbd5e1; height: 100%; overflow: hidden; box-sizing: border-box;">
+            <div id="gmmLeftInvoiceContainer" style="flex: 48 1 0; width: 48%; min-width: 0; display: flex; flex-direction: column; background: #ffffff; border-right: 2px solid #cbd5e1; height: 100%; overflow: hidden; box-sizing: border-box;">
                 
                 <!-- 1. Left Toolbar: Header, Date, Receipt No, Exchange Rate, Sender & Bulk Fees Box -->
                 <div style="background: #f8fafc; border-bottom: 1.5px solid #cbd5e1; padding: 9px 12px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
@@ -5858,7 +5872,7 @@ input[type="date"] {
             </div>
 
             <!-- CENTER COLUMN: ផ្ទាំងបង្ហាញរូបភាពធំ (LARGE PASSPORT & DOCUMENT VIEWER) -->
-            <div id="gmmCenterDocViewer" style="flex: 1 1 0; width: 33.33%; min-width: 0; display: flex; flex-direction: column; background: #ffffff; height: 100%; overflow: hidden; border-right: 2px solid #cbd5e1; position: relative; box-sizing: border-box;">
+            <div id="gmmCenterDocViewer" style="flex: 27 1 0; width: 27%; min-width: 0; display: flex; flex-direction: column; background: #ffffff; height: 100%; overflow: hidden; border-right: 2px solid #cbd5e1; position: relative; box-sizing: border-box;">
                 <!-- Header of Viewer -->
                 <div style="background: #f8fafc; border-bottom: 1.5px solid #cbd5e1; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; min-height: 40px; box-sizing: border-box; gap: 6px;">
                     <div style="display: flex; align-items: center; gap: 6px; overflow: hidden; min-width: 0;">
@@ -5902,7 +5916,7 @@ input[type="date"] {
             </div>
 
             <!-- RIGHT COLUMN: ផ្នែកទិន្នន័យពីការកក់ឡាន (ALL BOOKING DATA FOR VERIFICATION) -->
-            <div id="gmmVerificationSidePanel" style="flex: 1 1 0; width: 33.34%; min-width: 0; display: flex; flex-direction: column; background: #ffffff; height: 100%; overflow: hidden; box-sizing: border-box;">
+            <div id="gmmVerificationSidePanel" style="flex: 25 1 0; width: 25%; min-width: 0; display: flex; flex-direction: column; background: #ffffff; height: 100%; overflow: hidden; box-sizing: border-box;">
                 <!-- Header of Right Panel: Matches bookingDetailsModal header -->
                 <div id="gmmVerificationHeader" style="background: #ffffff; border-bottom: 1.5px solid #e2e8f0; padding: 7px 12px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); gap: 6px;">
                     <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0;">
@@ -6025,7 +6039,7 @@ input[type="date"] {
                     </div>
                     <div style="text-align: right;">
                         <div><strong id="mReceiptDateLabel">Travel Date:</strong> <span id="mTravelDate">-</span></div>
-                        <div><strong>Exchange Rate:</strong> <span id="mRate">1 USD = 33.90 THB</span></div>
+                        <div><strong>Exchange Rate:</strong> <span id="mRate" style="cursor: pointer; font-weight: 800; color: #0284c7; padding: 1px 6px; border-radius: 5px; border: 1px dashed #38bdf8; background: #f0f9ff; display: inline-flex; align-items: center;" onclick="editReceiptExchangeRate()" title="ចុចទីនេះដើម្បីកែប្រែអត្រាប្តូរប្រាក់ (Click to edit Exchange Rate)">1 USD = 33.90 THB <i class="fa-solid fa-pen-to-square" style="font-size: 11px; margin-left: 3px;"></i></span></div>
                         <div><strong>Date Issued:</strong> <span id="mDateSaved">-</span></div>
                     </div>
                 </div>
@@ -10410,9 +10424,9 @@ input[type="date"] {
             const mSaved = document.getElementById('mDateSaved');
             if (mSaved) mSaved.textContent = decodeURIComponent(item.date_saved || item.updated_at || '-');
 
-            const rate = parseFloat(item.group_data?.exchange_rate || item.fees?.exchange_rate || item.exchange_rate || 33.90);
+            const rate = parseFloat(item.exchange_rate || item.group_data?.exchange_rate || item.fees?.exchange_rate || 33.90);
             const mRate = document.getElementById('mRate');
-            if (mRate) mRate.textContent = `1 USD = ${rate.toFixed(2)} THB`;
+            if (mRate) mRate.innerHTML = `1 USD = ${rate.toFixed(2)} THB <i class="fa-solid fa-pen-to-square text-primary" style="font-size: 11px; margin-left: 3px;" title="ចុចដើម្បីកែប្រែ"></i>`;
 
             const members = item.members || [];
             let grandUSD = parseFloat(item.group_data?.totals?.usd || item.totals?.usd || 0);
@@ -10609,6 +10623,97 @@ input[type="date"] {
             const rNo = currentModalReceiptData.receipt_no || currentModalReceiptData.group_info?.receipt_no || currentModalReceiptData.group_data?.receipt_no || currentModalReceiptData.customer?.receipt_no || '';
             window.open('/view_receipt.html?no=' + encodeURIComponent(rNo), '_blank');
         }
+
+        window.editReceiptExchangeRate = async function() {
+            if (!currentModalReceiptData) return;
+            const item = currentModalReceiptData;
+            const rNo = item.receipt_no || item.group_info?.receipt_no || item.group_data?.receipt_no || item.customer?.receipt_no || '';
+            const currentRate = parseFloat(item.exchange_rate || item.group_data?.exchange_rate || item.fees?.exchange_rate || 33.90);
+
+            const inputStr = prompt(`💱 កែប្រែអត្រាប្តូរប្រាក់ (Exchange Rate)\n\nវិក្កយបត្រ៖ ${rNo}\nអត្រាបច្ចុប្បន្ន៖ 1 USD = ${currentRate.toFixed(2)} THB\n\nសូមបញ្ចូលអត្រាប្តូរប្រាក់ថ្មី (1 USD = ? THB):`, currentRate);
+            if (inputStr === null) return;
+
+            const newRate = parseFloat(inputStr.trim());
+            if (isNaN(newRate) || newRate <= 0) {
+                alert('⚠️ សូមបញ្ចូលលេខអត្រាប្តូរប្រាក់ឱ្យបានត្រឹមត្រូវ!');
+                return;
+            }
+
+            // Invalidate receipt cache
+            if (typeof invalidateReceiptCache === 'function') invalidateReceiptCache();
+
+            // 1. Update in-memory item
+            item.exchange_rate = newRate;
+            if (item.group_data) item.group_data.exchange_rate = newRate;
+            if (item.group_info) item.group_info.exchange_rate = newRate;
+            if (item.fees) item.fees.exchange_rate = newRate;
+
+            // 2. Recalculate Baht total
+            const isPassport = (typeof isPassportRecord === 'function') ? isPassportRecord(item) : false;
+            let grandUSD = parseFloat(item.group_data?.totals?.usd || item.totals?.usd || 0);
+            if ((!grandUSD || isNaN(grandUSD)) && item.members && item.members.length > 0) {
+                grandUSD = item.members.reduce((s, m) => s + (parseFloat(m.usd) || (parseFloat(m.car_fee || 0) + parseFloat(m.visa_fee || 0) + parseFloat(m.vip || 0) + parseFloat(m.clearance_fee || 0))), 0);
+            }
+            const grandTHB = isPassport ? grandUSD : Math.round(grandUSD * newRate * 100) / 100;
+
+            if (item.group_data) {
+                if (!item.group_data.totals) item.group_data.totals = {};
+                item.group_data.totals.usd = grandUSD;
+                item.group_data.totals.baht = grandTHB;
+            }
+            if (!item.totals) item.totals = {};
+            item.totals.usd = grandUSD;
+            item.totals.baht = grandTHB;
+
+            // 3. Update preview UI immediately
+            const mRate = document.getElementById('mRate');
+            if (mRate) mRate.innerHTML = `1 USD = ${newRate.toFixed(2)} THB <i class="fa-solid fa-pen-to-square text-primary" style="font-size: 11px; margin-left: 3px;"></i>`;
+
+            const mGTHB = document.getElementById('mGrandTHB');
+            if (mGTHB) mGTHB.textContent = '฿' + grandTHB.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+            // 4. Update allDatabaseRecords in memory
+            if (typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) {
+                allDatabaseRecords.forEach(rec => {
+                    const recNo = rec.receipt_no || rec.group_data?.receipt_no || rec.customer?.receipt_no || '';
+                    if (recNo && recNo.trim().toLowerCase() === rNo.trim().toLowerCase()) {
+                        rec.exchange_rate = newRate;
+                        if (rec.group_data) {
+                            rec.group_data.exchange_rate = newRate;
+                            if (!rec.group_data.totals) rec.group_data.totals = {};
+                            rec.group_data.totals.usd = grandUSD;
+                            rec.group_data.totals.baht = grandTHB;
+                        }
+                        if (rec.group_info) rec.group_info.exchange_rate = newRate;
+                        if (rec.fees) rec.fees.exchange_rate = newRate;
+                        if (!rec.totals) rec.totals = {};
+                        rec.totals.usd = grandUSD;
+                        rec.totals.baht = grandTHB;
+                    }
+                });
+            }
+
+            // 5. Save to server
+            try {
+                const resp = await fetch('/api/update_exchange_rate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ receipt_no: rNo, exchange_rate: newRate })
+                });
+                const res = await resp.json();
+                if (res && res.success) {
+                    if (typeof showToast === 'function') {
+                        showToast(`✅ បានកែប្រែអត្រាប្តូរប្រាក់ជា 1 USD = ${newRate.toFixed(2)} THB ជោគជ័យ!`);
+                    } else {
+                        alert(`✅ បានកែប្រែអត្រាប្តូរប្រាក់ជា 1 USD = ${newRate.toFixed(2)} THB ជោគជ័យ!`);
+                    }
+                } else {
+                    alert('⚠️ កំហុសពេលរក្សាទុកទៅ Server៖ ' + (res.error || 'Unknown error'));
+                }
+            } catch(err) {
+                console.error('Error saving exchange rate to server:', err);
+            }
+        };
 
         // ==========================================
         // Fast In-Memory Receipt Rendering & Caching
@@ -12401,23 +12506,38 @@ document.addEventListener('paste', function(e) {
             return;
         }
         requestAnimationFrame(() => {
+            const zoomFactor = (typeof currentAppZoomLevel !== 'undefined' && currentAppZoomLevel > 0 ? currentAppZoomLevel : 100) / 100;
             tableContainers.forEach(container => {
                 if (!container.offsetParent) return;
                 const rect = container.getBoundingClientRect();
-                // Dock bottom of table precisely 48px above the bottom of the viewport
-                const availableHeight = Math.floor(window.innerHeight - rect.top - 48);
-                if (availableHeight > 180) {
-                    container.style.height = availableHeight + 'px';
-                    container.style.maxHeight = availableHeight + 'px';
-                    container.style.overflowY = 'auto';
-                    container.style.overflowX = 'auto';
-                }
+                // Dock bottom of table cleanly 14px above the bottom of the viewport
+                // rect.top and window.innerHeight are in physical viewport coordinates.
+                // Divide by zoomFactor so the table expands fully down in the body's zoomed coordinate space.
+                const bottomGap = 14;
+                const availableViewportPixels = window.innerHeight - rect.top - bottomGap;
+                const availableHeight = Math.max(300, Math.floor(availableViewportPixels / zoomFactor));
+                container.style.height = availableHeight + 'px';
+                container.style.maxHeight = availableHeight + 'px';
+                container.style.overflowY = 'auto';
+                container.style.overflowX = 'auto';
             });
         });
     }
     window.fitAutoRentTableToViewport = fitAutoRentTableToViewport;
     window.addEventListener('resize', fitAutoRentTableToViewport);
     window.addEventListener('orientationchange', fitAutoRentTableToViewport);
+
+    window.toggleTableMaximize = function() {
+        document.body.classList.toggle('table-maximized-mode');
+        const isMax = document.body.classList.contains('table-maximized-mode');
+        document.querySelectorAll('.btn-toggle-table-max').forEach(btn => {
+            btn.innerHTML = isMax ? '<i class="fa-solid fa-compress"></i> <span class="d-none-sm">ធម្មតា</span>' : '<i class="fa-solid fa-up-down"></i> <span class="d-none-sm">ពង្រីកវែង</span>';
+            btn.title = isMax ? 'បង្រួមមកទំហំធម្មតាវិញ' : 'ពង្រីកទិដ្ឋភាពតារាងឱ្យកាន់តែធំ និងវែងចុះក្រោម';
+        });
+        setTimeout(() => {
+            if (typeof fitAutoRentTableToViewport === 'function') fitAutoRentTableToViewport();
+        }, 60);
+    };
 
     function getTimeOfDayInfo(timeStr) {
         if (!timeStr) return { period: '', label: '', tag: '', emoji: '', badgeHtml: '', color: '#0284c7' };

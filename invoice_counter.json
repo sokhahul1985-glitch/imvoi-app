@@ -1,8 +1,8 @@
 {
-  "last_number": 370,
+  "last_number": 427,
   "prefix": "INV ",
-  "last_visa_number": 78,
+  "last_visa_number": 79,
   "visa_prefix": "VISA ",
-  "last_passport_number": 0,
+  "last_passport_number": 1,
   "passport_prefix": "PASS "
 }
