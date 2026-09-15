@@ -18139,10 +18139,35 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
             if (data && data.success && Array.isArray(data.bookings)) {
                 if (data.bookings.length > 0) {
                     const localBks = getBookings();
-                    const sStr = JSON.stringify(data.bookings);
+                    
+                    // Two-way lossless merge: server bookings + any local-only bookings on this device
+                    let merged = [...data.bookings];
+                    const serverIds = new Set(data.bookings.map(b => String(b.id || '').trim().toLowerCase()));
+
+                    let hasLocalOnly = false;
+                    (Array.isArray(localBks) ? localBks : []).forEach(lb => {
+                        if (!lb || typeof lb !== 'object') return;
+                        const lId = String(lb.id || '').trim().toLowerCase();
+                        // Never discard genuine local bookings created on this phone
+                        if (lId && !serverIds.has(lId) && !['bk-1001','bk-1002','bk-1003','bk-1004'].includes(lId)) {
+                            merged.unshift(lb);
+                            hasLocalOnly = true;
+                        }
+                    });
+
+                    // If this device has local bookings not yet on server, push them to server now
+                    if (hasLocalOnly) {
+                        fetch('/api/bookings', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ bookings: merged })
+                        }).catch(e => {});
+                    }
+
+                    const mStr = JSON.stringify(merged);
                     const lStr = JSON.stringify(localBks);
-                    if (sStr !== lStr) {
-                        setBookings(data.bookings);
+                    if (mStr !== lStr) {
+                        setBookings(merged);
                         renderCurrentTabQuietly();
                     }
                     // Auto-ensure customers exist on this device from incoming bookings

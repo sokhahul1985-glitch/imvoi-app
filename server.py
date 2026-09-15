@@ -2846,6 +2846,7 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                     save_json(bk_file, current_bks)
                     if supabase_db and supabase_db.is_configured():
                         try:
+                            threading.Thread(target=supabase_db.delete_booking, args=(target_id,), daemon=True).start()
                             threading.Thread(target=supabase_db.save_bookings, args=(current_bks,), daemon=True).start()
                         except Exception:
                             pass
@@ -2898,6 +2899,7 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 save_json(bk_file, current_bks)
                 if supabase_db and supabase_db.is_configured():
                     try:
+                        threading.Thread(target=supabase_db.upsert_single_booking, args=(booking,), daemon=True).start()
                         threading.Thread(target=supabase_db.save_bookings, args=(current_bks,), daemon=True).start()
                     except Exception:
                         pass

@@ -57,7 +57,7 @@ def _make_request(endpoint, method='GET', data=None, extra_headers=None):
         
     req = urllib.request.Request(full_url, data=payload, headers=headers, method=method)
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=30) as resp:
             body = resp.read().decode('utf-8')
             if body:
                 return json.loads(body)
@@ -67,12 +67,12 @@ def _make_request(endpoint, method='GET', data=None, extra_headers=None):
         return None
 
 def fetch_all_invoices():
-    """Fetch all invoice records stored in Supabase."""
+    """Fetch all invoice records stored in Supabase (excluding car bookings)."""
     if not is_configured():
         return None
     try:
-        # Order by receipt_no or updated_at descending
-        rows = _make_request('invoices?select=receipt_no,data&order=updated_at.desc')
+        # Order by receipt_no or updated_at descending, strictly separate from car bookings
+        rows = _make_request('invoices?category=neq.car_booking&select=receipt_no,data&order=updated_at.desc')
         if isinstance(rows, list):
             records = []
             for r in rows:
@@ -182,3 +182,108 @@ def save_counters(counter_dict):
     except Exception as e:
         print(f"[Supabase] save_counters error: {e}")
         return False
+
+def fetch_bookings():
+    """Fetch all bookings from Supabase Cloud as first-class rows (identical architecture to invoices)."""
+    if not is_configured():
+        return None
+    try:
+        # First priority: Individual rows stored in invoices table with category='car_booking'
+        rows = _make_request('invoices?category=eq.car_booking&select=receipt_no,data&order=updated_at.desc')
+        if isinstance(rows, list) and len(rows) > 0:
+            records = []
+            for r in rows:
+                if isinstance(r, dict) and 'data' in r and isinstance(r['data'], dict):
+                    records.append(r['data'])
+            return records
+            
+        # Fallback: legacy app_counters
+        legacy_rows = _make_request('app_counters?key=eq.autorent_bookings&select=val')
+        if isinstance(legacy_rows, list) and len(legacy_rows) > 0:
+            val = legacy_rows[0].get('val')
+            if isinstance(val, list):
+                return val
+            if isinstance(val, dict) and 'bookings' in val and isinstance(val['bookings'], list):
+                return val['bookings']
+    except Exception as e:
+        print(f"[Supabase] fetch_bookings error: {e}")
+    return None
+
+def upsert_single_booking(record):
+    """Upsert a single booking record into Supabase invoices table as an independent row with primary key."""
+    if not is_configured() or not record:
+        return False
+    try:
+        b_id = str(record.get('id') or '').strip().upper()
+        if not b_id:
+            return False
+        payload = [{
+            'receipt_no': b_id,
+            'category': 'car_booking',
+            'data': record
+        }]
+        res = _make_request(
+            'invoices',
+            method='POST',
+            data=payload,
+            extra_headers={'Prefer': 'resolution=merge-duplicates'}
+        )
+        return res is not None
+    except Exception as e:
+        print(f"[Supabase] upsert_single_booking error: {e}")
+        return False
+
+def delete_booking(booking_id):
+    """Delete a single booking by ID from Supabase."""
+    if not is_configured() or not booking_id:
+        return False
+    try:
+        enc_id = urllib.parse.quote(str(booking_id).strip().upper())
+        res = _make_request(f'invoices?receipt_no=eq.{enc_id}', method='DELETE')
+        return res is not None
+    except Exception as e:
+        print(f"[Supabase] delete_booking error: {e}")
+        return False
+
+def save_bookings(bookings_list):
+    """Save bookings to Supabase Cloud permanently as individual rows and backup."""
+    if not is_configured() or bookings_list is None:
+        return False
+    try:
+        # 1. Save as independent rows with primary key (matching Invoices table architecture)
+        batch_size = 50
+        rows = []
+        for r in bookings_list:
+            b_id = str(r.get('id') or '').strip().upper()
+            if not b_id:
+                continue
+            rows.append({
+                'receipt_no': b_id,
+                'category': 'car_booking',
+                'data': r
+            })
+        for i in range(0, len(rows), batch_size):
+            chunk = rows[i:i + batch_size]
+            _make_request(
+                'invoices',
+                method='POST',
+                data=chunk,
+                extra_headers={'Prefer': 'resolution=merge-duplicates'}
+            )
+
+        # 2. Dual backup into app_counters
+        payload = [{
+            'key': 'autorent_bookings',
+            'val': bookings_list
+        }]
+        _make_request(
+            'app_counters',
+            method='POST',
+            data=payload,
+            extra_headers={'Prefer': 'resolution=merge-duplicates'}
+        )
+        return True
+    except Exception as e:
+        print(f"[Supabase] save_bookings error: {e}")
+        return False
+
