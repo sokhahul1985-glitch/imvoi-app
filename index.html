@@ -11600,6 +11600,9 @@ document.addEventListener('paste', function(e) {
                 if (typeof window.initAutoRentSystem === 'function') {
                     window.initAutoRentSystem();
                 }
+                if (typeof window.loadCentralBookings === 'function') {
+                    window.loadCentralBookings();
+                }
                 if (typeof fitAutoRentTableToViewport === 'function') {
                     fitAutoRentTableToViewport();
                 }
@@ -18613,7 +18616,9 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
         startTelegramBotLiveListener();
 
         // Initial instant sync with server database
-        if (typeof window.syncBookingsWithServer === 'function') {
+        if (typeof window.loadCentralBookings === 'function') {
+            window.loadCentralBookings();
+        } else if (typeof window.syncBookingsWithServer === 'function') {
             window.syncBookingsWithServer();
         }
         if (typeof window.syncCustomersWithServer === 'function') {
@@ -18819,10 +18824,16 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
             if (typeof window.initAutoRentSystem === 'function') {
                 window.initAutoRentSystem();
             }
+            if (typeof window.loadCentralBookings === 'function') {
+                window.loadCentralBookings();
+            }
         });
     } else {
         if (typeof window.initAutoRentSystem === 'function') {
             window.initAutoRentSystem();
+        }
+        if (typeof window.loadCentralBookings === 'function') {
+            window.loadCentralBookings();
         }
     }
 
