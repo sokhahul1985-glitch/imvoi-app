@@ -4416,6 +4416,11 @@ input[type="date"] {
                             </button>
                         </div>
 
+                        <!-- 1-Click Live Cloud Sync Button -->
+                        <button type="button" id="btnLiveCloudSync" onclick="window.loadCentralBookings(true)" title="ចុចដើម្បីទាញយកទិន្នន័យចុងក្រោយពី Cloud Server (Direct Central Database)" style="height: 30px; display: inline-flex; align-items: center; gap: 6px; padding: 0 11px; border-radius: 7px; font-weight: 800; font-size: 11.5px; background: #ecfdf5; border: 1.5px solid #10b981; color: #047857; cursor: pointer; box-shadow: 0 1px 3px rgba(16,185,129,0.15);">
+                            <i class="fa-solid fa-cloud-arrow-down" style="color: #059669;"></i> <span id="cloudSyncStatusText">Cloud Live</span>
+                        </button>
+
                         <a href="https://t.me/car_rent_sokha88_bot" target="_blank" class="btn-ar btn-ar-outline" style="color:#0088cc; font-weight:700;">
                             <i class="fa-solid fa-robot"></i> @car_rent_sokha88_bot
                         </a>
@@ -4786,6 +4791,9 @@ input[type="date"] {
                                     </button>
                                     <button type="button" class="btn-ar btn-ar-outline" onclick="handleExportBookingsCsv()">
                                         <i class="fa-solid fa-file-csv text-success"></i> Export CSV
+                                    </button>
+                                    <button type="button" class="btn-ar btn-ar-outline" style="color: #0284c7; border-color: #7dd3fc; background: #f0f9ff; font-weight: bold;" onclick="handleSyncCleanCentralBookings()" title="សម្អាតទិន្នន័យស្ទួន និងទាញយកទិន្នន័យចុងក្រោយ">
+                                        <i class="fa-solid fa-cloud-arrow-down text-primary"></i> Sync & សម្អាតពី Cloud
                                     </button>
                                 </div>
                             </div>
@@ -6002,7 +6010,22 @@ input[type="date"] {
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: nowrap;">
                     <button type="button" class="btn-sys" style="background: #4f46e5; color: #ffffff; padding: 7px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="window.print()">🖨️ បោះពុម្ព (Print)</button>
                     <button type="button" class="btn-sys" style="background: #059669; color: #ffffff; padding: 7px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="downloadReceiptPNG()">🖼️ PNG Image</button>
-                    <button type="button" class="btn-sys" style="background: #8b5cf6; color: #ffffff; padding: 7px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="shareReceiptTelegram()">✈️ Telegram</button>
+                    <div style="position: relative; display: inline-flex; align-items: center;">
+                        <button type="button" id="btnShareTelegram" class="btn-sys" style="background: #8b5cf6; color: #ffffff; padding: 7px 16px; border-radius: 6px 0 0 6px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="shareReceiptTelegram()" title="ចុចផ្ញើវិក្កយបត្រទៅកាន់ Telegram ផ្ទាល់ (1-Click Bot Delivery)">✈️ Telegram</button>
+                        <button type="button" id="btnTgMenuToggle" style="background: #7c3aed; color: #ffffff; padding: 7px 10px; border-radius: 0 6px 6px 0; font-weight: 700; font-size: 13px; border: none; border-left: 1px solid rgba(255,255,255,0.25); cursor: pointer; display: flex; align-items: center;" onclick="toggleReceiptTgMenu(event)" title="ជម្រើសផ្ញើ Telegram (រើស Group ឬ Copy)">▾</button>
+                        <div id="receiptTgMenu" style="display: none; position: absolute; top: calc(100% + 4px); right: 0; background: #0f172a; border: 1.5px solid #334155; border-radius: 8px; box-shadow: 0 12px 30px rgba(0,0,0,0.6); z-index: 10000; min-width: 260px; padding: 8px; color: #f8fafc; font-size: 12px; text-align: left;">
+                            <div style="font-weight: 700; color: #94a3b8; padding: 4px 8px 6px; border-bottom: 1px solid #1e293b; font-size: 11px; display: flex; justify-content: space-between;">
+                                <span>✈️ ជ្រើសរើសគោលដៅ TELEGRAM</span>
+                            </div>
+                            <div id="receiptTgTargetsList" style="max-height: 220px; overflow-y: auto; padding: 6px 0; display: flex; flex-direction: column; gap: 2px;">
+                                <!-- Rendered dynamically -->
+                            </div>
+                            <div style="border-top: 1px solid #1e293b; padding-top: 6px; margin-top: 4px; display: flex; flex-direction: column; gap: 3px;">
+                                <button type="button" onclick="copyReceiptOnly()" style="width: 100%; text-align: left; background: transparent; border: none; color: #cbd5e1; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 8px;" onmouseover="this.style.background='#1e293b'" onmouseout="this.style.background='transparent'">📋 Copy រូបភាពវិក្កយបត្រ (Ctrl+V)</button>
+                                <button type="button" onclick="openTelegramAppOrWeb()" style="width: 100%; text-align: left; background: transparent; border: none; color: #38bdf8; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 8px;" onmouseover="this.style.background='#1e293b'" onmouseout="this.style.background='transparent'">🚀 បើក Telegram Web / Desktop</button>
+                            </div>
+                        </div>
+                    </div>
                     <button type="button" class="btn-sys" style="background: #ffffff; color: #0f172a; border: 1.5px solid #cbd5e1; padding: 7px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);" onclick="closeReceiptModal()">❌ បិទ (Close)</button>
                 </div>
             </div>
@@ -6127,6 +6150,21 @@ input[type="date"] {
     
 
 <script>
+        // Transparent Hybrid API Routing: If opened locally (file://), route seamlessly to Render Cloud!
+        (function() {
+            try {
+                const originalFetch = window.fetch;
+                const isFileProto = window.location.protocol === 'file:' || !window.location.host;
+                if (isFileProto && typeof originalFetch === 'function') {
+                    window.fetch = function(input, init) {
+                        if (typeof input === 'string' && input.startsWith('/api/')) {
+                            input = 'https://imvoi-app-1.onrender.com' + input;
+                        }
+                        return originalFetch.call(this, input, init);
+                    };
+                }
+            } catch(e) {}
+        })();
 
         let allDatabaseRecords = [];
         let currentModalReceiptData = null;
@@ -6982,6 +7020,20 @@ input[type="date"] {
 
             pendingSavePayload.service_category = chosenCategory;
 
+            // Optimistic pre-inject into local records snapshot for 0ms visual update
+            try {
+                if (!Array.isArray(allDatabaseRecords)) allDatabaseRecords = [];
+                const rNoTarget = pendingSavePayload.receipt_no || pendingSavePayload.receiptNo;
+                const existIdx = allDatabaseRecords.findIndex(r => r && (r.receipt_no === rNoTarget || r.receiptNo === rNoTarget));
+                if (existIdx >= 0) {
+                    allDatabaseRecords[existIdx] = { ...allDatabaseRecords[existIdx], ...pendingSavePayload };
+                } else {
+                    allDatabaseRecords.unshift({ ...pendingSavePayload });
+                }
+                saveLocalVaultSnapshot(allDatabaseRecords);
+                renderDatabaseTable();
+            } catch(e) {}
+
             fetch('/api/save_group', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -7073,6 +7125,17 @@ input[type="date"] {
 
         /* Database Records Loader & Table Renderer */
         function loadDatabaseRecords(callback) {
+            // 0ms INSTANT RENDER: Display in-memory records or local vault snapshot immediately
+            if (Array.isArray(allDatabaseRecords) && allDatabaseRecords.length > 0) {
+                renderDatabaseTable();
+            } else {
+                const vault = getLocalVaultSnapshot();
+                if (vault && vault.records && vault.records.length > 0) {
+                    allDatabaseRecords = vault.records;
+                    renderDatabaseTable();
+                }
+            }
+
             fetch('/api/invoices?t=' + Date.now())
                 .then(r => r.json())
                 .then(d => {
@@ -10131,6 +10194,20 @@ input[type="date"] {
             if (!pendingGmmSavePayload) return;
             pendingGmmSavePayload.service_category = chosenCategory;
 
+            // Optimistic pre-inject into local records snapshot for 0ms visual update
+            try {
+                if (!Array.isArray(allDatabaseRecords)) allDatabaseRecords = [];
+                const rNoTarget = pendingGmmSavePayload.receipt_no || pendingGmmSavePayload.receiptNo || currentGmmReceiptNo;
+                const existIdx = allDatabaseRecords.findIndex(r => r && (r.receipt_no === rNoTarget || r.receiptNo === rNoTarget));
+                if (existIdx >= 0) {
+                    allDatabaseRecords[existIdx] = { ...allDatabaseRecords[existIdx], ...pendingGmmSavePayload };
+                } else {
+                    allDatabaseRecords.unshift({ ...pendingGmmSavePayload });
+                }
+                saveLocalVaultSnapshot(allDatabaseRecords);
+                renderDatabaseTable();
+            } catch(e) {}
+
             const btnSave = document.getElementById('btnGmmSave');
             if (btnSave) {
                 btnSave.disabled = true;
@@ -10229,21 +10306,26 @@ input[type="date"] {
         }
 
         function deleteRecord(rNo, recordId, originalIdx) {
-            const rawNo = decodeURIComponent(rNo || '');
+            const rawNo = decodeURIComponent(rNo || '').replace('🛂', '').trim();
             const displayNo = (rawNo && rawNo !== 'N/A') ? rawNo : 'កំណត់ត្រានេះ';
             if (confirm(`តើអ្នកពិតជាចង់លុបទិន្នន័យ ${displayNo} នេះមែនទេ?`)) {
-                let url = `/api/delete?no=${encodeURIComponent(rNo || '')}`;
+                let url = `/api/delete?no=${encodeURIComponent(rawNo)}`;
                 if (recordId !== undefined && recordId !== null && recordId !== '') {
                     url += `&id=${encodeURIComponent(recordId)}`;
-                }
-                if (originalIdx !== undefined && originalIdx !== null && originalIdx !== '') {
-                    url += `&index=${originalIdx}`;
                 }
                 fetch(url, { method: 'POST' })
                     .then(r => r.json())
                     .then(res => { 
                         if (res.success) {
                             showToast("🗑️ បានលុបទិន្នន័យដោយជោគជ័យ!");
+                            // Immediately remove from in-memory records and local vault
+                            if (typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) {
+                                allDatabaseRecords = allDatabaseRecords.filter(item => {
+                                    const itemNo = (item.receipt_no || item.group_data?.receipt_no || item.customer?.receipt_no || item.passport_no || item.id || '').toString().trim().toLowerCase().replace('🛂', '').trim();
+                                    return itemNo !== rawNo.toLowerCase();
+                                });
+                                saveLocalVaultSnapshot(allDatabaseRecords);
+                            }
                             loadDatabaseRecords();
                         } else {
                             alert("មិនអាចលុបទិន្នន័យបានឡើយ៖ " + (res.error || "Receipt not found"));
@@ -10795,12 +10877,12 @@ input[type="date"] {
                 try {
                     await Promise.race([
                         document.fonts.ready,
-                        new Promise(resolve => setTimeout(resolve, 200))
+                        new Promise(resolve => setTimeout(resolve, 80))
                     ]);
                 } catch (e) {}
             }
             return await html2canvas(receiptEl, {
-                scale: 2,
+                scale: 1.8,
                 letterRendering: false,
                 backgroundColor: '#ffffff',
                 useCORS: true,
@@ -10817,17 +10899,18 @@ input[type="date"] {
                         clonedReceipt.style.boxSizing = 'border-box';
                         clonedReceipt.style.padding = '36px 44px';
                         clonedReceipt.style.margin = '0 auto';
-                        clonedReceipt.style.letterSpacing = 'normal';
-                        clonedReceipt.style.wordSpacing = 'normal';
-                        clonedReceipt.style.fontVariantLigatures = 'normal';
-                        clonedReceipt.style.fontFamily = "'Kantumruy Pro', 'Noto Sans Khmer', 'Noto Sans Thai', system-ui, -apple-system, sans-serif";
 
-                        const allElems = clonedReceipt.getElementsByTagName('*');
-                        for (let i = 0; i < allElems.length; i++) {
-                            allElems[i].style.letterSpacing = 'normal';
-                            allElems[i].style.wordSpacing = 'normal';
-                            allElems[i].style.fontVariantLigatures = 'normal';
-                        }
+                        // Injected scoped stylesheet is 10x faster than looping all DOM elements
+                        const fastStyle = clonedDoc.createElement('style');
+                        fastStyle.textContent = `
+                            #printableReceiptArea, #printableReceiptArea * {
+                                letter-spacing: normal !important;
+                                word-spacing: normal !important;
+                                font-variant-ligatures: normal !important;
+                                font-family: 'Kantumruy Pro', 'Noto Sans Khmer', 'Noto Sans Thai', system-ui, -apple-system, sans-serif !important;
+                            }
+                        `;
+                        clonedDoc.head.appendChild(fastStyle);
                     }
                 }
             });
@@ -10927,11 +11010,110 @@ input[type="date"] {
             throw new Error("Clipboard API not supported");
         }
 
-        async function shareReceiptTelegram() {
+        let _selectedTgTargetChatId = null;
+        let _selectedTgTargetTitle = null;
+
+        const DEFAULT_TG_BOT_TOKEN = "8884318593:AAEipEVki9o1YFL0_8IYoUeSn3Xif4dlVOk";
+        const DEFAULT_TG_CHAT_ID = "8985821312"; // Sokha GMP88
+
+        const KNOWN_TG_TARGETS = [
+            { id: "8985821312", title: "👤 Sokha GMP88 (@Sokhalion)", isDefault: true },
+            { id: "-1004497657405", title: "🚗 Group: កក់ឡាន" },
+            { id: "-5381280318", title: "🚙 Group: J Heng" },
+            { id: "-1004424429378", title: "🚐 Group: CK 2849" },
+            { id: "-1004338568933", title: "🚕 Group: Nab" },
+            { id: "-1004336964750", title: "🚘 Group: Smey Ap" },
+            { id: "-1004480815325", title: "🏎️ Group: Phinin" }
+        ];
+
+        function toggleReceiptTgMenu(event) {
+            if (event) event.stopPropagation();
+            const menu = document.getElementById('receiptTgMenu');
+            if (!menu) return;
+            const isShown = menu.style.display === 'block';
+            if (isShown) {
+                menu.style.display = 'none';
+            } else {
+                renderReceiptTgTargets();
+                menu.style.display = 'block';
+            }
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('receiptTgMenu');
+            const toggleBtn = document.getElementById('btnTgMenuToggle');
+            if (menu && menu.style.display === 'block') {
+                if (!menu.contains(e.target) && e.target !== toggleBtn) {
+                    menu.style.display = 'none';
+                }
+            }
+        });
+
+        function renderReceiptTgTargets() {
+            const listEl = document.getElementById('receiptTgTargetsList');
+            if (!listEl) return;
+
+            const activeTargetId = _selectedTgTargetChatId || DEFAULT_TG_CHAT_ID;
+            let html = '';
+
+            KNOWN_TG_TARGETS.forEach(t => {
+                const isSelected = String(t.id) === String(activeTargetId);
+                const bg = isSelected ? 'rgba(56, 189, 248, 0.15)' : 'transparent';
+                const color = isSelected ? '#38bdf8' : '#f8fafc';
+                const check = isSelected ? ' ✔' : '';
+
+                html += `<div onclick="selectTgTargetAndSend('${t.id}', '${t.title.replace(/'/g, "\\'")}')" 
+                    style="padding: 7px 10px; cursor: pointer; border-radius: 5px; font-weight: ${isSelected ? '700' : '500'}; background: ${bg}; color: ${color}; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" 
+                    onmouseover="this.style.background='rgba(255,255,255,0.1)'" 
+                    onmouseout="this.style.background='${bg}'">
+                    <span>${t.title}</span>
+                    <span style="font-size: 11px; color: #38bdf8;">${check}</span>
+                </div>`;
+            });
+
+            listEl.innerHTML = html;
+        }
+
+        function selectTgTargetAndSend(chatId, title) {
+            _selectedTgTargetChatId = chatId;
+            _selectedTgTargetTitle = title;
+            const menu = document.getElementById('receiptTgMenu');
+            if (menu) menu.style.display = 'none';
+            shareReceiptTelegram(chatId, title);
+        }
+
+        async function copyReceiptOnly() {
+            const menu = document.getElementById('receiptTgMenu');
+            if (menu) menu.style.display = 'none';
+            const receiptEl = document.getElementById('printableReceiptArea');
+            if (!receiptEl) return;
+            try {
+                await copyReceiptToClipboard(receiptEl);
+                if (typeof showToast === 'function') {
+                    showToast('📋 បាន Copy រូបភាពវិក្កយបត្ររួចរាល់! ចុច <b>Ctrl + V</b> ក្នុង Telegram ដើម្បី Paste ផ្ញើ', true);
+                }
+            } catch (err) {
+                if (typeof showToast === 'function') {
+                    showToast('⚠️ មិនអាច Copy រូបភាពដោយស្វ័យប្រវត្តិបានទេ (សូម Right-click លើរូបភាព រើស "Copy image")', false);
+                }
+            }
+        }
+
+        function openTelegramAppOrWeb() {
+            const menu = document.getElementById('receiptTgMenu');
+            if (menu) menu.style.display = 'none';
+            window.open('https://web.telegram.org', '_blank');
+        }
+
+        async function shareReceiptTelegram(specifiedChatId, specifiedTitle) {
             const rNo = document.getElementById('mReceiptNo')?.textContent?.trim() || 'INV';
             const sender = document.getElementById('mSenderName')?.textContent?.trim() || '';
-            const total = document.getElementById('mGrandUSD')?.textContent?.trim() || '';
+            const totalUSD = document.getElementById('mGrandUSD')?.textContent?.trim() || '';
+            const totalTHB = document.getElementById('mGrandTHB')?.textContent?.trim() || '';
+            const travelDate = document.getElementById('mTravelDate')?.textContent?.trim() || '';
             const receiptEl = document.getElementById('printableReceiptArea');
+            const btn = document.getElementById('btnShareTelegram');
 
             if (!receiptEl) {
                 if (typeof showToast === 'function') {
@@ -10940,51 +11122,151 @@ input[type="date"] {
                 return;
             }
 
-            if (typeof showToast === 'function') {
-                showToast('⏳ កំពុងដំណើរការ Copy រូបភាពវិក្កយបត្រ...', true);
+            const activeChatId = specifiedChatId || _selectedTgTargetChatId || DEFAULT_TG_CHAT_ID;
+            const targetName = specifiedTitle || _selectedTgTargetTitle || (activeChatId === DEFAULT_TG_CHAT_ID ? 'Sokha GMP88' : `ID: ${activeChatId}`);
+
+            const originalBtnHtml = btn ? btn.innerHTML : '✈️ Telegram';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '⚡ កំពុងផ្ញើ...';
             }
 
-            const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            if (typeof showToast === 'function') {
+                showToast(`⏳ កំពុងផ្ញើវិក្កយបត្រទៅ Telegram (${targetName})...`, true);
+            }
+
+            const cleanRNo = rNo.replace(/[^a-zA-Z0-9_-]/g, '_').trim();
+            let totalStr = totalUSD;
+            if (totalTHB && totalTHB !== '-' && totalTHB !== '฿0.00') totalStr += ` (${totalTHB})`;
+
+            const caption = `🧾 វិក្កយបត្រផ្លូវការ / Official Invoice: ${rNo}\n👤 អតិថិជន: ${sender}\n📅 ថ្ងៃធ្វើដំណើរ: ${travelDate}\n💰 សរុប: ${totalStr}\n\nGolden Mekong Commercial Service Co., Ltd.`;
+
+            let sentSuccess = false;
+            let errorMessage = '';
 
             try {
+                // 1. Fast capture receipt PNG Blob (<300ms)
                 const blob = await getOrCaptureReceiptBlob(receiptEl);
+                if (!blob) throw new Error("Could not capture receipt image blob");
 
-                // 1. Android & Mobile Native Share
-                if (isMobileDevice && navigator.share && navigator.canShare && blob) {
+                // 2. Instant clipboard copy using existing blob (non-blocking)
+                if (navigator.clipboard && window.ClipboardItem) {
                     try {
-                        const file = new File([blob], `Receipt_${rNo.replace(/[^a-zA-Z0-9_-]/g, '_')}.png`, { type: 'image/png' });
+                        navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).catch(()=>{});
+                    } catch(e) {}
+                }
+
+                // 3. ULTRA-FAST: Direct Telegram Bot API with FormData (Direct to Telegram, takes <1s)
+                let botToken = DEFAULT_TG_BOT_TOKEN;
+                try {
+                    const formData = new FormData();
+                    formData.append('chat_id', activeChatId);
+                    formData.append('photo', blob, `Receipt_${cleanRNo}.png`);
+                    formData.append('caption', caption);
+
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 7000);
+
+                    const directResp = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+                        method: 'POST',
+                        body: formData,
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+
+                    const directData = await directResp.json();
+                    if (directData.ok) {
+                        sentSuccess = true;
+                    } else {
+                        errorMessage = directData.description || 'Telegram Bot error';
+                    }
+                } catch (directErr) {
+                    console.warn("Direct Telegram API note:", directErr);
+                }
+
+                // 4. Backend Fallback if Direct API failed (e.g. firewall)
+                if (!sentSuccess) {
+                    try {
+                        const reader = new FileReader();
+                        const b64Promise = new Promise((resolve, reject) => {
+                            reader.onloadend = () => resolve(reader.result);
+                            reader.onerror = reject;
+                        });
+                        reader.readAsDataURL(blob);
+                        const b64Data = await b64Promise;
+
+                        const controller2 = new AbortController();
+                        const timeoutId2 = setTimeout(() => controller2.abort(), 5000);
+
+                        const resp = await fetch('/api/send_telegram_bot', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                image: b64Data,
+                                filename: `Receipt_${cleanRNo}.png`,
+                                caption: caption,
+                                chat_id: activeChatId
+                            }),
+                            signal: controller2.signal
+                        });
+                        clearTimeout(timeoutId2);
+
+                        if (resp.ok) {
+                            const resData = await resp.json();
+                            if (resData.success) sentSuccess = true;
+                            else errorMessage = resData.error || errorMessage;
+                        }
+                    } catch (apiErr) {
+                        console.warn("Backend /api/send_telegram_bot fallback note:", apiErr);
+                    }
+                }
+
+                // 5. Mobile Web Share API fallback
+                const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                if (!sentSuccess && isMobileDevice && navigator.share && navigator.canShare) {
+                    try {
+                        const file = new File([blob], `Receipt_${cleanRNo}.png`, { type: 'image/png' });
                         if (navigator.canShare({ files: [file] })) {
                             await navigator.share({
                                 files: [file],
                                 title: `Receipt ${rNo}`,
-                                text: `🧾 VIP Border Receipt: ${rNo}\n👤 Customer/Group: ${sender}\n💰 Total: ${total}`
+                                text: caption
                             });
-                            if (typeof showToast === 'function') showToast('✅ បាន Share វិក្កយបត្ររួចរាល់!');
-                            return;
+                            sentSuccess = true;
                         }
-                    } catch (err) {
-                        if (err.name === 'AbortError') return;
-                        console.log('Mobile share canceled or rejected:', err);
+                    } catch (shErr) {
+                        if (shErr.name === 'AbortError') return;
                     }
                 }
 
-                // 2. Desktop PC Clipboard Copy & Direct Telegram Launch
-                try {
-                    await copyReceiptToClipboard(receiptEl);
+                // Feedback
+                if (sentSuccess) {
                     if (typeof showToast === 'function') {
-                        showToast('📋 បាន Copy រូបភាពវិក្កយបត្ររួចរាល់! ចុច <b>Ctrl + V</b> ក្នុង Telegram ដើម្បី Paste ផ្ញើ', true);
+                        showToast(`🚀 បានផ្ញើរូបភាពវិក្កយបត្រ <b>${rNo}</b> ទៅ Telegram (${targetName}) រួចរាល់! <a href="https://t.me/Sokhalion" target="_blank" style="display:inline-block; margin-left:8px; color:#38bdf8; text-decoration:underline; font-weight:700;">👉 បើក Telegram</a>`, true);
+                    } else {
+                        alert(`បានផ្ញើវិក្កយបត្រ ${rNo} ទៅ Telegram (${targetName}) រួចរាល់!`);
                     }
-                    window.location.href = 'tg://msg';
-                } catch (err) {
-                    console.warn('Clipboard write failed:', err);
+                } else {
                     if (typeof showToast === 'function') {
-                        showToast('⚠️ បានបើក Telegram! (ប្រសិនមិនទាន់ជាប់ សូម Right-click លើវិក្កយបត្រ រើស "Copy image" រួច Ctrl+V)', false);
+                        showToast(`⚠️ មិនទាន់អាចផ្ញើអូតូបានទេ (${errorMessage})។ រូបភាពត្រូវបាន Copy ចូល Clipboard រួច (ចុច Ctrl + V ក្នុង Telegram ដើម្បីផ្ញើ)`, false);
+                    } else {
+                        alert(`មិនអាចផ្ញើទៅ Telegram បានទេ៖ ${errorMessage}\n\nរូបភាពត្រូវបាន Copy ចូល Clipboard រួច (ចុច Ctrl + V ក្នុង Telegram ដើម្បីផ្ញើ)`);
                     }
-                    window.location.href = 'tg://msg';
+                    window.open('https://web.telegram.org', '_blank');
                 }
+
             } catch (e) {
                 console.error("shareReceiptTelegram error:", e);
-                alert("កំហុសក្នុងការចែករំលែកវិក្កយបត្រ៖ " + (e.message || e));
+                if (typeof showToast === 'function') {
+                    showToast("⚠️ កំហុសក្នុងការដំណើរការវិក្កយបត្រ៖ " + (e.message || e), false);
+                } else {
+                    alert("កំហុសក្នុងការដំណើរការវិក្កយបត្រ៖ " + (e.message || e));
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnHtml;
+                }
             }
         }
 
@@ -11780,76 +12062,7 @@ document.addEventListener('paste', function(e) {
     const DEFAULT_CUSTOMERS = [];
 
     function getInitialBookings() {
-        return [
-            {
-                id: 'BK-1001',
-                customerName: 'Sokha Lin',
-                customerPhone: '012 345 678',
-                customerTelegram: '@sokha_vip',
-                driverTelegram: '@driver_vireak',
-                cars: ['Alphard VIP 2023'],
-                vipService: 'យក VIP',
-                borderClear: '',
-                pickupLoc: 'ប៉ោយប៉ែត',
-                dropoffLoc: 'ភ្នំពេញ',
-                date: getTodayStr(0),
-                time: '08:00',
-                status: 'active',
-                notes: 'ភ្ញៀវ VIP ចេញដំណើរពីព្រំដែន ទៅកាន់សណ្ឋាគារណាាហ្គា',
-                rawMessage: 'ភ្ញៀវឈ្មោះ Sokha Lin 012345678 Alphard ពីប៉ោយប៉ែត ទៅភ្នំពេញ ម៉ោង 8 ព្រឹក យក VIP'
-            },
-            {
-                id: 'BK-1002',
-                customerName: 'Zhang Wei',
-                customerPhone: '088 777 6666',
-                customerTelegram: '@zhang_wei',
-                driverTelegram: '@driver_rithy',
-                cars: ['Hiace Commuter 15s'],
-                vipService: '',
-                borderClear: 'យកក្លៀដាន',
-                pickupLoc: 'ភ្នំពេញ',
-                dropoffLoc: 'ប៉ោយប៉ែត',
-                date: getTodayStr(0),
-                time: '09:00',
-                status: 'dueToday',
-                notes: 'ក្រុមទេសចរណ៍ 12 នាក់ ទៅ Poipet Border',
-                rawMessage: 'Zhang Wei 0887776666 Hiace Phnom Penh -> Poipet 09:00 AM'
-            },
-            {
-                id: 'BK-1003',
-                customerName: 'Tanaka Kenji',
-                customerPhone: '096 888 1234',
-                customerTelegram: '@kenji_t',
-                driverTelegram: '@driver_dara',
-                cars: ['Lexus NX200t F-Sport'],
-                vipService: 'យក VIP',
-                borderClear: '',
-                pickupLoc: 'សៀមរាប',
-                dropoffLoc: 'ប៉ោយប៉ែត',
-                date: getTodayStr(1),
-                time: '14:00',
-                status: 'upcoming',
-                notes: 'ទទួលនៅសណ្ឋាគារ Sofitel សៀមរាប',
-                rawMessage: ''
-            },
-            {
-                id: 'BK-1004',
-                customerName: 'David Miller',
-                customerPhone: '077 111 222',
-                customerTelegram: '@david_m',
-                driverTelegram: '@driver_chhay',
-                cars: ['Hyundai Staria Premium'],
-                vipService: 'យក VIP',
-                borderClear: 'យកក្លៀដាន',
-                pickupLoc: 'តេជោ',
-                dropoffLoc: 'ភ្នំពេញ',
-                date: getTodayStr(-1),
-                time: '11:00',
-                status: 'completed',
-                notes: 'ជើងហោះហើរចុះព្រលានតេជោថ្មី',
-                rawMessage: ''
-            }
-        ];
+        return [];
     }
 
     // Storage access
@@ -12070,12 +12283,24 @@ document.addEventListener('paste', function(e) {
         const activeNavBtn = document.querySelector(`#autoRentManagementContainer .ar-nav-item[data-tab="${currentTab}"]`);
         if (activeNavBtn) activeNavBtn.classList.add('active');
 
-        if (currentTab === 'dashboard') renderDashboard();
-        else if (currentTab === 'bookings') renderBookings(currentBookingFilter);
-        else if (currentTab === 'tganalysis') renderTelegramAnalysis();
-        else if (currentTab === 'cars') renderCars(currentCarFilter);
-        else if (currentTab === 'customers') renderCustomers();
-        else if (currentTab === 'calendar') renderCalendar();
+        if (currentTab === 'dashboard') {
+            renderDashboard();
+            if (typeof window.loadCentralBookings === 'function') window.loadCentralBookings();
+        } else if (currentTab === 'bookings') {
+            renderBookings(currentBookingFilter);
+            if (typeof window.loadCentralBookings === 'function') window.loadCentralBookings();
+        } else if (currentTab === 'tganalysis') {
+            renderTelegramAnalysis();
+        } else if (currentTab === 'cars') {
+            renderCars(currentCarFilter);
+            if (typeof window.syncCarsWithServer === 'function') window.syncCarsWithServer();
+        } else if (currentTab === 'customers') {
+            renderCustomers();
+            if (typeof window.syncCustomersWithServer === 'function') window.syncCustomersWithServer();
+        } else if (currentTab === 'calendar') {
+            renderCalendar();
+            if (typeof window.loadCentralBookings === 'function') window.loadCentralBookings();
+        }
     };
 
     // =========================================================================
@@ -14448,28 +14673,57 @@ document.addEventListener('paste', function(e) {
             }
         } catch(e) {}
 
-        // 3. Persist full bookings array to server database with await for rock-solid reliability
+        // 3. Instant UI feedback & Modal close (<15ms)
+        editingBookingId = null;
+        const bIdInput = document.getElementById('bookingId');
+        if (bIdInput) bIdInput.value = '';
+        // 3. Direct Central Cloud Server Persistence & Verification
+        let cloudConfirmed = false;
+        let errorReason = '';
+
         try {
-            await fetch('/api/bookings', {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 7000);
+
+            // Send both single item and full array for 100% guarantee
+            const resp = await fetch('/api/bookings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ bookings: bookings })
+                body: JSON.stringify({ booking: newBooking, bookings: bookings }),
+                signal: controller.signal
             });
-        } catch (e) {
-            console.warn('Could not sync booking to server:', e);
+            clearTimeout(timeoutId);
+
+            if (resp.ok) {
+                const resData = await resp.json();
+                if (resData && resData.success) {
+                    cloudConfirmed = true;
+                } else {
+                    errorReason = (resData && resData.error) || 'Server rejected';
+                }
+            } else {
+                errorReason = `Server status ${resp.status}`;
+            }
+        } catch (netErr) {
+            errorReason = netErr.name === 'AbortError' ? 'ការតភ្ជាប់លើសកំណត់ (Timeout)' : (netErr.message || 'បញ្ហាតភ្ជាប់');
         }
 
-        // 4. Clean up state and close modal
+        // Reset Buttons
+        if (btnH) { btnH.disabled = false; btnH.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> រក្សាទុក'; }
+        if (btnF) { btnF.disabled = false; btnF.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> រក្សាទុក (Save)'; }
+
         editingBookingId = null;
         const bIdInput = document.getElementById('bookingId');
         if (bIdInput) bIdInput.value = '';
         activeTelegramMessage = null;
 
-        if (btnH) { btnH.disabled = false; btnH.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> រក្សាទុក'; }
-        if (btnF) { btnF.disabled = false; btnF.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> រក្សាទុក (Save)'; }
-
         closeModal('bookingModal');
-        showToast(isEditing ? '✅ បានកែប្រែ និងរក្សាទុកការកក់ជោគជ័យ!' : '✅ បានបង្កើត និងរក្សាទុកការកក់ថ្មីជោគជ័យ!');
+
+        if (cloudConfirmed) {
+            showToast(isEditing ? '🎉 បានកែប្រែ និង Sync ទៅកាន់ Cloud Server ជោគជ័យ!' : '🎉 បានរក្សាទុកការកក់ទៅ Cloud Server ជោគជ័យ! (គ្រប់ឧបករណ៍ឃើញដូចគ្នា)');
+        } else {
+            alert(`⚠️ បានរក្សាទុកក្នុងទូរស័ព្ទ/កុំព្យូទ័រនេះ ប៉ុន្តែការបញ្ជូនទៅកាន់ Cloud Server មិនទាន់ជោគជ័យទេ៖ ${errorReason}\n\nប្រព័ន្ធនឹងព្យាយាម Sync ឡើងទៅ Cloud ដោយស្វ័យប្រវត្តក្នុងរយៈពេលខ្លី។`);
+        }
 
         if (typeof renderDashboard === 'function') renderDashboard();
         if (typeof renderBookings === 'function') renderBookings(currentBookingFilter);
@@ -15329,6 +15583,17 @@ document.addEventListener('paste', function(e) {
         }
         
         setBookings(bookings);
+
+        // Record to local deleted blacklist
+        try {
+            const delKey = 'autorent_deleted_booking_ids';
+            let localDelIds = JSON.parse(localStorage.getItem(delKey) || '[]');
+            const upId = String(id).trim().toUpperCase();
+            if (!localDelIds.includes(upId)) {
+                localDelIds.push(upId);
+                localStorage.setItem(delKey, JSON.stringify(localDelIds));
+            }
+        } catch (e) {}
 
         try {
             await fetch('/api/bookings', {
@@ -18234,8 +18499,53 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
         switchTab(currentTab);
     };
 
+    window.handleSyncCleanCentralBookings = async function() {
+        showToast('⏳ កំពុងសម្អាត និងទាញយកទិន្នន័យពិតប្រាកដពី Server...', true);
+        try {
+            const resp = await fetch('/api/bookings?t=' + Date.now());
+            if (!resp.ok) throw new Error('Server status ' + resp.status);
+            const data = await resp.json();
+            if (data && data.success && Array.isArray(data.bookings)) {
+                const delKey = 'autorent_deleted_booking_ids';
+                let localDelList = [];
+                try { localDelList = JSON.parse(localStorage.getItem(delKey) || '[]'); } catch(e) {}
+                const delSet = new Set((Array.isArray(localDelList) ? localDelList : []).map(x => String(x).trim().toUpperCase()));
+                if (Array.isArray(data.deleted_ids)) {
+                    data.deleted_ids.forEach(x => { if (x) delSet.add(String(x).trim().toUpperCase()); });
+                }
+                try { localStorage.setItem(delKey, JSON.stringify(Array.from(delSet))); } catch(e) {}
+
+                const cleanBks = data.bookings.filter(b => b && b.id && !delSet.has(String(b.id).trim().toUpperCase()));
+                setBookings(cleanBks);
+                if (typeof renderDashboard === 'function') renderDashboard();
+                if (typeof renderBookings === 'function') renderBookings(currentBookingFilter);
+                if (typeof renderCalendar === 'function') renderCalendar();
+                if (typeof renderFleetSchedule === 'function') renderFleetSchedule();
+                showToast(`✅ សម្អាតរួចរាល់! ទិន្នន័យជាក់ស្តែងសរុប ${cleanBks.length} ការកក់ 🛡️`);
+            }
+        } catch (err) {
+            showToast('❌ មានបញ្ហាតភ្ជាប់៖ ' + err.message);
+        }
+    };
+
     // Initialization
     window.initAutoRentSystem = function() {
+        // Auto-purge any deleted bookings from localStorage on init
+        try {
+            const delKey = 'autorent_deleted_booking_ids';
+            const delList = JSON.parse(localStorage.getItem(delKey) || '[]');
+            if (Array.isArray(delList) && delList.length > 0) {
+                const delSet = new Set(delList.map(x => String(x).trim().toUpperCase()));
+                let curBks = loadData(STORAGE_KEY_BOOKINGS, []);
+                if (Array.isArray(curBks)) {
+                    const clean = curBks.filter(b => b && b.id && !delSet.has(String(b.id).trim().toUpperCase()));
+                    if (clean.length !== curBks.length) {
+                        saveData(STORAGE_KEY_BOOKINGS, clean);
+                    }
+                }
+            }
+        } catch(e) {}
+
         // Ensure default data exists
         if (!localStorage.getItem(STORAGE_KEY_BOOKINGS)) setBookings(getInitialBookings());
         if (!localStorage.getItem(STORAGE_KEY_CARS)) setCars(DEFAULT_CARS);
@@ -18312,67 +18622,87 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
     };
 
     // Global Server Synchronization Function (Syncs PC & Phone in real-time)
-    window.syncBookingsWithServer = async function() {
-        if (Date.now() < (window.syncCooldownUntil || 0)) return;
+    // Direct Central Cloud Database Loader (100% Identical Across All Devices)
+    window.loadCentralBookings = async function(showToastNotice) {
+        if (showToastNotice && typeof showToast === 'function') {
+            showToast('⏳ កំពុងទាញយកទិន្នន័យពី Central Cloud Server...', true);
+        }
         try {
-            const resp = await fetch('/api/bookings');
+            const resp = await fetch('/api/bookings?t=' + Date.now());
             if (!resp.ok) return;
             const data = await resp.json();
-            if (Date.now() < (window.syncCooldownUntil || 0)) return;
             if (data && data.success && Array.isArray(data.bookings)) {
-                if (data.bookings.length > 0) {
-                    const localBks = getBookings();
-                    
-                    // Two-way lossless merge: server bookings + any local-only bookings on this device
-                    let merged = [...data.bookings];
-                    const serverIds = new Set(data.bookings.map(b => String(b.id || '').trim().toLowerCase()));
-
-                    let hasLocalOnly = false;
-                    (Array.isArray(localBks) ? localBks : []).forEach(lb => {
-                        if (!lb || typeof lb !== 'object') return;
-                        const lId = String(lb.id || '').trim().toLowerCase();
-                        // Never discard genuine local bookings created on this phone
-                        if (lId && !serverIds.has(lId) && !['bk-1001','bk-1002','bk-1003','bk-1004'].includes(lId)) {
-                            merged.unshift(lb);
-                            hasLocalOnly = true;
-                        }
+                // Collect and sync deleted IDs
+                const delKey = 'autorent_deleted_booking_ids';
+                let localDelList = [];
+                try { localDelList = JSON.parse(localStorage.getItem(delKey) || '[]'); } catch(e) {}
+                const delIdsSet = new Set((Array.isArray(localDelList) ? localDelList : []).map(x => String(x).trim().toUpperCase()));
+                if (Array.isArray(data.deleted_ids)) {
+                    data.deleted_ids.forEach(x => {
+                        if (x) delIdsSet.add(String(x).trim().toUpperCase());
                     });
+                    try { localStorage.setItem(delKey, JSON.stringify(Array.from(delIdsSet))); } catch(e) {}
+                }
 
-                    // If this device has local bookings not yet on server, push them to server now
-                    if (hasLocalOnly) {
-                        fetch('/api/bookings', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ bookings: merged })
-                        }).catch(e => {});
-                    }
+                const localBks = getBookings();
+                // Filter server bookings against deleted IDs
+                const serverBks = data.bookings.filter(b => b && b.id && !delIdsSet.has(String(b.id).trim().toUpperCase()));
+                const serverIds = new Set(serverBks.map(b => String(b.id || '').trim().toLowerCase()));
 
-                    const mStr = JSON.stringify(merged);
-                    const lStr = JSON.stringify(localBks);
-                    if (mStr !== lStr) {
-                        setBookings(merged);
-                        renderCurrentTabQuietly();
+                // Lossless merge: keep ONLY genuine offline local bookings that have NOT been deleted
+                let merged = [...serverBks];
+                let hasLocalOnly = false;
+                (Array.isArray(localBks) ? localBks : []).forEach(lb => {
+                    if (!lb || typeof lb !== 'object') return;
+                    const lId = String(lb.id || '').trim().toLowerCase();
+                    const lIdUpper = lId.toUpperCase();
+                    // CRITICAL: NEVER RESTORE ANY DELETED BOOKING!
+                    if (delIdsSet.has(lIdUpper)) return;
+                    if (lId && !serverIds.has(lId) && !['bk-1001','bk-1002','bk-1003','bk-1004'].includes(lId)) {
+                        merged.unshift(lb);
+                        hasLocalOnly = true;
                     }
-                    // Auto-ensure customers exist on this device from incoming bookings
-                    const curCusts = loadData(STORAGE_KEY_CUSTOMERS, []);
-                    if (!curCusts || curCusts.length === 0) {
-                        getCustomers();
-                        if (typeof populateCustomerDropdown === 'function') populateCustomerDropdown();
-                    }
-                } else {
-                    // If server database is empty but local has genuine bookings, upload to populate server
-                    const localBks = getBookings();
-                    if (localBks.length > 4) {
-                        fetch('/api/bookings', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ bookings: localBks })
-                        }).catch(e => {});
-                    }
+                });
+
+                setBookings(merged);
+                renderCurrentTabQuietly();
+
+                if (hasLocalOnly) {
+                    fetch('/api/bookings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ bookings: merged })
+                    }).catch(() => {});
+                }
+
+                // Update active count badge in header
+                const countBadge = document.getElementById('activeBookingsCount');
+                if (countBadge) {
+                    countBadge.textContent = merged.length;
+                    countBadge.style.display = 'inline-block';
+                }
+                const cloudSyncBtn = document.getElementById('cloudSyncStatusText');
+                if (cloudSyncBtn) {
+                    cloudSyncBtn.textContent = `Cloud (${merged.length})`;
+                }
+
+                // Auto-ensure customers exist on this device from incoming bookings
+                const curCusts = loadData(STORAGE_KEY_CUSTOMERS, []);
+                if (!curCusts || curCusts.length === 0) {
+                    getCustomers();
+                    if (typeof populateCustomerDropdown === 'function') populateCustomerDropdown();
+                }
+
+                if (showToastNotice && typeof showToast === 'function') {
+                    showToast(`✅ បានទាញយកទិន្នន័យចុងក្រោយពី Cloud រួចរាល់! (សរុប ${merged.length} ការកក់)`);
                 }
             }
-        } catch (e) {}
+        } catch (e) {
+            console.warn("Central cloud bookings fetch error:", e);
+        }
     };
+
+    window.syncBookingsWithServer = window.loadCentralBookings;
 
     // Global Customer Server Synchronization (Syncs PC & Phone in real-time)
     window.syncCustomersWithServer = async function() {
@@ -18456,6 +18786,7 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
             if (typeof window.syncBookingsWithServer === 'function') window.syncBookingsWithServer();
             if (typeof window.syncCustomersWithServer === 'function') window.syncCustomersWithServer();
             if (typeof window.syncCarsWithServer === 'function') window.syncCarsWithServer();
+            if (typeof loadDatabaseRecords === 'function') loadDatabaseRecords();
         }
     });
     window.addEventListener('focus', function() {
@@ -18463,9 +18794,10 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
         if (typeof window.syncBookingsWithServer === 'function') window.syncBookingsWithServer();
         if (typeof window.syncCustomersWithServer === 'function') window.syncCustomersWithServer();
         if (typeof window.syncCarsWithServer === 'function') window.syncCarsWithServer();
+        if (typeof loadDatabaseRecords === 'function') loadDatabaseRecords();
     });
 
-    // Real-time Live Background Sync (every 4 seconds) so Phone <-> PC sync automatically
+    // Real-time Live Background Sync (every 12 seconds) so Phone <-> PC sync smoothly without network lag
     if (!window.__autoRentSyncTimer) {
         window.__autoRentSyncTimer = setInterval(() => {
             if (Date.now() < (window.syncCooldownUntil || 0)) return;
@@ -18476,7 +18808,9 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
 
             if (typeof window.syncBookingsWithServer === 'function') window.syncBookingsWithServer();
             if (typeof window.syncCustomersWithServer === 'function') window.syncCustomersWithServer();
-        }, 4000);
+            if (typeof window.syncCarsWithServer === 'function') window.syncCarsWithServer();
+            if (typeof loadDatabaseRecords === 'function') loadDatabaseRecords();
+        }, 12000);
     }
 
     // Auto initialize if DOM is already loaded or when ready

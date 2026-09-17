@@ -117,7 +117,31 @@ SAVED_CUSTOMERS_FILE = os.path.join(DATA_DIR, 'saved_customers.json')
 INVOICE_COUNTER_FILE = os.path.join(DATA_DIR, 'invoice_counter.json')
 SAVED_BOOKINGS_FILE = os.path.join(DATA_DIR, 'saved_bookings.json')
 AUTORENT_CUSTOMERS_FILE = os.path.join(DATA_DIR, 'autorent_customers.json')
+DELETED_BOOKINGS_FILE = os.path.join(DATA_DIR, 'deleted_booking_ids.json')
 WEB_DIR = BASE_DIR
+
+def load_deleted_booking_ids():
+    df = DELETED_BOOKINGS_FILE
+    if not os.path.exists(df):
+        df = os.path.join(BASE_DIR, 'deleted_booking_ids.json')
+    ids = load_json(df, [])
+    if not isinstance(ids, list):
+        ids = []
+    return set(str(x).strip().upper() for x in ids if str(x).strip())
+
+def record_deleted_booking_id(bid):
+    if not bid: return
+    norm_id = str(bid).strip().upper()
+    curr_ids = load_deleted_booking_ids()
+    if norm_id not in curr_ids:
+        curr_ids.add(norm_id)
+        out_list = sorted(list(curr_ids))
+        save_json(DELETED_BOOKINGS_FILE, out_list)
+        if DATA_DIR != BASE_DIR:
+            try:
+                save_json(os.path.join(BASE_DIR, 'deleted_booking_ids.json'), out_list)
+            except Exception:
+                pass
 
 def load_json(filepath, default):
     if not os.path.exists(filepath):
@@ -783,9 +807,10 @@ def _merge_booking_records(base_bks, incoming_bks):
 
 
 def _startup_restore_bookings():
-    """Auto-restore car rental bookings from local files, backups, and Supabase Cloud with guaranteed union persistence."""
+    """Auto-restore car rental bookings from local files, backups, and Supabase Cloud only if local data is absent."""
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
+        deleted_ids = load_deleted_booking_ids()
         local_bks = []
         if os.path.exists(SAVED_BOOKINGS_FILE):
             try:
@@ -794,7 +819,19 @@ def _startup_restore_bookings():
             except Exception:
                 local_bks = []
 
-        # Check local backup candidates
+        # If local_bks already has valid data, filter out any deleted IDs and DO NOT resurrect old backups!
+        if isinstance(local_bks, list) and len(local_bks) > 0:
+            cleaned_bks = [b for b in local_bks if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in deleted_ids]
+            if len(cleaned_bks) != len(local_bks):
+                save_json(SAVED_BOOKINGS_FILE, cleaned_bks)
+                if DATA_DIR != BASE_DIR:
+                    try:
+                        save_json(os.path.join(BASE_DIR, 'saved_bookings.json'), cleaned_bks)
+                    except Exception:
+                        pass
+            return
+
+        # Only if local_bks is completely empty (fresh container or empty file), load from candidates
         for cand in [
             os.path.join(BASE_DIR, 'saved_bookings.json'),
             os.path.join(DATA_DIR, 'backups', 'saved_bookings_latest_vault.json'),
@@ -806,22 +843,25 @@ def _startup_restore_bookings():
                 try:
                     with open(cand, 'r', encoding='utf-8') as f:
                         cand_bks = json.load(f)
-                    if isinstance(cand_bks, list) and len(cand_bks) > len(local_bks):
+                    if isinstance(cand_bks, list) and len(cand_bks) > 0:
+                        cand_bks = [b for b in cand_bks if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in deleted_ids]
                         local_bks = _merge_booking_records(local_bks, cand_bks)
                 except Exception:
                     pass
 
-        # Query Supabase Cloud DB
+        # Query Supabase Cloud DB if still empty
         cloud_bks = []
         if supabase_db and supabase_db.is_configured():
             try:
                 print("[Supabase] Querying Supabase Cloud for Bookings on startup...")
                 cloud_bks = supabase_db.fetch_bookings() or []
+                cloud_bks = [b for b in cloud_bks if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in deleted_ids]
             except Exception as se:
                 print(f"[Supabase] Booking startup load warning: {se}")
 
-        # Intelligent union merge: never lose bookings from either local or cloud
+        # Merge and strip deleted bookings
         merged = _merge_booking_records(local_bks, cloud_bks)
+        merged = [b for b in merged if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in deleted_ids]
 
         if merged:
             save_json(SAVED_BOOKINGS_FILE, merged)
@@ -831,13 +871,6 @@ def _startup_restore_bookings():
                 except Exception:
                     pass
             print(f"[DataRestore] ✅ Bookings restored & merged: {len(merged)} bookings active.")
-
-            # Only update Supabase if we have more bookings than cloud had
-            if supabase_db and supabase_db.is_configured() and len(merged) > len(cloud_bks):
-                try:
-                    threading.Thread(target=supabase_db.save_bookings, args=(merged,), daemon=True).start()
-                except Exception:
-                    pass
     except Exception as ex:
         print(f"[DataRestore] Booking restore non-fatal error: {ex}")
 
@@ -915,10 +948,21 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Pragma', 'no-cache')
         self.send_header('Expires', '0')
         self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE, PUT')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
         super().end_headers()
 
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE, PUT')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+        self.send_header('Access-Control-Max-Age', '86400')
+        self.end_headers()
+
     def handle_delete_api(self, params):
-        receipt_no = urllib.parse.unquote(params.get('no', '')).strip().lower().replace('🛂', '').strip()
+        raw_receipt_no = urllib.parse.unquote(params.get('no', '')).strip().replace('🛂', '').strip()
+        receipt_no = raw_receipt_no.lower()
         item_id = urllib.parse.unquote(params.get('id', '')).strip()
         idx_str = str(params.get('index', '')).strip()
 
@@ -927,68 +971,62 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json_response({'success': True, 'message': 'No records to delete'})
             return
 
-        # 1. Check explicit 0-based index parameter
-        if idx_str != '' and idx_str.isdigit():
+        deleted_items = []
+        filtered = []
+
+        # 1. Match primarily by receipt_no, passport_no, item_id, or customer_name (Safe & Accurate!)
+        if (receipt_no and receipt_no != 'n/a') or item_id:
+            clean_target = receipt_no.replace(' ', '')
+            for item in data:
+                r_no = (item.get('receipt_no') or (item.get('group_data') or {}).get('receipt_no') or (item.get('customer') or {}).get('receipt_no') or item.get('passport_no') or item.get('id') or '').strip().lower().replace('🛂', '').strip()
+                clean_rno = r_no.replace(' ', '')
+                pass_no = (item.get('passport_no') or '').strip().lower()
+                cur_id = str(item.get('id', '')).strip()
+                cust_name = (item.get('customer_name') or item.get('full_english_name') or (item.get('group_info') or {}).get('customer_name') or (item.get('customer') or {}).get('full_english_name') or '').strip().lower()
+
+                match = False
+                if item_id and cur_id and cur_id == item_id:
+                    match = True
+                elif receipt_no and receipt_no != 'n/a':
+                    if r_no == receipt_no or clean_rno == clean_target:
+                        match = True
+                    elif pass_no and (pass_no == receipt_no or pass_no.replace(' ', '') == clean_target):
+                        match = True
+                    elif cust_name and cust_name == receipt_no:
+                        match = True
+
+                if match:
+                    deleted_items.append(item)
+                else:
+                    filtered.append(item)
+
+        # 2. Only if NOT matched by receipt_no/id, fallback to explicit index
+        if not deleted_items and idx_str != '' and idx_str.isdigit():
             idx = int(idx_str)
             if 0 <= idx < len(data):
-                popped = data.pop(idx)
-                save_json(SAVED_CUSTOMERS_FILE, data)
-                if supabase_db and supabase_db.is_configured():
-                    del_rno = popped.get('receipt_no') or (popped.get('group_data') or {}).get('receipt_no') or (popped.get('customer') or {}).get('receipt_no')
-                    if del_rno:
-                        threading.Thread(target=supabase_db.delete_invoice, args=(del_rno,), daemon=True).start()
-                self.send_json_response({'success': True})
-                return
+                deleted_items.append(data[idx])
+                filtered = [item for i, item in enumerate(data) if i != idx]
 
-        # 2. Match by id, receipt_no, passport_no, or customer_name
-        filtered = []
-        found = False
-        matched_item = None
-        for item in data:
-            if found:
-                filtered.append(item)
-                continue
-
-            r_no = (item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or item.get('passport_no') or item.get('id') or '').strip().lower().replace('🛂', '').strip()
-            pass_no = (item.get('passport_no') or '').strip().lower()
-            cur_id = str(item.get('id', '')).strip()
-            cust_name = (item.get('customer_name') or item.get('full_english_name') or item.get('group_info', {}).get('customer_name') or item.get('customer', {}).get('full_english_name') or '').strip().lower()
-
-            match = False
-            if item_id and cur_id and cur_id == item_id:
-                match = True
-            elif receipt_no and receipt_no != 'n/a' and (r_no == receipt_no or pass_no == receipt_no):
-                match = True
-            elif receipt_no and receipt_no != 'n/a' and cust_name and cust_name == receipt_no:
-                match = True
-
-            if match:
-                found = True
-                matched_item = item
-                continue
-            filtered.append(item)
-
-        if found:
-            save_json(SAVED_CUSTOMERS_FILE, filtered)
-            if supabase_db and supabase_db.is_configured() and matched_item:
-                del_rno = matched_item.get('receipt_no') or (matched_item.get('group_data') or {}).get('receipt_no') or (matched_item.get('customer') or {}).get('receipt_no')
-                if del_rno:
-                    threading.Thread(target=supabase_db.delete_invoice, args=(del_rno,), daemon=True).start()
-            self.send_json_response({'success': True})
-            return
-
-        # 3. Fallback: numeric receipt_no as index
-        if receipt_no.isdigit():
+        # 3. Numeric receipt_no as index fallback
+        if not deleted_items and receipt_no.isdigit():
             idx = int(receipt_no)
             if 0 <= idx < len(data):
-                popped = data.pop(idx)
-                save_json(SAVED_CUSTOMERS_FILE, data)
-                if supabase_db and supabase_db.is_configured():
-                    del_rno = popped.get('receipt_no') or (popped.get('group_data') or {}).get('receipt_no') or (popped.get('customer') or {}).get('receipt_no')
+                deleted_items.append(data[idx])
+                filtered = [item for i, item in enumerate(data) if i != idx]
+
+        if deleted_items:
+            save_json(SAVED_CUSTOMERS_FILE, filtered)
+            if supabase_db and supabase_db.is_configured():
+                for del_item in deleted_items:
+                    del_rno = del_item.get('receipt_no') or (del_item.get('group_data') or {}).get('receipt_no') or (del_item.get('customer') or {}).get('receipt_no')
+                    if not del_rno and raw_receipt_no and raw_receipt_no.upper() != 'N/A':
+                        del_rno = raw_receipt_no
                     if del_rno:
                         threading.Thread(target=supabase_db.delete_invoice, args=(del_rno,), daemon=True).start()
-                self.send_json_response({'success': True})
-                return
+            if raw_receipt_no and raw_receipt_no.upper() != 'N/A' and supabase_db and supabase_db.is_configured():
+                threading.Thread(target=supabase_db.delete_invoice, args=(raw_receipt_no,), daemon=True).start()
+            self.send_json_response({'success': True, 'deleted_count': len(deleted_items)})
+            return
 
         self.send_json_response({'success': False, 'error': 'Receipt or record not found'}, status=404)
 
@@ -1068,7 +1106,14 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             if not data:
                 _startup_restore_bookings()
                 data = load_json(bk_file, [])
-            self.send_json_response({'success': True, 'bookings': data, 'count': len(data)})
+            del_ids = list(load_deleted_booking_ids())
+            data = [b for b in data if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in del_ids]
+            self.send_json_response({'success': True, 'bookings': data, 'count': len(data), 'deleted_ids': del_ids})
+            return
+
+        elif path == '/api/deleted_booking_ids':
+            del_ids = list(load_deleted_booking_ids())
+            self.send_json_response({'success': True, 'deleted_ids': del_ids, 'count': len(del_ids)})
             return
 
         elif path == '/api/customers':
@@ -2519,7 +2564,8 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 f.write(img_bytes)
 
             cfg = get_telegram_config()
-            res = send_telegram_photo_bot(cfg.get('bot_token', ''), cfg.get('chat_id', ''), temp_path, caption=caption)
+            target_chat = str(req_data.get('chat_id', '')).strip() or cfg.get('chat_id', '')
+            res = send_telegram_photo_bot(cfg.get('bot_token', ''), target_chat, temp_path, caption=caption)
             try:
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
@@ -2846,13 +2892,21 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             delete_id = req_data.get('delete_id')
 
             current_bks = load_json(bk_file, [])
+            del_ids = load_deleted_booking_ids()
 
             # 1. Explicit Delete Handler
             if action == 'delete' or delete_id:
-                target_id = str(delete_id or '').strip().lower()
+                target_id = str(delete_id or '').strip().upper()
                 if target_id:
-                    current_bks = [b for b in current_bks if str(b.get('id') or '').strip().lower() != target_id]
+                    record_deleted_booking_id(target_id)
+                    del_ids.add(target_id)
+                    current_bks = [b for b in current_bks if str(b.get('id') or '').strip().upper() != target_id]
                     save_json(bk_file, current_bks)
+                    if DATA_DIR != BASE_DIR:
+                        try:
+                            save_json(os.path.join(BASE_DIR, 'saved_bookings.json'), current_bks)
+                        except Exception:
+                            pass
                     if supabase_db and supabase_db.is_configured():
                         try:
                             threading.Thread(target=supabase_db.delete_booking, args=(target_id,), daemon=True).start()
@@ -2862,21 +2916,25 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json_response({'success': True, 'count': len(current_bks), 'deleted_id': target_id})
                 return
 
-            # 2. Batch Bookings Update (Safe union merge to prevent stale client truncation)
+            # 2. Batch Bookings Update (Safe union merge to prevent stale client truncation, strictly ignoring deleted IDs)
             elif isinstance(bookings, list):
+                # Filter out any deleted bookings immediately!
+                incoming_valid = [b for b in bookings if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in del_ids]
+                current_bks = [b for b in current_bks if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in del_ids]
+
                 seen_ids = set()
                 max_num = 1000
                 for item in current_bks:
                     if isinstance(item, dict):
                         m = re.match(r'^BK-(\d+)$', str(item.get('id') or '').strip())
                         if m: max_num = max(max_num, int(m.group(1)))
-                for item in bookings:
+                for item in incoming_valid:
                     if isinstance(item, dict):
                         m = re.match(r'^BK-(\d+)$', str(item.get('id') or '').strip())
                         if m: max_num = max(max_num, int(m.group(1)))
 
                 sanitized_bks = []
-                for item in bookings:
+                for item in incoming_valid:
                     if not isinstance(item, dict): continue
                     bid = str(item.get('id') or '').strip()
                     if not bid or bid in seen_ids:
@@ -2886,9 +2944,15 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                     seen_ids.add(bid)
                     sanitized_bks.append(item)
 
-                # Union merge prevents wiping server records if client only has partial list
+                # Union merge prevents wiping server records if client only has partial list, but strictly respects deleted IDs
                 final_bks = _merge_booking_records(current_bks, sanitized_bks)
+                final_bks = [b for b in final_bks if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in del_ids]
                 save_json(bk_file, final_bks)
+                if DATA_DIR != BASE_DIR:
+                    try:
+                        save_json(os.path.join(BASE_DIR, 'saved_bookings.json'), final_bks)
+                    except Exception:
+                        pass
                 if supabase_db and supabase_db.is_configured():
                     try:
                         threading.Thread(target=supabase_db.save_bookings, args=(final_bks,), daemon=True).start()
@@ -2899,8 +2963,11 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
 
             # 3. Single Booking Update or Insert
             elif isinstance(booking, dict) and booking.get('id'):
-                target_id = str(booking['id']).strip()
-                idx = next((i for i, b in enumerate(current_bks) if str(b.get('id') or '').strip() == target_id), -1)
+                target_id = str(booking['id']).strip().upper()
+                if target_id in del_ids:
+                    self.send_json_response({'success': False, 'error': 'Booking was deleted'}, status=400)
+                    return
+                idx = next((i for i, b in enumerate(current_bks) if str(b.get('id') or '').strip().upper() == target_id), -1)
                 if idx >= 0:
                     current_bks[idx].update(booking)
                 else:
