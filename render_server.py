@@ -1405,8 +1405,35 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
 
         if path == '/' or path == '' or path == '/index.html':
             try:
-                with open('index.html', 'rb') as f:
-                    content = f.read()
+                with open('index.html', 'r', encoding='utf-8', errors='ignore') as f:
+                    html_text = f.read()
+
+                # Preload active bookings and deleted ids directly into HTML
+                bk_file = os.path.join(DATA_DIR, 'saved_bookings.json')
+                if not os.path.exists(bk_file):
+                    bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
+                bks = load_json(bk_file, [])
+                del_ids = load_deleted_booking_ids()
+                clean_bks = [b for b in bks if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in del_ids]
+
+                preload_js = f"""<script id="__SERVER_PRELOADED_DATA__">
+window.__SERVER_PRELOADED_BOOKINGS__ = {json.dumps(clean_bks, ensure_ascii=False)};
+window.__SERVER_DELETED_BOOKING_IDS__ = {json.dumps(list(del_ids), ensure_ascii=False)};
+try {{
+    if (Array.isArray(window.__SERVER_PRELOADED_BOOKINGS__) && window.__SERVER_PRELOADED_BOOKINGS__.length > 0) {{
+        localStorage.setItem('autorent_bookings', JSON.stringify(window.__SERVER_PRELOADED_BOOKINGS__));
+    }}
+    if (Array.isArray(window.__SERVER_DELETED_BOOKING_IDS__) && window.__SERVER_DELETED_BOOKING_IDS__.length > 0) {{
+        localStorage.setItem('autorent_deleted_booking_ids', JSON.stringify(window.__SERVER_DELETED_BOOKING_IDS__));
+    }}
+}} catch(e) {{}}
+</script>"""
+                if '</head>' in html_text:
+                    html_text = html_text.replace('</head>', preload_js + '\n</head>', 1)
+                else:
+                    html_text = preload_js + html_text
+
+                content = html_text.encode('utf-8')
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/html; charset=utf-8')
                 self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
