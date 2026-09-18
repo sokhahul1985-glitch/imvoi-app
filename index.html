@@ -6285,12 +6285,13 @@ input[type="date"] {
     
 
 <script>
-        // Transparent Hybrid API Routing: If opened locally (file://), route seamlessly to Render Cloud!
+        // Transparent Hybrid API Routing: If opened on GitHub Pages, file://, or non-backend host, route seamlessly to Render Cloud!
         (function() {
             try {
                 const originalFetch = window.fetch;
-                const isFileProto = window.location.protocol === 'file:' || !window.location.host;
-                if (isFileProto && typeof originalFetch === 'function') {
+                const isCloudHost = window.location.hostname.includes('onrender.com') || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                const needsCloudRouting = !isCloudHost || window.location.protocol === 'file:' || !window.location.host;
+                if (needsCloudRouting && typeof originalFetch === 'function') {
                     window.fetch = function(input, init) {
                         if (typeof input === 'string' && input.startsWith('/api/')) {
                             input = 'https://imvoi-app-1.onrender.com' + input;
@@ -12222,6 +12223,21 @@ document.addEventListener('paste', function(e) {
             localStorage.setItem(key, JSON.stringify(val));
         } catch (e) {
             console.error('Error saving data to ' + key, e);
+            if (key === STORAGE_KEY_BOOKINGS && Array.isArray(val)) {
+                try {
+                    // Quota exceeded recovery: keep full images on newest bookings, strip heavy base64 dataUrls on older bookings
+                    const slimmed = val.map((b, idx) => {
+                        if (idx > 5 && b && Array.isArray(b.images) && b.images.length > 0) {
+                            return { ...b, images: b.images.map(img => ({ id: img.id, name: img.name, category: img.category, size: img.size, date: img.date, url: '' })) };
+                        }
+                        return b;
+                    });
+                    localStorage.setItem(key, JSON.stringify(slimmed));
+                    console.warn('Saved slimmed bookings to avoid LocalStorage quota overflow');
+                } catch(e2) {
+                    console.error('Critical: LocalStorage fully exhausted', e2);
+                }
+            }
         }
     }
 
@@ -15389,7 +15405,7 @@ document.addEventListener('paste', function(e) {
         (async () => {
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 7000);
+                const timeoutId = setTimeout(() => controller.abort(), 35000);
 
                 const resp = await fetch('/api/bookings', {
                     method: 'POST',
@@ -16994,8 +17010,16 @@ document.addEventListener('paste', function(e) {
             }
         }
 
-        // 1. Customer Name (User requested to NOT auto-capture this field; leave for manual entry)
-        // Intentionally keep bookingCustomerName untouched/blank so user enters or selects customer manually.
+        // 1. Customer Name: Auto-fill from Telegram if field is currently blank
+        if (cleanName) {
+            const custNameEl = document.getElementById('bookingCustomerName');
+            if (custNameEl && !custNameEl.value.trim()) {
+                custNameEl.value = cleanName;
+                if (typeof validateBookingCustomerName === 'function') {
+                    validateBookingCustomerName();
+                }
+            }
+        }
 
         // 2. Phone Number
         const phoneMatch = text.match(/(?:លេខ|ទូរស័ព្ទ|phone|tel|call|เบอร์)[\s:៖]*([0-9\s-]{8,15})/i) ||
