@@ -12218,40 +12218,58 @@ document.addEventListener('paste', function(e) {
         }
     }
 
+    let _memoryBookingsCache = null;
+
     function saveData(key, val) {
+        if (key === STORAGE_KEY_BOOKINGS && Array.isArray(val)) {
+            _memoryBookingsCache = val;
+        }
         try {
             localStorage.setItem(key, JSON.stringify(val));
         } catch (e) {
-            console.error('Error saving data to ' + key, e);
+            console.warn('Error saving data to ' + key, e);
             if (key === STORAGE_KEY_BOOKINGS && Array.isArray(val)) {
                 try {
-                    // Quota exceeded recovery: keep full images on newest bookings, strip heavy base64 dataUrls on older bookings
+                    localStorage.removeItem('autorent_tg_inbox_list');
+                    localStorage.removeItem('autorent_tg_analysis_list');
+                    localStorage.removeItem('received_telegram_messages');
+                } catch(e3) {}
+
+                try {
+                    // Quota exceeded recovery: keep full images on newest 3 bookings, strip heavy base64 dataUrls on older bookings
                     const slimmed = val.map((b, idx) => {
-                        if (idx > 5 && b && Array.isArray(b.images) && b.images.length > 0) {
+                        if (idx >= 3 && b && Array.isArray(b.images) && b.images.length > 0) {
                             return { ...b, images: b.images.map(img => ({ id: img.id, name: img.name, category: img.category, size: img.size, date: img.date, url: '' })) };
                         }
                         return b;
                     });
                     localStorage.setItem(key, JSON.stringify(slimmed));
-                    console.warn('Saved slimmed bookings to avoid LocalStorage quota overflow');
+                    console.log('✅ Saved slimmed bookings to LocalStorage');
                 } catch(e2) {
-                    console.error('Critical: LocalStorage fully exhausted', e2);
+                    console.warn('Critical: LocalStorage fully exhausted', e2);
                 }
             }
         }
     }
 
     function getBookings() {
+        if (_memoryBookingsCache && Array.isArray(_memoryBookingsCache) && _memoryBookingsCache.length > 0) {
+            return _memoryBookingsCache;
+        }
         let list = loadData(STORAGE_KEY_BOOKINGS, null);
         if (Array.isArray(list) && list.length > 0) {
+            _memoryBookingsCache = list;
             return list;
         }
         // Direct Fallback to preloaded server data if localStorage is empty or []
         if (typeof window !== 'undefined' && window.__SERVER_PRELOADED_BOOKINGS__ && Array.isArray(window.__SERVER_PRELOADED_BOOKINGS__) && window.__SERVER_PRELOADED_BOOKINGS__.length > 0) {
             try { saveData(STORAGE_KEY_BOOKINGS, window.__SERVER_PRELOADED_BOOKINGS__); } catch(e) {}
+            _memoryBookingsCache = window.__SERVER_PRELOADED_BOOKINGS__;
             return window.__SERVER_PRELOADED_BOOKINGS__;
         }
-        return getInitialBookings();
+        const init = getInitialBookings();
+        _memoryBookingsCache = init;
+        return init;
     }
     function setBookings(b) {
         if (!Array.isArray(b)) {
@@ -15410,7 +15428,7 @@ document.addEventListener('paste', function(e) {
                 const resp = await fetch('/api/bookings', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ booking: newBooking, bookings: bookings }),
+                    body: JSON.stringify({ booking: newBooking }),
                     signal: controller.signal
                 });
                 clearTimeout(timeoutId);

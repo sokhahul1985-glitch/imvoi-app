@@ -2943,7 +2943,28 @@ try {{
                 self.send_json_response({'success': True, 'count': len(current_bks), 'deleted_id': target_id})
                 return
 
-            # 2. Batch Bookings Update (Safe union merge to prevent stale client truncation, strictly ignoring deleted IDs)
+            # 2. Single Booking Update or Insert (Fast & Lightweight)
+            elif isinstance(booking, dict) and booking.get('id'):
+                target_id = str(booking['id']).strip().upper()
+                if target_id in del_ids:
+                    self.send_json_response({'success': False, 'error': 'Booking was deleted'}, status=400)
+                    return
+                idx = next((i for i, b in enumerate(current_bks) if str(b.get('id') or '').strip().upper() == target_id), -1)
+                if idx >= 0:
+                    current_bks[idx].update(booking)
+                else:
+                    current_bks.insert(0, booking)
+                save_json(bk_file, current_bks)
+                if supabase_db and supabase_db.is_configured():
+                    try:
+                        threading.Thread(target=supabase_db.upsert_single_booking, args=(booking,), daemon=True).start()
+                        threading.Thread(target=supabase_db.save_bookings, args=(current_bks,), daemon=True).start()
+                    except Exception:
+                        pass
+                self.send_json_response({'success': True, 'booking': booking, 'count': len(current_bks)})
+                return
+
+            # 3. Batch Bookings Update (Safe union merge to prevent stale client truncation, strictly ignoring deleted IDs)
             elif isinstance(bookings, list):
                 # Filter out any deleted bookings immediately!
                 incoming_valid = [b for b in bookings if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in del_ids]
@@ -2986,27 +3007,6 @@ try {{
                     except Exception:
                         pass
                 self.send_json_response({'success': True, 'count': len(final_bks)})
-                return
-
-            # 3. Single Booking Update or Insert
-            elif isinstance(booking, dict) and booking.get('id'):
-                target_id = str(booking['id']).strip().upper()
-                if target_id in del_ids:
-                    self.send_json_response({'success': False, 'error': 'Booking was deleted'}, status=400)
-                    return
-                idx = next((i for i, b in enumerate(current_bks) if str(b.get('id') or '').strip().upper() == target_id), -1)
-                if idx >= 0:
-                    current_bks[idx].update(booking)
-                else:
-                    current_bks.insert(0, booking)
-                save_json(bk_file, current_bks)
-                if supabase_db and supabase_db.is_configured():
-                    try:
-                        threading.Thread(target=supabase_db.upsert_single_booking, args=(booking,), daemon=True).start()
-                        threading.Thread(target=supabase_db.save_bookings, args=(current_bks,), daemon=True).start()
-                    except Exception:
-                        pass
-                self.send_json_response({'success': True, 'booking': booking, 'count': len(current_bks)})
                 return
             else:
                 self.send_json_response({'success': False, 'error': 'Invalid booking data'}, status=400)

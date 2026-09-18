@@ -1459,8 +1459,35 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
 
         if path == '/' or path == '' or path == '/index.html':
             try:
-                with open('index.html', 'rb') as f:
-                    content = f.read()
+                with open('index.html', 'r', encoding='utf-8', errors='ignore') as f:
+                    html_text = f.read()
+
+                # Preload active bookings and deleted ids directly into HTML
+                bk_file = os.path.join(DATA_DIR, 'saved_bookings.json')
+                if not os.path.exists(bk_file):
+                    bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
+                bks = load_json(bk_file, [])
+                del_ids = load_deleted_booking_ids()
+                clean_bks = [b for b in bks if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in del_ids]
+
+                preload_js = f"""<script id="__SERVER_PRELOADED_DATA__">
+window.__SERVER_PRELOADED_BOOKINGS__ = {json.dumps(clean_bks, ensure_ascii=False)};
+window.__SERVER_DELETED_BOOKING_IDS__ = {json.dumps(list(del_ids), ensure_ascii=False)};
+try {{
+    if (Array.isArray(window.__SERVER_PRELOADED_BOOKINGS__) && window.__SERVER_PRELOADED_BOOKINGS__.length > 0) {{
+        localStorage.setItem('autorent_bookings', JSON.stringify(window.__SERVER_PRELOADED_BOOKINGS__));
+    }}
+    if (Array.isArray(window.__SERVER_DELETED_BOOKING_IDS__) && window.__SERVER_DELETED_BOOKING_IDS__.length > 0) {{
+        localStorage.setItem('autorent_deleted_booking_ids', JSON.stringify(window.__SERVER_DELETED_BOOKING_IDS__));
+    }}
+}} catch(e) {{}}
+</script>"""
+                if '</head>' in html_text:
+                    html_text = html_text.replace('</head>', preload_js + '\n</head>', 1)
+                else:
+                    html_text = preload_js + html_text
+
+                content = html_text.encode('utf-8')
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/html; charset=utf-8')
                 self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
@@ -2995,7 +3022,34 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json_response({'success': True, 'count': len(current_bks), 'deleted_id': target_id, 'deleted_ids': list(del_ids)})
                 return
 
-            # 2. Batch Bookings Update (Safe union merge, strictly ignoring deleted IDs)
+            # 2. Single Booking Update or Insert (Fast & Lightweight)
+            elif isinstance(booking, dict) and booking.get('id'):
+                target_id = str(booking['id']).strip().upper()
+                if target_id in del_ids:
+                    # Never insert or resurrect an explicitly deleted booking
+                    self.send_json_response({'success': False, 'error': 'Booking was deleted'}, status=400)
+                    return
+                idx = next((i for i, b in enumerate(current_bks) if str(b.get('id') or '').strip().upper() == target_id), -1)
+                if idx >= 0:
+                    current_bks[idx].update(booking)
+                else:
+                    current_bks.insert(0, booking)
+                save_json(bk_file, current_bks)
+                if DATA_DIR != BASE_DIR:
+                    try:
+                        save_json(os.path.join(BASE_DIR, 'saved_bookings.json'), current_bks)
+                    except Exception:
+                        pass
+                if supabase_db and supabase_db.is_configured():
+                    try:
+                        threading.Thread(target=supabase_db.upsert_single_booking, args=(booking,), daemon=True).start()
+                        threading.Thread(target=supabase_db.save_bookings, args=(current_bks,), daemon=True).start()
+                    except Exception:
+                        pass
+                self.send_json_response({'success': True, 'booking': booking, 'count': len(current_bks)})
+                return
+
+            # 3. Batch Bookings Update (Safe union merge, strictly ignoring deleted IDs)
             elif isinstance(bookings, list):
                 # Filter out any deleted bookings immediately!
                 incoming_valid = [b for b in bookings if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in del_ids]
@@ -3038,33 +3092,6 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                     except Exception:
                         pass
                 self.send_json_response({'success': True, 'count': len(final_bks)})
-                return
-
-            # 3. Single Booking Update or Insert
-            elif isinstance(booking, dict) and booking.get('id'):
-                target_id = str(booking['id']).strip().upper()
-                if target_id in del_ids:
-                    # Never insert or resurrect an explicitly deleted booking
-                    self.send_json_response({'success': False, 'error': 'Booking was deleted'}, status=400)
-                    return
-                idx = next((i for i, b in enumerate(current_bks) if str(b.get('id') or '').strip().upper() == target_id), -1)
-                if idx >= 0:
-                    current_bks[idx].update(booking)
-                else:
-                    current_bks.insert(0, booking)
-                save_json(bk_file, current_bks)
-                if DATA_DIR != BASE_DIR:
-                    try:
-                        save_json(os.path.join(BASE_DIR, 'saved_bookings.json'), current_bks)
-                    except Exception:
-                        pass
-                if supabase_db and supabase_db.is_configured():
-                    try:
-                        threading.Thread(target=supabase_db.upsert_single_booking, args=(booking,), daemon=True).start()
-                        threading.Thread(target=supabase_db.save_bookings, args=(current_bks,), daemon=True).start()
-                    except Exception:
-                        pass
-                self.send_json_response({'success': True, 'booking': booking, 'count': len(current_bks)})
                 return
             else:
                 self.send_json_response({'success': False, 'error': 'Invalid booking data'}, status=400)
