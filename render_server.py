@@ -2947,8 +2947,17 @@ try {{
             elif isinstance(booking, dict) and booking.get('id'):
                 target_id = str(booking['id']).strip().upper()
                 if target_id in del_ids:
-                    self.send_json_response({'success': False, 'error': 'Booking was deleted'}, status=400)
-                    return
+                    # Automatic renumbering: never fail or reject a new booking because of tombstone collision!
+                    max_num = 1000
+                    for item in current_bks:
+                        m = re.match(r'^BK-(\d+)$', str(item.get('id') or '').strip())
+                        if m: max_num = max(max_num, int(m.group(1)))
+                    for d_id in del_ids:
+                        m = re.match(r'^BK-(\d+)$', str(d_id).strip())
+                        if m: max_num = max(max_num, int(m.group(1)))
+                    max_num += 1
+                    target_id = f"BK-{max_num}"
+                    booking['id'] = target_id
                 idx = next((i for i, b in enumerate(current_bks) if str(b.get('id') or '').strip().upper() == target_id), -1)
                 if idx >= 0:
                     current_bks[idx].update(booking)
@@ -3011,6 +3020,21 @@ try {{
             else:
                 self.send_json_response({'success': False, 'error': 'Invalid booking data'}, status=400)
                 return
+
+        elif path == '/api/deleted_booking_ids':
+            new_ids = req_data.get('deleted_ids')
+            if isinstance(new_ids, list):
+                out_list = sorted(list(set(str(x).strip().upper() for x in new_ids if str(x).strip())))
+                save_json(DELETED_BOOKINGS_FILE, out_list)
+                if DATA_DIR != BASE_DIR:
+                    try:
+                        save_json(os.path.join(BASE_DIR, 'deleted_booking_ids.json'), out_list)
+                    except Exception:
+                        pass
+                self.send_json_response({'success': True, 'deleted_ids': out_list})
+                return
+            self.send_json_response({'success': False, 'error': 'Invalid deleted_ids'}, status=400)
+            return
 
         elif path == '/api/customers':
             cust_file = os.path.join(DATA_DIR, 'autorent_customers.json')

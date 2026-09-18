@@ -15326,12 +15326,24 @@ document.addEventListener('paste', function(e) {
         function getSafeNextBookingId(bks) {
             let maxNum = 1000;
             (bks || []).forEach(b => {
-                const m = String(b.id || '').match(/BK-(\d+)/);
+                const m = String(b.id || '').match(/BK-(\d+)/i);
                 if (m) {
                     const val = parseInt(m[1], 10);
                     if (!isNaN(val) && val > maxNum) maxNum = val;
                 }
             });
+            // Ensure we never collide with any tombstone deleted ID!
+            try {
+                const delKey = 'autorent_deleted_booking_ids';
+                const delList = JSON.parse(localStorage.getItem(delKey) || '[]');
+                (delList || []).forEach(id => {
+                    const m = String(id || '').match(/BK-(\d+)/i);
+                    if (m) {
+                        const val = parseInt(m[1], 10);
+                        if (!isNaN(val) && val > maxNum) maxNum = val;
+                    }
+                });
+            } catch(e) {}
             return 'BK-' + (maxNum + 1);
         }
 
@@ -19353,6 +19365,10 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
     // Global Server Synchronization Function (Syncs PC & Phone in real-time)
     // Direct Central Cloud Database Loader (100% Identical Across All Devices)
     window.loadCentralBookings = async function(showToastNotice) {
+        if (Date.now() < (window.syncCooldownUntil || 0)) {
+            console.log('⏳ Active save cooldown in effect, skipping loadCentralBookings to protect freshly saved data');
+            return;
+        }
         if (showToastNotice && typeof showToast === 'function') {
             showToast('⏳ កំពុងទាញយកទិន្នន័យពី Central Cloud Server...', true);
         }
@@ -19378,8 +19394,15 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
                 const serverBks = data.bookings.filter(b => b && b.id && !delIdsSet.has(String(b.id).trim().toUpperCase()));
                 const serverIds = new Set(serverBks.map(b => String(b.id || '').trim().toLowerCase()));
 
-                // Lossless merge: keep ONLY genuine offline local bookings that have NOT been deleted
-                let merged = [...serverBks];
+                // Smart merge: keep local edits and local bookings so background sync never wipes freshly saved bookings!
+                const localMap = new Map((Array.isArray(localBks) ? localBks : []).map(b => [String(b.id || '').trim().toUpperCase(), b]));
+                let merged = serverBks.map(sb => {
+                    const sId = String(sb.id || '').trim().toUpperCase();
+                    if (localMap.has(sId)) {
+                        return { ...sb, ...localMap.get(sId) };
+                    }
+                    return sb;
+                });
                 let hasLocalOnly = false;
                 (Array.isArray(localBks) ? localBks : []).forEach(lb => {
                     if (!lb || typeof lb !== 'object') return;
