@@ -1,0 +1,1249 @@
+/* ==========================================================================
+   AutoRent Pro - Car Rental & Booking Management Styles
+   Matching exact UI & UX from AutoRent Pro system
+   ========================================================================== */
+
+:root {
+    --ar-primary: #0284c7;
+    --ar-primary-hover: #0369a1;
+    --ar-primary-light: #e0f2fe;
+    --ar-emerald: #059669;
+    --ar-amber: #d97706;
+    --ar-rose: #dc2626;
+    --ar-indigo: #4f46e5;
+    --ar-telegram: #0088cc;
+    --ar-border: #cbd5e1;
+    --ar-card-bg: #ffffff;
+    --ar-body-bg: #f8fafc;
+    --ar-text-main: #0f172a;
+    --ar-text-sub: #475569;
+    --ar-radius: 12px;
+}
+
+#autoRentManagementContainer {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    font-family: 'Kantumruy Pro', 'Plus Jakarta Sans', system-ui, sans-serif;
+    color: var(--ar-text-main);
+}
+
+/* AutoRent Header & Top Navigation */
+.ar-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 18px;
+    background: #ffffff;
+    border: 1.5px solid var(--ar-border);
+    border-radius: var(--ar-radius);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+    margin-bottom: 14px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    position: sticky;
+    top: 56px;
+    z-index: 990;
+}
+
+.ar-logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ar-logo-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    box-shadow: 0 3px 8px rgba(2, 132, 199, 0.35);
+}
+
+.ar-logo-text h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+}
+
+.ar-logo-text h2 span {
+    color: #0284c7;
+}
+
+.ar-logo-text p {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+/* Tab Navigation Menu */
+.ar-nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.ar-nav-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 9px;
+    border: 1.5px solid transparent;
+    background: #f1f5f9;
+    color: #334155;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.ar-nav-item:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.ar-nav-item.active {
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    color: #ffffff;
+    border-color: #0284c7;
+    box-shadow: 0 3px 10px rgba(2, 132, 199, 0.35);
+}
+
+.ar-nav-item .badge-count {
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 1px 6px;
+    border-radius: 10px;
+    line-height: 1.2;
+}
+
+.ar-nav-item.active .badge-count {
+    background: #ffffff;
+    color: #0369a1;
+}
+
+/* Header Right Actions */
+.ar-top-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+}
+
+/* Global Buttons */
+.btn-ar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    text-decoration: none;
+    line-height: 1.4;
+}
+
+.btn-ar-primary {
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    color: #ffffff;
+    border-color: #0284c7;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+}
+.btn-ar-primary:hover {
+    background: linear-gradient(135deg, #0369a1, #1d4ed8);
+}
+
+.btn-ar-success {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: #ffffff;
+    border-color: #059669;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+}
+
+.btn-ar-outline {
+    background: #ffffff;
+    color: #334155;
+    border: 1.5px solid #cbd5e1;
+}
+.btn-ar-outline:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+.btn-ar-telegram {
+    background: #0088cc;
+    color: #ffffff;
+    border-color: #0077b5;
+}
+.btn-ar-telegram:hover {
+    background: #0077b5;
+}
+
+/* Views Tab Container */
+.tab-view {
+    display: none;
+    animation: arFadeIn 0.2s ease;
+}
+.tab-view.active {
+    display: block;
+}
+@keyframes arFadeIn {
+    from { opacity: 0; transform: translateY(3px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Stats Cards Grid (Hidden per user request) */
+.stats-grid {
+    display: none !important;
+}
+
+.stat-card {
+    background: #ffffff;
+    border: 1.5px solid var(--ar-border);
+    border-radius: var(--ar-radius);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    border-color: var(--ar-primary);
+}
+
+.stat-card .stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.stat-card.total-cars .stat-icon { background: #e0f2fe; color: #0284c7; }
+.stat-card.active-rentals .stat-icon { background: #dcfce7; color: #16a34a; }
+.stat-card.due-today .stat-icon { background: #fef3c7; color: #d97706; }
+.stat-card.available-cars .stat-icon { background: #ede9fe; color: #7c3aed; }
+
+.stat-meta p {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #64748b;
+    font-weight: 700;
+}
+
+.stat-meta h3 {
+    margin: 2px 0 3px 0;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.stat-sub {
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+.text-primary { color: #0284c7 !important; }
+.text-success { color: #16a34a !important; }
+.text-warning { color: #d97706 !important; }
+.text-danger { color: #dc2626 !important; }
+.text-info { color: #0088cc !important; }
+
+/* Dashboard & Common Cards */
+.dashboard-card, .ar-card {
+    background: #ffffff;
+    border: 1.5px solid var(--ar-border);
+    border-radius: var(--ar-radius);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    overflow: hidden;
+    margin-bottom: 18px;
+}
+
+.dashboard-card .card-header, .ar-card-header {
+    padding: 12px 18px;
+    border-bottom: 1.5px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-title h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+/* Schedule & Bookings Table */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    border-radius: 8px;
+    height: auto;
+    max-height: calc(var(--app-effective-vh, 100vh) - 200px);
+    margin-bottom: 4px;
+    border-bottom: 2px solid #cbd5e1;
+}
+
+body.table-maximized-mode .navbar,
+body.table-maximized-mode .ar-header-bar {
+    display: none !important;
+}
+body.table-maximized-mode #autoRentManagementContainer {
+    margin-top: 0 !important;
+}
+
+.table-responsive::-webkit-scrollbar {
+    width: 8px;
+    height: 12px;
+}
+.table-responsive::-webkit-scrollbar-track {
+    background: #e2e8f0;
+    border-radius: 6px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 6px;
+    border: 2px solid #e2e8f0;
+}
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #0284c7;
+}
+
+.schedule-table {
+    width: max-content !important;
+    min-width: auto !important;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+}
+
+.schedule-table th {
+    background: #e2e8f0;
+    color: #0f172a;
+    font-weight: 900;
+    font-size: 13.5px;
+    padding: 7px 8px;
+    text-align: left;
+    border-bottom: 2px solid #94a3b8;
+    white-space: nowrap;
+    letter-spacing: 0.1px;
+    position: sticky;
+    top: 0;
+    z-index: 25;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.schedule-table td {
+    padding: 6px 8px;
+    border-bottom: 1.5px solid #e2e8f0;
+    vertical-align: middle;
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.schedule-table tr {
+    white-space: nowrap;
+}
+
+.schedule-table tbody tr:hover {
+    background: #f1f5f9;
+}
+
+.table-badge-route {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-weight: 800;
+    font-size: 12px;
+}
+
+.table-badge-car {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 11.5px;
+    background: #f1f5f9;
+    color: #1e293b;
+    border: 1px solid #cbd5e1;
+    margin: 2px;
+}
+
+.badge-vip {
+    background: #fef3c7;
+    color: #b45309;
+    border-color: #f59e0b;
+}
+
+/* Filter Toolbar */
+.filter-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.filter-tab {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1.5px solid #cbd5e1;
+    background: #ffffff;
+    color: #475569;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.filter-tab:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.filter-tab.active {
+    background: #0284c7;
+    color: #ffffff;
+    border-color: #0284c7;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+}
+
+.filter-search-box {
+    position: relative;
+    min-width: 220px;
+    flex: 1;
+    max-width: 340px;
+}
+
+.filter-search-box i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+.filter-search-box input {
+    width: 100%;
+    height: 36px;
+    border-radius: 8px;
+    border: 1.5px solid #cbd5e1;
+    padding: 4px 10px 4px 32px;
+    font-size: 12.5px;
+    box-sizing: border-box;
+    outline: none;
+    font-family: inherit;
+}
+.filter-search-box input:focus {
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+/* Cars Fleet Grid */
+.cars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.ar-car-card {
+    background: #ffffff;
+    border: 1.5px solid var(--ar-border);
+    border-radius: var(--ar-radius);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.ar-car-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    border-color: var(--ar-primary);
+}
+
+.ar-car-img-wrap {
+    width: 100%;
+    height: 150px;
+    background: #f1f5f9;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ar-car-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ar-car-body {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.ar-car-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.ar-car-title-row h4 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.ar-car-plate {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 11.5px;
+    color: #0f172a;
+    letter-spacing: 0.5px;
+}
+
+.ar-car-price {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #0284c7;
+}
+
+.ar-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.ar-status-available { background: #dcfce7; color: #15803d; }
+.ar-status-rented { background: #fee2e2; color: #b91c1c; }
+.ar-status-maintenance { background: #fef3c7; color: #b45309; }
+
+/* Customers Grid */
+.customers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 16px;
+}
+
+.ar-customer-card {
+    background: #ffffff;
+    border: 1.5px solid var(--ar-border);
+    border-radius: var(--ar-radius);
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.ar-cust-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+/* Calendar View */
+.calendar-wrapper {
+    background: #ffffff;
+    border: 1.5px solid var(--ar-border);
+    border-radius: var(--ar-radius);
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.calendar-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.calendar-legend {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    font-weight: 700;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+.bg-success { background: #16a34a !important; }
+.bg-warning { background: #d97706 !important; }
+.bg-danger { background: #dc2626 !important; }
+.bg-info { background: #0284c7 !important; }
+
+.calendar-grid-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: 800;
+    color: #475569;
+    padding-bottom: 8px;
+    border-bottom: 1.5px solid #e2e8f0;
+    font-size: 12px;
+}
+
+.calendar-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.cal-day-cell {
+    min-height: 80px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 4px 6px;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 11px;
+}
+.cal-day-cell.today {
+    background: #f0f9ff;
+    border-color: #0284c7;
+}
+.cal-day-cell .day-number {
+    font-weight: 800;
+    color: #0f172a;
+}
+.cal-booking-chip {
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+/* Settings View Grid */
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.backup-actions-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Modals */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(3px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    overflow-y: auto;
+}
+
+.modal-backdrop.show, .modal-backdrop[style*="display: flex"] {
+    display: flex !important;
+}
+
+.modal-dialog {
+    background: #ffffff;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 650px;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    animation: arModalPop 0.2s ease-out;
+}
+
+.modal-dialog form {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    margin: 0;
+}
+
+.modal-dialog.modal-xl { max-width: 1040px; }
+.modal-dialog.modal-lg { max-width: 820px; }
+
+@keyframes arModalPop {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+    padding: 14px 18px;
+    border-bottom: 1.5px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    flex-shrink: 0;
+}
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #64748b;
+    cursor: pointer;
+    padding: 4px;
+}
+.modal-close-btn:hover { color: #dc2626; }
+
+.modal-body {
+    padding: 18px;
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.modal-footer {
+    padding: 12px 18px;
+    border-top: 1.5px solid #e2e8f0;
+    background: #f8fafc;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* Booking Modal 2-Column Grid */
+.booking-modal-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 16px;
+    align-items: stretch;
+}
+@media (max-width: 860px) {
+    .booking-modal-grid { grid-template-columns: 1fr; }
+}
+
+.telegram-paste-box {
+    background: #f0f9ff;
+    border: 1.5px solid #38bdf8;
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+.telegram-paste-box #telegramPasteInput {
+    flex: 1 1 auto;
+    min-height: 240px;
+    height: 100%;
+    resize: vertical;
+}
+
+.telegram-paste-box::-webkit-scrollbar,
+#tgBotRecentCardsList::-webkit-scrollbar {
+    width: 6px;
+}
+.telegram-paste-box::-webkit-scrollbar-thumb,
+#tgBotRecentCardsList::-webkit-scrollbar-thumb {
+    background: #bae6fd;
+    border-radius: 3px;
+}
+.telegram-paste-box::-webkit-scrollbar-thumb:hover,
+#tgBotRecentCardsList::-webkit-scrollbar-thumb:hover {
+    background: #0284c7;
+}
+
+.form-row-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+@media (max-width: 600px) {
+    .form-row-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+.form-row-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.form-row-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+.form-group label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 3px;
+}
+
+.form-control {
+    width: 100%;
+    height: 34px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 7px;
+    padding: 4px 10px;
+    font-size: 12px;
+    box-sizing: border-box;
+    font-family: inherit;
+    outline: none;
+}
+.form-control:focus {
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+textarea.form-control {
+    height: auto;
+    padding: 8px 10px;
+}
+
+/* Telegram Booking Analysis Styles */
+.badge-tg-pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #fef3c7;
+    color: #92400e;
+    border: 1.5px solid #f59e0b;
+    font-size: 12px;
+    font-weight: 900;
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.badge-tg-converted {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #dcfce7;
+    color: #166534;
+    border: 1.5px solid #22c55e;
+    font-size: 12px;
+    font-weight: 900;
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.badge-tg-vip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: #fef9c3;
+    color: #854d0e;
+    border: 1px solid #facc15;
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.badge-tg-border {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: #eff6ff;
+    color: #1e40af;
+    border: 1px solid #93c5fd;
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.btn-tg-convert {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #16a34a;
+    color: #ffffff !important;
+    font-size: 12px;
+    font-weight: 900;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(22, 163, 74, 0.25);
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.btn-tg-convert:hover {
+    background: #15803d;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(22, 163, 74, 0.35);
+}
+
+.tg-sender-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #0088cc;
+    font-weight: 800;
+    font-size: 12.5px;
+    white-space: nowrap;
+}
+
+/* Telegram Booking Set Visual Cards & Hub */
+.tg-order-card {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 8px 10px;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    position: relative;
+}
+
+.tg-order-card:hover {
+    border-color: #0284c7;
+    box-shadow: 0 3px 10px rgba(2, 132, 199, 0.12);
+}
+
+.tg-order-card.active-card {
+    background: #f0fdf4 !important;
+    border: 2px solid #16a34a !important;
+    box-shadow: 0 3px 12px rgba(22, 163, 74, 0.22) !important;
+}
+
+.tg-order-card.active-card .tg-card-badge {
+    background: #16a34a !important;
+    color: #ffffff !important;
+}
+
+.tg-card-badge {
+    background: #0284c7;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tg-order-card.checked-for-merge {
+    border-color: #0284c7 !important;
+    background: #f0f9ff !important;
+}
+
+.tg-order-card.merged-active {
+    background: #f0fdf4 !important;
+    border: 2px solid #16a34a !important;
+    box-shadow: 0 3px 12px rgba(22, 163, 74, 0.22) !important;
+}
+
+.tg-order-card.merged-active .tg-card-badge {
+    background: #16a34a !important;
+    color: #ffffff !important;
+}
+
+.tg-card-checkbox {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    accent-color: #0284c7;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   AutoRent Pro - Mobile Responsive Styles (Phones & Small Tablets)
+   Solves vertical stacking, sticky header collisions & table cut-off
+   ========================================================================== */
+.mobile-table-scroll-hint {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    html, body {
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    #mainWorkspaceContainer,
+    #autoRentManagementContainer,
+    #quoteStudioContainer {
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow: visible !important;
+        max-height: none !important;
+        padding-top: 2px !important;
+    }
+
+    /* 1. Top Quote Navigation Bar (Home, AutoRent, Invoice, Posters) */
+    .quote-top-bar {
+        position: static !important;
+        top: auto !important;
+        padding: 6px 8px !important;
+        gap: 6px !important;
+        border-radius: 10px !important;
+        margin-bottom: 6px !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    .quote-top-bar > div:first-child,
+    .quote-nav-tabs-group {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 5px !important;
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    .quote-top-bar .cat-nav-tab {
+        padding: 6px 11px !important;
+        font-size: 12px !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        border-radius: 7px !important;
+    }
+    #quoteRightActionsBar {
+        width: 100% !important;
+        justify-content: flex-start !important;
+        margin-top: 4px !important;
+    }
+
+    /* 2. AutoRent Pro Header Bar */
+    .ar-header-bar {
+        position: static !important;
+        top: auto !important;
+        padding: 8px 10px !important;
+        margin-bottom: 8px !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+    .ar-logo-wrap {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+    }
+    .ar-logo-text h2 {
+        font-size: 1.15rem !important;
+    }
+    .ar-logo-text p {
+        display: none !important; /* Hide long subtitle to preserve vertical space on mobile */
+    }
+    .ar-nav-menu {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+        gap: 4px !important;
+        padding-bottom: 4px !important;
+    }
+    .ar-nav-item {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+    }
+    .ar-top-actions {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+
+    /* 3. Filter Toolbar & Action Buttons */
+    .filter-toolbar {
+        margin: 6px 4px !important;
+        gap: 8px !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    .filter-tabs {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+        width: 100% !important;
+        padding-bottom: 4px !important;
+        gap: 5px !important;
+    }
+    .filter-tab {
+        padding: 5px 10px !important;
+        font-size: 12px !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+    }
+    /* Action buttons: + New Booking, Bot Fetch, Inbox */
+    .filter-toolbar > div[style*="flex"]:not(.filter-tabs) {
+        width: 100% !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+    .filter-toolbar .btn-ar {
+        font-size: 11.5px !important;
+        padding: 5px 9px !important;
+        flex: 1 1 auto !important;
+        text-align: center !important;
+        justify-content: center !important;
+    }
+    #dashScheduleCalendarWrapper {
+        width: 100% !important;
+        justify-content: space-between !important;
+        box-sizing: border-box !important;
+    }
+    .filter-search-box {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+    }
+    .filter-search-box input {
+        font-size: 12.5px !important;
+        height: 34px !important;
+    }
+
+    /* 4. Booking Table on Mobile */
+    .table-responsive {
+        height: auto !important;
+        max-height: none !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        margin-bottom: 40px !important;
+        border: 1.5px solid var(--ar-border) !important;
+        border-radius: 10px !important;
+        background: #ffffff !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+    }
+    .schedule-table {
+        min-width: 820px !important;
+        font-size: 12.5px !important;
+    }
+    .schedule-table th,
+    .schedule-table td {
+        padding: 8px 6px !important;
+        font-size: 12px !important;
+    }
+    .mobile-table-scroll-hint {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        background: #e0f2fe;
+        color: #0369a1;
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 6px 10px;
+        border-radius: 6px;
+        margin: 4px 4px 8px 4px;
+        border: 1px dashed #0284c7;
+    }
+
+    /* 5. Modals Responsiveness */
+    .modal-card {
+        width: 95% !important;
+        max-width: 95% !important;
+        padding: 14px 10px !important;
+        margin: 10px auto !important;
+    }
+}
