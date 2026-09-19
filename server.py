@@ -1516,6 +1516,41 @@ try {{
         path = parsed.path
         content_type = self.headers.get('Content-Type', '')
 
+        if path in ['/api/send_telegram_bot', '/api/send_telegram_photo']:
+            length = int(self.headers.get('Content-Length', 0))
+            body_bytes = self.rfile.read(length)
+            try:
+                data = json.loads(body_bytes.decode('utf-8'))
+                b64_image = data.get('image', '')
+                if ',' in b64_image:
+                    b64_image = b64_image.split(',', 1)[1]
+                image_bytes = base64.b64decode(b64_image)
+                chat_id = data.get('chat_id') or '-1004497657405'
+                caption = data.get('caption', '')
+                bot_token = data.get('bot_token') or '8884318593:AAEipEVki9o1YFL0_8IYoUeSn3Xif4dlVOk'
+                filename = data.get('filename', 'receipt.png')
+
+                url = f'https://api.telegram.org/bot{bot_token}/sendPhoto'
+                boundary = f'----WebKitFormBoundary{uuid.uuid4().hex}'
+                body = bytearray()
+                body.extend(f'--{boundary}\r\nContent-Disposition: form-data; name="chat_id"\r\n\r\n{chat_id}\r\n'.encode('utf-8'))
+                if caption:
+                    body.extend(f'--{boundary}\r\nContent-Disposition: form-data; name="caption"\r\n\r\n{caption}\r\n'.encode('utf-8'))
+                body.extend(f'--{boundary}\r\nContent-Disposition: form-data; name="photo"; filename="{filename}"\r\nContent-Type: image/png\r\n\r\n'.encode('utf-8'))
+                body.extend(image_bytes)
+                body.extend(f'\r\n--{boundary}--\r\n'.encode('utf-8'))
+
+                req = urllib.request.Request(url, data=bytes(body))
+                req.add_header('Content-Type', f'multipart/form-data; boundary={boundary}')
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    res_data = json.loads(resp.read().decode('utf-8'))
+                    self.send_json_response({'success': True, 'result': res_data})
+                    return
+            except Exception as e:
+                traceback.print_exc()
+                self.send_json_response({'success': False, 'error': str(e)}, status=500)
+                return
+
         # AI OCR Processing Endpoint for Batch/Single Images (Supports both Multipart and Base64)
         if path == '/api/ocr_scan':
             pil_images = []

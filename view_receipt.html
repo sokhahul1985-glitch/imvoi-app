@@ -590,7 +590,12 @@ input[type="date"] {
 
 
 </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="assets/js/html2canvas.min.js"></script>
+    <script>
+        if (typeof html2canvas === 'undefined') {
+            document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>');
+        }
+    </script>
     <style>
     .tg-modal-backdrop {
         position: fixed;
@@ -737,10 +742,10 @@ input[type="date"] {
     <div class="toolbar-print">
         <a href="index.html" class="btn-sys btn-dark">⬅️ ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង</a>
         
-        <div style="display: flex; gap: 10px;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <button onclick="window.print()" class="btn-sys btn-indigo">🖨️ បោះពុម្ព (Print)</button>
-            <button onclick="downloadImage()" class="btn-sys btn-emerald">🖼️ ទាញយក PNG Image</button>
-            <button onclick="openTelegramModal()" class="btn-sys btn-cyan">✈️ Share Telegram</button>
+            <button onclick="downloadImage()" class="btn-sys btn-emerald" title="រក្សាទុករូបភាពវិក្កយបត្រ (Save as PNG)">🖼️ PNG Image</button>
+            <button onclick="shareReceiptTelegram()" class="btn-sys btn-cyan" id="btnShareTelegram">✈️ Telegram</button>
         </div>
     </div>
 
@@ -1013,6 +1018,7 @@ input[type="date"] {
 
         async function downloadImage() {
             let tDate = document.getElementById('rDateStr')?.textContent?.trim() || '';
+            const rNo = document.getElementById('rNoVal')?.textContent?.trim() || 'Receipt';
             tDate = tDate.replace(/\//g, '-').replace(/[^a-zA-Z0-9\-]/g, '');
             if (!tDate || tDate === '-') {
                 const today = new Date();
@@ -1022,11 +1028,62 @@ input[type="date"] {
                 tDate = `${dd}-${mm}-${yyyy}`;
             }
 
-            const canvas = await renderReceiptCanvas();
-            const link = document.createElement('a');
-            link.download = `${tDate}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+            const cleanRNo = rNo.replace(/[^a-zA-Z0-9_-]/g, '_').trim();
+            const defaultFileName = `Receipt_${cleanRNo}_${tDate}.png`;
+
+            // 1. MUST call showSaveFilePicker FIRST in direct user gesture to open Windows Save As folder selection dialog!
+            let fileHandle = null;
+            if (window.showSaveFilePicker) {
+                try {
+                    fileHandle = await window.showSaveFilePicker({
+                        suggestedName: defaultFileName,
+                        types: [{
+                            description: 'PNG Image (*.png)',
+                            accept: { 'image/png': ['.png'] }
+                        }]
+                    });
+                } catch (pickerErr) {
+                    if (pickerErr.name === 'AbortError') return;
+                    console.warn('showSaveFilePicker fallback:', pickerErr);
+                }
+            }
+
+            // Fallback 1: If showSaveFilePicker was not available or threw an error, prompt folder picker
+            if (!fileHandle && window.showDirectoryPicker) {
+                try {
+                    const dirHandle = await window.showDirectoryPicker();
+                    if (dirHandle) {
+                        const canvas = await renderReceiptCanvas();
+                        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                        const fHandle = await dirHandle.getFileHandle(defaultFileName, { create: true });
+                        const writable = await fHandle.createWritable();
+                        await writable.write(blob);
+                        await writable.close();
+                        showTgToast(`🎉 បានរក្សាទុកក្នុង Folder "${dirHandle.name}" ដោយជោគជ័យ!`, 'success');
+                        return;
+                    }
+                } catch (dirErr) {
+                    if (dirErr.name === 'AbortError') return;
+                    console.warn('showDirectoryPicker fallback error:', dirErr);
+                }
+            }
+
+            if (!fileHandle) {
+                alert('⚠️ មិនអាចបើកផ្ទាំងជ្រើសរើស Folder បានទេ! សូមប្រាកដថាអ្នកកំពុងប្រើកម្មវិធី Google Chrome ឬ Microsoft Edge។');
+                return;
+            }
+
+            try {
+                const canvas = await renderReceiptCanvas();
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                const writable = await fileHandle.createWritable();
+                await writable.write(blob);
+                await writable.close();
+                showTgToast('🎉 បានរក្សាទុករូបភាពវិក្កយបត្រដោយជោគជ័យ!', 'success');
+            } catch (err) {
+                console.error("downloadImage error:", err);
+                alert('កំហុសក្នុងការរក្សាទុក៖ ' + (err.message || err));
+            }
         }
 
 
@@ -1034,81 +1091,55 @@ input[type="date"] {
 
     <!-- Telegram Share Modal Dialog -->
     <div id="telegramShareModal" class="tg-modal-backdrop" style="display: none;">
-        <div class="tg-modal-card">
+        <div class="tg-modal-card" style="max-width: 520px; width: 92%;">
             <div class="tg-modal-header">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <div style="font-size: 1.5rem;">✈️</div>
                     <div>
-                        <h3 style="margin: 0; font-size: 1.15rem; color: #38bdf8;">ចែករំលែកវិក្កយបត្រទៅ Telegram</h3>
-                        <div style="font-size: 0.8rem; color: #94a3b8;">រៀបចំ និងផ្ញើរូបភាពវិក្កយបត្រផ្លូវការ (Official Invoice Image)</div>
+                        <h3 style="margin: 0; font-size: 1.15rem; color: #38bdf8;">ចែករំលែកវិក្កយបត្រ (Share Invoice)</h3>
+                        <div style="font-size: 0.8rem; color: #94a3b8;">Copy រូបភាពវិក្កយបត្រ ឬបើកផ្ញើក្នុង Telegram ដោយផ្ទាល់</div>
                     </div>
                 </div>
                 <button onclick="closeTelegramModal()" class="tg-modal-close">&times;</button>
             </div>
 
             <div class="tg-modal-body">
-                <!-- Status Badge -->
-                <div id="tgStatusBadge" class="tg-status-box">
-                    <span>🔄 កំពុងពិនិត្យស្ថានភាព Telegram Bot...</span>
-                </div>
-
                 <div class="tg-options-grid">
-                    <!-- Option 1: Direct 1-Click Bot Delivery -->
-                    <button onclick="sendViaTelegramBot()" class="tg-opt-btn tg-btn-primary">
-                        <div class="tg-opt-icon">⚡</div>
+                    <!-- Option 1: 1-Click Send Photo via Bot to Group -->
+                    <button onclick="sendInvoicePhotoToTelegram('-1004497657405', 'Group: កក់ឡាន')" class="tg-opt-btn tg-btn-primary">
+                        <div class="tg-opt-icon">🚗</div>
                         <div class="tg-opt-content">
-                            <div class="tg-opt-title">១. ផ្ញើអូតូជា PNG Image ទៅ Telegram Bot</div>
-                            <div class="tg-opt-desc">Render រូបភាពវិក្កយបត្ររួចផ្ញើចូល Telegram Channel/Group ដោយផ្ទាល់ 1-Click</div>
+                            <div class="tg-opt-title">១. ផ្ញើរូបភាពចូល Group: កក់ឡាន (1-Click Photo)</div>
+                            <div class="tg-opt-desc">ផ្ញើរូបភាពវិក្កយបត្រ (PNG Photo) ចូល Telegram Group ដោយស្វ័យប្រវត្តិ</div>
                         </div>
                     </button>
 
-                    <!-- Option 2: Copy Image to Clipboard & Open Telegram -->
-                    <button onclick="copyInvoiceImageAndOpenTelegram()" class="tg-opt-btn tg-btn-indigo">
-                        <div class="tg-opt-icon">🖼️</div>
+                    <!-- Option 2: 1-Click Send Photo to Sokha -->
+                    <button onclick="sendInvoicePhotoToTelegram('8985821312', 'Sokha GMP88')" class="tg-opt-btn tg-btn-indigo">
+                        <div class="tg-opt-icon">👤</div>
                         <div class="tg-opt-content">
-                            <div class="tg-opt-title">២. Copy រូបភាពវិក័យប័ត្រចូល Clipboard + បើក Telegram</div>
-                            <div class="tg-opt-desc">Copy រូបភាពវិក្កយបត្រចូល Clipboard រួចបើក Telegram (ចុច Ctrl + V ដើម្បី Paste ផ្ញើ)</div>
+                            <div class="tg-opt-title">២. ផ្ញើរូបភាពទៅ Sokha GMP88 (@Sokhalion)</div>
+                            <div class="tg-opt-desc">ផ្ញើរូបភាពវិក្កយបត្រ (PNG Photo) ចូល Chat របស់លោក សុខា ភ្លាមៗ</div>
                         </div>
                     </button>
 
-                    <!-- Option 3: Web / Mobile Native Share File -->
-                    <button onclick="shareNativeImageFile()" class="tg-opt-btn tg-btn-emerald">
+                    <!-- Option 3: Copy Image to Clipboard & Open Telegram -->
+                    <button onclick="copyPhotoAndOpenTelegramForCustomer()" class="tg-opt-btn tg-btn-emerald">
+                        <div class="tg-opt-icon">📋</div>
+                        <div class="tg-opt-content">
+                            <div class="tg-opt-title">៣. ផ្ញើទៅកាន់ Chat ភ្ញៀវផ្ទាល់ (Copy Photo + Ctrl+V)</div>
+                            <div class="tg-opt-desc">Copy រូបភាពវិក្កយបត្រ រួចបើក Telegram (ចុច Ctrl + V ក្នុង Chat ណាក៏បានដើម្បីផ្ញើ)</div>
+                        </div>
+                    </button>
+
+                    <!-- Option 4: Web / Mobile Native Share File -->
+                    <button onclick="shareNativeImageFile()" class="tg-opt-btn tg-btn-slate">
                         <div class="tg-opt-icon">📲</div>
                         <div class="tg-opt-content">
-                            <div class="tg-opt-title">៣. ផ្ញើជា File រូបភាព (Mobile / Web Share)</div>
-                            <div class="tg-opt-desc">ចែករំលែកជា File .png ទៅកាន់ Telegram ឬ App ផ្សេងៗតាមរយះ Share Sheet</div>
+                            <div class="tg-opt-title">៤. ផ្ញើតាមទូរស័ព្ទ / Tablet (Mobile Share Sheet)</div>
+                            <div class="tg-opt-desc">ចែករំលែកជា File .png ទៅកាន់ Telegram ឬ App ផ្សេងៗតាម Share Sheet</div>
                         </div>
                     </button>
-
-                    <!-- Option 4: Plain Text Link Share fallback -->
-                    <button onclick="shareTextLink()" class="tg-opt-btn tg-btn-slate">
-                        <div class="tg-opt-icon">🔗</div>
-                        <div class="tg-opt-content">
-                            <div class="tg-opt-title">៤. ផ្ញើជា Link និងព័ត៌មានសង្ខេប (Text Link)</div>
-                            <div class="tg-opt-desc">ផ្ញើជាសារអក្សរ និង Link មើលវិក្កយបត្រតាម Telegram Share Link</div>
-                        </div>
-                    </button>
-                </div>
-
-                <!-- Telegram Bot Settings Collapse -->
-                <div class="tg-config-section">
-                    <button onclick="toggleTgConfigBox()" class="tg-config-toggle-btn">
-                        ⚙️ កំណត់ Telegram Bot Token & Chat ID <span id="tgConfigArrow">▼</span>
-                    </button>
-                    <div id="tgConfigBox" style="display: none; margin-top: 10px;">
-                        <div style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 8px;">
-                            បញ្ចូល Bot Token និង Chat ID / Channel Username ដើម្បីប្រើប្រាស់មុខងារ 1-Click Bot Delivery៖
-                        </div>
-                        <div style="margin-bottom: 8px;">
-                            <label style="display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 2px;">Bot Token:</label>
-                            <input type="text" id="tgBotTokenInput" placeholder="7890123456:AAxxxxxx..." class="tg-input-field">
-                        </div>
-                        <div style="margin-bottom: 12px;">
-                            <label style="display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 2px;">Chat ID / Channel ID:</label>
-                            <input type="text" id="tgChatIdInput" placeholder="-100xxxxxxxxx ឬ @your_channel" class="tg-input-field">
-                        </div>
-                        <button onclick="saveTgConfig()" class="btn-sys btn-emerald" style="width: 100%; justify-content: center;">💾 រក្សាទុក (Save Bot Config)</button>
-                    </div>
                 </div>
 
                 <!-- Toast / Notice Container -->
@@ -1120,7 +1151,6 @@ input[type="date"] {
     <script>
         function openTelegramModal() {
             document.getElementById('telegramShareModal').style.display = 'flex';
-            checkTgConfigStatus();
         }
 
         function closeTelegramModal() {
@@ -1129,64 +1159,15 @@ input[type="date"] {
 
         function showTgToast(msg, type = 'info') {
             const toast = document.getElementById('tgAlertToast');
+            if (!toast) return;
             toast.className = `tg-toast tg-toast-${type}`;
             toast.innerHTML = msg;
             toast.style.display = 'block';
         }
 
-        function checkTgConfigStatus() {
-            fetch('/api/get_telegram_config')
-                .then(r => r.json())
-                .then(res => {
-                    const badge = document.getElementById('tgStatusBadge');
-                    if (res.success && res.config.bot_token && res.config.chat_id) {
-                        badge.innerHTML = `<span>✅ Telegram Bot Configured: Chat ID (<b>${res.config.chat_id}</b>)</span>`;
-                        badge.style.color = '#34d399';
-                        document.getElementById('tgBotTokenInput').value = res.config.bot_token;
-                        document.getElementById('tgChatIdInput').value = res.config.chat_id;
-                    } else {
-                        badge.innerHTML = `<span>⚠️ Telegram Bot មិនទាន់កំណត់ Token / Chat ID ទេ (សូមកំណត់ខាងក្រោម)</span>`;
-                        badge.style.color = '#fb7185';
-                    }
-                }).catch(() => {});
-        }
-
-        function toggleTgConfigBox() {
-            const box = document.getElementById('tgConfigBox');
-            const arrow = document.getElementById('tgConfigArrow');
-            if (box.style.display === 'none') {
-                box.style.display = 'block';
-                arrow.textContent = '▲';
-            } else {
-                box.style.display = 'none';
-                arrow.textContent = '▼';
-            }
-        }
-
-        function saveTgConfig() {
-            const token = document.getElementById('tgBotTokenInput').value.trim();
-            const chatId = document.getElementById('tgChatIdInput').value.trim();
-
-            if (!token || !chatId) {
-                showTgToast('⚠️ សូមបញ្ចូល Bot Token និង Chat ID ឱ្យបានត្រឹមត្រូវ', 'error');
-                return;
-            }
-
-            fetch('/api/save_telegram_config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ bot_token: token, chat_id: chatId })
-            })
-            .then(r => r.json())
-            .then(res => {
-                if (res.success) {
-                    showTgToast('✅ បានរក្សាទុក Telegram Bot Config រួចរាល់!', 'success');
-                    checkTgConfigStatus();
-                    document.getElementById('tgConfigBox').style.display = 'none';
-                } else {
-                    showTgToast('❌ បរាជ័យក្នុងការរក្សាទុក Config', 'error');
-                }
-            });
+        function openTelegramAppOrWeb() {
+            closeTelegramModal();
+            window.open('https://web.telegram.org', '_blank');
         }
 
         async function renderReceiptCanvas() {
@@ -1232,40 +1213,14 @@ input[type="date"] {
             });
         }
 
-        function sendViaTelegramBot() {
-            showTgToast('🔄 កំពុង Render រូបភាពវិក្កយបត្រ & ផ្ញើទៅ Telegram Bot...', 'info');
-
-            renderReceiptCanvas().then(canvas => {
-                const b64Image = canvas.toDataURL('image/png');
-                const caption = `🧾 Official Invoice: ${currentReceiptNo}\n👤 Customer: ${currentCustomerName}\n💵 Total: $${currentTotalUSD}\n\nGolden Mekong Commercial Service`;
-
-
-                fetch('/api/send_telegram_bot', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        image: b64Image,
-                        filename: `Receipt_${currentReceiptNo}.png`,
-                        caption: caption
-                    })
-                })
-                .then(r => r.json())
-                .then(res => {
-                    if (res.success) {
-                        showTgToast('🚀 ' + (res.message || 'បានផ្ញើរូបភាពវិក្កយបត្រទៅ Telegram Bot រួចរាល់!'), 'success');
-                    } else {
-                        showTgToast('❌ បរាជ័យ៖ ' + (res.error || 'សូមពិនិត្យមើល Bot Token & Chat ID'), 'error');
-                        document.getElementById('tgConfigBox').style.display = 'block';
-                    }
-                })
-                .catch(err => {
-                    showTgToast('❌ បរាជ័យក្នុងការផ្ញើទៅ Telegram Server', 'error');
-                });
-            });
-        }
-
         async function copyInvoiceImageAndOpenTelegram() {
-            showTgToast('🔄 កំពុង Copy រូបភាពវិក្កយបត្រ...', 'info');
+            const btn = document.getElementById('btnQuickShareTg');
+            const originalText = btn ? btn.innerHTML : '📋 Copy ស៊ែ Telegram';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '⚡ កំពុង Copy...';
+            }
+            showTgToast('⚡ កំពុង Copy រូបភាពវិក្កយបត្រ...', 'info');
 
             window.focus();
             let copied = false;
@@ -1307,11 +1262,73 @@ input[type="date"] {
             }
 
             if (copied) {
-                showTgToast('✅ <b>បាន Copy រូបភាពវិក័យប័ត្រចូល Clipboard!</b><br>សូមចុច <b>Ctrl + V</b> ក្នុង Telegram Chat ដើម្បី Paste ផ្ញើរូបភាព!', 'success');
+                showTgToast('✅ <b>បាន Copy រូបភាពវិក្កយបត្រ រួចរាល់!</b><br>សូមចុច <b>Ctrl + V</b> ក្នុង Telegram Chat ដើម្បី Paste ផ្ញើរូបភាព! <a href="https://web.telegram.org" target="_blank" style="color:#38bdf8; font-weight:800; margin-left:8px;">👉 បើក Telegram</a>', 'success');
             } else {
                 showTgToast('⚠️ បានបើក Telegram! (ប្រសិនមិនទាន់ជាប់ សូម Right-click លើវិក្កយបត្រ រើស "Copy image" រួច Ctrl+V)', 'info');
             }
+
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
             window.location.href = 'tg://msg';
+        }
+
+        function shareReceiptTelegram() {
+            copyInvoiceImageAndOpenTelegram();
+        }
+
+        async function sendInvoicePhotoToTelegram(chatId, targetName) {
+            showTgToast(`⚡ កំពុង Render & ផ្ញើរូបភាពវិក្កយបត្រទៅកាន់ <b>${targetName}</b>...`, 'info');
+
+            try {
+                const canvas = await renderReceiptCanvas();
+                const b64Image = canvas.toDataURL('image/png');
+                const caption = `🧾 Official Invoice: ${currentReceiptNo}\n👤 Customer: ${currentCustomerName}\n💵 Total: $${currentTotalUSD}\n🏢 Golden Mekong Commercial Service`;
+
+                const resp = await fetch('/api/send_telegram_bot', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image: b64Image,
+                        chat_id: chatId,
+                        caption: caption,
+                        filename: `Receipt_${String(currentReceiptNo || '').replace(/[^a-zA-Z0-9_-]/g, '')}.png`
+                    })
+                });
+
+                const res = await resp.json();
+                if (res.success && res.result && res.result.ok) {
+                    showTgToast(`🎉 <b>បានផ្ញើរូបភាពវិក្កយបត្រ (Photo) ចូល ${targetName} ដោយជោគជ័យ!</b>`, 'success');
+                    setTimeout(() => closeTelegramModal(), 2000);
+                } else {
+                    throw new Error(res.error || res.result?.description || 'Server error');
+                }
+            } catch (err) {
+                console.error("sendInvoicePhotoToTelegram error:", err);
+                showTgToast(`❌ បរាជ័យក្នុងការផ្ញើ៖ ${err.message || err}`, 'error');
+            }
+        }
+
+        async function copyPhotoAndOpenTelegramForCustomer() {
+            showTgToast('⚡ កំពុង Copy រូបភាពវិក្កយបត្រ...', 'info');
+
+            try {
+                const canvas = await renderReceiptCanvas();
+                const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+                if (blob && navigator.clipboard && window.ClipboardItem) {
+                    const item = new ClipboardItem({ 'image/png': blob });
+                    await navigator.clipboard.write([item]);
+                }
+
+                showTgToast('✅ <b>បាន Copy រូបភាពវិក្កយបត្រ រួចរាល់!</b><br>សូមបើក Telegram រួចចុច <b>Ctrl + V</b> ក្នុង Chat ជាមួយភ្ញៀវដើម្បីផ្ញើរូបភាព', 'success');
+                window.open('https://web.telegram.org', '_blank');
+                setTimeout(() => closeTelegramModal(), 3000);
+            } catch (err) {
+                console.error("copyPhoto error:", err);
+                downloadImage();
+                showTgToast('💾 បានទាញយករូបភាព PNG រួចរាល់! អ្នកអាច Drag & Drop ចូល Telegram ដើម្បីផ្ញើ', 'info');
+            }
         }
 
 
@@ -1353,12 +1370,12 @@ input[type="date"] {
 
 
         function shareTelegram() {
-            openTelegramModal();
+            copyInvoiceImageAndOpenTelegram();
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             if (window.location.hash === '#share') {
-                openTelegramModal();
+                copyInvoiceImageAndOpenTelegram();
             }
         });
     </script>

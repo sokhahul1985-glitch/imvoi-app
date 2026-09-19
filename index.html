@@ -3704,9 +3704,13 @@ input[type="date"] {
                 display: none !important;
             }
         }
-
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="assets/js/html2canvas.min.js"></script>
+    <script>
+        if (typeof html2canvas === 'undefined') {
+            document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>');
+        }
+    </script>
 </head>
 <body>
     <!-- Toast Notification Overlay Container -->
@@ -6144,23 +6148,8 @@ input[type="date"] {
                 <div style="font-weight: 800; font-size: 16px; color: #0f172a; display: flex; align-items: center; gap: 6px;">📄 Official Receipt Preview</div>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: nowrap;">
                     <button type="button" class="btn-sys" style="background: #4f46e5; color: #ffffff; padding: 7px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="window.print()">🖨️ បោះពុម្ព (Print)</button>
-                    <button type="button" class="btn-sys" style="background: #059669; color: #ffffff; padding: 7px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="downloadReceiptPNG()">🖼️ PNG Image</button>
-                    <div style="position: relative; display: inline-flex; align-items: center;">
-                        <button type="button" id="btnShareTelegram" class="btn-sys" style="background: #8b5cf6; color: #ffffff; padding: 7px 16px; border-radius: 6px 0 0 6px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="shareReceiptTelegram()" title="ចុចផ្ញើវិក្កយបត្រទៅកាន់ Telegram ផ្ទាល់ (1-Click Bot Delivery)">✈️ Telegram</button>
-                        <button type="button" id="btnTgMenuToggle" style="background: #7c3aed; color: #ffffff; padding: 7px 10px; border-radius: 0 6px 6px 0; font-weight: 700; font-size: 13px; border: none; border-left: 1px solid rgba(255,255,255,0.25); cursor: pointer; display: flex; align-items: center;" onclick="toggleReceiptTgMenu(event)" title="ជម្រើសផ្ញើ Telegram (រើស Group ឬ Copy)">▾</button>
-                        <div id="receiptTgMenu" style="display: none; position: absolute; top: calc(100% + 4px); right: 0; background: #0f172a; border: 1.5px solid #334155; border-radius: 8px; box-shadow: 0 12px 30px rgba(0,0,0,0.6); z-index: 10000; min-width: 260px; padding: 8px; color: #f8fafc; font-size: 12px; text-align: left;">
-                            <div style="font-weight: 700; color: #94a3b8; padding: 4px 8px 6px; border-bottom: 1px solid #1e293b; font-size: 11px; display: flex; justify-content: space-between;">
-                                <span>✈️ ជ្រើសរើសគោលដៅ TELEGRAM</span>
-                            </div>
-                            <div id="receiptTgTargetsList" style="max-height: 220px; overflow-y: auto; padding: 6px 0; display: flex; flex-direction: column; gap: 2px;">
-                                <!-- Rendered dynamically -->
-                            </div>
-                            <div style="border-top: 1px solid #1e293b; padding-top: 6px; margin-top: 4px; display: flex; flex-direction: column; gap: 3px;">
-                                <button type="button" onclick="copyReceiptOnly()" style="width: 100%; text-align: left; background: transparent; border: none; color: #cbd5e1; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 8px;" onmouseover="this.style.background='#1e293b'" onmouseout="this.style.background='transparent'">📋 Copy រូបភាពវិក្កយបត្រ (Ctrl+V)</button>
-                                <button type="button" onclick="openTelegramAppOrWeb()" style="width: 100%; text-align: left; background: transparent; border: none; color: #38bdf8; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 8px;" onmouseover="this.style.background='#1e293b'" onmouseout="this.style.background='transparent'">🚀 បើក Telegram Web / Desktop</button>
-                            </div>
-                        </div>
-                    </div>
+                    <button type="button" class="btn-sys" style="background: #059669; color: #ffffff; padding: 7px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="downloadReceiptPNG()" title="រក្សាទុករូបភាពវិក្កយបត្រ (Save as PNG)">🖼️ PNG Image</button>
+                    <button type="button" id="btnShareTelegram" class="btn-sys" style="background: #8b5cf6; color: #ffffff; padding: 7px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(139,92,246,0.35);" onclick="shareReceiptTelegram()">✈️ Telegram</button>
                     <button type="button" class="btn-sys" style="background: #ffffff; color: #0f172a; border: 1.5px solid #cbd5e1; padding: 7px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);" onclick="closeReceiptModal()">❌ បិទ (Close)</button>
                 </div>
             </div>
@@ -10852,16 +10841,17 @@ input[type="date"] {
                 modal.style.display = 'flex';
                 modal.classList.add('active');
             }
+            setTimeout(() => {
+                const el = document.getElementById('printableReceiptArea');
+                if (el) getOrCaptureReceiptBlob(el).catch(() => {});
+            }, 60);
         }
 
         function openShareAction(rNoEnc, idx) {
             openReceiptModal(rNoEnc, idx);
-            if (typeof showToast === 'function') {
-                showToast('🚀 កំពុងរៀបចំការចែករំលែកទៅកាន់ Telegram...', true);
-            }
             setTimeout(() => {
                 shareReceiptTelegram();
-            }, 350);
+            }, 300);
         }
 
         function closeReceiptModal() {
@@ -11009,47 +10999,61 @@ input[type="date"] {
 
         async function captureReceiptCanvas(receiptEl) {
             if (!receiptEl) return null;
-            if (document.fonts && document.fonts.ready) {
-                try {
-                    await Promise.race([
-                        document.fonts.ready,
-                        new Promise(resolve => setTimeout(resolve, 80))
-                    ]);
-                } catch (e) {}
+            if (typeof html2canvas === 'undefined') {
+                throw new Error("html2canvas not loaded");
             }
-            return await html2canvas(receiptEl, {
-                scale: 1.8,
-                letterRendering: false,
-                backgroundColor: '#ffffff',
-                useCORS: true,
-                logging: false,
-                windowWidth: 1024,
-                scrollX: 0,
-                scrollY: 0,
-                onclone: (clonedDoc) => {
-                    const clonedReceipt = clonedDoc.getElementById('printableReceiptArea') || clonedDoc.querySelector('.cmp-receipt-paper');
-                    if (clonedReceipt) {
-                        clonedReceipt.style.width = '780px';
-                        clonedReceipt.style.minWidth = '780px';
-                        clonedReceipt.style.maxWidth = '780px';
-                        clonedReceipt.style.boxSizing = 'border-box';
-                        clonedReceipt.style.padding = '36px 44px';
-                        clonedReceipt.style.margin = '0 auto';
 
-                        // Injected scoped stylesheet is 10x faster than looping all DOM elements
-                        const fastStyle = clonedDoc.createElement('style');
-                        fastStyle.textContent = `
-                            #printableReceiptArea, #printableReceiptArea * {
-                                letter-spacing: normal !important;
-                                word-spacing: normal !important;
-                                font-variant-ligatures: normal !important;
-                                font-family: 'Kantumruy Pro', 'Noto Sans Khmer', 'Noto Sans Thai', system-ui, -apple-system, sans-serif !important;
-                            }
-                        `;
-                        clonedDoc.head.appendChild(fastStyle);
-                    }
+            // Clone receipt and isolate it in a clean iframe so html2canvas only renders THIS card (takes ~180ms instead of 13+ seconds!)
+            const clone = receiptEl.cloneNode(true);
+            clone.style.position = 'static';
+            clone.style.visibility = 'visible';
+            clone.style.display = 'block';
+            clone.style.width = '780px';
+            clone.style.minWidth = '780px';
+            clone.style.maxWidth = '780px';
+            clone.style.background = '#ffffff';
+            clone.style.boxShadow = 'none';
+
+            // Remove edit pen icons from receipt image
+            clone.querySelectorAll('.fa-pen-to-square, .fa-edit').forEach(i => i.remove());
+
+            // Remove any gradients that cause addColorStop error in html2canvas
+            clone.querySelectorAll('*').forEach(e => {
+                if (e.style.background && e.style.background.includes('gradient')) {
+                    e.style.background = '#0284c7';
                 }
             });
+
+            const iframe = document.createElement('iframe');
+            iframe.style.position = 'fixed';
+            iframe.style.left = '-9999px';
+            iframe.style.top = '0';
+            iframe.style.width = '850px';
+            iframe.style.height = '1400px';
+            iframe.style.border = 'none';
+            iframe.style.opacity = '0';
+            iframe.style.pointerEvents = 'none';
+            document.body.appendChild(iframe);
+
+            try {
+                const idoc = iframe.contentDocument || iframe.contentWindow.document;
+                idoc.open();
+                idoc.write('<!DOCTYPE html><html><head><style>*{box-sizing:border-box;}body{margin:0;padding:20px;background:#fff;font-family:\"Kantumruy Pro\",\"Noto Sans Khmer\",\"Noto Sans Thai\",sans-serif;}</style></head><body></body></html>');
+                idoc.close();
+                idoc.body.appendChild(idoc.adoptNode(clone));
+
+                const target = idoc.body.firstElementChild;
+                return await html2canvas(target, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    useCORS: true
+                });
+            } finally {
+                if (iframe && iframe.parentNode) {
+                    iframe.parentNode.removeChild(iframe);
+                }
+            }
         }
 
         async function getOrCaptureReceiptBlob(receiptEl) {
@@ -11086,27 +11090,69 @@ input[type="date"] {
             const receiptEl = document.getElementById('printableReceiptArea');
             if (!receiptEl) return;
 
+            // 1. MUST call showSaveFilePicker FIRST in direct user gesture to open Windows Save As folder selection dialog!
+            let fileHandle = null;
+            if (window.showSaveFilePicker) {
+                try {
+                    fileHandle = await window.showSaveFilePicker({
+                        suggestedName: defaultFileName,
+                        types: [{
+                            description: 'PNG Image (*.png)',
+                            accept: { 'image/png': ['.png'] }
+                        }]
+                    });
+                } catch (pickerErr) {
+                    if (pickerErr.name === 'AbortError') {
+                        return; // User cancelled in dialog, do nothing
+                    }
+                    console.warn('showSaveFilePicker dialog error:', pickerErr);
+                }
+            }
+
+            // Fallback 1: If showSaveFilePicker was not available or threw an error, prompt folder picker
+            if (!fileHandle && window.showDirectoryPicker) {
+                try {
+                    const dirHandle = await window.showDirectoryPicker();
+                    if (dirHandle) {
+                        if (typeof showToast === 'function') {
+                            showToast(`⏳ កំពុងរក្សាទុកក្នុង Folder ${dirHandle.name}...`, true);
+                        }
+                        const blob = await getOrCaptureReceiptBlob(receiptEl);
+                        const fHandle = await dirHandle.getFileHandle(defaultFileName, { create: true });
+                        const writable = await fHandle.createWritable();
+                        await writable.write(blob);
+                        await writable.close();
+                        if (typeof showToast === 'function') {
+                            showToast(`🎉 បានរក្សាទុកក្នុង Folder "${dirHandle.name}" ដោយជោគជ័យ!`);
+                        }
+                        return;
+                    }
+                } catch (dirErr) {
+                    if (dirErr.name === 'AbortError') return;
+                    console.warn('showDirectoryPicker fallback error:', dirErr);
+                }
+            }
+
+            if (!fileHandle) {
+                alert('⚠️ មិនអាចបើកផ្ទាំងជ្រើសរើស Folder បានទេ! សូមប្រាកដថាអ្នកកំពុងប្រើកម្មវិធី Google Chrome ឬ Microsoft Edge។');
+                return;
+            }
+
             if (typeof showToast === 'function') {
-                showToast('⏳ កំពុងបង្កើតរូបភាពវិក្កយបត្រ...', true);
+                showToast('⏳ កំពុងរក្សាទុករូបភាពវិក្កយបត្រ...', true);
             }
 
             try {
                 const blob = await getOrCaptureReceiptBlob(receiptEl);
-                const blobUrl = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.download = defaultFileName;
-                link.href = blobUrl;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
-
+                const writable = await fileHandle.createWritable();
+                await writable.write(blob);
+                await writable.close();
                 if (typeof showToast === 'function') {
                     showToast('🎉 បានរក្សាទុករូបភាពវិក្កយបត្រដោយជោគជ័យ!');
                 }
             } catch (err) {
-                console.error("Error generating receipt PNG:", err);
-                alert('កំហុសក្នុងការបង្កើតរូបភាព៖ ' + (err.message || err));
+                console.error("Error saving receipt PNG:", err);
+                alert('កំហុសក្នុងការរក្សាទុក៖ ' + (err.message || err));
             }
         }
 
@@ -11146,110 +11192,11 @@ input[type="date"] {
             throw new Error("Clipboard API not supported");
         }
 
-        let _selectedTgTargetChatId = null;
-        let _selectedTgTargetTitle = null;
-
-        const DEFAULT_TG_BOT_TOKEN = "8884318593:AAEipEVki9o1YFL0_8IYoUeSn3Xif4dlVOk";
-        const DEFAULT_TG_CHAT_ID = "8985821312"; // Sokha GMP88
-
-        const KNOWN_TG_TARGETS = [
-            { id: "8985821312", title: "👤 Sokha GMP88 (@Sokhalion)", isDefault: true },
-            { id: "-1004497657405", title: "🚗 Group: កក់ឡាន" },
-            { id: "-5381280318", title: "🚙 Group: J Heng" },
-            { id: "-1004424429378", title: "🚐 Group: CK 2849" },
-            { id: "-1004338568933", title: "🚕 Group: Nab" },
-            { id: "-1004336964750", title: "🚘 Group: Smey Ap" },
-            { id: "-1004480815325", title: "🏎️ Group: Phinin" }
-        ];
-
-        function toggleReceiptTgMenu(event) {
-            if (event) event.stopPropagation();
-            const menu = document.getElementById('receiptTgMenu');
-            if (!menu) return;
-            const isShown = menu.style.display === 'block';
-            if (isShown) {
-                menu.style.display = 'none';
-            } else {
-                renderReceiptTgTargets();
-                menu.style.display = 'block';
-            }
-        }
-
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
-            const menu = document.getElementById('receiptTgMenu');
-            const toggleBtn = document.getElementById('btnTgMenuToggle');
-            if (menu && menu.style.display === 'block') {
-                if (!menu.contains(e.target) && e.target !== toggleBtn) {
-                    menu.style.display = 'none';
-                }
-            }
-        });
-
-        function renderReceiptTgTargets() {
-            const listEl = document.getElementById('receiptTgTargetsList');
-            if (!listEl) return;
-
-            const activeTargetId = _selectedTgTargetChatId || DEFAULT_TG_CHAT_ID;
-            let html = '';
-
-            KNOWN_TG_TARGETS.forEach(t => {
-                const isSelected = String(t.id) === String(activeTargetId);
-                const bg = isSelected ? 'rgba(56, 189, 248, 0.15)' : 'transparent';
-                const color = isSelected ? '#38bdf8' : '#f8fafc';
-                const check = isSelected ? ' ✔' : '';
-
-                html += `<div onclick="selectTgTargetAndSend('${t.id}', '${t.title.replace(/'/g, "\\'")}')" 
-                    style="padding: 7px 10px; cursor: pointer; border-radius: 5px; font-weight: ${isSelected ? '700' : '500'}; background: ${bg}; color: ${color}; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" 
-                    onmouseover="this.style.background='rgba(255,255,255,0.1)'" 
-                    onmouseout="this.style.background='${bg}'">
-                    <span>${t.title}</span>
-                    <span style="font-size: 11px; color: #38bdf8;">${check}</span>
-                </div>`;
-            });
-
-            listEl.innerHTML = html;
-        }
-
-        function selectTgTargetAndSend(chatId, title) {
-            _selectedTgTargetChatId = chatId;
-            _selectedTgTargetTitle = title;
-            const menu = document.getElementById('receiptTgMenu');
-            if (menu) menu.style.display = 'none';
-            shareReceiptTelegram(chatId, title);
-        }
-
-        async function copyReceiptOnly() {
-            const menu = document.getElementById('receiptTgMenu');
-            if (menu) menu.style.display = 'none';
-            const receiptEl = document.getElementById('printableReceiptArea');
-            if (!receiptEl) return;
-            try {
-                await copyReceiptToClipboard(receiptEl);
-                if (typeof showToast === 'function') {
-                    showToast('📋 បាន Copy រូបភាពវិក្កយបត្ររួចរាល់! ចុច <b>Ctrl + V</b> ក្នុង Telegram ដើម្បី Paste ផ្ញើ', true);
-                }
-            } catch (err) {
-                if (typeof showToast === 'function') {
-                    showToast('⚠️ មិនអាច Copy រូបភាពដោយស្វ័យប្រវត្តិបានទេ (សូម Right-click លើរូបភាព រើស "Copy image")', false);
-                }
-            }
-        }
-
-        function openTelegramAppOrWeb() {
-            const menu = document.getElementById('receiptTgMenu');
-            if (menu) menu.style.display = 'none';
-            window.open('https://web.telegram.org', '_blank');
-        }
-
-        async function shareReceiptTelegram(specifiedChatId, specifiedTitle) {
+        async function shareReceiptTelegram() {
             const rNo = document.getElementById('mReceiptNo')?.textContent?.trim() || 'INV';
             const sender = document.getElementById('mSenderName')?.textContent?.trim() || '';
-            const totalUSD = document.getElementById('mGrandUSD')?.textContent?.trim() || '';
-            const totalTHB = document.getElementById('mGrandTHB')?.textContent?.trim() || '';
-            const travelDate = document.getElementById('mTravelDate')?.textContent?.trim() || '';
+            const total = document.getElementById('mGrandUSD')?.textContent?.trim() || '';
             const receiptEl = document.getElementById('printableReceiptArea');
-            const btn = document.getElementById('btnShareTelegram');
 
             if (!receiptEl) {
                 if (typeof showToast === 'function') {
@@ -11258,151 +11205,51 @@ input[type="date"] {
                 return;
             }
 
-            const activeChatId = specifiedChatId || _selectedTgTargetChatId || DEFAULT_TG_CHAT_ID;
-            const targetName = specifiedTitle || _selectedTgTargetTitle || (activeChatId === DEFAULT_TG_CHAT_ID ? 'Sokha GMP88' : `ID: ${activeChatId}`);
-
-            const originalBtnHtml = btn ? btn.innerHTML : '✈️ Telegram';
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '⚡ កំពុងផ្ញើ...';
-            }
-
             if (typeof showToast === 'function') {
-                showToast(`⏳ កំពុងផ្ញើវិក្កយបត្រទៅ Telegram (${targetName})...`, true);
+                showToast('⏳ កំពុងដំណើរការ Copy រូបភាពវិក្កយបត្រ...', true);
             }
 
-            const cleanRNo = rNo.replace(/[^a-zA-Z0-9_-]/g, '_').trim();
-            let totalStr = totalUSD;
-            if (totalTHB && totalTHB !== '-' && totalTHB !== '฿0.00') totalStr += ` (${totalTHB})`;
-
-            const caption = `🧾 វិក្កយបត្រផ្លូវការ / Official Invoice: ${rNo}\n👤 អតិថិជន: ${sender}\n📅 ថ្ងៃធ្វើដំណើរ: ${travelDate}\n💰 សរុប: ${totalStr}\n\nGolden Mekong Commercial Service Co., Ltd.`;
-
-            let sentSuccess = false;
-            let errorMessage = '';
+            const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
             try {
-                // 1. Fast capture receipt PNG Blob (<300ms)
                 const blob = await getOrCaptureReceiptBlob(receiptEl);
-                if (!blob) throw new Error("Could not capture receipt image blob");
 
-                // 2. Instant clipboard copy using existing blob (non-blocking)
-                if (navigator.clipboard && window.ClipboardItem) {
+                // 1. Android & Mobile Native Share
+                if (isMobileDevice && navigator.share && navigator.canShare && blob) {
                     try {
-                        navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).catch(()=>{});
-                    } catch(e) {}
-                }
-
-                // 3. ULTRA-FAST: Direct Telegram Bot API with FormData (Direct to Telegram, takes <1s)
-                let botToken = DEFAULT_TG_BOT_TOKEN;
-                try {
-                    const formData = new FormData();
-                    formData.append('chat_id', activeChatId);
-                    formData.append('photo', blob, `Receipt_${cleanRNo}.png`);
-                    formData.append('caption', caption);
-
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 7000);
-
-                    const directResp = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
-                        method: 'POST',
-                        body: formData,
-                        signal: controller.signal
-                    });
-                    clearTimeout(timeoutId);
-
-                    const directData = await directResp.json();
-                    if (directData.ok) {
-                        sentSuccess = true;
-                    } else {
-                        errorMessage = directData.description || 'Telegram Bot error';
-                    }
-                } catch (directErr) {
-                    console.warn("Direct Telegram API note:", directErr);
-                }
-
-                // 4. Backend Fallback if Direct API failed (e.g. firewall)
-                if (!sentSuccess) {
-                    try {
-                        const reader = new FileReader();
-                        const b64Promise = new Promise((resolve, reject) => {
-                            reader.onloadend = () => resolve(reader.result);
-                            reader.onerror = reject;
-                        });
-                        reader.readAsDataURL(blob);
-                        const b64Data = await b64Promise;
-
-                        const controller2 = new AbortController();
-                        const timeoutId2 = setTimeout(() => controller2.abort(), 5000);
-
-                        const resp = await fetch('/api/send_telegram_bot', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                image: b64Data,
-                                filename: `Receipt_${cleanRNo}.png`,
-                                caption: caption,
-                                chat_id: activeChatId
-                            }),
-                            signal: controller2.signal
-                        });
-                        clearTimeout(timeoutId2);
-
-                        if (resp.ok) {
-                            const resData = await resp.json();
-                            if (resData.success) sentSuccess = true;
-                            else errorMessage = resData.error || errorMessage;
-                        }
-                    } catch (apiErr) {
-                        console.warn("Backend /api/send_telegram_bot fallback note:", apiErr);
-                    }
-                }
-
-                // 5. Mobile Web Share API fallback
-                const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-                if (!sentSuccess && isMobileDevice && navigator.share && navigator.canShare) {
-                    try {
-                        const file = new File([blob], `Receipt_${cleanRNo}.png`, { type: 'image/png' });
+                        const file = new File([blob], `Receipt_${rNo.replace(/[^a-zA-Z0-9_-]/g, '_')}.png`, { type: 'image/png' });
                         if (navigator.canShare({ files: [file] })) {
                             await navigator.share({
                                 files: [file],
                                 title: `Receipt ${rNo}`,
-                                text: caption
+                                text: `🧾 VIP Border Receipt: ${rNo}\n👤 Customer/Group: ${sender}\n💰 Total: ${total}`
                             });
-                            sentSuccess = true;
+                            if (typeof showToast === 'function') showToast('✅ បាន Share វិក្កយបត្ររួចរាល់!');
+                            return;
                         }
-                    } catch (shErr) {
-                        if (shErr.name === 'AbortError') return;
+                    } catch (err) {
+                        if (err.name === 'AbortError') return;
+                        console.log('Mobile share canceled or rejected:', err);
                     }
                 }
 
-                // Feedback
-                if (sentSuccess) {
+                // 2. Desktop PC Clipboard Copy & Direct Telegram Launch
+                try {
+                    await copyReceiptToClipboard(receiptEl);
                     if (typeof showToast === 'function') {
-                        showToast(`🚀 បានផ្ញើរូបភាពវិក្កយបត្រ <b>${rNo}</b> ទៅ Telegram (${targetName}) រួចរាល់! <a href="https://t.me/Sokhalion" target="_blank" style="display:inline-block; margin-left:8px; color:#38bdf8; text-decoration:underline; font-weight:700;">👉 បើក Telegram</a>`, true);
-                    } else {
-                        alert(`បានផ្ញើវិក្កយបត្រ ${rNo} ទៅ Telegram (${targetName}) រួចរាល់!`);
+                        showToast('📋 បាន Copy រូបភាពវិក្កយបត្ររួចរាល់! ចុច <b>Ctrl + V</b> ក្នុង Telegram ដើម្បី Paste ផ្ញើ', true);
                     }
-                } else {
+                    window.location.href = 'tg://msg';
+                } catch (err) {
+                    console.warn('Clipboard write failed:', err);
                     if (typeof showToast === 'function') {
-                        showToast(`⚠️ មិនទាន់អាចផ្ញើអូតូបានទេ (${errorMessage})។ រូបភាពត្រូវបាន Copy ចូល Clipboard រួច (ចុច Ctrl + V ក្នុង Telegram ដើម្បីផ្ញើ)`, false);
-                    } else {
-                        alert(`មិនអាចផ្ញើទៅ Telegram បានទេ៖ ${errorMessage}\n\nរូបភាពត្រូវបាន Copy ចូល Clipboard រួច (ចុច Ctrl + V ក្នុង Telegram ដើម្បីផ្ញើ)`);
+                        showToast('⚠️ បានបើក Telegram! (ប្រសិនមិនទាន់ជាប់ សូម Right-click លើវិក្កយបត្រ រើស "Copy image" រួច Ctrl+V)', false);
                     }
-                    window.open('https://web.telegram.org', '_blank');
+                    window.location.href = 'tg://msg';
                 }
-
             } catch (e) {
                 console.error("shareReceiptTelegram error:", e);
-                if (typeof showToast === 'function') {
-                    showToast("⚠️ កំហុសក្នុងការដំណើរការវិក្កយបត្រ៖ " + (e.message || e), false);
-                } else {
-                    alert("កំហុសក្នុងការដំណើរការវិក្កយបត្រ៖ " + (e.message || e));
-                }
-            } finally {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = originalBtnHtml;
-                }
+                alert("កំហុសក្នុងការចែករំលែកវិក្កយបត្រ៖ " + (e.message || e));
             }
         }
 
