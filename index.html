@@ -4559,7 +4559,7 @@ input[type="date"] {
                                         </th>
                                         <th style="padding: 7px 8px; width: 175px; font-size: 13.5px;"><i class="fa-solid fa-user text-primary"></i> ភ្ញៀវ / អ្នកកក់</th>
                                         <th style="text-align: center; padding: 7px 6px; width: 135px; font-size: 13.5px;"><i class="fa-brands fa-telegram text-primary"></i> តេលេក្រាមតៃកុង</th>
-                                        <th style="padding: 7px 8px; width: 210px; font-size: 13.5px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅធ្វើដំណើរ (Route)</th>
+                                        <th style="padding: 7px 8px; width: 235px; font-size: 13.5px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅធ្វើដំណើរ (Route)</th>
                                         <th style="padding: 7px 6px; width: 155px; font-size: 13.5px;"><i class="fa-solid fa-car text-primary"></i> ប្រភេទរថយន្ត</th>
                                         <th style="text-align: center; padding: 7px 8px; width: 120px; font-size: 13.5px;"><i class="fa-solid fa-star text-warning"></i> VIP / ក្លៀដាន</th>
                                         <th style="text-align: center; padding: 7px 6px; width: 125px; font-size: 13.5px;"><i class="fa-solid fa-eye text-primary"></i> មើលលម្អិត</th>
@@ -4875,108 +4875,112 @@ input[type="date"] {
                             <div class="booking-modal-grid">
                                 <!-- Left Column: Form -->
                                 <div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                        <b style="color: #0f172a; font-size: 13px;"><i class="fa-solid fa-car-side text-primary"></i> ១. ជ្រើសរើសរថយន្ត</b>
-                                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 3px 8px; font-size: 11px;" onclick="addBookingModalExtraCarSlot()">
-                                            <i class="fa-solid fa-plus text-primary"></i> ថែមឡាន
-                                        </button>
-                                    </div>
-
-                                    <!-- Car Selection Slots (Default: 2 slots) -->
-                                    <div id="bookingCarSlotsRow" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;" class="mb-2">
-                                        <div class="form-group" id="bookingCarSlotGroup1" style="margin-bottom: 0;">
-                                            <label style="font-weight: 900; font-size: 13px; color: #0f172a;">🚗 ឡានទី ១ <span class="text-danger">*</span></label>
-                                            <select id="bookingCarSelect" required class="form-control font-weight-bold" style="height: 38px; font-size: 13.5px; font-weight: 800;"></select>
-                                        </div>
-                                        <div class="form-group" id="bookingCarSlotGroup2" style="margin-bottom: 0;">
-                                            <label style="font-weight: 900; font-size: 13px; color: #0f172a;">🚗 ឡានទី ២</label>
-                                            <select id="bookingCarSelect2" class="form-control font-weight-bold" style="height: 38px; font-size: 13.5px; font-weight: 800;"></select>
-                                        </div>
-                                        <div class="form-group" id="bookingCarSlotGroup3" style="display: none; margin-bottom: 0;">
-                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-                                                <label style="font-weight: 900; font-size: 13px; color: #0f172a; margin: 0;">🚗 ឡានទី ៣</label>
-                                                <button type="button" class="btn-ar" onclick="removeBookingCarSlot(3)" style="padding: 2px 7px; font-size: 11px; color: #dc2626; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 4px; cursor: pointer;" title="លុបឡានទី ៣"><i class="fa-solid fa-xmark"></i></button>
-                                            </div>
-                                            <select id="bookingCarSelect3" class="form-control font-weight-bold" style="height: 38px; font-size: 13.5px; font-weight: 800;"></select>
-                                        </div>
-                                        <div class="form-group" id="bookingCarSlotGroup4" style="display: none; margin-bottom: 0;">
-                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-                                                <label style="font-weight: 900; font-size: 13px; color: #0f172a; margin: 0;">🚗 ឡានទី ៤</label>
-                                                <button type="button" class="btn-ar" onclick="removeBookingCarSlot(4)" style="padding: 2px 7px; font-size: 11px; color: #dc2626; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 4px; cursor: pointer;" title="លុបឡានទី ៤"><i class="fa-solid fa-xmark"></i></button>
-                                            </div>
-                                            <select id="bookingCarSelect4" class="form-control font-weight-bold" style="height: 38px; font-size: 13.5px; font-weight: 800;"></select>
-                                        </div>
-                                    </div>
-
-                                    <div id="bookingExtraCarSlotsContainer"></div>
-
-                                    <!-- Customer & Service Bar -->
+                                    <!-- Customer & Service Bar (ឈ្មោះភ្ញៀវ & ព័ត៌មានភ្ញៀវ) -->
                                     <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 9px; padding: 10px; margin-bottom: 12px;">
-                                        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
-                                            <div style="flex: 1.2; min-width: 150px;">
-                                                <label style="font-size: 11px; font-weight: 700; color: #0284c7;">👤 ឈ្មោះភ្ញៀវ * :</label>
-                                                <input type="text" id="bookingCustomerName" required class="form-control font-weight-bold" placeholder="ឈ្មោះភ្ញៀវ..." oninput="if(typeof validateBookingCustomerName==='function') validateBookingCustomerName();">
-                                                <div id="bookingCustomerNameError" style="display: none; color: #dc2626; font-size: 11px; font-weight: 800; margin-top: 3px;">
-                                                    <i class="fa-solid fa-triangle-exclamation"></i> សូមបញ្ចូលឈ្មោះភ្ញៀវជាមុនសិន! មិនអាចសេវបានទេ។
+                                        <!-- Row 1: Customer Details -->
+                                        <div style="display: grid; grid-template-columns: 1.25fr 1.35fr 1fr; gap: 8px; align-items: flex-end; margin-bottom: 8px;">
+                                            <div style="min-width: 0;">
+                                                <label style="font-size: 11px; font-weight: 700; color: #0284c7; margin-bottom: 2px; display: block; white-space: nowrap;">👤 ឈ្មោះភ្ញៀវ * :</label>
+                                                <input type="text" id="bookingCustomerName" required class="form-control font-weight-bold" placeholder="ឈ្មោះភ្ញៀវ..." oninput="if(typeof validateBookingCustomerName==='function') validateBookingCustomerName();" style="height: 34px; font-size: 13px;">
+                                                <div id="bookingCustomerNameError" style="display: none; color: #dc2626; font-size: 10.5px; font-weight: 800; margin-top: 2px;">
+                                                    <i class="fa-solid fa-triangle-exclamation"></i> សូមបញ្ចូលឈ្មោះភ្ញៀវជាមុនសិន!
                                                 </div>
                                             </div>
-                                            <div style="flex: 1.1; min-width: 145px;">
+                                            <div style="min-width: 0;">
                                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-                                                    <label style="font-size: 11px; font-weight: 700; margin: 0;">ភ្ញៀវចាស់ :</label>
+                                                    <label style="font-size: 11px; font-weight: 700; margin: 0; white-space: nowrap;">ភ្ញៀវចាស់ :</label>
                                                     <div style="display: flex; gap: 4px;">
-                                                        <button type="button" class="btn-ar" style="padding: 1px 7px; font-size: 10px; font-weight: 800; background: #fef3c7; color: #b45309; border: 1px solid #fde68a; border-radius: 5px; cursor: pointer;" onclick="cleanDuplicateCustomers()" title="សម្អាត និងច្រោះឈ្មោះដែលជាន់គ្នាស្វ័យប្រវត្តិ">
-                                                            <i class="fa-solid fa-broom"></i> សម្អាតជាន់គ្នា
+                                                        <button type="button" class="btn-ar" style="padding: 1px 6px; font-size: 9.5px; font-weight: 800; background: #fef3c7; color: #b45309; border: 1px solid #fde68a; border-radius: 4px; cursor: pointer; white-space: nowrap;" onclick="cleanDuplicateCustomers()" title="សម្អាត និងច្រោះឈ្មោះដែលជាន់គ្នាស្វ័យប្រវត្តិ">
+                                                            <i class="fa-solid fa-broom"></i> សម្អាត
                                                         </button>
-                                                        <button type="button" class="btn-ar" style="padding: 1px 7px; font-size: 10px; font-weight: 800; background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;" onclick="openQuickAddCustomerModal()" title="ចុចដើម្បីបញ្ចូលភ្ញៀវថ្មី">
+                                                        <button type="button" class="btn-ar" style="padding: 1px 6px; font-size: 9.5px; font-weight: 800; background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 2px; white-space: nowrap;" onclick="openQuickAddCustomerModal()" title="ចុចដើម្បីបញ្ចូលភ្ញៀវថ្មី">
                                                             <i class="fa-solid fa-user-plus text-primary"></i> + ភ្ញៀវថ្មី
                                                         </button>
                                                     </div>
                                                 </div>
                                                 <div style="display: flex; gap: 4px; align-items: center;">
-                                                    <select id="bookingCustomerSelect" class="form-control font-weight-bold" onchange="handleCustomerDropdownChange(this)"></select>
-                                                    <button type="button" id="btnDeleteSelectedCustomer" class="btn-ar" style="display: none; padding: 4px 8px; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 6px; cursor: pointer; white-space: nowrap; font-size: 11px; font-weight: 800;" onclick="deleteSelectedCustomerFromDropdown()" title="លុបឈ្មោះភ្ញៀវដែលបានជ្រើសរើសនេះចេញពីបញ្ជី">
-                                                        <i class="fa-solid fa-trash"></i> លុប
+                                                    <select id="bookingCustomerSelect" class="form-control font-weight-bold" onchange="handleCustomerDropdownChange(this)" style="height: 34px; font-size: 12.5px;"></select>
+                                                    <button type="button" id="btnDeleteSelectedCustomer" class="btn-ar" style="display: none; padding: 4px 7px; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 6px; cursor: pointer; white-space: nowrap; font-size: 11px; font-weight: 800;" onclick="deleteSelectedCustomerFromDropdown()" title="លុបឈ្មោះភ្ញៀវដែលបានជ្រើសរើសនេះចេញពីបញ្ជី">
+                                                        <i class="fa-solid fa-trash"></i>
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div style="flex: 1; min-width: 125px;">
-                                                <label style="font-size: 11px; font-weight: 700; color: #0f172a;"><i class="fa-solid fa-phone text-primary"></i> លេខទូរស័ព្ទ :</label>
-                                                <input type="text" id="bookingCustomerPhone" class="form-control font-weight-bold" placeholder="012 345 678">
+                                            <div style="display: none;">
+                                                <input type="text" id="bookingCustomerPhone" class="form-control" placeholder="012 345 678">
                                             </div>
-                                            <div style="flex: 1; min-width: 130px;">
-                                                <label style="font-size: 11px; font-weight: 700;"><i class="fa-brands fa-telegram text-info"></i> Telegram ភ្ញៀវ :</label>
-                                                <input type="text" id="bookingTelegramLink" class="form-control" placeholder="@username">
+                                            <div style="min-width: 0;">
+                                                <label style="font-size: 11px; font-weight: 700; margin-bottom: 2px; display: block; white-space: nowrap;"><i class="fa-brands fa-telegram text-info"></i> Telegram ភ្ញៀវ :</label>
+                                                <input type="text" id="bookingTelegramLink" class="form-control" placeholder="@username" style="height: 34px; font-size: 12.5px;">
                                             </div>
-                                            <div style="flex: 1; min-width: 130px;">
-                                                <label style="font-size: 11px; font-weight: 700;"><i class="fa-brands fa-telegram text-primary"></i> ឆាតតៃកុង :</label>
-                                                <input type="text" id="bookingDriverTelegram" class="form-control font-weight-bold" placeholder="@driver ឬឈ្មោះគ្រុប" list="bookingDriverDatalist" onfocus="if (typeof populateDriverDatalist==='function') populateDriverDatalist()">
+                                        </div>
+
+                                        <!-- Row 2: Service & Dispatch Options (ឆាតតៃកុង, VIP, ក្លៀដាន, ធ្វើ Invoice) - On a single compact line -->
+                                        <div style="display: grid; grid-template-columns: 1.4fr 0.85fr 0.85fr 1.1fr; gap: 8px; align-items: flex-end;">
+                                            <div style="min-width: 0;">
+                                                <label style="font-size: 11px; font-weight: 700; margin-bottom: 2px; display: block; white-space: nowrap;"><i class="fa-brands fa-telegram text-primary"></i> ឆាតតៃកុង :</label>
+                                                <input type="text" id="bookingDriverTelegram" class="form-control font-weight-bold" placeholder="@driver ឬឈ្មោះគ្រុប" list="bookingDriverDatalist" onfocus="if (typeof populateDriverDatalist==='function') populateDriverDatalist()" style="height: 32px; font-size: 12px; padding: 3px 8px;">
                                                 <datalist id="bookingDriverDatalist"></datalist>
                                             </div>
-                                            <div style="min-width: 95px;">
-                                                <label style="font-size: 11px; font-weight: 700; color: #d97706;">VIP :</label>
-                                                <select id="bookingVipService" class="form-control font-weight-bold">
+                                            <div style="min-width: 0;">
+                                                <label style="font-size: 11px; font-weight: 700; color: #d97706; margin-bottom: 2px; display: block; white-space: nowrap;">VIP :</label>
+                                                <select id="bookingVipService" class="form-control font-weight-bold" style="height: 32px; font-size: 12px; padding: 3px 6px;">
                                                     <option value="">-- មិនយក --</option>
                                                     <option value="VIP">VIP</option>
                                                     <option value="យក VIP" style="display:none;">VIP</option>
                                                 </select>
                                             </div>
-                                            <div style="min-width: 95px;">
-                                                <label style="font-size: 11px; font-weight: 700; color: #16a34a;">ក្លៀដាន :</label>
-                                                <select id="bookingBorderClear" class="form-control font-weight-bold">
+                                            <div style="min-width: 0;">
+                                                <label style="font-size: 11px; font-weight: 700; color: #16a34a; margin-bottom: 2px; display: block; white-space: nowrap;">ក្លៀដាន :</label>
+                                                <select id="bookingBorderClear" class="form-control font-weight-bold" style="height: 32px; font-size: 12px; padding: 3px 6px;">
                                                     <option value="">-- មិនយក --</option>
                                                     <option value="ក្លៀដាន">ក្លៀដាន</option>
                                                     <option value="យកក្លៀដាន" style="display:none;">ក្លៀដាន</option>
                                                 </select>
                                             </div>
-                                            <div style="min-width: 125px;">
-                                                <label style="font-size: 11px; font-weight: 700; color: #16a34a;"><i class="fa-solid fa-file-invoice-dollar"></i> ធ្វើ Invoice :</label>
-                                                <select id="bookingInvoiceDone" class="form-control font-weight-bold">
-                                                    <option value="false">⬜ មិនទាន់ធ្វើ</option>
+                                            <div style="min-width: 0;">
+                                                <label style="font-size: 11px; font-weight: 700; color: #16a34a; margin-bottom: 2px; display: block; white-space: nowrap;"><i class="fa-solid fa-file-invoice-dollar"></i> ធ្វើ Invoice :</label>
+                                                <select id="bookingInvoiceDone" class="form-control font-weight-bold" style="height: 32px; font-size: 12px; padding: 3px 6px;">
+                                                    <option value="false">⬜ មិនទាន់</option>
                                                     <option value="true">✅ ធ្វើរួចរាល់</option>
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Car Selection Slots (Default: 2 slots) - បន្ទាត់ជ្រើសរើសរថយន្ត -->
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                        <b style="color: #0f172a; font-size: 12px;"><i class="fa-solid fa-car-side text-primary"></i> ជ្រើសរើសរថយន្ត</b>
+                                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 2px 7px; font-size: 10.5px;" onclick="addBookingModalExtraCarSlot()">
+                                            <i class="fa-solid fa-plus text-primary"></i> ថែមឡាន
+                                        </button>
+                                    </div>
+
+                                    <div id="bookingCarSlotsRow" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;" class="mb-2">
+                                        <div class="form-group" id="bookingCarSlotGroup1" style="margin-bottom: 0;">
+                                            <label style="font-weight: 700; font-size: 11.5px; color: #0f172a; margin-bottom: 2px; display: block; white-space: nowrap;">🚗 ឡានទី ១ <span class="text-danger">*</span></label>
+                                            <select id="bookingCarSelect" required class="form-control font-weight-bold" style="height: 36px; font-size: 12.5px; font-weight: 700; padding: 4px 6px; width: 100%;"></select>
+                                        </div>
+                                        <div class="form-group" id="bookingCarSlotGroup2" style="margin-bottom: 0;">
+                                            <label style="font-weight: 700; font-size: 11.5px; color: #0f172a; margin-bottom: 2px; display: block; white-space: nowrap;">🚗 ឡានទី ២</label>
+                                            <select id="bookingCarSelect2" class="form-control font-weight-bold" style="height: 36px; font-size: 12.5px; font-weight: 700; padding: 4px 6px; width: 100%;"></select>
+                                        </div>
+                                        <div class="form-group" id="bookingCarSlotGroup3" style="margin-bottom: 0;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                                                <label style="font-weight: 700; font-size: 11.5px; color: #0f172a; margin: 0; white-space: nowrap;">🚗 ឡានទី ៣</label>
+                                                <button type="button" class="btn-ar" onclick="removeBookingCarSlot(3)" style="padding: 1px 5px; font-size: 9.5px; color: #dc2626; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 4px; cursor: pointer;" title="លុបឡានទី ៣"><i class="fa-solid fa-xmark"></i></button>
+                                            </div>
+                                            <select id="bookingCarSelect3" class="form-control font-weight-bold" style="height: 36px; font-size: 12.5px; font-weight: 700; padding: 4px 6px; width: 100%;"></select>
+                                        </div>
+                                        <div class="form-group" id="bookingCarSlotGroup4" style="display: none; margin-bottom: 0;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                                                <label style="font-weight: 700; font-size: 11.5px; color: #0f172a; margin: 0; white-space: nowrap;">🚗 ឡានទី ៤</label>
+                                                <button type="button" class="btn-ar" onclick="removeBookingCarSlot(4)" style="padding: 1px 5px; font-size: 9.5px; color: #dc2626; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 4px; cursor: pointer;" title="លុបឡានទី ៤"><i class="fa-solid fa-xmark"></i></button>
+                                            </div>
+                                            <select id="bookingCarSelect4" class="form-control font-weight-bold" style="height: 36px; font-size: 12.5px; font-weight: 700; padding: 4px 6px; width: 100%;"></select>
+                                        </div>
+                                    </div>
+
+                                    <div id="bookingExtraCarSlotsContainer" style="margin-bottom: 10px;"></div>
 
                                     <!-- Route & Date / Time (3 Columns on a Single Line) -->
                                     <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 9px; padding: 10px 12px; margin-bottom: 12px;">
@@ -4988,22 +4992,22 @@ input[type="date"] {
                                                     <label style="font-size: 13px; font-weight: 900; color: #dc2626; margin: 0; padding-right: 4px;">🏁 ជូនទៅ :</label>
                                                 </div>
                                                 <div style="display: flex; gap: 4px; align-items: center;">
-                                                    <select id="bookingPickupLoc" class="form-control font-weight-bold" style="background:#ffffff;color:#475569; height: 38px; flex: 1; min-width: 0; padding: 4px 6px; font-size: 13.5px; font-weight: 800;" onchange="updateBookingRouteStyles()">
+                                                    <select id="bookingPickupLoc" class="form-control font-weight-bold" style="background:#ffffff; color:#475569; height: 38px; flex: 1; min-width: 0; padding: 4px 6px; font-size: 13.5px; font-weight: 800; border-radius: 6px;" onchange="updateBookingRouteStyles()">
                                                         <option value="">-- ជ្រើសរើស --</option>
-                                                        <option value="ប៉ោយប៉ែត">📍 ប៉ោយប៉ែត</option>
-                                                        <option value="ភ្នំពេញ">📍 ភ្នំពេញ</option>
-                                                        <option value="សៀមរាប">📍 សៀមរាប</option>
-                                                        <option value="តេជោ">📍 តេជោ</option>
+                                                        <option value="ប៉ោយប៉ែត" style="background: #dcfce7; color: #15803d; font-weight: 800;">ប៉ោយប៉ែត</option>
+                                                        <option value="ភ្នំពេញ" style="background: #ede9fe; color: #6d28d9; font-weight: 800;">ភ្នំពេញ</option>
+                                                        <option value="សៀមរាប" style="background: #e0f2fe; color: #0284c7; font-weight: 800;">សៀមរាប</option>
+                                                        <option value="តេជោ" style="background: #ffedd5; color: #ea580c; font-weight: 800;">តេជោ</option>
                                                     </select>
                                                     <button type="button" class="btn-ar btn-ar-outline" style="height: 38px; padding: 0 8px; flex-shrink: 0; font-size: 14px;" onclick="swapFormLocations()" title="ផ្លាស់ប្តូរទីតាំង (Swap)">
                                                         <i class="fa-solid fa-arrows-rotate"></i>
                                                     </button>
-                                                    <select id="bookingDropoffLoc" class="form-control font-weight-bold" style="background:#ffffff;color:#475569; height: 38px; flex: 1; min-width: 0; padding: 4px 6px; font-size: 13.5px; font-weight: 800;" onchange="updateBookingRouteStyles()">
+                                                    <select id="bookingDropoffLoc" class="form-control font-weight-bold" style="background:#ffffff; color:#475569; height: 38px; flex: 1; min-width: 0; padding: 4px 6px; font-size: 13.5px; font-weight: 800; border-radius: 6px;" onchange="updateBookingRouteStyles()">
                                                         <option value="">-- ជ្រើសរើស --</option>
-                                                        <option value="ភ្នំពេញ">📍 ភ្នំពេញ</option>
-                                                        <option value="ប៉ោយប៉ែត">📍 ប៉ោយប៉ែត</option>
-                                                        <option value="សៀមរាប">📍 សៀមរាប</option>
-                                                        <option value="តេជោ">📍 តេជោ</option>
+                                                        <option value="ភ្នំពេញ" style="background: #ede9fe; color: #6d28d9; font-weight: 800;">ភ្នំពេញ</option>
+                                                        <option value="ប៉ោយប៉ែត" style="background: #dcfce7; color: #15803d; font-weight: 800;">ប៉ោយប៉ែត</option>
+                                                        <option value="សៀមរាប" style="background: #e0f2fe; color: #0284c7; font-weight: 800;">សៀមរាប</option>
+                                                        <option value="តេជោ" style="background: #ffedd5; color: #ea580c; font-weight: 800;">តេជោ</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -5365,7 +5369,7 @@ input[type="date"] {
                                     <i class="fa-solid fa-rotate-right"></i> សរសេរឡើងវិញ
                                 </button>
                             </div>
-                            <textarea id="dispatchMessageText" class="form-control" rows="8" style="font-family: 'Khmer OS Siemreap', 'Segoe UI', sans-serif; font-size: 12.5px; line-height: 1.6; border: 1.5px solid #cbd5e1; border-radius: 8px; resize: vertical; background: #fff;"></textarea>
+                            <textarea id="dispatchMessageText" class="form-control" rows="8" style="font-family: 'Khmer OS Siemreap', 'Segoe UI', sans-serif; font-size: 13.5px; font-weight: 500; line-height: 1.6; border: 1.5px solid #cbd5e1; border-radius: 8px; resize: vertical; background: #fff;"></textarea>
                         </div>
 
                         <!-- Step 3: Attached Photos & Location Images -->
@@ -7898,94 +7902,94 @@ input[type="date"] {
 
         function openNewGroupModal() {
             const cat = (currentServiceCategory === 'visa') ? 'visa' : (currentServiceCategory === 'passport' ? 'passport' : 'car');
-            fetch('/api/next_no?category=' + cat)
+            const provisionalNo = (cat === 'visa' ? 'VISA 00001' : 'INV 00001');
+            currentGmmReceiptNo = provisionalNo;
+
+            // 1. Open modal immediately (0ms)
+            const modal = document.getElementById('groupMembersModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.classList.add('active');
+            }
+
+            const titleElem = document.getElementById('gmmTitle');
+            const subTitleElem = document.getElementById('gmmSubTitle');
+            if (titleElem) titleElem.textContent = `📋 បង្កើតទិន្នន័យក្រុមថ្មី (${provisionalNo})`;
+            if (subTitleElem) subTitleElem.textContent = `👤 បញ្ចូលព័ត៌មានអ្នកនាំ និងសមាជិកក្រុមថ្មី`;
+
+            // Set default today's date
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const dateInput = document.getElementById('gmmTravelDate');
+            if (dateInput) dateInput.value = `${yyyy}-${mm}-${dd}`;
+
+            const rNoInput = document.getElementById('gmmReceiptNo');
+            if (rNoInput) rNoInput.value = provisionalNo;
+
+            const rateInput = document.getElementById('gmmExchangeRate');
+            if (rateInput) rateInput.value = getLatestSavedExchangeRate();
+
+            // Clear sender & agency
+            const senderInp = document.getElementById('gmmSenderName');
+            if (senderInp) senderInp.value = '';
+            const agencyInp = document.getElementById('gmmAgencyCompany');
+            if (agencyInp) agencyInp.value = '';
+
+            // Clear tbody first
+            const tbody = document.getElementById('gmmMembersBody');
+            if (tbody) tbody.innerHTML = '';
+
+            // Set mode based on active category with explicit empty list
+            const initialMode = (currentServiceCategory === 'visa') ? 'visa' : (currentServiceCategory === 'passport' ? 'passport' : 'line');
+            currentGmmCachedItem = null;
+            currentModalReceiptData = null;
+            switchGmmMode(initialMode, []);
+
+            // Clear bulk fee inputs
+            ['gmmFeePassport', 'gmmFeeNamelist', 'gmmFeeVisa', 'gmmFeeMissingDoc', 'gmmFeeStamping', 'gmmFeeVip', 'gmmFeeCar', 'gmmFeeClearance', 'gmmFeeWork', 'gmmFeeFine'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+
+            // Set button text to: 💾 រក្សាទុក (Save Changes)
+            const btnSave = document.getElementById('btnGmmSave');
+            if (btnSave) {
+                btnSave.textContent = '💾 រក្សាទុក (Save Changes)';
+            }
+
+            // Add 2 initial completely blank member rows ready for typing
+            if (tbody) {
+                tbody.innerHTML = '';
+                addNewGmmMemberRow();
+                addNewGmmMemberRow();
+            }
+
+            calculateGmmTotal();
+
+            // Focus sender name input immediately
+            if (senderInp) senderInp.focus();
+
+            // Update datalist asynchronously
+            setTimeout(() => {
+                if (typeof updateGmmSenderDatalist === 'function') updateGmmSenderDatalist();
+            }, 20);
+
+            // Background fetch next invoice number
+            const ab = new AbortController();
+            const tId = setTimeout(() => ab.abort(), 2000);
+            fetch('/api/next_no?category=' + cat, { signal: ab.signal })
                 .then(r => r.json())
                 .then(d => {
-                    const nextNo = d.next_no || (cat === 'visa' ? 'VISA 00001' : 'INV 00001');
+                    clearTimeout(tId);
+                    const nextNo = d.next_no || provisionalNo;
                     currentGmmReceiptNo = nextNo;
-
-                    const titleElem = document.getElementById('gmmTitle');
-                    const subTitleElem = document.getElementById('gmmSubTitle');
                     if (titleElem) titleElem.textContent = `📋 បង្កើតទិន្នន័យក្រុមថ្មី (${nextNo})`;
-                    if (subTitleElem) subTitleElem.textContent = `👤 បញ្ចូលព័ត៌មានអ្នកនាំ និងសមាជិកក្រុមថ្មី`;
-
-                    // Set default today's date
-                    const today = new Date();
-                    const yyyy = today.getFullYear();
-                    const mm = String(today.getMonth() + 1).padStart(2, '0');
-                    const dd = String(today.getDate()).padStart(2, '0');
-                    const dateInput = document.getElementById('gmmTravelDate');
-                    if (dateInput) dateInput.value = `${yyyy}-${mm}-${dd}`;
-
-                    const rNoInput = document.getElementById('gmmReceiptNo');
                     if (rNoInput) rNoInput.value = nextNo;
-
-                    const rateInput = document.getElementById('gmmExchangeRate');
-                    if (rateInput) rateInput.value = getLatestSavedExchangeRate();
-
-                    // Clear sender & agency
-                    const senderInp = document.getElementById('gmmSenderName');
-                    if (senderInp) senderInp.value = '';
-                    const agencyInp = document.getElementById('gmmAgencyCompany');
-                    if (agencyInp) agencyInp.value = '';
-
-                    if (typeof updateGmmSenderDatalist === 'function') {
-                        updateGmmSenderDatalist();
-                    }
-
-                    // Clear tbody first
-                    const tbody = document.getElementById('gmmMembersBody');
-                    if (tbody) tbody.innerHTML = '';
-
-                    // Set mode based on active category with explicit empty list
-                    const initialMode = (currentServiceCategory === 'visa') ? 'visa' : (currentServiceCategory === 'passport' ? 'passport' : 'line');
-                    currentGmmCachedItem = null;
-                    currentModalReceiptData = null;
-                    switchGmmMode(initialMode, []);
-
-                    // Clear bulk fee inputs
-                    ['gmmFeePassport', 'gmmFeeNamelist', 'gmmFeeVisa', 'gmmFeeMissingDoc', 'gmmFeeStamping', 'gmmFeeVip', 'gmmFeeCar', 'gmmFeeClearance', 'gmmFeeWork', 'gmmFeeFine'].forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) el.value = '';
-                    });
-
-                    // Set button text to: 💾 រក្សាទុក (Save Changes)
-                    const btnSave = document.getElementById('btnGmmSave');
-                    if (btnSave) {
-                        btnSave.textContent = '💾 រក្សាទុក (Save Changes)';
-                    }
-
-                    // Add 2 initial completely blank member rows ready for typing
-                    if (tbody) {
-                        tbody.innerHTML = '';
-                        addNewGmmMemberRow();
-                        addNewGmmMemberRow();
-                    }
-
-                    calculateGmmTotal();
-
-                    // Open modal
-                    const modal = document.getElementById('groupMembersModal');
-                    if (modal) {
-                        modal.style.display = 'flex';
-                        modal.classList.add('active');
-                    }
-
-                    // Focus sender name input
-                    setTimeout(() => {
-                        if (senderInp) senderInp.focus();
-                    }, 100);
                 })
                 .catch(() => {
-                    const nextNo = (currentServiceCategory === 'visa' ? 'VISA ' : 'INV ') + String(Date.now()).slice(-5);
-                    currentGmmReceiptNo = nextNo;
-                    const rNoInput = document.getElementById('gmmReceiptNo');
-                    if (rNoInput) rNoInput.value = nextNo;
-                    const modal = document.getElementById('groupMembersModal');
-                    if (modal) {
-                        modal.style.display = 'flex';
-                        modal.classList.add('active');
-                    }
+                    clearTimeout(tId);
                 });
         }
 
@@ -13033,12 +13037,24 @@ document.addEventListener('paste', function(e) {
                     ${b.images && b.images.length > 0 ? ` <span class="badge" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;font-size:12px;font-weight:800;margin-left:4px;cursor:pointer;vertical-align:middle;padding:2px 6px;" onclick="viewBookingDetails('${b.id}')" title="${b.images.length} រូបភាពភ្ជាប់"><i class="fa-solid fa-camera"></i> ${b.images.length}</span>` : ''}
                 </td>
                 <td style="text-align: center; white-space: nowrap; padding: 6px 5px;">${driverTg}</td>
-                <td style="white-space: nowrap; padding: 6px 8px; width: 210px;">
-                    <span class="table-badge-route" style="white-space: nowrap; font-size: 13.5px; font-weight: 900; padding: 4px 10px; background: #e0f2fe; color: #0369a1; border: 1.5px solid #7dd3fc; border-radius: 6px; display: inline-flex; align-items: center;" title="${b.pickupLoc || 'ភ្នំពេញ'} ➔ ${b.dropoffLoc || 'ប៉ោយប៉ែត'}">
-                        <span style="max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${b.pickupLoc || 'ភ្នំពេញ'}</span>
-                        <i class="fa-solid fa-arrow-right" style="font-size: 10px; margin: 0 5px; flex-shrink: 0;"></i>
-                        <span style="max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${b.dropoffLoc || 'ប៉ោយប៉ែត'}</span>
-                    </span>
+                <td style="white-space: nowrap; padding: 6px 8px; width: 235px;">
+                    ${(() => {
+                        const pTheme = (typeof window.getLocationTheme === 'function' ? window.getLocationTheme(b.pickupLoc || 'ភ្នំពេញ') : null) || { badgeBg: '#f3e8ff', badgeText: '#581c87', badgeBorder: '#c084fc' };
+                        const dTheme = (typeof window.getLocationTheme === 'function' ? window.getLocationTheme(b.dropoffLoc || 'ប៉ោយប៉ែត') : null) || { badgeBg: '#dcfce7', badgeText: '#14532d', badgeBorder: '#86efac' };
+                        const pName = b.pickupLoc || 'ភ្នំពេញ';
+                        const dName = b.dropoffLoc || 'ប៉ោយប៉ែត';
+                        return `
+                            <div style="display: inline-flex; align-items: center; gap: 4px;" title="${pName} ➔ ${dName}">
+                                <span style="white-space: nowrap; font-size: 14.5px; font-weight: 900; padding: 4px 10px; background: ${pTheme.badgeBg}; color: ${pTheme.badgeText}; border: 1.5px solid ${pTheme.badgeBorder}; border-radius: 7px; display: inline-flex; align-items: center; max-width: 125px; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 2px rgba(0,0,0,0.05); letter-spacing: 0.1px;">
+                                    <span style="overflow: hidden; text-overflow: ellipsis;">${pName}</span>
+                                </span>
+                                <i class="fa-solid fa-arrow-right" style="font-size: 11.5px; color: #475569; margin: 0 3px; flex-shrink: 0; font-weight: 900;"></i>
+                                <span style="white-space: nowrap; font-size: 14.5px; font-weight: 900; padding: 4px 10px; background: ${dTheme.badgeBg}; color: ${dTheme.badgeText}; border: 1.5px solid ${dTheme.badgeBorder}; border-radius: 7px; display: inline-flex; align-items: center; max-width: 125px; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 2px rgba(0,0,0,0.05); letter-spacing: 0.1px;">
+                                    <span style="overflow: hidden; text-overflow: ellipsis;">${dName}</span>
+                                </span>
+                            </div>
+                        `;
+                    })()}
                 </td>
                 <td style="white-space: nowrap; padding: 6px 6px;">
                     <div style="display: inline-flex; align-items: center; gap: 5px; flex-wrap: nowrap; vertical-align: middle;">
@@ -13730,11 +13746,23 @@ document.addEventListener('paste', function(e) {
                         ${b.customerPhone ? `<div style="font-size: 11.5px; color: #0284c7; font-weight: 700;"><i class="fa-solid fa-phone"></i> ${b.customerPhone}</div>` : ''}
                     </td>
                     <td style="padding: 12px 14px;">
-                        <span class="table-badge-route" style="font-size: 12.5px; font-weight: 800; padding: 4px 10px; background: #e0f2fe; color: #0369a1; border: 1.5px solid #7dd3fc;">
-                            <span>📍 ${b.pickupLoc || 'ភ្នំពេញ'}</span>
-                            <i class="fa-solid fa-arrow-right" style="font-size: 10px; margin: 0 4px;"></i>
-                            <span>🏁 ${b.dropoffLoc || 'ប៉ោយប៉ែត'}</span>
-                        </span>
+                        ${(() => {
+                            const pTheme = (typeof window.getLocationTheme === 'function' ? window.getLocationTheme(b.pickupLoc || 'ភ្នំពេញ') : null) || { badgeBg: '#f3e8ff', badgeText: '#581c87', badgeBorder: '#c084fc' };
+                            const dTheme = (typeof window.getLocationTheme === 'function' ? window.getLocationTheme(b.dropoffLoc || 'ប៉ោយប៉ែត') : null) || { badgeBg: '#dcfce7', badgeText: '#14532d', badgeBorder: '#86efac' };
+                            const pName = b.pickupLoc || 'ភ្នំពេញ';
+                            const dName = b.dropoffLoc || 'ប៉ោយប៉ែត';
+                            return `
+                                <div style="display: inline-flex; align-items: center; gap: 4px;" title="${pName} ➔ ${dName}">
+                                    <span style="white-space: nowrap; font-size: 14.5px; font-weight: 900; padding: 4px 10px; background: ${pTheme.badgeBg}; color: ${pTheme.badgeText}; border: 1.5px solid ${pTheme.badgeBorder}; border-radius: 7px; display: inline-flex; align-items: center; max-width: 125px; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 2px rgba(0,0,0,0.05); letter-spacing: 0.1px;">
+                                        <span style="overflow: hidden; text-overflow: ellipsis;">${pName}</span>
+                                    </span>
+                                    <i class="fa-solid fa-arrow-right" style="font-size: 11.5px; color: #475569; margin: 0 3px; flex-shrink: 0; font-weight: 900;"></i>
+                                    <span style="white-space: nowrap; font-size: 14.5px; font-weight: 900; padding: 4px 10px; background: ${dTheme.badgeBg}; color: ${dTheme.badgeText}; border: 1.5px solid ${dTheme.badgeBorder}; border-radius: 7px; display: inline-flex; align-items: center; max-width: 125px; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 2px rgba(0,0,0,0.05); letter-spacing: 0.1px;">
+                                        <span style="overflow: hidden; text-overflow: ellipsis;">${dName}</span>
+                                    </span>
+                                </div>
+                            `;
+                        })()}
                     </td>
                     <td style="padding: 12px 14px;">
                         <div style="display: flex; gap: 4px; flex-wrap: wrap;">
@@ -14179,9 +14207,9 @@ document.addEventListener('paste', function(e) {
         const notesEl = document.getElementById('bookingNotes');
         if (notesEl) notesEl.value = prefill.notes || '';
 
-        // Ensure only Car 1 and Car 2 are shown initially
+        // Ensure Car 1, Car 2, and Car 3 are shown on the same line
         const g3 = document.getElementById('bookingCarSlotGroup3');
-        if (g3) g3.style.display = 'none';
+        if (g3) g3.style.display = 'block';
         const g4 = document.getElementById('bookingCarSlotGroup4');
         if (g4) g4.style.display = 'none';
         const s3 = document.getElementById('bookingCarSelect3');
@@ -14327,18 +14355,27 @@ document.addEventListener('paste', function(e) {
 
         let found = false;
         for (let i = 0; i < selectEl.options.length; i++) {
-            if (selectEl.options[i].value.toLowerCase() === cleanVal.toLowerCase()) {
+            const optVal = selectEl.options[i].value;
+            if (optVal && (optVal.toLowerCase() === cleanVal.toLowerCase() || cleanVal.toLowerCase().includes(optVal.toLowerCase()) || optVal.toLowerCase().includes(cleanVal.toLowerCase()))) {
                 selectEl.selectedIndex = i;
                 found = true;
                 break;
             }
         }
         if (!found) {
+            const theme = typeof window.getLocationTheme === 'function' ? window.getLocationTheme(cleanVal) : null;
             const opt = document.createElement('option');
             opt.value = cleanVal;
-            opt.textContent = cleanVal;
+            opt.textContent = (theme ? theme.emoji + ' ' : '📍 ') + cleanVal;
+            if (theme) {
+                opt.style.color = theme.badgeText;
+                opt.style.fontWeight = '800';
+            }
             selectEl.appendChild(opt);
             selectEl.value = cleanVal;
+        }
+        if (typeof updateBookingRouteStyles === 'function') {
+            updateBookingRouteStyles();
         }
     }
     window.setLocationDropdownVal = setLocationDropdownVal;
@@ -14487,45 +14524,115 @@ document.addEventListener('paste', function(e) {
 
         const div = document.createElement('div');
         div.className = 'form-group mb-2';
+        div.style.width = '210px';
         div.innerHTML = `
-            <label style="font-weight: 700; font-size: 11.5px; color: #0f172a;">🚗 ឡានទី ${extraCarSlotCount}:</label>
+            <label style="font-weight: 700; font-size: 12px; color: #0f172a; margin-bottom: 3px; display: block;">🚗 ឡានទី ${extraCarSlotCount}:</label>
             <div style="display: flex; gap: 6px;">
-                <select class="form-control font-weight-bold extra-car-select" style="height: 36px;">
+                <select class="form-control font-weight-bold extra-car-select" style="height: 36px; font-size: 13px; font-weight: 700; padding: 4px 8px;">
                     <option value="">-- គ្មាន (None) --</option>
                     <option value="no_car">🚫 មិនយកឡាន</option>
                     ${optsHtml}
                 </select>
-                <button type="button" class="btn-ar btn-ar-outline text-danger" onclick="this.parentElement.parentElement.remove()" title="លុប"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" class="btn-ar btn-ar-outline text-danger" style="padding: 2px 7px; font-size: 11px;" onclick="this.parentElement.parentElement.remove()" title="លុប"><i class="fa-solid fa-xmark"></i></button>
             </div>
         `;
         container.appendChild(div);
     };
 
+    window.getLocationTheme = function(loc) {
+        if (!loc) return null;
+        const s = String(loc).toLowerCase().trim();
+        if (s.includes('ភ្នំពេញ') || s.includes('phnom penh') || s.includes('pp')) {
+            return { 
+                name: 'ភ្នំពេញ', 
+                emoji: '', 
+                bg: '#7c3aed', 
+                color: '#ffffff', 
+                border: '#6d28d9', 
+                badgeBg: '#f3e8ff', 
+                badgeText: '#581c87', 
+                badgeBorder: '#c084fc' 
+            };
+        }
+        if (s.includes('ប៉ោយប៉ែត') || s.includes('poipet') || s.includes('poi pet') || s.includes('poi')) {
+            return { 
+                name: 'ប៉ោយប៉ែត', 
+                emoji: '', 
+                bg: '#16a34a', 
+                color: '#ffffff', 
+                border: '#15803d', 
+                badgeBg: '#dcfce7', 
+                badgeText: '#14532d', 
+                badgeBorder: '#86efac' 
+            };
+        }
+        if (s.includes('សៀមរាប') || s.includes('siem reap') || s.includes('sr')) {
+            return { 
+                name: 'សៀមរាប', 
+                emoji: '', 
+                bg: '#0284c7', 
+                color: '#ffffff', 
+                border: '#0369a1', 
+                badgeBg: '#e0f2fe', 
+                badgeText: '#0369a1', 
+                badgeBorder: '#7dd3fc' 
+            };
+        }
+        if (s.includes('តេជោ') || s.includes('techo')) {
+            return { 
+                name: 'តេជោ', 
+                emoji: '', 
+                bg: '#ea580c', 
+                color: '#ffffff', 
+                border: '#c2410c', 
+                badgeBg: '#ffedd5', 
+                badgeText: '#9a3412', 
+                badgeBorder: '#fdba74' 
+            };
+        }
+        return { 
+            name: loc, 
+            emoji: '', 
+            bg: '#0f766e', 
+            color: '#ffffff', 
+            border: '#115e59', 
+            badgeBg: '#ccfbf1', 
+            badgeText: '#115e59', 
+            badgeBorder: '#99f6e4' 
+        };
+    };
+
+    window.getLocationTelegramColorEmoji = function(loc) {
+        if (!loc) return '🟢';
+        const s = String(loc).toLowerCase().trim();
+        if (s.includes('ភ្នំពេញ') || s.includes('phnom penh') || s.includes('pp')) return '🟣';
+        if (s.includes('ប៉ោយប៉ែត') || s.includes('poipet') || s.includes('poi pet') || s.includes('poi')) return '🟢';
+        if (s.includes('សៀមរាប') || s.includes('siem reap') || s.includes('sr')) return '🔵';
+        if (s.includes('តេជោ') || s.includes('techo')) return '🟠';
+        return '🟢';
+    };
+
     window.updateBookingRouteStyles = function() {
         const p = document.getElementById('bookingPickupLoc');
         const d = document.getElementById('bookingDropoffLoc');
-        if (p) {
-            p.style.fontSize = '13.5px';
-            p.style.fontWeight = '800';
-            if (p.value) {
-                p.style.background = '#0284c7';
-                p.style.color = '#ffffff';
+        [p, d].forEach(el => {
+            if (!el) return;
+            el.style.fontSize = '14.5px';
+            el.style.fontWeight = '900';
+            el.style.transition = 'all 0.2s ease';
+            const theme = window.getLocationTheme(el.value);
+            if (theme) {
+                el.style.background = theme.bg;
+                el.style.color = theme.color;
+                el.style.borderColor = theme.border;
+                el.style.boxShadow = '0 1px 3px rgba(0,0,0,0.15)';
             } else {
-                p.style.background = '#ffffff';
-                p.style.color = '#475569';
+                el.style.background = '#ffffff';
+                el.style.color = '#475569';
+                el.style.borderColor = '#cbd5e1';
+                el.style.boxShadow = 'none';
             }
-        }
-        if (d) {
-            d.style.fontSize = '13.5px';
-            d.style.fontWeight = '800';
-            if (d.value) {
-                d.style.background = '#dc2626';
-                d.style.color = '#ffffff';
-            } else {
-                d.style.background = '#ffffff';
-                d.style.color = '#475569';
-            }
-        }
+        });
     };
 
     window.swapFormLocations = function() {
@@ -15012,7 +15119,7 @@ document.addEventListener('paste', function(e) {
         }
 
         const g3 = document.getElementById('bookingCarSlotGroup3');
-        if (g3) g3.style.display = 'none';
+        if (g3) g3.style.display = 'block';
         const g4 = document.getElementById('bookingCarSlotGroup4');
         if (g4) g4.style.display = 'none';
         const s3 = document.getElementById('bookingCarSelect3');
@@ -15082,14 +15189,7 @@ document.addEventListener('paste', function(e) {
             updateTgMergeToolbar();
         }
 
-        // Delete all cached bot messages on the server so live poller won't re-populate old cards
-        try {
-            fetch('/api/delete_telegram_message', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ all: true })
-            }).catch(() => {});
-        } catch(e) {}
+        // Modal form inputs are cleared, but server inbox is preserved so user does not lose incoming telegram bookings
 
         // Reset Modal Title
         const title = document.getElementById('bookingModalTitle');
@@ -15749,54 +15849,50 @@ document.addEventListener('paste', function(e) {
                 ${rawMsgHtml}
             `;
 
-            // Filter ONLY existing images that actually exist on disk/network!
-            const rawImages = Array.isArray(b.images) ? b.images : [];
-            if (typeof window.filterExistingImages === 'function') {
-                window.filterExistingImages(rawImages).then(validImages => {
-                    window.activeBookingVerificationImages = validImages.map((img, i) => {
-                        const imgUrl = (typeof img === 'string' ? img : (img?.url || ''));
-                        const cat = (typeof img === 'string' ? 'រូបភាព' : (img?.category || 'រូបភាព'));
-                        return {
-                            url: imgUrl,
-                            title: `${cat} (${i + 1}/${validImages.length}) - ${b.customerName || ''}`,
-                            category: cat
-                        };
-                    });
+            // Instant render for attached images (No blocking network timeout)
+            const rawImages = (Array.isArray(b.images) ? b.images : []).filter(Boolean);
+            window.activeBookingVerificationImages = rawImages.map((img, i) => {
+                const imgUrl = (typeof img === 'string' ? img : (img?.url || ''));
+                const cat = (typeof img === 'string' ? 'រូបភាព' : (img?.category || 'រូបភាព'));
+                return {
+                    url: imgUrl,
+                    title: `${cat} (${i + 1}/${rawImages.length}) - ${b.customerName || ''}`,
+                    category: cat
+                };
+            }).filter(x => x.url);
 
-                    // If existing images found, show them in Center Document Viewer; if none, leave it open/blank!
-                    if (window.gmmDocViewer) {
-                        window.gmmDocViewer.setImages(window.activeBookingVerificationImages);
-                    }
+            // If existing images found, show them in Center Document Viewer; if none, leave it open/blank!
+            if (window.gmmDocViewer) {
+                window.gmmDocViewer.setImages(window.activeBookingVerificationImages);
+            }
 
-                    // Render thumbnails in right panel ONLY for valid existing images!
-                    const imgContainer = document.getElementById('gmmVerifImagesContainer');
-                    if (imgContainer) {
-                        if (window.activeBookingVerificationImages.length > 0) {
-                            imgContainer.style.display = 'block';
-                            imgContainer.innerHTML = `
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                    <b style="color: #0f172a; font-size: 13px;">📷 រូបភាព & ឯកសារភ្ជាប់ (${window.activeBookingVerificationImages.length} រូប)៖</b>
+            // Render thumbnails in right panel immediately with lazy loading
+            const imgContainer = document.getElementById('gmmVerifImagesContainer');
+            if (imgContainer) {
+                if (window.activeBookingVerificationImages.length > 0) {
+                    imgContainer.style.display = 'block';
+                    imgContainer.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <b style="color: #0f172a; font-size: 13px;">📷 រូបភាព & ឯកសារភ្ជាប់ (${window.activeBookingVerificationImages.length} រូប)៖</b>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            ${window.activeBookingVerificationImages.map((img, idx) => `
+                                <div style="position: relative; width: 105px; height: 90px; border-radius: 8px; overflow: hidden; border: 1.5px solid #cbd5e1; background: #fff; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.08); transition: transform 0.15s ease;"
+                                     onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'"
+                                     onclick="if(window.gmmDocViewer){window.gmmDocViewer.showImage(${idx});} else {window.openImageLightbox(window.activeBookingVerificationImages[${idx}].url, window.activeBookingVerificationImages[${idx}].title, window.activeBookingVerificationImages, ${idx});}"
+                                     title="ចុចមើលរូបធំ">
+                                    <img src="${img.url}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" onerror="this.parentElement.style.display='none';">
+                                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.82); color: #fff; font-size: 9.5px; font-weight: 700; padding: 2px 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        ${img.category || 'រូបភាព'}
+                                    </div>
                                 </div>
-                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                                    ${window.activeBookingVerificationImages.map((img, idx) => `
-                                        <div style="position: relative; width: 105px; height: 90px; border-radius: 8px; overflow: hidden; border: 1.5px solid #cbd5e1; background: #fff; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.08); transition: transform 0.15s ease;"
-                                             onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'"
-                                             onclick="if(window.gmmDocViewer){window.gmmDocViewer.showImage(${idx});} else {window.openImageLightbox(window.activeBookingVerificationImages[${idx}].url, window.activeBookingVerificationImages[${idx}].title, window.activeBookingVerificationImages, ${idx});}"
-                                             title="ចុចមើលរូបធំ">
-                                            <img src="${img.url}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
-                                            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.82); color: #fff; font-size: 9.5px; font-weight: 700; padding: 2px 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                                ${img.category || 'រូបភាព'}
-                                            </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            `;
-                        } else {
-                            imgContainer.style.display = 'none';
-                            imgContainer.innerHTML = '';
-                        }
-                    }
-                });
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    imgContainer.style.display = 'none';
+                    imgContainer.innerHTML = '';
+                }
             }
         } else if (item) {
             // Render from item
@@ -15909,152 +16005,156 @@ document.addEventListener('paste', function(e) {
 
         window.activeBookingForGroupInvoice = b.id;
 
-        // Populate side-by-side verification panel (Passports & Original booking data)
-        populateGmmVerificationPanel(b);
-
         // If this booking already has an invoice number, check if it exists in saved database records to open in edit mode
         if (b.invoiceNo && typeof openGroupMembersModal === 'function') {
             const invNo = b.invoiceNo;
-            function doOpen() {
-                openGroupMembersModal(invNo);
-                if (typeof populateGmmVerificationPanel === 'function') {
-                    populateGmmVerificationPanel(b);
-                }
+            openGroupMembersModal(invNo);
+            if (typeof populateGmmVerificationPanel === 'function') {
+                populateGmmVerificationPanel(b);
             }
             if (typeof allDatabaseRecords === 'undefined' || !allDatabaseRecords || allDatabaseRecords.length === 0) {
                 if (typeof loadDatabaseRecords === 'function') {
-                    loadDatabaseRecords(doOpen);
-                } else {
-                    doOpen();
+                    loadDatabaseRecords(() => {
+                        openGroupMembersModal(invNo);
+                        if (typeof populateGmmVerificationPanel === 'function') populateGmmVerificationPanel(b);
+                    });
                 }
-            } else {
-                doOpen();
             }
             return;
         }
 
-        // Otherwise open new group modal in Car Service ('line') mode
+        // =========================================================================
+        // INSTANT (0ms) OPEN MODAL & POPULATE FIELDS (Zero Blocking Network Wait)
+        // =========================================================================
         currentServiceCategory = 'car';
-        fetch('/api/next_no?category=car')
+
+        // 1. Immediately open the modal
+        const modal = document.getElementById('groupMembersModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            modal.classList.add('active');
+        }
+
+        // 2. Immediately populate verification side-panel (Images & Booking Info)
+        populateGmmVerificationPanel(b);
+
+        // 3. Set header & temporary/cached receipt number
+        const provisionalNo = currentGmmReceiptNo || 'INV 00363';
+        const titleElem = document.getElementById('gmmTitle');
+        const subTitleElem = document.getElementById('gmmSubTitle');
+        if (titleElem) titleElem.textContent = `📋 បង្កើតទិន្នន័យក្រុមថ្មី (${provisionalNo})`;
+        if (subTitleElem) subTitleElem.textContent = `👤 បញ្ចូលព័ត៌មានអ្នកនាំ និងសមាជិកក្រុមថ្មី`;
+
+        // 4. Set travel date from booking
+        const dateInput = document.getElementById('gmmTravelDate');
+        if (dateInput) {
+            if (b.date && b.date.includes('-')) {
+                dateInput.value = b.date;
+            } else {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                dateInput.value = `${yyyy}-${mm}-${dd}`;
+            }
+        }
+
+        const rNoInput = document.getElementById('gmmReceiptNo');
+        if (rNoInput) rNoInput.value = provisionalNo;
+
+        const rateInput = document.getElementById('gmmExchangeRate');
+        if (rateInput) rateInput.value = getLatestSavedExchangeRate();
+
+        // 5. Sender / Customer name from booking
+        const senderInp = document.getElementById('gmmSenderName');
+        if (senderInp) senderInp.value = b.customerName || '';
+
+        const agencyInp = document.getElementById('gmmAgencyCompany');
+        if (agencyInp) {
+            let agParts = [];
+            if (b.customerTelegram) agParts.push(`TG: ${b.customerTelegram}`);
+            if (b.pickupLoc || b.dropoffLoc) agParts.push(`${b.pickupLoc || ''} ➔ ${b.dropoffLoc || ''}`);
+            agencyInp.value = agParts.join(' • ');
+        }
+
+        // 6. Set to 'line' (Car Service) mode with empty list
+        const tbody = document.getElementById('gmmMembersBody');
+        if (tbody) tbody.innerHTML = '';
+        currentGmmCachedItem = null;
+        currentModalReceiptData = null;
+        switchGmmMode('line', []);
+
+        // 7. Clear bulk fee inputs
+        ['gmmFeePassport', 'gmmFeeNamelist', 'gmmFeeVisa', 'gmmFeeMissingDoc', 'gmmFeeStamping', 'gmmFeeVip', 'gmmFeeCar', 'gmmFeeClearance', 'gmmFeeWork', 'gmmFeeFine'].forEach(bulkId => {
+            const el = document.getElementById(bulkId);
+            if (el) el.value = '';
+        });
+
+        // 8. Car price from booking
+        let carPrice = '';
+        if (b.price != null && !isNaN(parseFloat(b.price)) && parseFloat(b.price) > 0) {
+            carPrice = parseFloat(b.price);
+        } else if (b.feeCar != null && !isNaN(parseFloat(b.feeCar)) && parseFloat(b.feeCar) > 0) {
+            carPrice = parseFloat(b.feeCar);
+        }
+
+        // Bulk car fee input
+        const bulkCarEl = document.getElementById('gmmFeeCar');
+        if (bulkCarEl && carPrice) bulkCarEl.value = carPrice;
+
+        // Set button text to: 💾 រក្សាទុក (Save Changes)
+        const btnSave = document.getElementById('btnGmmSave');
+        if (btnSave) {
+            btnSave.textContent = '💾 រក្សាទុក (Save Changes)';
+        }
+
+        // 9. Add 2 initial member rows (row 1 prefilled with customer name and car fee)
+        if (tbody) {
+            tbody.innerHTML = '';
+            addNewGmmMemberRow();
+            addNewGmmMemberRow();
+
+            const rows = tbody.querySelectorAll('tr');
+            if (rows && rows.length > 0) {
+                const firstRow = rows[0];
+                const nameInp = firstRow.querySelector('.gmm-input-name');
+                if (nameInp && b.customerName) nameInp.value = b.customerName;
+
+                if (carPrice) {
+                    const carInp = firstRow.querySelector('.gmm-input-car') || firstRow.querySelector('.gmm-fee-car');
+                    if (carInp) {
+                        carInp.value = carPrice;
+                        const usdInp = firstRow.querySelector('.gmm-input-usd');
+                        if (usdInp) usdInp.value = carPrice;
+                    }
+                }
+            }
+        }
+
+        calculateGmmTotal();
+
+        // Focus sender name input immediately
+        if (senderInp) senderInp.focus();
+
+        // 10. Update datalist asynchronously in background
+        setTimeout(() => {
+            if (typeof updateGmmSenderDatalist === 'function') updateGmmSenderDatalist();
+        }, 20);
+
+        // 11. Background fetch for verified next receipt number (Fast with 2s timeout)
+        const ab = new AbortController();
+        const tId = setTimeout(() => ab.abort(), 2000);
+        fetch('/api/next_no?category=car', { signal: ab.signal })
             .then(r => r.json())
             .then(d => {
-                const nextNo = (d && d.next_no) ? d.next_no : 'INV 00363';
+                clearTimeout(tId);
+                const nextNo = (d && d.next_no) ? d.next_no : provisionalNo;
                 currentGmmReceiptNo = nextNo;
-
-                const titleElem = document.getElementById('gmmTitle');
-                const subTitleElem = document.getElementById('gmmSubTitle');
                 if (titleElem) titleElem.textContent = `📋 បង្កើតទិន្នន័យក្រុមថ្មី (${nextNo})`;
-                if (subTitleElem) subTitleElem.textContent = `👤 បញ្ចូលព័ត៌មានអ្នកនាំ និងសមាជិកក្រុមថ្មី`;
-
-                // Set travel date from booking
-                const dateInput = document.getElementById('gmmTravelDate');
-                if (dateInput) {
-                    if (b.date && b.date.includes('-')) {
-                        dateInput.value = b.date;
-                    } else {
-                        const today = new Date();
-                        const yyyy = today.getFullYear();
-                        const mm = String(today.getMonth() + 1).padStart(2, '0');
-                        const dd = String(today.getDate()).padStart(2, '0');
-                        dateInput.value = `${yyyy}-${mm}-${dd}`;
-                    }
-                }
-
-                const rNoInput = document.getElementById('gmmReceiptNo');
                 if (rNoInput) rNoInput.value = nextNo;
-
-                const rateInput = document.getElementById('gmmExchangeRate');
-                if (rateInput) rateInput.value = getLatestSavedExchangeRate();
-
-                // Sender / Customer name from booking
-                const senderInp = document.getElementById('gmmSenderName');
-                if (senderInp) senderInp.value = b.customerName || '';
-
-                const agencyInp = document.getElementById('gmmAgencyCompany');
-                if (agencyInp) {
-                    let agParts = [];
-                    if (b.customerTelegram) agParts.push(`TG: ${b.customerTelegram}`);
-                    if (b.pickupLoc || b.dropoffLoc) agParts.push(`${b.pickupLoc || ''} ➔ ${b.dropoffLoc || ''}`);
-                    agencyInp.value = agParts.join(' • ');
-                }
-
-                if (typeof updateGmmSenderDatalist === 'function') {
-                    updateGmmSenderDatalist();
-                }
-
-                // Clear tbody first
-                const tbody = document.getElementById('gmmMembersBody');
-                if (tbody) tbody.innerHTML = '';
-
-                // Set to 'line' (Car Service) mode with empty list
-                currentGmmCachedItem = null;
-                currentModalReceiptData = null;
-                switchGmmMode('line', []);
-
-                // Clear bulk fee inputs
-                ['gmmFeePassport', 'gmmFeeNamelist', 'gmmFeeVisa', 'gmmFeeMissingDoc', 'gmmFeeStamping', 'gmmFeeVip', 'gmmFeeCar', 'gmmFeeClearance', 'gmmFeeWork', 'gmmFeeFine'].forEach(bulkId => {
-                    const el = document.getElementById(bulkId);
-                    if (el) el.value = '';
-                });
-
-                // Car price from booking
-                let carPrice = '';
-                if (b.price != null && !isNaN(parseFloat(b.price)) && parseFloat(b.price) > 0) {
-                    carPrice = parseFloat(b.price);
-                } else if (b.feeCar != null && !isNaN(parseFloat(b.feeCar)) && parseFloat(b.feeCar) > 0) {
-                    carPrice = parseFloat(b.feeCar);
-                }
-
-                // Bulk car fee input
-                const bulkCarEl = document.getElementById('gmmFeeCar');
-                if (bulkCarEl && carPrice) bulkCarEl.value = carPrice;
-
-                // Set button text to: 💾 រក្សាទុក (Save Changes)
-                const btnSave = document.getElementById('btnGmmSave');
-                if (btnSave) {
-                    btnSave.textContent = '💾 រក្សាទុក (Save Changes)';
-                }
-
-                // Add 2 initial member rows (row 1 prefilled with customer name and car fee)
-                if (tbody) {
-                    tbody.innerHTML = '';
-                    addNewGmmMemberRow();
-                    addNewGmmMemberRow();
-
-                    const rows = tbody.querySelectorAll('tr');
-                    if (rows && rows.length > 0) {
-                        const firstRow = rows[0];
-                        const nameInp = firstRow.querySelector('.gmm-input-name');
-                        if (nameInp && b.customerName) nameInp.value = b.customerName;
-
-                        if (carPrice) {
-                            const carInp = firstRow.querySelector('.gmm-input-car') || firstRow.querySelector('.gmm-fee-car');
-                            if (carInp) {
-                                carInp.value = carPrice;
-                                const usdInp = firstRow.querySelector('.gmm-input-usd');
-                                if (usdInp) usdInp.value = carPrice;
-                            }
-                        }
-                    }
-                }
-
-                calculateGmmTotal();
-
-                // Open groupMembersModal
-                const modal = document.getElementById('groupMembersModal');
-                if (modal) {
-                    modal.style.display = 'flex';
-                    modal.classList.add('active');
-                }
-
-                // Focus sender name input
-                setTimeout(() => {
-                    if (senderInp) senderInp.focus();
-                }, 100);
             })
-            .catch(err => {
-                console.error('Error opening groupMembersModal for booking:', err);
-                if (typeof openNewGroupModal === 'function') openNewGroupModal();
+            .catch(() => {
+                clearTimeout(tId);
             });
     };
 
@@ -16431,14 +16531,29 @@ document.addEventListener('paste', function(e) {
             driverInput.value = b.driverTelegram || '';
         }
 
-        // Clear quick chips initially
-        if (chipsContainer) {
-            chipsContainer.innerHTML = '<span style="color:#94a3b8; font-size:11px;"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងផ្ទុកគ្រុប...</span>';
+        // Builtin permanent driver groups so they NEVER disappear (Nab, J Heng, etc.)
+        const BUILTIN_CONNECTED_GROUPS = [
+            { id: "-1004497657405", title: "កក់ឡាន" },
+            { id: "-5381280318", title: "J Heng" },
+            { id: "-1004424429378", title: "CK 2849" },
+            { id: "-1004480815325", title: "Phinin" },
+            { id: "-1004338568933", title: "Nab" },
+            { id: "-1004336964750", title: "Smey Ap" }
+        ];
+
+        function getCachedTelegramGroups() {
+            try {
+                const stored = JSON.parse(localStorage.getItem('imvoi_cached_telegram_groups') || '[]');
+                const map = new Map();
+                BUILTIN_CONNECTED_GROUPS.forEach(g => map.set(g.title.trim().toLowerCase(), g));
+                stored.forEach(g => { if (g && g.title) map.set(g.title.trim().toLowerCase(), g); });
+                return Array.from(map.values());
+            } catch (e) {
+                return BUILTIN_CONNECTED_GROUPS;
+            }
         }
 
-        // Fetch auto-detected Telegram groups (e.g. J Heng, កក់ឡាន, CK 2849)
-        fetch('/api/telegram_groups').then(r => r.json()).then(data => {
-            const detectedGroups = (data && data.groups) ? data.groups : [];
+        function renderDispatchDriverOptions(detectedGroups) {
             const groupTitles = new Set(detectedGroups.map(g => g.title.trim().toLowerCase()));
 
             if (driverSelect) {
@@ -16472,7 +16587,7 @@ document.addEventListener('paste', function(e) {
                 }
             }
 
-            // Quick Chips ONLY show connected groups
+            // Quick Chips show connected groups
             if (chipsContainer) {
                 let chipsHtml = '';
                 detectedGroups.forEach(g => {
@@ -16493,8 +16608,28 @@ document.addEventListener('paste', function(e) {
                 });
                 chipsContainer.innerHTML = chipsHtml;
             }
+        }
+
+        // Render IMMEDIATELY from cache so Nab and groups are NEVER missing
+        const initialGroups = getCachedTelegramGroups();
+        renderDispatchDriverOptions(initialGroups);
+
+        // Fetch fresh auto-detected Telegram groups in background
+        fetch('/api/telegram_groups').then(r => r.json()).then(data => {
+            const apiGroups = (data && data.groups) ? data.groups : [];
+            const mergedMap = new Map();
+            BUILTIN_CONNECTED_GROUPS.forEach(g => mergedMap.set(g.title.trim().toLowerCase(), g));
+            initialGroups.forEach(g => mergedMap.set(g.title.trim().toLowerCase(), g));
+            apiGroups.forEach(g => mergedMap.set(g.title.trim().toLowerCase(), g));
+            const mergedList = Array.from(mergedMap.values());
+
+            try {
+                localStorage.setItem('imvoi_cached_telegram_groups', JSON.stringify(mergedList));
+            } catch (e) {}
+
+            renderDispatchDriverOptions(mergedList);
         }).catch(e => {
-            if (chipsContainer) chipsContainer.innerHTML = '';
+            console.warn('telegram_groups fetch fallback to cache:', e);
         });
 
         // Build Default Trip Dispatch Message Text
@@ -16539,34 +16674,37 @@ document.addEventListener('paste', function(e) {
         const txtArea = document.getElementById('dispatchMessageText');
         if (!txtArea || !b) return;
 
-        const driverTg = document.getElementById('dispatchDriverCustomInput') ? document.getElementById('dispatchDriverCustomInput').value.trim() : (b.driverTelegram || '');
         const carsStr = (b.cars && b.cars.length > 0) ? b.cars.join(', ') : 'អាលផាត (Alphard)';
 
         const tInfo = (typeof getTimeOfDayInfo === 'function') ? getTimeOfDayInfo(b.time) : null;
         const timeTag = (tInfo && tInfo.tag) ? ` (${tInfo.tag})` : '';
 
-        let msg = `🚗 ការងារជើងឡាន / TRIP DISPATCH\n`;
-        msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
-        if (driverTg) msg += `👮‍♂️ អ្នកបើកបរ / Driver: ${driverTg}\n`;
-        msg += `📅 កាលបរិច្ឆេទ: ${b.date || ''}\n`;
-        msg += `⏰ **ម៉ោងចេញដំណើរ: ${b.time || '--:--'}${timeTag}**\n`;
-        msg += `👤 **ឈ្មោះភ្ញៀវ: ${b.customerName || 'អតិថិជន'}**\n`;
-        if (b.customerPhone) msg += `📞 លេខទូរស័ព្ទភ្ញៀវ: ${b.customerPhone}\n`;
-        if (b.customerTelegram) msg += `💬 Telegram ភ្ញៀវ: ${b.customerTelegram}\n`;
-        msg += `🚗 **ប្រភេទរថយន្ត: ${carsStr}**\n`;
-        msg += `📍 ទីតាំងទទួល (Pickup): ${b.pickupLoc || 'ភ្នំពេញ'}\n`;
-        msg += `🏁 ទីតាំងទម្លាក់ (Dropoff): ${b.dropoffLoc || 'ប៉ោយប៉ែត'}\n`;
-        if (b.vipService) msg += `⭐ សេវា VIP: ${b.vipService}\n`;
-        if (b.borderClear) msg += `🚀 សេវាច្រកទ្វារ: ${b.borderClear}\n`;
+        let msg = `កាលបរិច្ឆេទ: ${b.date || ''}\n`;
+        msg += `ម៉ោងចេញដំណើរ: ${b.time || '--:--'}${timeTag}\n`;
+        msg += `ឈ្មោះភ្ញៀវ: ${b.customerName || 'អតិថិជន'}\n`;
+        if (b.customerTelegram) msg += `Telegram ភ្ញៀវ: ${b.customerTelegram}\n`;
+        msg += `ប្រភេទរថយន្ត: ${carsStr}\n`;
+        const pName = b.pickupLoc || 'ភ្នំពេញ';
+        const dName = b.dropoffLoc || 'ប៉ោយប៉ែត';
+        msg += `ទិសដៅ: ${pName} ➔ ${dName}\n`;
+        if (b.vipService) msg += `សេវា VIP: ${b.vipService}\n`;
+        if (b.borderClear) msg += `សេវាច្រកទ្វារ: ${b.borderClear}\n`;
         if (b.notes) {
-            let notesText = String(b.notes).trim();
-            if (notesText.includes(' | ')) {
-                notesText = notesText.split(/\s*\|\s*/).join('\n');
+            let rawNotes = String(b.notes).trim();
+            let noteLines = rawNotes.split(/\s*\|\s*|\r?\n/).map(s => s.trim()).filter(Boolean);
+            // Filter out Flight and passenger count to keep dispatch message clean
+            noteLines = noteLines.filter(line => {
+                if (/^(flight|flt|ជើងហោះហើរ)\s*[:#]/i.test(line) || /^flight\s+[a-z0-9]+/i.test(line)) return false;
+                if (line.includes('ចំនួនភ្ញៀវ') || line.includes('ចំនួនមនុស្ស') || /^(pax|passengers?)\s*[:#]/i.test(line)) return false;
+                if (/^\d+\s*នាក់\s*$/i.test(line)) return false;
+                return true;
+            }).map(line => line.replace(/^[📍🏁📌🗺️📝🚗🚕🚘🚙•\-\*]+\s*/u, '').trim());
+            if (noteLines.length > 0) {
+                msg += `ចំណាំ / ទីតាំង Location:\n${noteLines.join('\n')}\n`;
             }
-            msg += `📝 ចំណាំ / ទីតាំង Location:\n${notesText}\n`;
         }
         msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
-        msg += `🙏 សូមអ្នកបើកបរពិនិត្យមើលម៉ោង និងទីតាំងអោយបានច្បាស់លាស់។ សូមអរគុណ!`;
+        msg += `សូមអ្នកបើកបរពិនិត្យមើលម៉ោង និងទីតាំងអោយបានច្បាស់លាស់។ សូមអរគុណ!`;
 
         txtArea.value = msg;
     }
@@ -16638,12 +16776,17 @@ document.addEventListener('paste', function(e) {
 
     async function copyDispatchRichText(plainText) {
         if (!plainText) return;
-        const htmlText = plainText
+        let htmlText = plainText
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
             .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
-            .replace(/(⏰\s*(?:<b>)?\s*ម៉ោងចេញដំណើរ:\s*)([^<\n]+)((?:<\/b>)?)/g, '$1<code style="color:#b45309;background:#fef3c7;border:1px solid #fcd34d;padding:1px 5px;border-radius:4px;font-weight:bold;">$2</code>$3')
+            .replace(/^(ម៉ោងចេញដំណើរ:\s*)(.+)$/gm, '$1<b>$2</b>')
+            .replace(/^(ឈ្មោះភ្ញៀវ:\s*)(.+)$/gm, '$1<b>$2</b>')
+            .replace(/^(ប្រភេទរថយន្ត:\s*)(.+)$/gm, '$1<b>$2</b>')
+            .replace(/^(ទិសដៅ:\s*)(.+)$/gm, '$1<b>$2</b>')
+            .replace(/^(សេវា VIP:\s*)(.+)$/gm, '$1<b>$2</b>')
+            .replace(/^(សេវាច្រកទ្វារ:\s*)(.+)$/gm, '$1<b>$2</b>')
             .replace(/\n/g, '<br>');
 
         try {

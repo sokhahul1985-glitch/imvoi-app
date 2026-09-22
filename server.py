@@ -30,8 +30,13 @@ except Exception:
 class SafeThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     allow_reuse_address = False
     daemon_threads = True
+    address_family = socket.AF_INET6
 
     def server_bind(self):
+        try:
+            self.socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
+        except Exception:
+            pass
         if hasattr(socket, 'SO_EXCLUSIVEADDRUSE'):
             try:
                 self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
@@ -89,6 +94,7 @@ def safe_int(val, default=0):
 try:
     from telegram_utils import (
         get_telegram_config, save_telegram_config, send_telegram_photo_bot,
+        send_telegram_media_group_bot,
         send_telegram_text_bot, get_telegram_bot_info, telegram_bot_listener,
         launch_telegram_desktop, get_telegram_exe_path, _handle_chat_migration,
         download_telegram_image_by_file_id
@@ -98,6 +104,7 @@ except Exception as e:
     def save_telegram_config(b, c): pass
     def _handle_chat_migration(old_c, new_c): pass
     def send_telegram_photo_bot(b, c, p, caption=""): return {"ok": False, "description": "telegram_utils unavailable"}
+    def send_telegram_media_group_bot(b, c, p, caption=""): return {"ok": False, "description": "telegram_utils unavailable"}
     def send_telegram_text_bot(b, c, text, parse_mode=None): return {"ok": False, "description": "telegram_utils unavailable"}
     def get_telegram_bot_info(t): return {"ok": False}
     def launch_telegram_desktop(): return False
@@ -105,7 +112,7 @@ except Exception as e:
     def download_telegram_image_by_file_id(f, d=None, t=None, data_dir=None): return None
     telegram_bot_listener = None
 
-
+_tg_poller_active = False
 PORT = 8000
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.environ.get('DATA_DIR', '/var/data' if os.path.exists('/var/data') else BASE_DIR)
@@ -293,14 +300,28 @@ def format_group_customer_names(members):
         return clean_names[0]
     return ", ".join([f"{idx + 1}. {n}" for idx, n in enumerate(clean_names)])
 
+_NEXT_NO_CACHE = {'mtime': 0, 'counters': {}}
+
 def get_next_invoice_no(category='car'):
+    global _NEXT_NO_CACHE
+    cat = (category or 'car').lower().strip()
+    
+    mtime = 0
+    try:
+        mtime = os.path.getmtime(SAVED_CUSTOMERS_FILE) if os.path.exists(SAVED_CUSTOMERS_FILE) else 0
+    except Exception:
+        mtime = 0
+
+    if _NEXT_NO_CACHE.get('mtime') == mtime and cat in _NEXT_NO_CACHE.get('counters', {}):
+        cached = _NEXT_NO_CACHE['counters'][cat]
+        return f"{cached['prefix']}{(cached['max_num'] + 1):05d}"
+
     data = load_json(SAVED_CUSTOMERS_FILE, [])
     counter = load_json(INVOICE_COUNTER_FILE, {
         "last_number": 0, "prefix": "INV ",
         "last_visa_number": 0, "visa_prefix": "VISA ",
         "last_passport_number": 0, "passport_prefix": "INV "
     })
-    cat = (category or 'car').lower().strip()
     
     if cat == 'visa':
         prefix = counter.get("visa_prefix", "VISA ")
@@ -322,6 +343,10 @@ def get_next_invoice_no(category='car'):
             counter["last_visa_number"] = max_num
             save_json(INVOICE_COUNTER_FILE, counter)
             
+        if _NEXT_NO_CACHE.get('mtime') != mtime:
+            _NEXT_NO_CACHE['mtime'] = mtime
+            _NEXT_NO_CACHE['counters'] = {}
+        _NEXT_NO_CACHE['counters'][cat] = {'prefix': prefix, 'max_num': max_num}
         return f"{prefix}{(max_num + 1):05d}"
 
     elif cat == 'passport':
@@ -343,6 +368,10 @@ def get_next_invoice_no(category='car'):
             counter["last_passport_number"] = max_num
             save_json(INVOICE_COUNTER_FILE, counter)
             
+        if _NEXT_NO_CACHE.get('mtime') != mtime:
+            _NEXT_NO_CACHE['mtime'] = mtime
+            _NEXT_NO_CACHE['counters'] = {}
+        _NEXT_NO_CACHE['counters'][cat] = {'prefix': prefix, 'max_num': max_num}
         return f"{prefix}{(max_num + 1):05d}"
 
     elif cat in ['quote', 'quotation']:
@@ -365,6 +394,10 @@ def get_next_invoice_no(category='car'):
             counter["last_quote_number"] = max_num
             save_json(INVOICE_COUNTER_FILE, counter)
             
+        if _NEXT_NO_CACHE.get('mtime') != mtime:
+            _NEXT_NO_CACHE['mtime'] = mtime
+            _NEXT_NO_CACHE['counters'] = {}
+        _NEXT_NO_CACHE['counters'][cat] = {'prefix': prefix, 'max_num': max_num}
         return f"{prefix}{(max_num + 1):05d}"
 
     else:
@@ -387,6 +420,10 @@ def get_next_invoice_no(category='car'):
             counter["last_number"] = max_num
             save_json(INVOICE_COUNTER_FILE, counter)
             
+        if _NEXT_NO_CACHE.get('mtime') != mtime:
+            _NEXT_NO_CACHE['mtime'] = mtime
+            _NEXT_NO_CACHE['counters'] = {}
+        _NEXT_NO_CACHE['counters'][cat] = {'prefix': prefix, 'max_num': max_num}
         return f"{prefix}{(max_num + 1):05d}"
 
 def increment_invoice_no(category='car'):
@@ -1298,7 +1335,15 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         elif path == '/api/telegram_bot_status':
-            status = telegram_bot_listener.get_status() if telegram_bot_listener else {"running": False}
+            is_active = (telegram_bot_listener.running if telegram_bot_listener else False) or _tg_poller_active
+            b_info = getattr(telegram_bot_listener, 'bot_info', None) or {}
+            status = {
+                "running": is_active,
+                "bot_username": b_info.get("username") or "car_rent_sokha88_bot",
+                "bot_first_name": b_info.get("first_name") or "កក់ឡាន",
+                "has_token": True,
+                "total_recent_scans": len(telegram_bot_listener.recent_scans) if telegram_bot_listener else 0
+            }
             self.send_json_response({'success': True, 'status': status})
             return
 
@@ -1350,7 +1395,19 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
 
         if path == '/api/telegram_groups':
             groups_by_title = {}
-            for g_dir in [DATA_DIR, BASE_DIR]:
+            # Permanent builtin groups so driver groups (Nab, J Heng, etc.) NEVER disappear
+            builtin_groups = [
+                {"id": "-1004497657405", "title": "កក់ឡាន"},
+                {"id": "-5381280318", "title": "J Heng"},
+                {"id": "-1004424429378", "title": "CK 2849"},
+                {"id": "-1004480815325", "title": "Phinin"},
+                {"id": "-1004338568933", "title": "Nab"},
+                {"id": "-1004336964750", "title": "Smey Ap"}
+            ]
+            for bg in builtin_groups:
+                groups_by_title[bg['title'].lower()] = bg
+
+            for g_dir in [DATA_DIR, BASE_DIR, os.path.join(BASE_DIR, 'UPLOAD_TO_GITHUB'), os.path.join(BASE_DIR, 'READY_FOR_GITHUB')]:
                 gf = os.path.join(g_dir, "known_telegram_groups.json")
                 if os.path.exists(gf):
                     try:
@@ -1362,14 +1419,12 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                                     if not t:
                                         continue
                                     existing = groups_by_title.get(t.lower())
-                                    # If not seen yet, or if current is supergroup (-100...) and old wasn't, replace
                                     if not existing or (cid.startswith('-100') and not existing['id'].startswith('-100')):
                                         groups_by_title[t.lower()] = {
                                             'id': cid,
                                             'title': t,
                                             'link': gdata.get('link', '') or (existing.get('link', '') if existing else '')
                                         }
-                            break
                     except Exception:
                         pass
             groups = list(groups_by_title.values())
@@ -2741,7 +2796,20 @@ try {{
             # Check if we have an auto-discovered group ID from the bot joining the group(s)
             known_group_id = ''
             known_group_title = ''
-            for g_dir in [DATA_DIR, BASE_DIR]:
+            d_clean = driver_target.replace('👥', '').replace('គ្រុប', '').replace('ក្រុម', '').replace('Telegram', '').replace('៖', '').strip().lower()
+            builtin_map = {
+                "កក់ឡាន": "-1004497657405",
+                "j heng": "-5381280318",
+                "ck 2849": "-1004424429378",
+                "phinin": "-1004480815325",
+                "nab": "-1004338568933",
+                "smey ap": "-1004336964750"
+            }
+            if d_clean in builtin_map:
+                known_group_id = builtin_map[d_clean]
+                known_group_title = driver_target
+
+            for g_dir in [DATA_DIR, BASE_DIR, os.path.join(BASE_DIR, 'UPLOAD_TO_GITHUB'), os.path.join(BASE_DIR, 'READY_FOR_GITHUB')]:
                 gf = os.path.join(g_dir, "known_telegram_groups.json")
                 if os.path.exists(gf):
                     try:
@@ -2823,41 +2891,66 @@ try {{
                 })
                 return
 
-            # Support HTML formatting for bold (<b>...</b> or **...**) and distinct time styling
-            def format_time_dispatch(m):
-                prefix = m.group(1)
-                t_str = m.group(2).strip()
-                if 'ព្រឹក' in t_str or 'ថ្ងៃ' in t_str or 'យប់' in t_str:
-                    return f"{prefix}<b><code>{t_str}</code></b>"
-                try:
-                    h = int(t_str.split(':')[0])
-                    if 0 <= h < 5:
-                        tag = 'យប់ 🌙'
-                    elif 5 <= h < 12:
-                        tag = 'ព្រឹក ☀️'
-                    elif 12 <= h < 18:
-                        tag = 'ថ្ងៃត្រង់ ☀️' if h == 12 else 'ថ្ងៃ 🌤️'
-                    else:
-                        tag = 'យប់ 🌙'
-                    return f"{prefix}<b><code>{t_str} ({tag})</code></b>"
-                except Exception:
-                    return f"{prefix}<b><code>{t_str}</code></b>"
-
-            escaped_text = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            # Format HTML for Telegram Bot API (making key dispatch values BOLD as requested)
+            clean_text = text.replace('\r\n', '\n').replace('\r', '\n')
+            escaped_text = clean_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
             html_text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', escaped_text)
-            html_text = re.sub(r'(⏰\s*(?:<b>)?\s*ម៉ោងចេញដំណើរ:\s*)([^<\n]+)((?:</b>)?)', format_time_dispatch, html_text)
+            # Bold vital dispatch fields: time, customer, car, route, VIP
+            html_text = re.sub(r'^(ម៉ោងចេញដំណើរ:\s*)([^\n]+)$', r'\1<b>\2</b>', html_text, flags=re.MULTILINE)
+            html_text = re.sub(r'^(ឈ្មោះភ្ញៀវ:\s*)([^\n]+)$', r'\1<b>\2</b>', html_text, flags=re.MULTILINE)
+            html_text = re.sub(r'^(ប្រភេទរថយន្ត:\s*)([^\n]+)$', r'\1<b>\2</b>', html_text, flags=re.MULTILINE)
+            html_text = re.sub(r'^(ទិសដៅ:\s*)([^\n]+)$', r'\1<b>\2</b>', html_text, flags=re.MULTILINE)
+            html_text = re.sub(r'^(សេវា VIP:\s*)([^\n]+)$', r'\1<b>\2</b>', html_text, flags=re.MULTILINE)
+            html_text = re.sub(r'^(សេវាច្រកទ្វារ:\s*)([^\n]+)$', r'\1<b>\2</b>', html_text, flags=re.MULTILINE)
+
             res_text = send_telegram_text_bot(bot_token, chat_id, html_text, parse_mode='HTML')
             if not res_text.get('ok'):
+                print(f"[send_driver_dispatch] HTML send failed: {res_text.get('description')}, fallback to plain text")
                 res_text = send_telegram_text_bot(bot_token, chat_id, text)
-            photos_sent = 0
+            # Collect and prepare all valid photo paths for grouped album sending
+            valid_photo_paths = []
             for img_rel in image_urls:
                 if not img_rel or not isinstance(img_rel, str):
+                    continue
+                if img_rel.startswith('data:image/'):
+                    try:
+                        header, b64data = img_rel.split(',', 1)
+                        ext = 'png'
+                        if 'image/jpeg' in header:
+                            ext = 'jpg'
+                        elif 'image/webp' in header:
+                            ext = 'webp'
+                        cards_dir = os.path.join(BASE_DIR, 'uploads', 'dispatch_cards')
+                        os.makedirs(cards_dir, exist_ok=True)
+                        fname = f"card_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}.{ext}"
+                        local_path = os.path.join(cards_dir, fname)
+                        with open(local_path, 'wb') as f:
+                            f.write(base64.b64decode(b64data))
+                        valid_photo_paths.append(local_path)
+                    except Exception as e:
+                        print(f"Error decoding base64 image card: {e}")
                     continue
                 clean_rel = img_rel.replace('/', os.sep).lstrip(os.sep)
                 local_path = os.path.join(BASE_DIR, clean_rel)
                 if os.path.exists(local_path):
-                    send_telegram_photo_bot(bot_token, chat_id, local_path, caption=f"📍 ឯកសារ/ទីតាំងជើងឡាន #{photos_sent+1}")
-                    photos_sent += 1
+                    valid_photo_paths.append(local_path)
+
+            photos_sent = 0
+            if len(valid_photo_paths) == 1:
+                res_p = send_telegram_photo_bot(bot_token, chat_id, valid_photo_paths[0], caption="📍 ឯកសារ & រូបភាពទីតាំង")
+                if res_p.get('ok'):
+                    photos_sent = 1
+            elif len(valid_photo_paths) > 1:
+                # Group images into albums (max 10 photos per sendMediaGroup)
+                for i in range(0, len(valid_photo_paths), 10):
+                    chunk = valid_photo_paths[i:i+10]
+                    res_mg = send_telegram_media_group_bot(bot_token, chat_id, chunk, caption=f"📍 ឯកសារ & រូបភាពទីតាំង ({len(chunk)} សន្លឹក)")
+                    if res_mg.get('ok'):
+                        photos_sent += len(chunk)
+                    else:
+                        for p in chunk:
+                            if send_telegram_photo_bot(bot_token, chat_id, p).get('ok'):
+                                photos_sent += 1
 
             if res_text.get('ok') or photos_sent > 0:
                 target_display = known_group_title or chat_id
@@ -3372,6 +3465,8 @@ def detect_photo_category(caption_text, img_path=None):
 
 def start_telegram_bot_message_poller():
     """Continuously polls Telegram Bot for incoming text, photos, and photo captions and stores them in received_telegram_messages.json"""
+    global _tg_poller_active
+    _tg_poller_active = True
     def _poll_thread():
         token = "8884318593:AAEipEVki9o1YFL0_8IYoUeSn3Xif4dlVOk"
         cfg = get_telegram_config()
@@ -3384,6 +3479,15 @@ def start_telegram_bot_message_poller():
             msg_file = os.path.join(BASE_DIR, 'received_telegram_messages.json')
             
         print(f"[TelegramBotPoller] Live message & photo monitor active for token: {token[:12]}...")
+        # Auto-remove any conflicting webhook so getUpdates polling never gets HTTP 409 Conflict
+        try:
+            del_wh_url = f"https://api.telegram.org/bot{token}/deleteWebhook?drop_pending_updates=false"
+            del_wh_req = urllib.request.Request(del_wh_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
+            with urllib.request.urlopen(del_wh_req, timeout=10) as _:
+                pass
+        except Exception:
+            pass
+
         while True:
             try:
                 url = f"https://api.telegram.org/bot{token}/getUpdates?offset={offset}&timeout=20"
@@ -3455,15 +3559,14 @@ def start_telegram_bot_message_poller():
                                 send_telegram_text_bot(token, c_id_str, greet_msg)
                                 continue
 
-                            # 🛑 Strict Chat Room Filter: Allow ONLY the designated Telegram room (e.g. 8985821312)
+                            # 🛑 Chat Filter: Allow designated room AND all groups/supergroups/channels
                             cfg_tg = get_telegram_config()
                             allowed_chat_id = str(cfg_tg.get("chat_id", "")).strip()
                             allowed_chat_ids = [str(x).strip() for x in cfg_tg.get("allowed_chat_ids", []) if str(x).strip()]
                             if allowed_chat_id and allowed_chat_id not in allowed_chat_ids:
                                 allowed_chat_ids.append(allowed_chat_id)
 
-                            # Strictly reject any message that is NOT from the designated room!
-                            if allowed_chat_ids and c_id_str not in allowed_chat_ids:
+                            if c_type not in ["group", "supergroup", "channel"] and allowed_chat_ids and c_id_str not in allowed_chat_ids:
                                 continue
 
                             txt = (m.get('text') or m.get('caption') or '').strip()
@@ -3606,9 +3709,17 @@ def start_telegram_bot_message_poller():
                                 msgs = msgs[:100]
                                 save_json(msg_file, msgs)
                                 print(f"[TelegramBotPoller] ⚡ Received/Updated message from {sender} (Total images: {len(msgs[0].get('images', []))}): {txt[:35]}...")
-            except Exception:
+            except Exception as e:
+                if '409' in str(e):
+                    try:
+                        del_wh_url = f"https://api.telegram.org/bot{token}/deleteWebhook?drop_pending_updates=false"
+                        del_wh_req = urllib.request.Request(del_wh_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
+                        with urllib.request.urlopen(del_wh_req, timeout=10) as _:
+                            pass
+                    except Exception:
+                        pass
                 pass
-            time.sleep(3)
+            time.sleep(2)
 
     t = threading.Thread(target=_poll_thread, daemon=True)
     t.start()
@@ -3634,14 +3745,21 @@ def main():
         except Exception:
             pass
 
-    # 2. Bind server exclusively to available port
+    # 2. Bind server exclusively to available port (Dual Stack IPv6 + IPv4)
     for p in ports:
         try:
-            httpd = SafeThreadingHTTPServer(("", p), ImvoiWebHandler)
+            httpd = SafeThreadingHTTPServer(("::", p), ImvoiWebHandler)
             PORT = p
             break
-        except OSError:
-            continue
+        except Exception:
+            try:
+                class IPv4SafeThreadingHTTPServer(SafeThreadingHTTPServer):
+                    address_family = socket.AF_INET
+                httpd = IPv4SafeThreadingHTTPServer(("", p), ImvoiWebHandler)
+                PORT = p
+                break
+            except Exception:
+                continue
 
     if httpd is None:
         print("❌ Error: Could not bind server to any port (8000, 8001, 8080, 8888).")
@@ -3664,6 +3782,7 @@ def main():
             telegram_bot_listener.start()
         except Exception as e:
             print("[TelegramBotListener] Start notice:", e)
+        if not getattr(telegram_bot_listener, 'running', False):
             start_telegram_bot_message_poller()
     else:
         start_telegram_bot_message_poller()
