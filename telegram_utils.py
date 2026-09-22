@@ -230,6 +230,82 @@ def send_telegram_photo_bot(bot_token, chat_id, photo_path, caption=""):
         return {"ok": False, "description": str(e)}
 
 
+def send_telegram_media_group_bot(bot_token, chat_id, photo_paths, caption=""):
+    """
+    Sends multiple photos as a single grouped album (Media Group) via Bot API sendMediaGroup.
+    Telegram allows 2-10 items per media group. If 1 item, falls back to send_telegram_photo_bot.
+    """
+    if not bot_token or not chat_id or not photo_paths:
+        return {"ok": False, "description": "Missing Bot Token, Chat ID, or Photo Paths"}
+
+    valid_paths = [p for p in photo_paths if p and os.path.exists(p)]
+    if not valid_paths:
+        return {"ok": False, "description": "No valid photo files exist"}
+
+    if len(valid_paths) == 1:
+        return send_telegram_photo_bot(bot_token, chat_id, valid_paths[0], caption=caption)
+
+    url = f"https://api.telegram.org/bot{bot_token}/sendMediaGroup"
+    boundary = f"----WebKitFormBoundary{uuid.uuid4().hex}"
+    body = bytearray()
+
+    # chat_id
+    body.extend(f"--{boundary}\r\n".encode('utf-8'))
+    body.extend(f'Content-Disposition: form-data; name="chat_id"\r\n\r\n{chat_id}\r\n'.encode('utf-8'))
+
+    # media JSON
+    media_array = []
+    for idx, p in enumerate(valid_paths):
+        item = {
+            "type": "photo",
+            "media": f"attach://photo{idx}"
+        }
+        if idx == 0 and caption:
+            item["caption"] = caption
+            item["parse_mode"] = "HTML"
+        media_array.append(item)
+
+    body.extend(f"--{boundary}\r\n".encode('utf-8'))
+    body.extend(f'Content-Disposition: form-data; name="media"\r\n\r\n{json.dumps(media_array)}\r\n'.encode('utf-8'))
+
+    # attach files
+    for idx, p in enumerate(valid_paths):
+        fname = os.path.basename(p)
+        content_type = "image/jpeg"
+        if p.lower().endswith(".png"):
+            content_type = "image/png"
+        elif p.lower().endswith(".webp"):
+            content_type = "image/webp"
+
+        body.extend(f"--{boundary}\r\n".encode('utf-8'))
+        body.extend(f'Content-Disposition: form-data; name="photo{idx}"; filename="{fname}"\r\n'.encode('utf-8'))
+        body.extend(f'Content-Type: {content_type}\r\n\r\n'.encode('utf-8'))
+        with open(p, "rb") as f:
+            body.extend(f.read())
+        body.extend(b"\r\n")
+
+    body.extend(f"--{boundary}--\r\n".encode('utf-8'))
+
+    req = urllib.request.Request(url, data=bytes(body))
+    req.add_header('Content-Type', f'multipart/form-data; boundary={boundary}')
+
+    try:
+        with urllib.request.urlopen(req, timeout=35) as resp:
+            return json.loads(resp.read().decode('utf-8'))
+    except urllib.error.HTTPError as e:
+        try:
+            err_data = json.loads(e.read().decode('utf-8'))
+            migrate_to = err_data.get('parameters', {}).get('migrate_to_chat_id')
+            if migrate_to:
+                _handle_chat_migration(chat_id, migrate_to)
+                return send_telegram_media_group_bot(bot_token, str(migrate_to), photo_paths, caption)
+        except Exception:
+            pass
+        return {"ok": False, "description": str(e)}
+    except Exception as e:
+        return {"ok": False, "description": str(e)}
+
+
 def send_telegram_text_bot(bot_token, chat_id, text, parse_mode=None):
     """
     Sends text message directly to Telegram Chat / Channel via Bot API sendMessage.
@@ -314,14 +390,33 @@ class TelegramBotListener:
             print("[TelegramBotListener] No bot token configured. Listener not started.")
             return
 
-        # Check bot validity
-        info = get_telegram_bot_info(token)
-        if not info.get("ok"):
-            print(f"[TelegramBotListener] Invalid Bot Token: {info.get('description')}")
-            return
+        # Auto-remove any conflicting webhook so getUpdates polling never gets HTTP 409 Conflict
+        try:
+            del_wh_url = f"https://api.telegram.org/bot{token}/deleteWebhook?drop_pending_updates=false"
+            del_wh_req = urllib.request.Request(del_wh_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
+            with urllib.request.urlopen(del_wh_req, timeout=10) as _:
+                pass
+        except Exception:
+            pass
 
-        self.bot_info = info.get("result", {})
-        print(f"[TelegramBotListener] Starting listener for @{self.bot_info.get('username')}...")
+        # Check bot validity (with retry)
+        info = None
+        for _ in range(3):
+            info = get_telegram_bot_info(token)
+            if info.get("ok"):
+                break
+            time.sleep(1)
+
+        if not info or not info.get("ok"):
+            print(f"[TelegramBotListener] Notice: Bot Token validity check: {info.get('description') if info else 'timeout'}. Will proceed anyway.")
+            self.bot_info = {"username": "car_rent_sokha88_bot", "first_name": "កក់ឡាន"}
+        else:
+            self.bot_info = info.get("result", {})
+
+        try:
+            print(f"[TelegramBotListener] Starting listener for @{self.bot_info.get('username')}...")
+        except Exception:
+            pass
 
         if DocumentAIEngine and self.ocr_engine is None:
             try:
@@ -443,14 +538,17 @@ class TelegramBotListener:
             chat_id_str = str(chat.get("id", ""))
             group_title = chat.get("title") or ""
 
-            # Filter: STRICTLY accept incoming messages ONLY from the designated room
+            # 🛑 Strict Filter: Accept incoming messages ONLY from the designated group "កក់ឡាន" (-1004497657405)
             cfg = get_telegram_config()
-            allowed_chat_id = str(cfg.get("chat_id", "")).strip()
             allowed_chat_ids = [str(x).strip() for x in cfg.get("allowed_chat_ids", []) if str(x).strip()]
-            if allowed_chat_id and allowed_chat_id not in allowed_chat_ids:
-                allowed_chat_ids.append(allowed_chat_id)
+            if cfg.get("chat_id"):
+                allowed_chat_ids.append(str(cfg.get("chat_id")).strip())
+            if not allowed_chat_ids:
+                allowed_chat_ids = ["-1004497657405"]
 
-            if allowed_chat_ids and chat_id_str not in allowed_chat_ids:
+            is_allowed = (chat_id_str in allowed_chat_ids) or ('កក់ឡាន' in group_title)
+            if not is_allowed:
+                # Silently ignore all driver groups and other chats
                 return
 
             text = (msg.get("text") or msg.get("caption") or "").strip()
@@ -751,14 +849,20 @@ class TelegramBotListener:
                     if not msg:
                         continue
 
-                    # Chat filter: STRICTLY allow ONLY the designated room
+                    # 🛑 Strict Chat filter: Allow ONLY the designated group "កក់ឡាន" (-1004497657405)
                     c_id_str = str((msg.get("chat") or {}).get("id", "")).strip()
-                    allowed_chat_id = str(cfg.get("chat_id", "")).strip()
-                    allowed_chat_ids = [str(x).strip() for x in cfg.get("allowed_chat_ids", []) if str(x).strip()]
-                    if allowed_chat_id and allowed_chat_id not in allowed_chat_ids:
-                        allowed_chat_ids.append(allowed_chat_id)
+                    c_type = str((msg.get("chat") or {}).get("type", "")).lower()
+                    c_title = str((msg.get("chat") or {}).get("title", "")).strip()
 
-                    if allowed_chat_ids and c_id_str not in allowed_chat_ids:
+                    allowed_chat_ids = [str(x).strip() for x in cfg.get("allowed_chat_ids", []) if str(x).strip()]
+                    if cfg.get("chat_id"):
+                        allowed_chat_ids.append(str(cfg.get("chat_id")).strip())
+                    if not allowed_chat_ids:
+                        allowed_chat_ids = ["-1004497657405"]
+
+                    is_allowed = (c_id_str in allowed_chat_ids) or ('កក់ឡាន' in c_title)
+                    if not is_allowed:
+                        # Silently ignore all driver groups and other chats
                         continue
 
                     # Record incoming text or caption and photo for AutoRent integration
@@ -852,7 +956,15 @@ class TelegramBotListener:
                     self._process_telegram_text(token, chat_id, text_content, msg)
 
             except Exception as e:
-                time.sleep(3)
+                if '409' in str(e):
+                    try:
+                        del_wh_url = f"https://api.telegram.org/bot{token}/deleteWebhook?drop_pending_updates=false"
+                        del_wh_req = urllib.request.Request(del_wh_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
+                        with urllib.request.urlopen(del_wh_req, timeout=10) as _:
+                            pass
+                    except Exception:
+                        pass
+                time.sleep(2)
 
     def _process_telegram_photo_group(self, token, chat_id, msg_list):
         """

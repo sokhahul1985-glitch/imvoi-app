@@ -20,6 +20,7 @@ import uuid
 import threading
 import time
 import traceback
+import gzip
 from PIL import Image
 
 try:
@@ -89,18 +90,22 @@ def safe_int(val, default=0):
 try:
     from telegram_utils import (
         get_telegram_config, save_telegram_config, send_telegram_photo_bot,
+        send_telegram_media_group_bot,
         send_telegram_text_bot, get_telegram_bot_info, telegram_bot_listener,
-        launch_telegram_desktop, get_telegram_exe_path, _handle_chat_migration
+        launch_telegram_desktop, get_telegram_exe_path, _handle_chat_migration,
+        download_telegram_image_by_file_id
     )
 except Exception as e:
     def get_telegram_config(): return {"bot_token": "8884318593:AAEipEVki9o1YFL0_8IYoUeSn3Xif4dlVOk", "chat_id": "8985821312"}
     def save_telegram_config(b, c): pass
     def _handle_chat_migration(old_c, new_c): pass
     def send_telegram_photo_bot(b, c, p, caption=""): return {"ok": False, "description": "telegram_utils unavailable"}
+    def send_telegram_media_group_bot(b, c, p, caption=""): return {"ok": False, "description": "telegram_utils unavailable"}
     def send_telegram_text_bot(b, c, text, parse_mode=None): return {"ok": False, "description": "telegram_utils unavailable"}
     def get_telegram_bot_info(t): return {"ok": False}
     def launch_telegram_desktop(): return False
     def get_telegram_exe_path(): return None
+    def download_telegram_image_by_file_id(f, d=None, t=None, data_dir=None): return None
     telegram_bot_listener = None
 
 
@@ -807,10 +812,9 @@ def _merge_booking_records(base_bks, incoming_bks):
 
 
 def _startup_restore_bookings():
-    """Auto-restore car rental bookings from local files, backups, and Supabase Cloud only if local data is absent."""
+    """Auto-restore car rental bookings from local files, backups, and Supabase Cloud with guaranteed union persistence."""
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
-        deleted_ids = load_deleted_booking_ids()
         local_bks = []
         if os.path.exists(SAVED_BOOKINGS_FILE):
             try:
@@ -819,19 +823,7 @@ def _startup_restore_bookings():
             except Exception:
                 local_bks = []
 
-        # If local_bks already has valid data, filter out any deleted IDs and DO NOT resurrect old backups!
-        if isinstance(local_bks, list) and len(local_bks) > 0:
-            cleaned_bks = [b for b in local_bks if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in deleted_ids]
-            if len(cleaned_bks) != len(local_bks):
-                save_json(SAVED_BOOKINGS_FILE, cleaned_bks)
-                if DATA_DIR != BASE_DIR:
-                    try:
-                        save_json(os.path.join(BASE_DIR, 'saved_bookings.json'), cleaned_bks)
-                    except Exception:
-                        pass
-            return
-
-        # Only if local_bks is completely empty (fresh container or empty file), load from candidates
+        # Check local backup candidates
         for cand in [
             os.path.join(BASE_DIR, 'saved_bookings.json'),
             os.path.join(DATA_DIR, 'backups', 'saved_bookings_latest_vault.json'),
@@ -843,25 +835,24 @@ def _startup_restore_bookings():
                 try:
                     with open(cand, 'r', encoding='utf-8') as f:
                         cand_bks = json.load(f)
-                    if isinstance(cand_bks, list) and len(cand_bks) > 0:
-                        cand_bks = [b for b in cand_bks if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in deleted_ids]
+                    if isinstance(cand_bks, list) and len(cand_bks) > len(local_bks):
                         local_bks = _merge_booking_records(local_bks, cand_bks)
                 except Exception:
                     pass
 
-        # Query Supabase Cloud DB if still empty
+        # Query Supabase Cloud DB
         cloud_bks = []
         if supabase_db and supabase_db.is_configured():
             try:
                 print("[Supabase] Querying Supabase Cloud for Bookings on startup...")
                 cloud_bks = supabase_db.fetch_bookings() or []
-                cloud_bks = [b for b in cloud_bks if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in deleted_ids]
             except Exception as se:
                 print(f"[Supabase] Booking startup load warning: {se}")
 
-        # Merge and strip deleted bookings
+        del_ids = load_deleted_booking_ids()
+        # Intelligent union merge: never lose bookings from either local or cloud, strictly ignoring deleted IDs
         merged = _merge_booking_records(local_bks, cloud_bks)
-        merged = [b for b in merged if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in deleted_ids]
+        merged = [b for b in merged if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in del_ids]
 
         if merged:
             save_json(SAVED_BOOKINGS_FILE, merged)
@@ -871,6 +862,13 @@ def _startup_restore_bookings():
                 except Exception:
                     pass
             print(f"[DataRestore] ✅ Bookings restored & merged: {len(merged)} bookings active.")
+
+            # Only update Supabase if we have more bookings than cloud had
+            if supabase_db and supabase_db.is_configured() and len(merged) > len(cloud_bks):
+                try:
+                    threading.Thread(target=supabase_db.save_bookings, args=(merged,), daemon=True).start()
+                except Exception:
+                    pass
     except Exception as ex:
         print(f"[DataRestore] Booking restore non-fatal error: {ex}")
 
@@ -1355,7 +1353,19 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
 
         if path == '/api/telegram_groups':
             groups_by_title = {}
-            for g_dir in [DATA_DIR, BASE_DIR]:
+            # Permanent builtin groups so driver groups (Nab, J Heng, etc.) NEVER disappear
+            builtin_groups = [
+                {"id": "-1004497657405", "title": "កក់ឡាន"},
+                {"id": "-5381280318", "title": "J Heng"},
+                {"id": "-1004424429378", "title": "CK 2849"},
+                {"id": "-1004480815325", "title": "Phinin"},
+                {"id": "-1004338568933", "title": "Nab"},
+                {"id": "-1004336964750", "title": "Smey Ap"}
+            ]
+            for bg in builtin_groups:
+                groups_by_title[bg['title'].lower()] = bg
+
+            for g_dir in [DATA_DIR, BASE_DIR, os.path.join(BASE_DIR, 'UPLOAD_TO_GITHUB'), os.path.join(BASE_DIR, 'READY_FOR_GITHUB')]:
                 gf = os.path.join(g_dir, "known_telegram_groups.json")
                 if os.path.exists(gf):
                     try:
@@ -1367,20 +1377,77 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                                     if not t:
                                         continue
                                     existing = groups_by_title.get(t.lower())
-                                    # If not seen yet, or if current is supergroup (-100...) and old wasn't, replace
                                     if not existing or (cid.startswith('-100') and not existing['id'].startswith('-100')):
                                         groups_by_title[t.lower()] = {
                                             'id': cid,
                                             'title': t,
                                             'link': gdata.get('link', '') or (existing.get('link', '') if existing else '')
                                         }
-                            break
                     except Exception:
                         pass
             groups = list(groups_by_title.values())
             self.send_json_response({'success': True, 'groups': groups})
             return
 
+        # Serve Telegram Images with Auto-Recovery & Multi-directory Fallback
+        if path.startswith('/telegram_images/'):
+            clean_rel = path.lstrip('/').replace('/', os.sep)
+            img_filename = os.path.basename(clean_rel)
+            
+            candidates = [
+                os.path.join(DATA_DIR, clean_rel),
+                os.path.join(BASE_DIR, clean_rel),
+                os.path.join(BASE_DIR, 'UPLOAD_TO_GITHUB', clean_rel),
+                os.path.join(BASE_DIR, 'READY_FOR_GITHUB', clean_rel),
+            ]
+            
+            local_path = None
+            for c in candidates:
+                if os.path.exists(c) and os.path.isfile(c) and os.path.getsize(c) > 0:
+                    local_path = c
+                    break
+                    
+            # If missing on disk, try on-demand auto-download via file_id
+            if not local_path:
+                target_file_id = None
+                for src_file in [SAVED_BOOKINGS_FILE, os.path.join(DATA_DIR, 'received_telegram_messages.json')]:
+                    if os.path.exists(src_file):
+                        try:
+                            records = load_json(src_file, [])
+                            for r in records:
+                                for im in r.get('images', []):
+                                    im_url = im.get('url', '') if isinstance(im, dict) else str(im)
+                                    if img_filename in im_url and isinstance(im, dict) and im.get('file_id'):
+                                        target_file_id = im.get('file_id')
+                                        break
+                                if target_file_id: break
+                        except Exception: pass
+                    if target_file_id: break
+                
+                if target_file_id and download_telegram_image_by_file_id:
+                    fetched = download_telegram_image_by_file_id(target_file_id, dest_filename=img_filename, data_dir=DATA_DIR)
+                    if fetched and os.path.exists(fetched):
+                        local_path = fetched
+
+            if local_path and os.path.exists(local_path):
+                ext = os.path.splitext(local_path)[1].lower()
+                mime = 'image/jpeg'
+                if ext == '.png': mime = 'image/png'
+                elif ext == '.webp': mime = 'image/webp'
+                elif ext == '.pdf': mime = 'application/pdf'
+                self.send_response(200)
+                self.send_header('Content-Type', mime)
+                self.send_header('Cache-Control', 'public, max-age=86400')
+                self.end_headers()
+                with open(local_path, 'rb') as f:
+                    self.wfile.write(f.read())
+                return
+            else:
+                self.send_response(404)
+                self.send_header('Content-Type', 'text/plain; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(b'Image not found')
+                return
 
         # Serve static web assets
         if path.startswith('/assets/'):
@@ -1434,8 +1501,26 @@ try {{
                     html_text = preload_js + html_text
 
                 content = html_text.encode('utf-8')
+                accept_encoding = self.headers.get('Accept-Encoding', '') if hasattr(self, 'headers') and self.headers else ''
+                if 'gzip' in accept_encoding.lower() and len(content) > 1024:
+                    try:
+                        compressed = gzip.compress(content, compresslevel=6)
+                        self.send_response(200)
+                        self.send_header('Content-Type', 'text/html; charset=utf-8')
+                        self.send_header('Content-Encoding', 'gzip')
+                        self.send_header('Content-Length', str(len(compressed)))
+                        self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                        self.send_header('Pragma', 'no-cache')
+                        self.send_header('Expires', '0')
+                        self.end_headers()
+                        self.wfile.write(compressed)
+                        return
+                    except Exception:
+                        pass
+
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/html; charset=utf-8')
+                self.send_header('Content-Length', str(len(content)))
                 self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
                 self.send_header('Pragma', 'no-cache')
                 self.send_header('Expires', '0')
@@ -2213,6 +2298,31 @@ try {{
             if updated_item and not clean_r_no:
                 clean_r_no = updated_item.get('receipt_no') or updated_item.get('group_data', {}).get('receipt_no') or updated_item.get('customer', {}).get('receipt_no') or ''
 
+            # Synchronize with saved_bookings.json so booking invoice status turns into 'ធ្វើរួច' immediately
+            try:
+                bk_file = os.path.join(DATA_DIR, 'saved_bookings.json')
+                if not os.path.exists(os.path.dirname(bk_file)):
+                    bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
+                bks = load_json(bk_file, [])
+                req_b_id = str(req_data.get('booking_id') or '').strip()
+                target_booking = None
+                if req_b_id:
+                    target_booking = next((b for b in bks if str(b.get('id', '')).strip() == req_b_id), None)
+                if not target_booking and clean_r_no:
+                    target_booking = next((b for b in bks if str(b.get('invoiceNo', '')).strip().lower() == clean_r_no.lower()), None)
+                
+                if target_booking:
+                    target_booking['invoiceDone'] = True
+                    target_booking['invoiceNo'] = clean_r_no
+                    save_json(bk_file, bks)
+                    if supabase_db and supabase_db.is_configured():
+                        try:
+                            threading.Thread(target=supabase_db.save_bookings, args=(bks,), daemon=True).start()
+                        except Exception:
+                            pass
+            except Exception as e_bk_sync:
+                print(f"[update_members] Error syncing booking invoice status: {e_bk_sync}")
+
             save_json(SAVED_CUSTOMERS_FILE, all_invoices)
             self.send_json_response({'success': True, 'receipt_no': clean_r_no, 'invoice': updated_item})
             return
@@ -2662,7 +2772,20 @@ try {{
             # Check if we have an auto-discovered group ID from the bot joining the group(s)
             known_group_id = ''
             known_group_title = ''
-            for g_dir in [DATA_DIR, BASE_DIR]:
+            d_clean = driver_target.replace('👥', '').replace('គ្រុប', '').replace('ក្រុម', '').replace('Telegram', '').replace('៖', '').strip().lower()
+            builtin_map = {
+                "កក់ឡាន": "-1004497657405",
+                "j heng": "-5381280318",
+                "ck 2849": "-1004424429378",
+                "phinin": "-1004480815325",
+                "nab": "-1004338568933",
+                "smey ap": "-1004336964750"
+            }
+            if d_clean in builtin_map:
+                known_group_id = builtin_map[d_clean]
+                known_group_title = driver_target
+
+            for g_dir in [DATA_DIR, BASE_DIR, os.path.join(BASE_DIR, 'UPLOAD_TO_GITHUB'), os.path.join(BASE_DIR, 'READY_FOR_GITHUB')]:
                 gf = os.path.join(g_dir, "known_telegram_groups.json")
                 if os.path.exists(gf):
                     try:
@@ -2744,48 +2867,88 @@ try {{
                 })
                 return
 
-            # Support HTML formatting for bold (<b>...</b> or **...**) and distinct time styling
-            def format_time_dispatch(m):
-                prefix = m.group(1)
-                t_str = m.group(2).strip()
-                if 'ព្រឹក' in t_str or 'ថ្ងៃ' in t_str or 'យប់' in t_str:
-                    return f"{prefix}<b><code>{t_str}</code></b>"
-                try:
-                    h = int(t_str.split(':')[0])
-                    if 0 <= h < 5:
-                        tag = 'យប់ 🌙'
-                    elif 5 <= h < 12:
-                        tag = 'ព្រឹក ☀️'
-                    elif 12 <= h < 18:
-                        tag = 'ថ្ងៃត្រង់ ☀️' if h == 12 else 'ថ្ងៃ 🌤️'
-                    else:
-                        tag = 'យប់ 🌙'
-                    return f"{prefix}<b><code>{t_str} ({tag})</code></b>"
-                except Exception:
-                    return f"{prefix}<b><code>{t_str}</code></b>"
-
-            escaped_text = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            # Format HTML for Telegram Bot API (making key dispatch values BOLD as requested)
+            clean_text = text.replace('\r\n', '\n').replace('\r', '\n')
+            escaped_text = clean_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
             html_text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', escaped_text)
-            html_text = re.sub(r'(⏰\s*(?:<b>)?\s*ម៉ោងចេញដំណើរ:\s*)([^<\n]+)((?:</b>)?)', format_time_dispatch, html_text)
+            # Bold vital dispatch fields: time, customer, car, route, VIP
+            html_text = re.sub(r'^(ម៉ោងចេញដំណើរ:\s*)([^\n]+)$', r'\1<b>\2</b>', html_text, flags=re.MULTILINE)
+            html_text = re.sub(r'^(ឈ្មោះភ្ញៀវ:\s*)([^\n]+)$', r'\1<b>\2</b>', html_text, flags=re.MULTILINE)
+            html_text = re.sub(r'^(ប្រភេទរថយន្ត:\s*)([^\n]+)$', r'\1<b>\2</b>', html_text, flags=re.MULTILINE)
+            html_text = re.sub(r'^(ទិសដៅ:\s*)([^\n]+)$', r'\1<b>\2</b>', html_text, flags=re.MULTILINE)
+            html_text = re.sub(r'^(សេវា VIP:\s*)([^\n]+)$', r'\1<b>\2</b>', html_text, flags=re.MULTILINE)
+            html_text = re.sub(r'^(សេវាច្រកទ្វារ:\s*)([^\n]+)$', r'\1<b>\2</b>', html_text, flags=re.MULTILINE)
+
             res_text = send_telegram_text_bot(bot_token, chat_id, html_text, parse_mode='HTML')
             if not res_text.get('ok'):
+                print(f"[send_driver_dispatch] HTML send failed: {res_text.get('description')}, fallback to plain text")
                 res_text = send_telegram_text_bot(bot_token, chat_id, text)
-            photos_sent = 0
+            # Collect and prepare all valid photo paths
+            valid_photo_paths = []
             for img_rel in image_urls:
                 if not img_rel or not isinstance(img_rel, str):
                     continue
-                clean_rel = img_rel.replace('/', os.sep).lstrip(os.sep)
-                local_path = os.path.join(BASE_DIR, clean_rel)
-                if os.path.exists(local_path):
-                    send_telegram_photo_bot(bot_token, chat_id, local_path, caption=f"📍 ឯកសារ/ទីតាំងជើងឡាន #{photos_sent+1}")
-                    photos_sent += 1
+                if img_rel.startswith('data:image/'):
+                    try:
+                        header, b64data = img_rel.split(',', 1)
+                        ext = 'png'
+                        if 'image/jpeg' in header:
+                            ext = 'jpg'
+                        elif 'image/webp' in header:
+                            ext = 'webp'
+                        cards_dir = os.path.join(BASE_DIR, 'uploads', 'dispatch_cards')
+                        os.makedirs(cards_dir, exist_ok=True)
+                        fname = f"card_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}.{ext}"
+                        local_path = os.path.join(cards_dir, fname)
+                        with open(local_path, 'wb') as f:
+                            f.write(base64.b64decode(b64data))
+                        valid_photo_paths.append(local_path)
+                    except Exception as e:
+                        print(f"Error decoding base64 image card: {e}")
+                    continue
 
-            if res_text.get('ok') or photos_sent > 0:
+                clean_rel = img_rel.replace('/', os.sep).lstrip(os.sep)
+                candidates = [
+                    os.path.join(DATA_DIR, clean_rel) if 'DATA_DIR' in globals() else '',
+                    os.path.join(BASE_DIR, clean_rel),
+                    os.path.join(BASE_DIR, 'UPLOAD_TO_GITHUB', clean_rel),
+                    os.path.join(BASE_DIR, 'READY_FOR_GITHUB', clean_rel),
+                ]
+                found_path = None
+                for c in candidates:
+                    if c and os.path.exists(c) and os.path.isfile(c) and os.path.getsize(c) > 0:
+                        found_path = c
+                        break
+
+                if found_path:
+                    valid_photo_paths.append(found_path)
+
+            # Send photos asynchronously in a background thread so UI responds in 1 second!
+            def _async_send_photos_worker(t_token, t_chat_id, paths):
+                try:
+                    if len(paths) == 1:
+                        send_telegram_photo_bot(t_token, t_chat_id, paths[0], caption="📍 ឯកសារ & រូបភាពទីតាំង")
+                    elif len(paths) > 1:
+                        for i in range(0, len(paths), 10):
+                            chunk = paths[i:i+10]
+                            res_mg = send_telegram_media_group_bot(t_token, t_chat_id, chunk, caption=f"📍 ឯកសារ & រូបភាពទីតាំង ({len(chunk)} សន្លឹក)")
+                            if not res_mg.get('ok'):
+                                for p in chunk:
+                                    send_telegram_photo_bot(t_token, t_chat_id, p)
+                except Exception as ex:
+                    print(f"[send_driver_dispatch] Background photo upload note: {ex}")
+
+            if valid_photo_paths:
+                th = threading.Thread(target=_async_send_photos_worker, args=(bot_token, chat_id, valid_photo_paths), daemon=True)
+                th.start()
+
+            if res_text.get('ok') or len(valid_photo_paths) > 0:
                 target_display = known_group_title or chat_id
+                num_photos = len(valid_photo_paths)
                 self.send_json_response({
                     'success': True,
                     'bot_sent': True,
-                    'message': f'បានបញ្ជូនទិន្នន័យ និងរូបភាព ({photos_sent} សន្លឹក) ចូលទៅក្នុងគ្រុប "{target_display}" រួចរាល់! 🚀',
+                    'message': f'បានបញ្ជូនទិន្នន័យ និងរូបភាព ({num_photos} សន្លឹក) ចូលទៅក្នុងគ្រុប "{target_display}" រួចរាល់! 🚀',
                     'chat_id': chat_id
                 })
             else:
@@ -2975,7 +3138,7 @@ try {{
                             threading.Thread(target=supabase_db.save_bookings, args=(current_bks,), daemon=True).start()
                         except Exception:
                             pass
-                self.send_json_response({'success': True, 'count': len(current_bks), 'deleted_id': target_id})
+                self.send_json_response({'success': True, 'count': len(current_bks), 'deleted_id': target_id, 'deleted_ids': list(del_ids)})
                 return
 
             # 2. Single Booking Update or Insert (Fast & Lightweight)
@@ -2999,6 +3162,11 @@ try {{
                 else:
                     current_bks.insert(0, booking)
                 save_json(bk_file, current_bks)
+                if DATA_DIR != BASE_DIR:
+                    try:
+                        save_json(os.path.join(BASE_DIR, 'saved_bookings.json'), current_bks)
+                    except Exception:
+                        pass
                 if supabase_db and supabase_db.is_configured():
                     try:
                         threading.Thread(target=supabase_db.upsert_single_booking, args=(booking,), daemon=True).start()
@@ -3008,7 +3176,7 @@ try {{
                 self.send_json_response({'success': True, 'booking': booking, 'count': len(current_bks)})
                 return
 
-            # 3. Batch Bookings Update (Safe union merge to prevent stale client truncation, strictly ignoring deleted IDs)
+            # 3. Batch Bookings Update (Safe union merge, strictly ignoring deleted IDs)
             elif isinstance(bookings, list):
                 # Filter out any deleted bookings immediately!
                 incoming_valid = [b for b in bookings if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in del_ids]
@@ -3206,140 +3374,77 @@ try {{
 
 
     def send_json_response(self, data, status=200):
+        raw_bytes = json.dumps(data, ensure_ascii=False).encode('utf-8')
+        accept_encoding = self.headers.get('Accept-Encoding', '') if hasattr(self, 'headers') and self.headers else ''
+        if 'gzip' in accept_encoding.lower() and len(raw_bytes) > 1024:
+            try:
+                compressed = gzip.compress(raw_bytes, compresslevel=6)
+                self.send_response(status)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.send_header('Content-Encoding', 'gzip')
+                self.send_header('Content-Length', str(len(compressed)))
+                self.end_headers()
+                self.wfile.write(compressed)
+                return
+            except Exception:
+                pass
         self.send_response(status)
         self.send_header('Content-Type', 'application/json; charset=utf-8')
+        self.send_header('Content-Length', str(len(raw_bytes)))
         self.end_headers()
-        self.wfile.write(json.dumps(data, ensure_ascii=False).encode('utf-8'))
+        self.wfile.write(raw_bytes)
 
 def download_telegram_photo_file(token, file_id, update_id):
     """
     Downloads a photo from Telegram Bot API using file_id and saves to telegram_images/ folder.
     Returns the relative web path: /telegram_images/tg_photo_<update_id>_<short_id>.jpg
-    Includes automatic retries and dual-path persistence (BASE_DIR & DATA_DIR).
     """
-    for attempt in range(3):
-        try:
-            tg_img_dir = os.path.join(BASE_DIR, 'telegram_images')
-            os.makedirs(tg_img_dir, exist_ok=True)
-            tg_img_dir_data = os.path.join(DATA_DIR, 'telegram_images')
-            os.makedirs(tg_img_dir_data, exist_ok=True)
-
-            # 1. Get file path from Telegram
-            get_file_url = f"https://api.telegram.org/bot{token}/getFile?file_id={file_id}"
-            req = urllib.request.Request(get_file_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
-            with urllib.request.urlopen(req, timeout=15) as resp:
-                f_data = json.loads(resp.read().decode('utf-8'))
-
-            if not f_data.get('ok') or not f_data.get('result', {}).get('file_path'):
-                if attempt < 2:
-                    time.sleep(1)
-                    continue
-                return None
-
-            file_path = f_data['result']['file_path']
-            ext = os.path.splitext(file_path)[1].lower() or '.jpg'
-            if ext not in ['.jpg', '.jpeg', '.png', '.webp']:
-                ext = '.jpg'
-
-            clean_file_id = re.sub(r'[^a-zA-Z0-9]', '', str(file_id))[:10]
-            filename = f"tg_photo_{update_id}_{clean_file_id}{ext}"
-            dest_path = os.path.join(tg_img_dir, filename)
-            dest_path_data = os.path.join(tg_img_dir_data, filename)
-
-            # 2. Download file content
-            dl_url = f"https://api.telegram.org/file/bot{token}/{file_path}"
-            req_dl = urllib.request.Request(dl_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
-            with urllib.request.urlopen(req_dl, timeout=25) as resp_dl:
-                img_bytes = resp_dl.read()
-                with open(dest_path, 'wb') as f:
-                    f.write(img_bytes)
-                if dest_path_data != dest_path:
-                    try:
-                        with open(dest_path_data, 'wb') as f_d:
-                            f_d.write(img_bytes)
-                    except Exception:
-                        pass
-
-            return f"/telegram_images/{filename}"
-        except Exception as e:
-            if attempt < 2:
-                time.sleep(1.2)
-                continue
-            print(f"[TelegramBotPoller] Error downloading photo {file_id}: {e}")
-            return None
-    return None
-
-def _auto_attach_photos_to_bookings(new_images, txt, sender, ts):
-    """
-    Automatically attaches newly downloaded Telegram photos to matching bookings in saved_bookings.json.
-    Ensures users NEVER have to manually click download or fetch photos.
-    """
-    if not new_images or not isinstance(new_images, list):
-        return
     try:
-        bk_file = os.path.join(DATA_DIR, 'saved_bookings.json')
-        if not os.path.exists(bk_file):
-            bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
-        bookings = load_json(bk_file, [])
-        if not bookings:
-            return
+        tg_img_dir = os.path.join(BASE_DIR, 'telegram_images')
+        os.makedirs(tg_img_dir, exist_ok=True)
 
-        modified = False
-        txt_clean = (txt or '').lower()
-        sender_clean = (sender or '').lower()
+        # 1. Get file path from Telegram
+        get_file_url = f"https://api.telegram.org/bot{token}/getFile?file_id={file_id}"
+        req = urllib.request.Request(get_file_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            f_data = json.loads(resp.read().decode('utf-8'))
 
-        for b in bookings[:25]:
-            c_name = (b.get('customerName') or '').lower().strip()
-            raw_msg = (b.get('rawMessage') or '').lower()
-            b_notes = (b.get('notes') or '').lower()
-            b_tg = (b.get('customerTelegram') or '').lower()
+        if not f_data.get('ok') or not f_data.get('result', {}).get('file_path'):
+            return None
 
-            name_match = (len(c_name) >= 3 and (c_name in txt_clean or txt_clean in c_name))
-            raw_match = (len(raw_msg) >= 15 and (raw_msg[:30] in txt_clean or txt_clean[:30] in raw_msg))
-            is_empty_images = len(b.get('images', [])) == 0
+        file_path = f_data['result']['file_path']
+        ext = os.path.splitext(file_path)[1].lower() or '.jpg'
+        if ext not in ['.jpg', '.jpeg', '.png', '.webp']:
+            ext = '.jpg'
 
-            # Flight number match e.g. PG0903, FD..., K6...
-            flight_match = False
-            f_matches = re.findall(r'[a-zA-Z]{2}\s*\d{3,4}', txt_clean)
-            for f_cand in f_matches:
-                f_norm = f_cand.replace(' ', '')
-                if f_norm in raw_msg.replace(' ', '') or f_norm in b_notes.replace(' ', ''):
-                    flight_match = True
-                    break
+        clean_file_id = re.sub(r'[^a-zA-Z0-9]', '', str(file_id))[:10]
+        filename = f"tg_photo_{update_id}_{clean_file_id}{ext}"
+        dest_path = os.path.join(tg_img_dir, filename)
 
-            today_str = datetime.date.today().strftime('%Y-%m-%d')
-            b_date = b.get('date', '')
-            recent_empty_match = (b_date == today_str and is_empty_images and (name_match or raw_match or flight_match or (sender_clean and sender_clean in b_tg)))
+        # 2. Download file content
+        dl_url = f"https://api.telegram.org/file/bot{token}/{file_path}"
+        req_dl = urllib.request.Request(dl_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
+        with urllib.request.urlopen(req_dl, timeout=20) as resp_dl:
+            img_bytes = resp_dl.read()
+            with open(dest_path, 'wb') as f:
+                f.write(img_bytes)
 
-            if name_match or raw_match or flight_match or recent_empty_match:
-                if 'images' not in b or not isinstance(b['images'], list):
-                    b['images'] = []
-                for img in new_images:
-                    if not any(ex.get('url') == img.get('url') for ex in b['images']):
-                        b['images'].append(img)
-                        modified = True
-                        print(f"[TelegramAutoAttach] ⚡ Auto-linked photo {img.get('name')} to booking {b.get('id')} ({b.get('customerName')})")
-                if modified:
-                    break
-
-        if modified:
-            save_json(bk_file, bookings)
-            if DATA_DIR != BASE_DIR:
-                try:
-                    save_json(os.path.join(BASE_DIR, 'saved_bookings.json'), bookings)
-                except Exception:
-                    pass
+        return f"/telegram_images/{filename}"
     except Exception as e:
-        print(f"[TelegramAutoAttach] Error: {e}")
-
+        print(f"[TelegramBotPoller] Error downloading photo {file_id}: {e}")
+        return None
 
 def detect_photo_category(caption_text, img_path=None):
     text_lower = (caption_text or "").lower()
-    if any(k in text_lower for k in ['flight', '✈', '✈️', 'dmk', 'bkk', 'sai', 'airasia', 'air', 'fd', 'fd-', 'fd ', 'we', 'sl', 'v9', 'k6', 'pg', 'tg', 'qv', 'ហោះហើរ', 'សំបុត្រ', 'ตั๋วเครื่องบิน', 'ไฟลท์', 'ขาเข้า', 'ขาออก', 'สนามบิน', 'airport', 'pnr', 'boarding']):
+    has_passport_kw = any(k in text_lower for k in ['passport', 'បាសស្ព័រ', 'ប៉ាស្ព័រ', 'លិខិតឆ្លងដែន', 'พาสปอร์ต', 'pass', 'pp'])
+    has_flight_kw = any(k in text_lower for k in ['flight', '✈', '✈️', 'dmk', 'bkk', 'sai', 'airasia', 'air', 'fd', 'fd-', 'fd ', 'we', 'sl', 'v9', 'k6', 'pg', 'tg', 'qv', 'ហោះហើរ', 'សំបុត្រ', 'ตั๋วเครื่องบิน', 'ไฟลท์', 'ขาเข้า', 'ขาออก', 'สนามบิน', 'airport', 'pnr', 'boarding'])
+    has_car_kw = any(k in text_lower for k in ['alphard', 'hiace', 'staria', 'suv', 'lexus', 'car', 'ឡាន', 'រថយន្ត', 'ជួល', 'ទៅមក', 'ដឹក', 'កក់', 'សៀមរាប', 'ប៉ោយប៉ែត', 'ភ្នំពេញ', 'តេជោ', 'รถ', 'ตู้', 'เก๋ง', 'เหมา', 'คนขับ', 'តៃកុង'])
+
+    if has_flight_kw:
         return 'សំបុត្រយន្តហោះ'
-    elif any(k in text_lower for k in ['passport', 'បាសស្ព័រ', 'ប៉ាស្ព័រ', 'លិខិតឆ្លងដែន', 'พาสปอร์ต', 'pass', 'pp']):
+    elif has_passport_kw:
         return 'ប៉ាស្ព័រ'
-    elif any(k in text_lower for k in ['alphard', 'hiace', 'staria', 'ឡានជួល']):
+    elif has_car_kw:
         return 'រូបឡាន'
     
     if img_path and os.path.exists(img_path):
@@ -3349,13 +3454,19 @@ def detect_photo_category(caption_text, img_path=None):
                 w, h = im.size
                 aspect = max(w, h) / max(min(w, h), 1)
                 if h > w and aspect >= 1.62:
-                    if any(k in text_lower for k in ['flight', '✈', 'dmk', 'sai', 'bkk', 'airasia', 'ขาเข้า', 'ขาออก', 'pnr']):
+                    if has_flight_kw:
                         return 'សំបុត្រយន្តហោះ'
-                elif 1.20 <= aspect <= 1.58:
+                elif h > w and 1.20 <= aspect <= 1.58 and has_passport_kw:
                     return 'ប៉ាស្ព័រ'
+                elif w >= h:
+                    # Landscape photos (cars, driver standing with car, scenery)
+                    if not has_passport_kw:
+                        return 'រូបឡាន'
         except Exception:
             pass
-    # In VIP border/airport transport system, default customer photos without car/flight text are passports
+    # If landscape or contains general booking text, default to car
+    if has_car_kw or not has_passport_kw:
+        return 'រូបឡាន'
     return 'ប៉ាស្ព័រ'
 
 def start_telegram_bot_message_poller():
@@ -3372,6 +3483,15 @@ def start_telegram_bot_message_poller():
             msg_file = os.path.join(BASE_DIR, 'received_telegram_messages.json')
             
         print(f"[TelegramBotPoller] Live message & photo monitor active for token: {token[:12]}...")
+        # Auto-remove any conflicting webhook so getUpdates polling never gets HTTP 409 Conflict
+        try:
+            del_wh_url = f"https://api.telegram.org/bot{token}/deleteWebhook?drop_pending_updates=false"
+            del_wh_req = urllib.request.Request(del_wh_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
+            with urllib.request.urlopen(del_wh_req, timeout=10) as _:
+                pass
+        except Exception:
+            pass
+
         while True:
             try:
                 url = f"https://api.telegram.org/bot{token}/getUpdates?offset={offset}&timeout=20"
@@ -3443,14 +3563,18 @@ def start_telegram_bot_message_poller():
                                 send_telegram_text_bot(token, c_id_str, greet_msg)
                                 continue
 
-                            # 🛑 Strict Chat Room Filter: Allow ONLY the designated Telegram room (e.g. 8985821312)
+                            # 🛑 Strict Chat Filter: Allow ONLY the designated group "កក់ឡាន" (-1004497657405)
                             cfg_tg = get_telegram_config()
-                            allowed_chat_id = str(cfg_tg.get("chat_id", "")).strip()
                             allowed_chat_ids = [str(x).strip() for x in cfg_tg.get("allowed_chat_ids", []) if str(x).strip()]
-                            if allowed_chat_id and allowed_chat_id not in allowed_chat_ids:
-                                allowed_chat_ids.append(allowed_chat_id)
+                            if cfg_tg.get("chat_id"):
+                                allowed_chat_ids.append(str(cfg_tg.get("chat_id")).strip())
+                            if not allowed_chat_ids:
+                                allowed_chat_ids = ["-1004497657405"]
 
-                            if allowed_chat_ids and c_id_str not in allowed_chat_ids:
+                            c_title = str(chat_obj.get('title', '')).strip()
+                            is_allowed = (c_id_str in allowed_chat_ids) or ('កក់ឡាន' in c_title)
+                            if not is_allowed:
+                                # Silently ignore any other groups (drivers) and private chats
                                 continue
 
                             txt = (m.get('text') or m.get('caption') or '').strip()
@@ -3508,6 +3632,7 @@ def start_telegram_bot_message_poller():
                                         img_list.append({
                                             'id': f"IMG-TG-{u['update_id']}",
                                             'name': f"telegram_photo_{u['update_id']}.jpg",
+                                            'file_id': f_id,
                                             'category': cat,
                                             'url': img_url,
                                             'date': dt_str
@@ -3517,11 +3642,13 @@ def start_telegram_bot_message_poller():
                                 if f_id:
                                     img_url = download_telegram_photo_file(token, f_id, u['update_id'])
                                     if img_url:
+                                        # Refine category with actual downloaded image dimensions
                                         full_local_path = os.path.join(BASE_DIR, img_url.lstrip('/'))
                                         cat = detect_photo_category(txt, full_local_path)
                                         img_list.append({
                                             'id': f"IMG-TG-{u['update_id']}",
                                             'name': doc.get('file_name') or f"telegram_doc_{u['update_id']}.jpg",
+                                            'file_id': f_id,
                                             'category': cat,
                                             'url': img_url,
                                             'date': dt_str
@@ -3589,12 +3716,18 @@ def start_telegram_bot_message_poller():
 
                                 msgs = msgs[:100]
                                 save_json(msg_file, msgs)
-                                if img_list:
-                                    _auto_attach_photos_to_bookings(img_list, txt, sender, ts)
                                 print(f"[TelegramBotPoller] ⚡ Received/Updated message from {sender} (Total images: {len(msgs[0].get('images', []))}): {txt[:35]}...")
-            except Exception:
+            except Exception as e:
+                if '409' in str(e):
+                    try:
+                        del_wh_url = f"https://api.telegram.org/bot{token}/deleteWebhook?drop_pending_updates=false"
+                        del_wh_req = urllib.request.Request(del_wh_url, headers={'User-Agent': 'ImvoiBotPoller/1.0'})
+                        with urllib.request.urlopen(del_wh_req, timeout=10) as _:
+                            pass
+                    except Exception:
+                        pass
                 pass
-            time.sleep(3)
+            time.sleep(2)
 
     t = threading.Thread(target=_poll_thread, daemon=True)
     t.start()

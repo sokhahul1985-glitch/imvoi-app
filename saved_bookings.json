@@ -993,7 +993,7 @@
     ],
     "status": "active",
     "invoiceNo": null,
-    "pickupLoc": "ตึกพักโซน2  จำนวน  2 + เวลา",
+    "pickupLoc": "ប៉ោយប៉ែត",
     "dropoffLoc": "ភ្នំពេញ",
     "rawMessage": "[សារពី Sokha GMP88 (Forwarded from HR.6 UCOM JALOY🦄) - 22/09/2026 08:58]\nจองรถ 1-3 ที่นั่ง  1 คัน\nPoi Pet →    Techo\n\n\nวันที่ 23/9/2026\n\n📍รับที่ตึกพักโซน2  จำนวน  2  คน\n\n⏰รถมารับเวลา 00.00 น. (เที่ยงคืน)",
     "vipService": "",
@@ -1426,7 +1426,7 @@
     ],
     "status": "active",
     "invoiceNo": null,
-    "pickupLoc": "ตึก",
+    "pickupLoc": "ប៉ោយប៉ែត",
     "dropoffLoc": "តេជោ",
     "rawMessage": "[សារពី Sokha GMP88 (Forwarded from HR356) - 22/09/2026 05:56]\nคอนเฟิร์มรถรับพนักงาน *คุณโซคา\n*สนามบินเตโช ขาออก\nรถตู้ 7-12 ที่นั่ง =  150 USD\n\nรวม 150 USD\n\nพนักงานบินออกวันที่ 23/09/2026\nTecho - Bangkok\nรายชื่อพนักงาน \n1.บิ๊ว\n2.แอม\n3.เสือ2\n4.นัท\n5.เฟิร์น3\n6.ฮาย\n7.กันต์1\n8.นนท์2\n9.เอ๋\n\nรถมารับที่ตึก 07.00 น.\n\nhttps://maps.app.goo.gl/HjzYfvBoZuXRiJpR6",
     "vipService": "",
@@ -1513,6 +1513,85 @@
     "customerName": "WINS Visa Cambodia",
     "customerPhone": "",
     "driverTelegram": "CK 2849",
+    "customerTelegram": ""
+  },
+  {
+    "id": "BK-1335",
+    "cars": [
+      "ស្តារេច"
+    ],
+    "date": "2026-09-23",
+    "time": "08:00",
+    "notes": "ចំនួនភ្ញៀវ: 6 នាក់",
+    "images": [
+      {
+        "id": "IMG-TG-678574181",
+        "url": "/telegram_images/tg_photo_678574181_AgACAgUAAx.jpg",
+        "date": "22/09/2026 14:21",
+        "name": "telegram_photo_678574181.jpg",
+        "file_id": "AgACAgUAAxkBAAISNWqyjvj6KbuBMVy9V0Lkii6Q3RSnAAKsEmsbL0uRVZZeHoQYCMTIAQADAgADeAADPQQ",
+        "category": "រូបឡាន"
+      },
+      {
+        "id": "IMG-TG-678574182",
+        "url": "/telegram_images/tg_photo_678574182_AgACAgUAAx.jpg",
+        "date": "22/09/2026 14:21",
+        "name": "telegram_photo_678574182.jpg",
+        "file_id": "AgACAgUAAxkBAAISNmqyjviUJ6RygNnUWsi4UskveKrHAAKtEmsbL0uRVXJP5Xyl5v42AQADAgADeAADPQQ",
+        "category": "រូបឡាន"
+      },
+      {
+        "id": "IMG-TG-678574183",
+        "url": "/telegram_images/tg_photo_678574183_AgACAgUAAx.jpg",
+        "date": "22/09/2026 14:21",
+        "name": "telegram_photo_678574183.jpg",
+        "file_id": "AgACAgUAAxkBAAISN2qyjvgNuSaw_ygU5nOp_jmn2pxdAAKzEmsbL0uRVR9cAjOc-Ns8AQADAgADeAADPQQ",
+        "category": "រូបឡាន"
+      },
+      {
+        "id": "IMG-TG-678574184",
+        "url": "/telegram_images/tg_photo_678574184_AgACAgUAAx.jpg",
+        "date": "22/09/2026 14:21",
+        "name": "telegram_photo_678574184.jpg",
+        "file_id": "AgACAgUAAxkBAAISOGqyjvgtbOEYVT76IZgPW25xGL2QAAKyEmsbL0uRVQbUGGqoBvgRAQADAgADeAADPQQ",
+        "category": "រូបឡាន"
+      },
+      {
+        "id": "IMG-TG-678574185",
+        "url": "/telegram_images/tg_photo_678574185_AgACAgUAAx.jpg",
+        "date": "22/09/2026 14:21",
+        "name": "telegram_photo_678574185.jpg",
+        "file_id": "AgACAgUAAxkBAAISOWqyjvgVYZlgkelPAoeOHIhBvn_2AAKxEmsbL0uRVf9F_gak7ZDZAQADAgADeAADPQQ",
+        "category": "រូបឡាន"
+      },
+      {
+        "id": "IMG-TG-678574186",
+        "url": "/telegram_images/tg_photo_678574186_AgACAgUAAx.jpg",
+        "date": "22/09/2026 14:21",
+        "name": "telegram_photo_678574186.jpg",
+        "file_id": "AgACAgUAAxkBAAISOmqyjvj1GzQ8m3m5xGcj7zuSQ_g5AAKwEmsbL0uRVbhS3mZ73fLSAQADAgADeAADPQQ",
+        "category": "រូបឡាន"
+      },
+      {
+        "id": "IMG-TG-678574187",
+        "url": "/telegram_images/tg_photo_678574187_AgACAgUAAx.jpg",
+        "date": "22/09/2026 14:21",
+        "name": "telegram_photo_678574187.jpg",
+        "file_id": "AgACAgUAAxkBAAISO2qyjvg6kGmFE87LwMktyNj50GpUAAKvEmsbL0uRVWEofcVUQX_2AQADAgADeAADPQQ",
+        "category": "រូបឡាន"
+      }
+    ],
+    "status": "active",
+    "invoiceNo": null,
+    "pickupLoc": "តេជោ",
+    "dropoffLoc": "ប៉ោយប៉ែត",
+    "rawMessage": "จองรถ Starex 1 คัน\nTecho  →  Poi Pet\n\nVIP 6 คน\n\nผู้โดยสาร จำนวน 6 คน  \nวันที่  23/9/2026",
+    "vipService": "VIP",
+    "borderClear": "ក្លៀដាន",
+    "invoiceDone": false,
+    "customerName": "จองรถ คุณ Sokha GMP",
+    "customerPhone": "",
+    "driverTelegram": "J Heng",
     "customerTelegram": ""
   },
   {

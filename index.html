@@ -16856,7 +16856,7 @@ document.addEventListener('paste', function(e) {
         const sendBtn = document.getElementById('btnDispatchSendTelegram');
         const origHtml = sendBtn ? sendBtn.innerHTML : '';
         if (sendBtn) {
-            sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងបើកទៅកាន់ Telegram...';
+            sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane fa-spin"></i> កំពុងបញ្ជូនទៅ Telegram...';
             sendBtn.disabled = true;
         }
 
@@ -16956,7 +16956,7 @@ document.addEventListener('paste', function(e) {
 
         // 4. User feedback
         if (botSent) {
-            alert(`✅ ${sentMessage || 'បានបញ្ជូនទិន្នន័យ និងរូបភាពចូលទៅក្នុងគ្រុប Telegram រួចរាល់!'} 🎉\n\nលោកអ្នកអាចពិនិត្យមើលក្នុងគ្រុប Telegram "កក់ឡាន" របស់អ្នកបានភ្លាមៗ!`);
+            alert(`✅ ${sentMessage || 'បានបញ្ជូនទិន្នន័យ និងរូបភាពចូលទៅក្នុង Telegram រួចរាល់!'} 🎉\n\nលោកអ្នកអាចពិនិត្យមើលក្នុងគ្រុប Telegram (${driverTg}) របស់អ្នកបានភ្លាមៗ!`);
         } else {
             showToast('📋 បានចម្លងទិន្នន័យរួចរាល់! កំពុងបើកទៅកាន់ Telegram Group របស់អ្នក... សូមចុច Ctrl+V ដើម្បី Paste ផ្ញើក្នុង Group!');
         }

@@ -20,6 +20,7 @@ import uuid
 import threading
 import time
 import traceback
+import gzip
 from PIL import Image
 
 try:
@@ -1543,8 +1544,26 @@ try {{
                     html_text = preload_js + html_text
 
                 content = html_text.encode('utf-8')
+                accept_encoding = self.headers.get('Accept-Encoding', '') if hasattr(self, 'headers') and self.headers else ''
+                if 'gzip' in accept_encoding.lower() and len(content) > 1024:
+                    try:
+                        compressed = gzip.compress(content, compresslevel=6)
+                        self.send_response(200)
+                        self.send_header('Content-Type', 'text/html; charset=utf-8')
+                        self.send_header('Content-Encoding', 'gzip')
+                        self.send_header('Content-Length', str(len(compressed)))
+                        self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                        self.send_header('Pragma', 'no-cache')
+                        self.send_header('Expires', '0')
+                        self.end_headers()
+                        self.wfile.write(compressed)
+                        return
+                    except Exception:
+                        pass
+
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/html; charset=utf-8')
+                self.send_header('Content-Length', str(len(content)))
                 self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
                 self.send_header('Pragma', 'no-cache')
                 self.send_header('Expires', '0')
@@ -2907,7 +2926,8 @@ try {{
             if not res_text.get('ok'):
                 print(f"[send_driver_dispatch] HTML send failed: {res_text.get('description')}, fallback to plain text")
                 res_text = send_telegram_text_bot(bot_token, chat_id, text)
-            # Collect and prepare all valid photo paths for grouped album sending
+
+            # Collect and prepare all valid photo paths
             valid_photo_paths = []
             for img_rel in image_urls:
                 if not img_rel or not isinstance(img_rel, str):
@@ -2930,34 +2950,64 @@ try {{
                     except Exception as e:
                         print(f"Error decoding base64 image card: {e}")
                     continue
+
                 clean_rel = img_rel.replace('/', os.sep).lstrip(os.sep)
-                local_path = os.path.join(BASE_DIR, clean_rel)
-                if os.path.exists(local_path):
-                    valid_photo_paths.append(local_path)
+                candidates = [
+                    os.path.join(BASE_DIR, clean_rel),
+                    os.path.join(DATA_DIR, clean_rel) if 'DATA_DIR' in globals() else '',
+                    os.path.join(BASE_DIR, 'UPLOAD_TO_GITHUB', clean_rel),
+                    os.path.join(BASE_DIR, 'READY_FOR_GITHUB', clean_rel),
+                ]
+                found_path = None
+                for c in candidates:
+                    if c and os.path.exists(c) and os.path.isfile(c) and os.path.getsize(c) > 0:
+                        found_path = c
+                        break
 
-            photos_sent = 0
-            if len(valid_photo_paths) == 1:
-                res_p = send_telegram_photo_bot(bot_token, chat_id, valid_photo_paths[0], caption="📍 ឯកសារ & រូបភាពទីតាំង")
-                if res_p.get('ok'):
-                    photos_sent = 1
-            elif len(valid_photo_paths) > 1:
-                # Group images into albums (max 10 photos per sendMediaGroup)
-                for i in range(0, len(valid_photo_paths), 10):
-                    chunk = valid_photo_paths[i:i+10]
-                    res_mg = send_telegram_media_group_bot(bot_token, chat_id, chunk, caption=f"📍 ឯកសារ & រូបភាពទីតាំង ({len(chunk)} សន្លឹក)")
-                    if res_mg.get('ok'):
-                        photos_sent += len(chunk)
-                    else:
-                        for p in chunk:
-                            if send_telegram_photo_bot(bot_token, chat_id, p).get('ok'):
-                                photos_sent += 1
+                # If missing on disk, try auto-downloading from Render
+                if not found_path and img_rel.startswith('/telegram_images/'):
+                    try:
+                        remote_url = f"https://imvoi-app-1.onrender.com/{img_rel.lstrip('/')}"
+                        req_dl = urllib.request.Request(remote_url, headers={'User-Agent': 'Mozilla/5.0'})
+                        with urllib.request.urlopen(req_dl, timeout=8) as resp_dl:
+                            dest_path = os.path.join(BASE_DIR, clean_rel)
+                            os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+                            with open(dest_path, 'wb') as f_out:
+                                f_out.write(resp_dl.read())
+                            if os.path.exists(dest_path) and os.path.getsize(dest_path) > 0:
+                                found_path = dest_path
+                    except Exception:
+                        pass
 
-            if res_text.get('ok') or photos_sent > 0:
+                if found_path:
+                    valid_photo_paths.append(found_path)
+
+            # Send photos asynchronously in a background thread so UI responds in 1 second!
+            def _async_send_photos_worker(t_token, t_chat_id, paths):
+                try:
+                    if len(paths) == 1:
+                        send_telegram_photo_bot(t_token, t_chat_id, paths[0], caption="📍 ឯកសារ & រូបភាពទីតាំង")
+                    elif len(paths) > 1:
+                        for i in range(0, len(paths), 10):
+                            chunk = paths[i:i+10]
+                            res_mg = send_telegram_media_group_bot(t_token, t_chat_id, chunk, caption=f"📍 ឯកសារ & រូបភាពទីតាំង ({len(chunk)} សន្លឹក)")
+                            if not res_mg.get('ok'):
+                                for p in chunk:
+                                    send_telegram_photo_bot(t_token, t_chat_id, p)
+                except Exception as ex:
+                    print(f"[send_driver_dispatch] Background photo upload note: {ex}")
+
+            if valid_photo_paths:
+                th = threading.Thread(target=_async_send_photos_worker, args=(bot_token, chat_id, valid_photo_paths), daemon=True)
+                th.start()
+
+            if res_text.get('ok') or len(valid_photo_paths) > 0:
                 target_display = known_group_title or chat_id
+                num_photos = len(valid_photo_paths)
                 self.send_json_response({
                     'success': True,
                     'bot_sent': True,
-                    'message': f'បានបញ្ជូនទិន្នន័យ និងរូបភាព ({photos_sent} សន្លឹក) ចូលទៅក្នុងគ្រុប "{target_display}" រួចរាល់! 🚀',
+                    'message': f'បានបញ្ជូនទិន្នន័យ និងរូបភាព ({num_photos} សន្លឹក) ចូលទៅក្នុងគ្រុប "{target_display}" រួចរាល់! 🚀',
                     'chat_id': chat_id
                 })
             else:
@@ -3383,10 +3433,25 @@ try {{
 
 
     def send_json_response(self, data, status=200):
+        raw_bytes = json.dumps(data, ensure_ascii=False).encode('utf-8')
+        accept_encoding = self.headers.get('Accept-Encoding', '') if hasattr(self, 'headers') and self.headers else ''
+        if 'gzip' in accept_encoding.lower() and len(raw_bytes) > 1024:
+            try:
+                compressed = gzip.compress(raw_bytes, compresslevel=6)
+                self.send_response(status)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.send_header('Content-Encoding', 'gzip')
+                self.send_header('Content-Length', str(len(compressed)))
+                self.end_headers()
+                self.wfile.write(compressed)
+                return
+            except Exception:
+                pass
         self.send_response(status)
         self.send_header('Content-Type', 'application/json; charset=utf-8')
+        self.send_header('Content-Length', str(len(raw_bytes)))
         self.end_headers()
-        self.wfile.write(json.dumps(data, ensure_ascii=False).encode('utf-8'))
+        self.wfile.write(raw_bytes)
 
 def download_telegram_photo_file(token, file_id, update_id):
     """
@@ -3559,14 +3624,18 @@ def start_telegram_bot_message_poller():
                                 send_telegram_text_bot(token, c_id_str, greet_msg)
                                 continue
 
-                            # 🛑 Chat Filter: Allow designated room AND all groups/supergroups/channels
+                            # 🛑 Strict Chat Filter: Allow ONLY the designated group "កក់ឡាន" (-1004497657405)
                             cfg_tg = get_telegram_config()
-                            allowed_chat_id = str(cfg_tg.get("chat_id", "")).strip()
                             allowed_chat_ids = [str(x).strip() for x in cfg_tg.get("allowed_chat_ids", []) if str(x).strip()]
-                            if allowed_chat_id and allowed_chat_id not in allowed_chat_ids:
-                                allowed_chat_ids.append(allowed_chat_id)
+                            if cfg_tg.get("chat_id"):
+                                allowed_chat_ids.append(str(cfg_tg.get("chat_id")).strip())
+                            if not allowed_chat_ids:
+                                allowed_chat_ids = ["-1004497657405"]
 
-                            if c_type not in ["group", "supergroup", "channel"] and allowed_chat_ids and c_id_str not in allowed_chat_ids:
+                            c_title = str(chat_obj.get('title', '')).strip()
+                            is_allowed = (c_id_str in allowed_chat_ids) or ('កក់ឡាន' in c_title)
+                            if not is_allowed:
+                                # Silently ignore any other groups (drivers) and private chats
                                 continue
 
                             txt = (m.get('text') or m.get('caption') or '').strip()
