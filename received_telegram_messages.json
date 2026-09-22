@@ -1,1 +1,31 @@
-[]
+[
+  {
+    "id": 678574195,
+    "chat_id": "8985821312",
+    "text": "Forwarded from 💥HR369💥office View 💥\nItinerary\nวันที่ 23/09/2026\n\nจอง Alphard - 1 คัน\nVIP ขาเข้า - 5 คน\nเคลียร์ด่าน 5 คน\nเวลา 12.45 น.\nสนามบินเดโช เข้ามา ปป",
+    "sender": "HR369 (Forwarded from 💥HR369💥office View 💥)",
+    "date": "22/09/2026 21:58",
+    "timestamp": 1790089080,
+    "media_group_id": null,
+    "images": []
+  },
+  {
+    "id": 678574188,
+    "chat_id": "-1004497657405",
+    "text": "📷 រូបភាព (រូបឡាន) ពី Vanny Chan (កក់ឡាន)",
+    "sender": "Vanny Chan (កក់ឡាន)",
+    "date": "22/09/2026 21:42",
+    "timestamp": 1790088147,
+    "media_group_id": null,
+    "images": [
+      {
+        "id": "IMG-TG-678574188",
+        "name": "telegram_photo_678574188.jpg",
+        "file_id": "AgACAgUAAyEFAAMBDBTOPQACBapqspPRSEjrb_unnYpsKRWl2YL15wACfxFrGzwxmVXBjgHTiMSY5AEAAwIAA3kAAz0E",
+        "category": "រូបឡាន",
+        "url": "/telegram_images/tg_photo_678574188_AgACAgUAAy.jpg",
+        "date": "22/09/2026 21:42"
+      }
+    ]
+  }
+]

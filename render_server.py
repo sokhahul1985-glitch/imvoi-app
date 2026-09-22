@@ -1092,7 +1092,22 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             if not os.path.exists(tg_file):
                 tg_file = os.path.join(BASE_DIR, 'received_telegram_messages.json')
             msgs = load_json(tg_file, [])
-            clustered_msgs = cluster_telegram_messages_by_time(msgs)
+            
+            # Strict Filter: Reject driver groups, allow bot room and booking group
+            DISALLOWED_TITLES = ["j heng", "ck 2849", "phinin", "nab", "smey ap"]
+            DISALLOWED_IDS = ["-5381280318", "-1004424429378", "-1004480815325", "-1004338568933", "-1004336964750"]
+            clean_msgs = []
+            for m in msgs:
+                cid = str(m.get("chat_id", "")).strip()
+                sdr = str(m.get("sender", "")).lower()
+                if cid in DISALLOWED_IDS or any(dt in sdr for dt in DISALLOWED_TITLES):
+                    continue
+                # If it's a group (ID starts with -), it must be -1004497657405 or mention កក់ឡាន
+                if cid.startswith("-") and cid != "-1004497657405" and "កក់ឡាន" not in sdr and "ការកក់ឡាន" not in sdr:
+                    continue
+                clean_msgs.append(m)
+
+            clustered_msgs = cluster_telegram_messages_by_time(clean_msgs)
             self.send_json_response({'success': True, 'messages': clustered_msgs})
             return
 
@@ -1310,7 +1325,21 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             if not os.path.exists(msg_file):
                 msg_file = os.path.join(BASE_DIR, 'received_telegram_messages.json')
             msgs = load_json(msg_file, [])
-            clustered_msgs = cluster_telegram_messages_by_time(msgs)
+            
+            # Strict Filter: Reject driver groups, allow bot room and booking group
+            DISALLOWED_TITLES = ["j heng", "ck 2849", "phinin", "nab", "smey ap"]
+            DISALLOWED_IDS = ["-5381280318", "-1004424429378", "-1004480815325", "-1004338568933", "-1004336964750"]
+            clean_msgs = []
+            for m in msgs:
+                cid = str(m.get("chat_id", "")).strip()
+                sdr = str(m.get("sender", "")).lower()
+                if cid in DISALLOWED_IDS or any(dt in sdr for dt in DISALLOWED_TITLES):
+                    continue
+                if cid.startswith("-") and cid != "-1004497657405" and "កក់ឡាន" not in sdr and "ការកក់ឡាន" not in sdr:
+                    continue
+                clean_msgs.append(m)
+
+            clustered_msgs = cluster_telegram_messages_by_time(clean_msgs)
             self.send_json_response({'success': True, 'messages': clustered_msgs})
             return
 
@@ -3563,18 +3592,18 @@ def start_telegram_bot_message_poller():
                                 send_telegram_text_bot(token, c_id_str, greet_msg)
                                 continue
 
-                            # 🛑 Strict Chat Filter: Allow ONLY the designated group "កក់ឡាន" (-1004497657405)
-                            cfg_tg = get_telegram_config()
-                            allowed_chat_ids = [str(x).strip() for x in cfg_tg.get("allowed_chat_ids", []) if str(x).strip()]
-                            if cfg_tg.get("chat_id"):
-                                allowed_chat_ids.append(str(cfg_tg.get("chat_id")).strip())
-                            if not allowed_chat_ids:
-                                allowed_chat_ids = ["-1004497657405"]
+                            # 🛑 Strict Chat Filter: Allow ONLY bot room "ការកក់ឡាន" and booking group "កក់ឡាន" (-1004497657405)
+                            DISALLOWED_DRIVER_CHAT_IDS = ["-5381280318", "-1004424429378", "-1004480815325", "-1004338568933", "-1004336964750"]
+                            DISALLOWED_TITLES = ["j heng", "ck 2849", "phinin", "nab", "smey ap"]
 
                             c_title = str(chat_obj.get('title', '')).strip()
-                            is_allowed = (c_id_str in allowed_chat_ids) or ('កក់ឡាន' in c_title)
-                            if not is_allowed:
-                                # Silently ignore any other groups (drivers) and private chats
+                            if c_id_str in DISALLOWED_DRIVER_CHAT_IDS or any(dt in c_title.lower() for dt in DISALLOWED_TITLES):
+                                continue
+
+                            is_private_bot_chat = (c_type == 'private') or (not c_id_str.startswith('-'))
+                            is_booking_group = (c_id_str == '-1004497657405') or ('កក់ឡាន' in c_title) or ('ការកក់ឡាន' in c_title)
+
+                            if not (is_private_bot_chat or is_booking_group):
                                 continue
 
                             txt = (m.get('text') or m.get('caption') or '').strip()

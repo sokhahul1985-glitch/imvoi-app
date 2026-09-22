@@ -538,17 +538,19 @@ class TelegramBotListener:
             chat_id_str = str(chat.get("id", ""))
             group_title = chat.get("title") or ""
 
-            # 🛑 Strict Filter: Accept incoming messages ONLY from the designated group "កក់ឡាន" (-1004497657405)
-            cfg = get_telegram_config()
-            allowed_chat_ids = [str(x).strip() for x in cfg.get("allowed_chat_ids", []) if str(x).strip()]
-            if cfg.get("chat_id"):
-                allowed_chat_ids.append(str(cfg.get("chat_id")).strip())
-            if not allowed_chat_ids:
-                allowed_chat_ids = ["-1004497657405"]
+            # 🛑 Strict Filter: Allow ONLY the bot room "ការកក់ឡាន" (private chat) and booking group "កក់ឡាន" (-1004497657405)
+            # NEVER accept messages from driver groups (J Heng, CK 2849, Phinin, Nab, Smey Ap...)
+            DISALLOWED_DRIVER_CHAT_IDS = ["-5381280318", "-1004424429378", "-1004480815325", "-1004338568933", "-1004336964750"]
+            DISALLOWED_TITLES = ["j heng", "ck 2849", "phinin", "nab", "smey ap"]
+            
+            if chat_id_str in DISALLOWED_DRIVER_CHAT_IDS or any(dt in group_title.lower() for dt in DISALLOWED_TITLES):
+                return
 
-            is_allowed = (chat_id_str in allowed_chat_ids) or ('កក់ឡាន' in group_title)
-            if not is_allowed:
-                # Silently ignore all driver groups and other chats
+            is_private_bot_chat = (chat_type == "private") or (not chat_id_str.startswith("-"))
+            is_booking_group = (chat_id_str == "-1004497657405") or ("កក់ឡាន" in group_title) or ("ការកក់ឡាន" in group_title)
+
+            if not (is_private_bot_chat or is_booking_group):
+                # Silently ignore other groups / channels
                 return
 
             text = (msg.get("text") or msg.get("caption") or "").strip()
@@ -849,20 +851,21 @@ class TelegramBotListener:
                     if not msg:
                         continue
 
-                    # 🛑 Strict Chat filter: Allow ONLY the designated group "កក់ឡាន" (-1004497657405)
+                    # 🛑 Strict Chat filter: Allow ONLY bot room "ការកក់ឡាន" and booking group "កក់ឡាន" (-1004497657405)
                     c_id_str = str((msg.get("chat") or {}).get("id", "")).strip()
                     c_type = str((msg.get("chat") or {}).get("type", "")).lower()
                     c_title = str((msg.get("chat") or {}).get("title", "")).strip()
 
-                    allowed_chat_ids = [str(x).strip() for x in cfg.get("allowed_chat_ids", []) if str(x).strip()]
-                    if cfg.get("chat_id"):
-                        allowed_chat_ids.append(str(cfg.get("chat_id")).strip())
-                    if not allowed_chat_ids:
-                        allowed_chat_ids = ["-1004497657405"]
+                    DISALLOWED_DRIVER_CHAT_IDS = ["-5381280318", "-1004424429378", "-1004480815325", "-1004338568933", "-1004336964750"]
+                    DISALLOWED_TITLES = ["j heng", "ck 2849", "phinin", "nab", "smey ap"]
 
-                    is_allowed = (c_id_str in allowed_chat_ids) or ('កក់ឡាន' in c_title)
-                    if not is_allowed:
-                        # Silently ignore all driver groups and other chats
+                    if c_id_str in DISALLOWED_DRIVER_CHAT_IDS or any(dt in c_title.lower() for dt in DISALLOWED_TITLES):
+                        continue
+
+                    is_private_bot_chat = (c_type == "private") or (not c_id_str.startswith("-"))
+                    is_booking_group = (c_id_str == "-1004497657405") or ("កក់ឡាន" in c_title) or ("ការកក់ឡាន" in c_title)
+
+                    if not (is_private_bot_chat or is_booking_group):
                         continue
 
                     # Record incoming text or caption and photo for AutoRent integration

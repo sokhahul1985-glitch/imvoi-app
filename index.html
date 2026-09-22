@@ -18123,8 +18123,24 @@ document.addEventListener('paste', function(e) {
         return 'ប៉ាស្ព័រ';
     }
 
+    function filterTelegramMessagesForBookingGroup(msgs) {
+        if (!Array.isArray(msgs)) return [];
+        const DISALLOWED_DRIVERS = ['j heng', 'ck 2849', 'phinin', 'nab', 'smey ap'];
+        const DISALLOWED_IDS = ['-5381280318', '-1004424429378', '-1004480815325', '-1004338568933', '-1004336964750'];
+        return msgs.filter(m => {
+            if (!m) return false;
+            const cid = String(m.chat_id || '').trim();
+            const sdr = (m.sender || '').toLowerCase();
+            const txt = (m.text || '').toLowerCase();
+            if (DISALLOWED_IDS.includes(cid) || DISALLOWED_DRIVERS.some(d => sdr.includes(d))) return false;
+            if (cid.startsWith('-') && cid !== '-1004497657405' && !sdr.includes('កក់ឡាន') && !txt.includes('កក់ឡាន')) return false;
+            return true;
+        });
+    }
+
     function clusterTelegramMessagesByTime(msgs, windowSeconds = 240) {
         if (!msgs || !Array.isArray(msgs)) return [];
+        msgs = filterTelegramMessagesForBookingGroup(msgs);
         let clustered = [];
         msgs.forEach(m => {
             const sender = (m.sender || 'Telegram User').trim();
@@ -18192,10 +18208,12 @@ document.addEventListener('paste', function(e) {
                 const sResp = await fetch('/api/telegram_messages');
                 const sData = await sResp.json();
                 if (sData && sData.success && Array.isArray(sData.messages)) {
-                    sData.messages.forEach(sm => {
+                    const cleanMsgs = filterTelegramMessagesForBookingGroup(sData.messages);
+                    cleanMsgs.forEach(sm => {
                         if ((sm.text || (sm.images && sm.images.length > 0)) && !combined.some(c => String(c.id) === String(sm.id))) {
                             combined.push({
                                 id: sm.id || Date.now(),
+                                chat_id: sm.chat_id || '-1004497657405',
                                 text: sm.text || '',
                                 sender: sm.sender || 'Telegram User',
                                 date: sm.date || 'ថ្មីៗ',
@@ -18270,7 +18288,8 @@ document.addEventListener('paste', function(e) {
             if (sResp.ok) {
                 const sData = await sResp.json();
                 if (sData && sData.success && Array.isArray(sData.messages) && sData.messages.length > 0) {
-                    tgRecentMessages = clusterTelegramMessagesByTime(sData.messages);
+                    const cleanMsgs = filterTelegramMessagesForBookingGroup(sData.messages);
+                    tgRecentMessages = clusterTelegramMessagesByTime(cleanMsgs);
                     updateTgBotRecentDropdown();
                 }
             }
@@ -18844,7 +18863,7 @@ document.addEventListener('paste', function(e) {
             if (sResp.ok) {
                 const sData = await sResp.json();
                 if (sData && sData.success && Array.isArray(sData.messages) && sData.messages.length > 0) {
-                    tgRecentMessages = sData.messages;
+                    tgRecentMessages = filterTelegramMessagesForBookingGroup(sData.messages);
                     updateTgBotRecentDropdown();
                 }
             }
@@ -19074,7 +19093,8 @@ document.addEventListener('paste', function(e) {
                 if (sResp.ok) {
                     const sData = await sResp.json();
                     if (sData && sData.success && Array.isArray(sData.messages) && sData.messages.length > 0) {
-                        const newMsgs = sData.messages;
+                        const newMsgs = filterTelegramMessagesForBookingGroup(sData.messages);
+                        if (newMsgs.length === 0) return;
                         const newest = newMsgs[0];
                         const curId = newest ? newest.id : null;
                         const curImgCount = (newest && newest.images && Array.isArray(newest.images)) ? newest.images.length : 0;
