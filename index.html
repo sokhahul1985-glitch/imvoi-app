@@ -4505,6 +4505,10 @@ input[type="date"] {
                                     <i class="fa-brands fa-telegram text-info"></i> Telegram Inbox
                                     <span id="topBarTgCountBadge" class="badge" style="display: none; background: #0284c7; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 800; margin-left: 4px;">0</span>
                                 </button>
+                                <button type="button" id="btnDashRecentBookings" class="btn-ar" onclick="toggleDashRecentBookings()" style="padding: 5px 11px; font-size: 11.5px; font-weight: 800; background: #fdf4ff; color: #a21caf; border: 1.5px solid #f0abfc; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; transition: all 0.2s;" title="បង្ហាញការកក់ដែលទើបតែបញ្ចូល ឬកែប្រែថ្មីៗបំផុត (Recently Created / Updated)">
+                                    <i class="fa-solid fa-clock-rotate-left"></i> <span>ទើបបញ្ចូលថ្មីៗ</span>
+                                    <span id="dashRecentCountBadge" style="background: #a21caf; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 800;">0</span>
+                                </button>
                             </div>
 
                             <!-- Calendar Date Picker & Daily Count Widget (ប្រតិទិនមើលចំនួនតាមថ្ងៃនីមួយៗ) -->
@@ -4521,6 +4525,26 @@ input[type="date"] {
                                 </button>
                                 <span id="dashScheduleDateCountBadge" style="background: #0284c7; color: #ffffff; font-weight: 900; font-size: 11.5px; padding: 2px 8px; border-radius: 10px; white-space: nowrap; margin-left: 2px;" title="ចំនួនជើងឡានសរុបក្នុងថ្ងៃនេះ">0 ជើង</span>
                                 <button type="button" id="dashScheduleDateResetBtn" onclick="resetDashScheduleDateFilter()" style="display: none; background: #fee2e2; color: #dc2626; border: 1.2px solid #fca5a5; border-radius: 6px; padding: 3px 8px; font-size: 11.5px; font-weight: 800; cursor: pointer; line-height: 1; margin-left: 4px; align-items: center; gap: 4px; white-space: nowrap;" title="សម្អាតការស្វែងរកតាមថ្ងៃ (បង្ហាញទាំងអស់)">
+                                    <i class="fa-solid fa-xmark"></i> <span>សម្អាត</span>
+                                </button>
+                            </div>
+
+                            <!-- Date Range Picker Widget (ស្វែងរកចាប់ពីថ្ងៃណា ដល់ថ្ងៃណា) -->
+                            <div id="dashDateRangeWrapper" style="display: inline-flex; align-items: center; gap: 5px; background: #ffffff; border: 1.5px solid #0284c7; border-radius: 8px; padding: 2px 8px; box-shadow: 0 1px 3px rgba(2,132,199,0.12); flex-shrink: 0; transition: all 0.2s ease;">
+                                <div style="display: inline-flex; align-items: center; gap: 3px; cursor: pointer;" onclick="const s=document.getElementById('dashDateRangeStart'); if(s && s.showPicker) s.showPicker(); else if(s) s.focus();">
+                                    <span style="font-size: 11.5px; font-weight: 800; color: #0284c7; white-space: nowrap;"><i class="fa-regular fa-calendar-days"></i> ពី:</span>
+                                    <input type="date" id="dashDateRangeStart" onchange="onDashDateRangeChanged()" style="border: 1px solid #cbd5e1; border-radius: 5px; padding: 2px 4px; font-size: 12px; font-weight: 800; color: #0f172a; width: 115px; color-scheme: light; cursor: pointer; height: 26px; outline: none;" title="កាលបរិច្ឆេទចាប់ផ្តើម (From Date)">
+                                </div>
+                                <span style="font-size: 11px; font-weight: 900; color: #64748b;">➔</span>
+                                <div style="display: inline-flex; align-items: center; gap: 3px; cursor: pointer;" onclick="const e=document.getElementById('dashDateRangeEnd'); if(e && e.showPicker) e.showPicker(); else if(e) e.focus();">
+                                    <span style="font-size: 11.5px; font-weight: 800; color: #0284c7; white-space: nowrap;">ដល់:</span>
+                                    <input type="date" id="dashDateRangeEnd" onchange="onDashDateRangeChanged()" style="border: 1px solid #cbd5e1; border-radius: 5px; padding: 2px 4px; font-size: 12px; font-weight: 800; color: #0f172a; width: 115px; color-scheme: light; cursor: pointer; height: 26px; outline: none;" title="កាលបរិច្ឆេទបញ្ចប់ (To Date)">
+                                </div>
+                                <button type="button" id="btnDashDateRangeSearch" class="btn-ar" onclick="applyDashDateRangeFilter()" style="padding: 2px 9px; font-size: 11.5px; height: 26px; line-height: 1; font-weight: 800; border-radius: 5px; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border: none; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; box-shadow: 0 1px 2px rgba(2,132,199,0.25);" title="ចុចស្វែងរកជើងឡានតាមចន្លោះកាលបរិច្ឆេទនេះ">
+                                    <i class="fa-solid fa-magnifying-glass"></i> <span>រក</span>
+                                </button>
+                                <span id="dashDateRangeCountBadge" style="display: none; background: #059669; color: #ffffff; font-weight: 900; font-size: 11px; padding: 2px 8px; border-radius: 10px; white-space: nowrap;" title="ចំនួនជើងឡានក្នុងចន្លោះកាលបរិច្ឆេទនេះ">0 ជើង</span>
+                                <button type="button" id="dashDateRangeResetBtn" onclick="resetDashDateRangeFilter()" style="display: none; background: #fee2e2; color: #dc2626; border: 1.2px solid #fca5a5; border-radius: 5px; padding: 2px 7px; font-size: 11px; font-weight: 800; cursor: pointer; height: 26px; line-height: 1; align-items: center; gap: 3px; white-space: nowrap;" title="សម្អាតការស្វែងរកចន្លោះថ្ងៃ (បង្ហាញទាំងអស់)">
                                     <i class="fa-solid fa-xmark"></i> <span>សម្អាត</span>
                                 </button>
                             </div>
@@ -4562,8 +4586,9 @@ input[type="date"] {
                                         <th style="padding: 7px 8px; width: 235px; font-size: 13.5px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅធ្វើដំណើរ (Route)</th>
                                         <th style="padding: 7px 6px; width: 155px; font-size: 13.5px;"><i class="fa-solid fa-car text-primary"></i> ប្រភេទរថយន្ត</th>
                                         <th style="text-align: center; padding: 7px 8px; width: 120px; font-size: 13.5px;"><i class="fa-solid fa-star text-warning"></i> VIP / ក្លៀដាន</th>
+                                        <th style="text-align: center; padding: 7px 6px; width: 95px; font-size: 13.5px;"><i class="fa-solid fa-pen-to-square text-primary"></i> កែប្រែ</th>
                                         <th style="text-align: center; padding: 7px 6px; width: 125px; font-size: 13.5px;"><i class="fa-solid fa-eye text-primary"></i> មើលលម្អិត</th>
-                                        <th style="text-align: center; padding: 7px 8px; min-width: 280px; font-size: 13.5px;"><i class="fa-solid fa-sliders text-primary"></i> សកម្មភាព</th>
+                                        <th style="text-align: center; padding: 7px 8px; min-width: 220px; font-size: 13.5px;"><i class="fa-solid fa-sliders text-primary"></i> សកម្មភាព</th>
                                     </tr>
                                 </thead>
                                 <tbody id="todayActionList"></tbody>
@@ -4593,6 +4618,7 @@ input[type="date"] {
                     <div class="filter-toolbar">
                         <div class="filter-tabs">
                             <button type="button" class="filter-tab active" data-filter="all" onclick="setBookingFilter('all')">ទាំងអស់ (<span id="countFilterAll">0</span>)</button>
+                            <button type="button" class="filter-tab" data-filter="recent" onclick="setBookingFilter('recent')" style="color: #a21caf; font-weight: 800;" title="បង្ហាញការកក់ដែលទើបតែបញ្ចូល ឬកែប្រែថ្មីៗបំផុត"><i class="fa-solid fa-clock-rotate-left"></i> ទើបបញ្ចូលថ្មីៗ (<span id="countFilterRecent">0</span>)</button>
                             <button type="button" class="filter-tab" data-filter="dueToday" onclick="setBookingFilter('dueToday')">🕒 ថ្ងៃនេះ (<span id="countFilterDueToday">0</span>)</button>
                             <button type="button" class="filter-tab" data-filter="tomorrow" onclick="setBookingFilter('tomorrow')">🌅 ថ្ងៃស្អែក (<span id="countFilterTomorrow">0</span>)</button>
                             <button type="button" class="filter-tab" data-filter="upcoming" onclick="setBookingFilter('upcoming')">កក់ទុកមុន (<span id="countFilterUpcoming">0</span>)</button>
@@ -4627,8 +4653,9 @@ input[type="date"] {
                                         <th style="padding: 7px 8px; width: 210px; font-size: 13.5px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅធ្វើដំណើរ (Route)</th>
                                         <th style="padding: 7px 6px; width: 155px; font-size: 13.5px;"><i class="fa-solid fa-car text-primary"></i> ប្រភេទរថយន្ត</th>
                                         <th style="text-align: center; padding: 7px 8px; width: 120px; font-size: 13.5px;"><i class="fa-solid fa-star text-warning"></i> VIP / ក្លៀដាន</th>
+                                        <th style="text-align: center; padding: 7px 6px; width: 95px; font-size: 13.5px;"><i class="fa-solid fa-pen-to-square text-primary"></i> កែប្រែ</th>
                                         <th style="text-align: center; padding: 7px 6px; width: 125px; font-size: 13.5px;"><i class="fa-solid fa-eye text-primary"></i> មើលលម្អិត</th>
-                                        <th style="text-align: center; padding: 7px 8px; min-width: 280px; font-size: 13.5px;"><i class="fa-solid fa-sliders text-primary"></i> សកម្មភាព</th>
+                                        <th style="text-align: center; padding: 7px 8px; min-width: 220px; font-size: 13.5px;"><i class="fa-solid fa-sliders text-primary"></i> សកម្មភាព</th>
                                     </tr>
                                 </thead>
                                 <tbody id="bookingsGrid"></tbody>
@@ -4995,7 +5022,6 @@ input[type="date"] {
                                                     <select id="bookingPickupLoc" class="form-control font-weight-bold" style="background:#ffffff; color:#475569; height: 38px; flex: 1; min-width: 0; padding: 4px 6px; font-size: 13.5px; font-weight: 800; border-radius: 6px;" onchange="updateBookingRouteStyles()">
                                                         <option value="">-- ជ្រើសរើស --</option>
                                                         <option value="ប៉ោយប៉ែត" style="background: #dcfce7; color: #15803d; font-weight: 800;">ប៉ោយប៉ែត</option>
-                                                        <option value="ភ្នំពេញ" style="background: #ede9fe; color: #6d28d9; font-weight: 800;">ភ្នំពេញ</option>
                                                         <option value="សៀមរាប" style="background: #e0f2fe; color: #0284c7; font-weight: 800;">សៀមរាប</option>
                                                         <option value="តេជោ" style="background: #ffedd5; color: #ea580c; font-weight: 800;">តេជោ</option>
                                                     </select>
@@ -5004,10 +5030,9 @@ input[type="date"] {
                                                     </button>
                                                     <select id="bookingDropoffLoc" class="form-control font-weight-bold" style="background:#ffffff; color:#475569; height: 38px; flex: 1; min-width: 0; padding: 4px 6px; font-size: 13.5px; font-weight: 800; border-radius: 6px;" onchange="updateBookingRouteStyles()">
                                                         <option value="">-- ជ្រើសរើស --</option>
-                                                        <option value="ភ្នំពេញ" style="background: #ede9fe; color: #6d28d9; font-weight: 800;">ភ្នំពេញ</option>
+                                                        <option value="តេជោ" style="background: #ffedd5; color: #ea580c; font-weight: 800;">តេជោ</option>
                                                         <option value="ប៉ោយប៉ែត" style="background: #dcfce7; color: #15803d; font-weight: 800;">ប៉ោយប៉ែត</option>
                                                         <option value="សៀមរាប" style="background: #e0f2fe; color: #0284c7; font-weight: 800;">សៀមរាប</option>
-                                                        <option value="តេជោ" style="background: #ffedd5; color: #ea580c; font-weight: 800;">តេជោ</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -5945,6 +5970,8 @@ input[type="date"] {
                         </div>
 
                         <input type="hidden" id="gmmAgencyCompany" value="">
+                        <input type="hidden" id="gmmActiveBookingId" value="">
+                        <input type="hidden" id="gmmIsNewInvoice" value="0">
 
                         <div style="display: flex; align-items: center; gap: 6px; background: #ffffff; border: 1.5px solid #0284c7; border-radius: 8px; padding: 3px 8px; flex-wrap: wrap; flex-shrink: 0;">
                             <div style="display: flex; align-items: center; gap: 4px;">
@@ -7912,6 +7939,10 @@ input[type="date"] {
                 modal.classList.add('active');
             }
 
+            const isNewInp = document.getElementById('gmmIsNewInvoice');
+            if (isNewInp) isNewInp.value = '1';
+            window.currentGmmIsNewInvoice = true;
+
             const titleElem = document.getElementById('gmmTitle');
             const subTitleElem = document.getElementById('gmmSubTitle');
             if (titleElem) titleElem.textContent = `📋 បង្កើតទិន្នន័យក្រុមថ្មី (${provisionalNo})`;
@@ -8973,6 +9004,9 @@ input[type="date"] {
         function openGroupMembersModal(rNoEnc, idx) {
             const rNo = decodeURIComponent(rNoEnc || '');
             currentGmmReceiptNo = rNo;
+            const isNewInp = document.getElementById('gmmIsNewInvoice');
+            if (isNewInp) isNewInp.value = '0';
+            window.currentGmmIsNewInvoice = false;
             const item = getItemByRef(rNoEnc, idx);
             currentGmmCachedItem = item;
 
@@ -10294,9 +10328,16 @@ input[type="date"] {
                 return;
             }
 
+            const activeBId = window.activeBookingForGroupInvoice || 
+                              document.getElementById('gmmActiveBookingId')?.value || 
+                              document.getElementById('groupMembersModal')?.getAttribute('data-active-booking-id') || null;
+
+            const isNewInvoice = document.getElementById('gmmIsNewInvoice')?.value === '1' || window.currentGmmIsNewInvoice === true;
+
             pendingGmmSavePayload = {
                 receipt_no: editedReceiptNo,
-                booking_id: window.activeBookingForGroupInvoice || null,
+                booking_id: activeBId,
+                is_new: isNewInvoice,
                 exchange_rate: exchangeRate,
                 members: members,
                 travel_date: travelDate,
@@ -10365,28 +10406,62 @@ input[type="date"] {
                 if (res && res.success) {
                     const catNameKh = chosenCategory === 'car' ? 'ផ្នែកឡាន (Car)' : (chosenCategory === 'passport' ? 'ផ្នែកប៉ាសស្ព័រ & ផ្សេងៗ (Passport)' : 'ផ្នែកវីសា (Visa)');
                     const savedNo = res.receipt_no || (pendingGmmSavePayload && pendingGmmSavePayload.receipt_no) || currentGmmReceiptNo;
+                    currentGmmReceiptNo = savedNo;
+                    const rNoInput = document.getElementById('gmmReceiptNo');
+                    if (rNoInput) rNoInput.value = savedNo;
+                    const isNewInp = document.getElementById('gmmIsNewInvoice');
+                    if (isNewInp) isNewInp.value = '0';
+                    window.currentGmmIsNewInvoice = false;
                     
-                    // Immediate Booking Auto-Link & Update
+                    // Immediate Booking Auto-Link & Update with robust fallback
                     try {
                         let bookings = getBookings();
                         let targetBooking = null;
 
-                        if (window.activeBookingForGroupInvoice) {
-                            targetBooking = bookings.find(x => String(x.id).trim() === String(window.activeBookingForGroupInvoice).trim());
+                        const bId = window.activeBookingForGroupInvoice || 
+                                    document.getElementById('gmmActiveBookingId')?.value || 
+                                    document.getElementById('groupMembersModal')?.getAttribute('data-active-booking-id') || 
+                                    (pendingGmmSavePayload && pendingGmmSavePayload.booking_id);
+
+                        if (bId) {
+                            targetBooking = bookings.find(x => String(x.id || '').trim().toLowerCase() === String(bId).trim().toLowerCase());
                         }
                         if (!targetBooking && savedNo) {
                             targetBooking = bookings.find(x => String(x.invoiceNo || '').trim().toLowerCase() === String(savedNo).trim().toLowerCase());
+                        }
+                        // Robust fallback: match by customer name and travel date
+                        if (!targetBooking && pendingGmmSavePayload) {
+                            const sName = (pendingGmmSavePayload.sender_name || '').trim().toLowerCase();
+                            const tDate = (pendingGmmSavePayload.travel_date || '').trim();
+                            if (sName) {
+                                targetBooking = bookings.find(x => {
+                                    const cName = (x.customerName || '').trim().toLowerCase();
+                                    const bDate = (x.date || '').trim();
+                                    const nameMatch = (cName && (cName === sName || cName.includes(sName) || sName.includes(cName)));
+                                    const dateMatch = !tDate || !bDate || bDate === tDate || tDate.includes(bDate) || bDate.includes(tDate);
+                                    return nameMatch && dateMatch && !x.invoiceNo;
+                                });
+                            }
                         }
 
                         if (targetBooking) {
                             targetBooking.invoiceDone = true;
                             if (savedNo) targetBooking.invoiceNo = savedNo;
                             setBookings(bookings);
+
+                            // Active save cooldown (30s) prevents background sync from reverting fresh invoice status
+                            window.syncCooldownUntil = Date.now() + 30000;
+
+                            // Sync single booking & full list to server immediately
                             fetch('/api/bookings', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ bookings: bookings })
+                                body: JSON.stringify({ 
+                                    booking: targetBooking,
+                                    bookings: bookings 
+                                })
                             }).catch(() => {});
+
                             if (typeof renderDashboard === 'function') renderDashboard();
                             if (typeof renderBookings === 'function') renderBookings(currentBookingFilter);
                         }
@@ -10417,7 +10492,12 @@ input[type="date"] {
             if (modal) {
                 modal.classList.remove('active');
                 modal.style.display = 'none';
+                modal.removeAttribute('data-active-booking-id');
+                modal.removeAttribute('data-active-booking-cust');
+                modal.removeAttribute('data-active-booking-date');
             }
+            const gmmActiveInp = document.getElementById('gmmActiveBookingId');
+            if (gmmActiveInp) gmmActiveInp.value = '';
             window.activeBookingForGroupInvoice = null;
             if (typeof populateGmmVerificationPanel === 'function') {
                 populateGmmVerificationPanel(null);
@@ -12103,22 +12183,34 @@ document.addEventListener('paste', function(e) {
         }
     }
 
+    function sanitizeBookingsLocations(arr) {
+        if (!Array.isArray(arr)) return arr;
+        arr.forEach(item => {
+            if (!item || typeof item !== 'object') return;
+            if (item.pickupLoc === 'ភ្នំពេញ') item.pickupLoc = 'តេជោ';
+            if (item.dropoffLoc === 'ភ្នំពេញ') item.dropoffLoc = 'តេជោ';
+        });
+        return arr;
+    }
+
     function getBookings() {
         if (_memoryBookingsCache && Array.isArray(_memoryBookingsCache) && _memoryBookingsCache.length > 0) {
-            return _memoryBookingsCache;
+            return sanitizeBookingsLocations(_memoryBookingsCache);
         }
         let list = loadData(STORAGE_KEY_BOOKINGS, null);
         if (Array.isArray(list) && list.length > 0) {
+            sanitizeBookingsLocations(list);
             _memoryBookingsCache = list;
             return list;
         }
         // Direct Fallback to preloaded server data if localStorage is empty or []
         if (typeof window !== 'undefined' && window.__SERVER_PRELOADED_BOOKINGS__ && Array.isArray(window.__SERVER_PRELOADED_BOOKINGS__) && window.__SERVER_PRELOADED_BOOKINGS__.length > 0) {
+            sanitizeBookingsLocations(window.__SERVER_PRELOADED_BOOKINGS__);
             try { saveData(STORAGE_KEY_BOOKINGS, window.__SERVER_PRELOADED_BOOKINGS__); } catch(e) {}
             _memoryBookingsCache = window.__SERVER_PRELOADED_BOOKINGS__;
             return window.__SERVER_PRELOADED_BOOKINGS__;
         }
-        const init = getInitialBookings();
+        const init = sanitizeBookingsLocations(getInitialBookings());
         _memoryBookingsCache = init;
         return init;
     }
@@ -12127,6 +12219,7 @@ document.addEventListener('paste', function(e) {
             saveData(STORAGE_KEY_BOOKINGS, b);
             return;
         }
+        sanitizeBookingsLocations(b);
         const seenIds = new Set();
         let maxNum = 1000;
         b.forEach(item => {
@@ -12509,11 +12602,148 @@ document.addEventListener('paste', function(e) {
         renderDashboard();
     };
 
-    // Dashboard Schedule Filtering (ទាំងអស់, ប្រតិទិនតាមថ្ងៃ)
+    // Dashboard Schedule Filtering (ទាំងអស់, ប្រតិទិនតាមថ្ងៃ, ចន្លោះថ្ងៃ From - To)
     let currentDashScheduleFilter = 'all';
     let currentDashCustomDate = '';
+    let currentDashRangeStart = '';
+    let currentDashRangeEnd = '';
+
+    window.onDashDateRangeChanged = function() {
+        const sInp = document.getElementById('dashDateRangeStart');
+        const eInp = document.getElementById('dashDateRangeEnd');
+        const sVal = sInp ? sInp.value.trim() : '';
+        const eVal = eInp ? eInp.value.trim() : '';
+        if (sVal && eVal) {
+            applyDashDateRangeFilter();
+        }
+    };
+
+    window.applyDashDateRangeFilter = function() {
+        const sInp = document.getElementById('dashDateRangeStart');
+        const eInp = document.getElementById('dashDateRangeEnd');
+        let sVal = sInp ? sInp.value.trim() : '';
+        let eVal = eInp ? eInp.value.trim() : '';
+
+        if (!sVal && !eVal) {
+            resetDashDateRangeFilter();
+            return;
+        }
+
+        if (sVal && eVal && sVal > eVal) {
+            const tmp = sVal;
+            sVal = eVal;
+            eVal = tmp;
+            if (sInp) sInp.value = sVal;
+            if (eInp) eInp.value = eVal;
+        }
+
+        currentDashRangeStart = sVal;
+        currentDashRangeEnd = eVal;
+        currentDashScheduleFilter = 'dateRange';
+
+        // Clear single date picker so they don't clash
+        currentDashCustomDate = '';
+        const singleInp = document.getElementById('dashScheduleDateInput');
+        if (singleInp) singleInp.value = '';
+        const singleResetBtn = document.getElementById('dashScheduleDateResetBtn');
+        if (singleResetBtn) singleResetBtn.style.display = 'none';
+        const singleCalWrap = document.getElementById('dashScheduleCalendarWrapper');
+        if (singleCalWrap) {
+            singleCalWrap.style.borderColor = '#0284c7';
+            singleCalWrap.style.boxShadow = '0 1px 3px rgba(2,132,199,0.12)';
+        }
+
+        // Highlight Range wrapper
+        const rangeWrap = document.getElementById('dashDateRangeWrapper');
+        if (rangeWrap) {
+            rangeWrap.style.borderColor = '#059669';
+            rangeWrap.style.boxShadow = '0 0 0 2px rgba(16, 185, 129, 0.25)';
+        }
+        const resetRangeBtn = document.getElementById('dashDateRangeResetBtn');
+        if (resetRangeBtn) resetRangeBtn.style.display = 'inline-flex';
+
+        renderDashboard();
+    };
+
+    window.toggleDashRecentBookings = function() {
+        if (currentDashScheduleFilter === 'recent') {
+            currentDashScheduleFilter = 'all';
+        } else {
+            currentDashScheduleFilter = 'recent';
+            // Clear single date picker and range so they don't conflict
+            currentDashCustomDate = '';
+            currentDashRangeStart = '';
+            currentDashRangeEnd = '';
+            const sInp = document.getElementById('dashDateRangeStart'); if (sInp) sInp.value = '';
+            const eInp = document.getElementById('dashDateRangeEnd'); if (eInp) eInp.value = '';
+            const singleInp = document.getElementById('dashScheduleDateInput'); if (singleInp) singleInp.value = '';
+            const resetRangeBtn = document.getElementById('dashDateRangeResetBtn'); if (resetRangeBtn) resetRangeBtn.style.display = 'none';
+            const singleResetBtn = document.getElementById('dashScheduleDateResetBtn'); if (singleResetBtn) singleResetBtn.style.display = 'none';
+            const rangeBadge = document.getElementById('dashDateRangeCountBadge'); if (rangeBadge) rangeBadge.style.display = 'none';
+            const rangeWrap = document.getElementById('dashDateRangeWrapper');
+            if (rangeWrap) { rangeWrap.style.borderColor = '#0284c7'; rangeWrap.style.boxShadow = '0 1px 3px rgba(2,132,199,0.12)'; }
+            const calWrap = document.getElementById('dashScheduleCalendarWrapper');
+            if (calWrap) { calWrap.style.borderColor = '#0284c7'; calWrap.style.boxShadow = '0 1px 3px rgba(2,132,199,0.12)'; }
+        }
+        updateDashRecentBtnState();
+        renderDashboard();
+    };
+
+    function updateDashRecentBtnState() {
+        const btn = document.getElementById('btnDashRecentBookings');
+        if (!btn) return;
+        const isActive = (currentDashScheduleFilter === 'recent');
+        if (isActive) {
+            btn.style.background = '#a21caf';
+            btn.style.color = '#ffffff';
+            btn.style.borderColor = '#86198f';
+            btn.style.boxShadow = '0 0 0 2px rgba(162, 28, 175, 0.35)';
+        } else {
+            btn.style.background = '#fdf4ff';
+            btn.style.color = '#a21caf';
+            btn.style.borderColor = '#f0abfc';
+            btn.style.boxShadow = 'none';
+        }
+    }
+
+    window.resetDashDateRangeFilter = function() {
+        currentDashRangeStart = '';
+        currentDashRangeEnd = '';
+        currentDashScheduleFilter = 'all';
+
+        const sInp = document.getElementById('dashDateRangeStart');
+        if (sInp) sInp.value = '';
+        const eInp = document.getElementById('dashDateRangeEnd');
+        if (eInp) eInp.value = '';
+
+        const rangeWrap = document.getElementById('dashDateRangeWrapper');
+        if (rangeWrap) {
+            rangeWrap.style.borderColor = '#0284c7';
+            rangeWrap.style.boxShadow = '0 1px 3px rgba(2,132,199,0.12)';
+        }
+        const resetRangeBtn = document.getElementById('dashDateRangeResetBtn');
+        if (resetRangeBtn) resetRangeBtn.style.display = 'none';
+        const rangeBadge = document.getElementById('dashDateRangeCountBadge');
+        if (rangeBadge) rangeBadge.style.display = 'none';
+
+        renderDashboard();
+    };
 
     window.onDashScheduleDateSelected = function(val) {
+        // Clear date range if active
+        currentDashRangeStart = '';
+        currentDashRangeEnd = '';
+        const sInp = document.getElementById('dashDateRangeStart'); if (sInp) sInp.value = '';
+        const eInp = document.getElementById('dashDateRangeEnd'); if (eInp) eInp.value = '';
+        const rangeWrap = document.getElementById('dashDateRangeWrapper');
+        if (rangeWrap) {
+            rangeWrap.style.borderColor = '#0284c7';
+            rangeWrap.style.boxShadow = '0 1px 3px rgba(2,132,199,0.12)';
+        }
+        const resetRangeBtn = document.getElementById('dashDateRangeResetBtn');
+        if (resetRangeBtn) resetRangeBtn.style.display = 'none';
+        const rangeBadge = document.getElementById('dashDateRangeCountBadge');
+        if (rangeBadge) rangeBadge.style.display = 'none';
         if (!val) {
             resetDashScheduleDateFilter();
             return;
@@ -12691,6 +12921,8 @@ document.addEventListener('paste', function(e) {
         const cntAll = bookings.length;
         const cntToday = bookings.filter(b => (b.date === todayStr && b.status !== 'completed')).length;
         const cntTomorrow = bookings.filter(b => (b.date === tomorrowStr && b.status !== 'completed')).length;
+        const recentTodayBookings = bookings.filter(b => (b.updated_at && b.updated_at.startsWith(todayStr)) || (b.created_at && b.created_at.startsWith(todayStr)));
+        const cntRecent = recentTodayBookings.length > 0 ? recentTodayBookings.length : Math.min(bookings.length, 15);
         const cntUpcoming = bookings.filter(b => ((b.date && b.date > tomorrowStr) || b.status === 'upcoming') && b.status !== 'completed' && b.date !== todayStr).length;
         const cntCompleted = bookings.filter(b => b.status === 'completed' || (b.date && b.date < todayStr)).length;
 
@@ -12731,11 +12963,27 @@ document.addEventListener('paste', function(e) {
             }
         }
 
+        const rangeBadge = document.getElementById('dashDateRangeCountBadge');
+        if (rangeBadge) {
+            if (currentDashScheduleFilter === 'dateRange' && (currentDashRangeStart || currentDashRangeEnd)) {
+                rangeBadge.textContent = `${filteredTrips.length} ជើង`;
+                rangeBadge.style.display = 'inline-block';
+            } else {
+                rangeBadge.style.display = 'none';
+            }
+        }
+
         if (typeof updateDriverCarsSummaryBadge === 'function') {
             updateDriverCarsSummaryBadge();
         }
 
         let filteredTrips = bookings.filter(b => {
+            if (currentDashScheduleFilter === 'dateRange' && (currentDashRangeStart || currentDashRangeEnd)) {
+                const bDate = normalizeBookingDate(b.date);
+                const sDate = currentDashRangeStart ? normalizeBookingDate(currentDashRangeStart) : '0000-00-00';
+                const eDate = currentDashRangeEnd ? normalizeBookingDate(currentDashRangeEnd) : '9999-99-99';
+                return (bDate >= sDate && bDate <= eDate);
+            }
             if (currentDashScheduleFilter === 'customDate' && currentDashCustomDate) {
                 return normalizeBookingDate(b.date) === normalizeBookingDate(currentDashCustomDate);
             }
@@ -12747,6 +12995,9 @@ document.addEventListener('paste', function(e) {
             }
             if (currentDashScheduleFilter === 'upcoming') {
                 return ((b.date && b.date > tomorrowStr) || b.status === 'upcoming') && b.status !== 'completed' && b.date !== todayStr;
+            }
+            if (currentDashScheduleFilter === 'recent') {
+                return true;
             }
             if (currentDashScheduleFilter === 'completed') {
                 return (b.status === 'completed' || (b.date && b.date < todayStr));
@@ -12773,6 +13024,11 @@ document.addEventListener('paste', function(e) {
             if (q) {
                 cardTitleEl.innerHTML = `<i class="fa-solid fa-magnifying-glass text-primary"></i> លទ្ធផលស្វែងរក៖ "${escapeHtml(q)}"`;
                 if (cardSubEl) cardSubEl.textContent = `រកឃើញការកក់សរុប ${filteredTrips.length} ជើង ដែលត្រូវគ្នានឹងពាក្យគន្លឹះគ្រប់ជួរឈរ`;
+            } else if (currentDashScheduleFilter === 'dateRange' && (currentDashRangeStart || currentDashRangeEnd)) {
+                const sDisp = currentDashRangeStart ? formatDisplayDate(currentDashRangeStart) : 'ដំបូង';
+                const eDisp = currentDashRangeEnd ? formatDisplayDate(currentDashRangeEnd) : 'ចុងក្រោយ';
+                cardTitleEl.innerHTML = `<i class="fa-solid fa-calendar-days text-success"></i> កាលវិភាគចេញដំណើរ (ពី ${sDisp} ដល់ ${eDisp} : ${filteredTrips.length} ជើង)`;
+                if (cardSubEl) cardSubEl.textContent = `ជើងឡានដែលត្រូវចេញដំណើរ និងទទួលភ្ញៀវក្នុងចន្លោះកាលបរិច្ឆេទនេះ សរុប ${filteredTrips.length} ជើង`;
             } else if (currentDashScheduleFilter === 'customDate' && currentDashCustomDate) {
                 cardTitleEl.innerHTML = `<i class="fa-regular fa-calendar-days text-primary"></i> កាលវិភាគចេញដំណើរថ្ងៃទី ${currentDashCustomDate} (${countForCalDate} ជើង)`;
                 if (cardSubEl) cardSubEl.textContent = `ជើងឡានដែលត្រូវចេញដំណើរ និងទទួលភ្ញៀវក្នុងថ្ងៃទី ${currentDashCustomDate} សរុប ${countForCalDate} ជើង`;
@@ -12785,6 +13041,9 @@ document.addEventListener('paste', function(e) {
             } else if (currentDashScheduleFilter === 'upcoming') {
                 cardTitleEl.textContent = 'កាលវិភាគកក់ទុកមុន (Upcoming Trips)';
                 if (cardSubEl) cardSubEl.textContent = 'ជើងឡានកក់ទុកសម្រាប់ថ្ងៃបន្តបន្ទាប់ទៀត';
+            } else if (currentDashScheduleFilter === 'recent') {
+                cardTitleEl.innerHTML = '<i class="fa-solid fa-clock-rotate-left" style="color: #a21caf;"></i> ជើងឡានដែលទើបបញ្ចូល ឬកែប្រែថ្មីៗ (Recently Added / Updated)';
+                if (cardSubEl) cardSubEl.textContent = `បង្ហាញការកក់ដែលបានរក្សាទុកចុងក្រោយបំផុត (${filteredTrips.length} ជើង) ដោយមិនខ្វល់ថាកាលបរិច្ឆេទជាថ្ងៃណាឡើយ`;
             } else if (currentDashScheduleFilter === 'completed') {
                 cardTitleEl.textContent = 'ប្រវត្តិកក់បានបញ្ចប់ (Completed Trips)';
                 if (cardSubEl) cardSubEl.textContent = 'ជើងឡានដែលបានបញ្ចប់ការធ្វើដំណើររួចរាល់';
@@ -12810,15 +13069,28 @@ document.addEventListener('paste', function(e) {
             } else if (currentDashScheduleFilter === 'tomorrow') {
                 emptyMsg = 'គ្មានជើងឡានត្រូវចេញដំណើរនៅថ្ងៃស្អែកទេ';
             }
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 28px; color: #64748b;">
+            tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; padding: 28px; color: #64748b;">
                 <i class="fa-solid fa-magnifying-glass" style="font-size: 1.8rem; opacity: 0.4; margin-bottom: 6px;"></i><br>
                 ${emptyMsg}
             </td></tr>`;
             return;
         }
 
-        // Apply chronological sorting by Date & Time (ព្រឹក ➔ យប់)
-        filteredTrips.sort((a, b) => compareBookingsByDateTime(a, b, currentBookingSortOrder));
+        // Apply chronological sorting or Recent sorting
+        if (currentDashScheduleFilter === 'recent') {
+            filteredTrips.sort((a, b) => {
+                const ta = a.updated_at || a.created_at || a.saved_at || '';
+                const tb = b.updated_at || b.created_at || b.saved_at || '';
+                if (ta && tb) return tb.localeCompare(ta);
+                const ma = String(a.id || '').match(/\d+/);
+                const mb = String(b.id || '').match(/\d+/);
+                if (ma && mb) return parseInt(mb[0], 10) - parseInt(ma[0], 10);
+                return 0;
+            });
+            filteredTrips = filteredTrips.slice(0, 50);
+        } else {
+            filteredTrips.sort((a, b) => compareBookingsByDateTime(a, b, currentBookingSortOrder));
+        }
 
         tbody.innerHTML = filteredTrips.map((b, idx) => renderBookingRow(b, idx)).join('');
 
@@ -12954,6 +13226,7 @@ document.addEventListener('paste', function(e) {
     window.formatCarNameKhmer = formatCarNameKhmer;
 
     function renderBookingRow(b, idx) {
+        const isJustSaved = (typeof window.lastSavedBookingId !== 'undefined' && window.lastSavedBookingId === b.id);
         const tInfo = getTimeOfDayInfo(b.time);
         const carChips = (b.cars && b.cars.length > 0 ? b.cars : ['អាលផាត']).map(c => {
             const kName = formatCarNameKhmer(c);
@@ -12978,11 +13251,41 @@ document.addEventListener('paste', function(e) {
         }
         const borderBadge = borderText ? `<span class="table-badge-car" style="background:#dcfce7;color:#166534;border: 1.5px solid #16a34a;white-space: nowrap; font-size: 13.5px; font-weight: 900; padding: 4px 12px; border-radius: 6px;">${borderText}</span>` : '';
 
-        const invoiceBtn = b.invoiceNo ? `
+        // Auto-resolve invoice number from allDatabaseRecords if not directly set on b
+        let effInvoiceNo = (b.invoiceNo || '').trim();
+        if (!effInvoiceNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords) && allDatabaseRecords.length > 0) {
+            const bIdStr = String(b.id || '').trim().toLowerCase();
+            const bName = (b.customerName || '').trim().toLowerCase();
+            const bDate = (b.date || '').trim();
+            const matchedRec = allDatabaseRecords.find(r => {
+                if (!r) return false;
+                const rBId = String(r.booking_id || r.group_data?.booking_id || '').trim().toLowerCase();
+                if (rBId && bIdStr && rBId === bIdStr) return true;
+                if (!bName) return false;
+                const rName = (r.sender_name || r.sender || r.customer_name || r.group_info?.sender_name || r.customer?.full_english_name || '').trim().toLowerCase();
+                if (rName && (rName === bName || rName.includes(bName) || bName.includes(rName))) {
+                    const rDate = (r.travel_date || r.date_saved || '').trim();
+                    if (!bDate || !rDate) return true;
+                    if (rDate.includes(bDate) || bDate.includes(rDate)) return true;
+                    const p = bDate.split('-');
+                    if (p.length === 3 && rDate.includes(`${p[2]}-${p[1]}-${p[0]}`)) return true;
+                }
+                return false;
+            });
+            if (matchedRec) {
+                effInvoiceNo = (matchedRec.receipt_no || matchedRec.receiptNo || matchedRec.group_data?.receipt_no || matchedRec.customer?.receipt_no || '').trim();
+                if (effInvoiceNo) {
+                    b.invoiceNo = effInvoiceNo;
+                    b.invoiceDone = true;
+                }
+            }
+        }
+
+        const invoiceBtn = effInvoiceNo ? `
             <button type="button" class="btn-ar" onclick="openCarInvoiceForBooking('${b.id}', event)" 
-                title="ចុចដើម្បីពិនិត្យ ឬកែប្រែវិក្កយបត្រ (${b.invoiceNo})"
+                title="ចុចដើម្បីពិនិត្យ ឬកែប្រែវិក្កយបត្រ (${effInvoiceNo})"
                 style="padding: 4px 10px; font-size: 13px; font-weight: 800; border-radius: 6px; white-space: nowrap; cursor: pointer; background: #ecfdf5; color: #15803d; border: 1.5px solid #86efac; box-shadow: 0 1px 2px rgba(22,101,52,0.1); display: inline-flex; align-items: center; gap: 5px;">
-                <i class="fa-solid fa-file-invoice-dollar" style="font-size: 13px; color: #16a34a;"></i> <span>${b.invoiceNo}</span>
+                <i class="fa-solid fa-file-invoice-dollar" style="font-size: 13px; color: #16a34a;"></i> <span>${effInvoiceNo}</span>
             </button>
         ` : `
             <button type="button" class="btn-ar" onclick="openCarInvoiceForBooking('${b.id}', event)" 
@@ -12992,9 +13295,9 @@ document.addEventListener('paste', function(e) {
             </button>
         `;
 
-        const invDetailsBtn = b.invoiceNo ? `
+        const invDetailsBtn = effInvoiceNo ? `
             <button type="button" class="btn-ar" onclick="openCarInvoiceForBooking('${b.id}', event)" 
-                title="ចុចដើម្បីមើលលម្អិត និងកែប្រែវិក្កយបត្រ (${b.invoiceNo})"
+                title="ចុចដើម្បីមើលលម្អិត និងកែប្រែវិក្កយបត្រ (${effInvoiceNo})"
                 style="padding: 5px 12px; font-size: 13.5px; font-weight: 800; border-radius: 7px; white-space: nowrap; cursor: pointer; background: linear-gradient(135deg, #0284c7, #2563eb); border: 1.5px solid #38bdf8; color: #ffffff; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(2,132,199,0.25); transition: all 0.15s ease;">
                 <i class="fa-solid fa-eye" style="font-size: 13px;"></i> <span>មើលលម្អិត</span>
             </button>
@@ -13016,7 +13319,7 @@ document.addEventListener('paste', function(e) {
         `;
 
         return `
-            <tr style="white-space: nowrap; border-bottom: 1.5px solid #e2e8f0;">
+            <tr style="white-space: nowrap; border-bottom: 1.5px solid #e2e8f0; ${isJustSaved ? 'background: #fdf4ff !important; box-shadow: inset 4px 0 0 #a21caf;' : ''}">
                 <td style="text-align: center; padding: 6px 4px; width: 44px;">
                     <span style="display: inline-block; font-size: 13px; font-weight: 800; color: #1e293b; background: #e2e8f0; border: 1px solid #cbd5e1; border-radius: 5px; min-width: 26px; padding: 2px 6px; line-height: 1.4;">${idx != null ? (idx + 1) : '-'}</span>
                 </td>
@@ -13034,15 +13337,18 @@ document.addEventListener('paste', function(e) {
                 </td>
                 <td style="white-space: nowrap; padding: 6px 8px; width: 175px;">
                     <span style="font-weight: 900; color: #0f172a; font-size: 14.5px; max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle;" title="${escapeHtml(b.customerName || '')}">${b.customerName || 'អតិថិជន'}</span>
+                    ${isJustSaved ? '<span style="background: #a21caf; color: #ffffff; font-size: 10.5px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-left: 4px; vertical-align: middle;" title="ទើបតែរក្សាទុកមុននេះបន្តិច">🆕 ទើបបញ្ចូល</span>' : ''}
                     ${b.images && b.images.length > 0 ? ` <span class="badge" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;font-size:12px;font-weight:800;margin-left:4px;cursor:pointer;vertical-align:middle;padding:2px 6px;" onclick="viewBookingDetails('${b.id}')" title="${b.images.length} រូបភាពភ្ជាប់"><i class="fa-solid fa-camera"></i> ${b.images.length}</span>` : ''}
                 </td>
                 <td style="text-align: center; white-space: nowrap; padding: 6px 5px;">${driverTg}</td>
                 <td style="white-space: nowrap; padding: 6px 8px; width: 235px;">
                     ${(() => {
-                        const pTheme = (typeof window.getLocationTheme === 'function' ? window.getLocationTheme(b.pickupLoc || 'ភ្នំពេញ') : null) || { badgeBg: '#f3e8ff', badgeText: '#581c87', badgeBorder: '#c084fc' };
-                        const dTheme = (typeof window.getLocationTheme === 'function' ? window.getLocationTheme(b.dropoffLoc || 'ប៉ោយប៉ែត') : null) || { badgeBg: '#dcfce7', badgeText: '#14532d', badgeBorder: '#86efac' };
-                        const pName = b.pickupLoc || 'ភ្នំពេញ';
-                        const dName = b.dropoffLoc || 'ប៉ោយប៉ែត';
+                        const rawP = b.pickupLoc === 'ភ្នំពេញ' ? 'តេជោ' : (b.pickupLoc || 'ប៉ោយប៉ែត');
+                        const rawD = b.dropoffLoc === 'ភ្នំពេញ' ? 'តេជោ' : (b.dropoffLoc || 'តេជោ');
+                        const pTheme = (typeof window.getLocationTheme === 'function' ? window.getLocationTheme(rawP) : null) || { badgeBg: '#dcfce7', badgeText: '#14532d', badgeBorder: '#86efac' };
+                        const dTheme = (typeof window.getLocationTheme === 'function' ? window.getLocationTheme(rawD) : null) || { badgeBg: '#ffedd5', badgeText: '#9a3412', badgeBorder: '#fdba74' };
+                        const pName = rawP;
+                        const dName = rawD;
                         return `
                             <div style="display: inline-flex; align-items: center; gap: 4px;" title="${pName} ➔ ${dName}">
                                 <span style="white-space: nowrap; font-size: 14.5px; font-weight: 900; padding: 4px 10px; background: ${pTheme.badgeBg}; color: ${pTheme.badgeText}; border: 1.5px solid ${pTheme.badgeBorder}; border-radius: 7px; display: inline-flex; align-items: center; max-width: 125px; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 2px rgba(0,0,0,0.05); letter-spacing: 0.1px;">
@@ -13066,12 +13372,14 @@ document.addEventListener('paste', function(e) {
                         ${(vipBadge || borderBadge) ? (vipBadge + (vipBadge && borderBadge ? ' ' : '') + borderBadge) : '<span style="color: #64748b; font-size: 13px; font-weight: 800;">--</span>'}
                     </div>
                 </td>
+                <td style="text-align: center; white-space: nowrap; padding: 6px 8px; width: 95px;">
+                    <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 12px; font-size: 13px; font-weight: 800; border: 1.5px solid #bfdbfe; color: #2563eb; background: #eff6ff; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;" onclick="openEditBookingModal('${b.id}')" title="កែប្រែ"><i class="fa-solid fa-pen-to-square"></i> <span>កែប្រែ</span></button>
+                </td>
                 <td style="text-align: center; white-space: nowrap; padding: 6px 8px;">${invDetailsBtn}</td>
                 <td style="text-align: center; white-space: nowrap; padding: 6px 8px;">
                     <div style="display: inline-flex; gap: 6px; align-items: center;">
                         <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #7dd3fc; color: #0284c7; background: #e0f2fe; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;" onclick="openDispatchDriverModal('${b.id}')" title="បញ្ជូនទិន្នន័យ & ទីតាំងទៅ Telegram តៃកុង"><i class="fa-solid fa-share-nodes"></i> <span>ផ្ញើ</span></button>
                         <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #99f6e4; color: #0f766e; background: #f0fdfa; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;" onclick="viewBookingDetails('${b.id}')" title="ព័ត៌មានកក់ឡាន (Booking Info)"><i class="fa-solid fa-circle-info"></i> <span>ព័ត៌មាន</span></button>
-                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #bfdbfe; color: #2563eb; background: #eff6ff; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;" onclick="openEditBookingModal('${b.id}')" title="កែប្រែ"><i class="fa-solid fa-pen-to-square"></i> <span>កែប្រែ</span></button>
                         <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #fca5a5; color: #dc2626; background: #fef2f2; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;" onclick="deleteBooking('${b.id}', this)" title="លុប"><i class="fa-solid fa-trash-can"></i> <span>លុប</span></button>
                     </div>
                 </td>
@@ -13101,12 +13409,15 @@ document.addEventListener('paste', function(e) {
         const cntCompleted = bookings.filter(b => b.status === 'completed' || (b.date && b.date < todayStr)).length;
 
         const elAll = document.getElementById('countFilterAll'); if (elAll) elAll.textContent = cntAll;
+        const elRec = document.getElementById('countFilterRecent'); if (elRec) elRec.textContent = cntRecent;
+        const elDashRec = document.getElementById('dashRecentCountBadge'); if (elDashRec) elDashRec.textContent = cntRecent;
         const elDue = document.getElementById('countFilterDueToday'); if (elDue) elDue.textContent = cntDueToday;
         const elTom = document.getElementById('countFilterTomorrow'); if (elTom) elTom.textContent = cntTomorrow;
         const elUpc = document.getElementById('countFilterUpcoming'); if (elUpc) elUpc.textContent = cntUpcoming;
         const elCmp = document.getElementById('countFilterCompleted'); if (elCmp) elCmp.textContent = cntCompleted;
 
         let filtered = bookings.filter(b => {
+            if (filter === 'recent') return true;
             if (filter === 'dueToday' || filter === 'today') return (b.date === todayStr && b.status !== 'completed');
             if (filter === 'tomorrow') return (b.date === tomorrowStr && b.status !== 'completed');
             if (filter === 'upcoming') return ((b.date && b.date > tomorrowStr) || b.status === 'upcoming') && b.status !== 'completed' && b.date !== todayStr;
@@ -13121,14 +13432,27 @@ document.addEventListener('paste', function(e) {
             filtered = filtered.filter(b => matchBookingSearch(b, q));
         }
 
-        // Apply chronological sorting by Date & Time (ព្រឹក ➔ យប់)
-        filtered.sort((a, b) => compareBookingsByDateTime(a, b, currentBookingSortOrder));
+        // Apply chronological sorting or Recent sorting
+        if (filter === 'recent') {
+            filtered.sort((a, b) => {
+                const ta = a.updated_at || a.created_at || a.saved_at || '';
+                const tb = b.updated_at || b.created_at || b.saved_at || '';
+                if (ta && tb) return tb.localeCompare(ta);
+                const ma = String(a.id || '').match(/\d+/);
+                const mb = String(b.id || '').match(/\d+/);
+                if (ma && mb) return parseInt(mb[0], 10) - parseInt(ma[0], 10);
+                return 0;
+            });
+            filtered = filtered.slice(0, 50);
+        } else {
+            filtered.sort((a, b) => compareBookingsByDateTime(a, b, currentBookingSortOrder));
+        }
 
         const tbody = document.getElementById('bookingsGrid');
         if (!tbody) return;
 
         if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 24px; color: #64748b;">
+            tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; padding: 24px; color: #64748b;">
                 <i class="fa-solid fa-magnifying-glass" style="font-size: 1.5rem; opacity: 0.4; margin-bottom: 6px;"></i><br>
                 រកមិនឃើញទិន្នន័យការកក់ឡើយ
             </td></tr>`;
@@ -13155,7 +13479,14 @@ document.addEventListener('paste', function(e) {
         const activeCalDate = currentDashCustomDate || (calInp ? calInp.value : '');
 
         let activeBookings = bookings;
-        if (activeCalDate) {
+        if (currentDashScheduleFilter === 'dateRange' && (currentDashRangeStart || currentDashRangeEnd)) {
+            const sDate = currentDashRangeStart ? normalizeBookingDate(currentDashRangeStart) : '0000-00-00';
+            const eDate = currentDashRangeEnd ? normalizeBookingDate(currentDashRangeEnd) : '9999-99-99';
+            activeBookings = bookings.filter(b => {
+                const bd = normalizeBookingDate(b.date);
+                return (bd >= sDate && bd <= eDate);
+            });
+        } else if (activeCalDate) {
             const norm = normalizeBookingDate(activeCalDate);
             activeBookings = bookings.filter(b => normalizeBookingDate(b.date) === norm);
         }
@@ -13747,10 +14078,12 @@ document.addEventListener('paste', function(e) {
                     </td>
                     <td style="padding: 12px 14px;">
                         ${(() => {
-                            const pTheme = (typeof window.getLocationTheme === 'function' ? window.getLocationTheme(b.pickupLoc || 'ភ្នំពេញ') : null) || { badgeBg: '#f3e8ff', badgeText: '#581c87', badgeBorder: '#c084fc' };
-                            const dTheme = (typeof window.getLocationTheme === 'function' ? window.getLocationTheme(b.dropoffLoc || 'ប៉ោយប៉ែត') : null) || { badgeBg: '#dcfce7', badgeText: '#14532d', badgeBorder: '#86efac' };
-                            const pName = b.pickupLoc || 'ភ្នំពេញ';
-                            const dName = b.dropoffLoc || 'ប៉ោយប៉ែត';
+                            const rawP = b.pickupLoc === 'ភ្នំពេញ' ? 'តេជោ' : (b.pickupLoc || 'ប៉ោយប៉ែត');
+                            const rawD = b.dropoffLoc === 'ភ្នំពេញ' ? 'តេជោ' : (b.dropoffLoc || 'តេជោ');
+                            const pTheme = (typeof window.getLocationTheme === 'function' ? window.getLocationTheme(rawP) : null) || { badgeBg: '#dcfce7', badgeText: '#14532d', badgeBorder: '#86efac' };
+                            const dTheme = (typeof window.getLocationTheme === 'function' ? window.getLocationTheme(rawD) : null) || { badgeBg: '#ffedd5', badgeText: '#9a3412', badgeBorder: '#fdba74' };
+                            const pName = rawP;
+                            const dName = rawD;
                             return `
                                 <div style="display: inline-flex; align-items: center; gap: 4px;" title="${pName} ➔ ${dName}">
                                     <span style="white-space: nowrap; font-size: 14.5px; font-weight: 900; padding: 4px 10px; background: ${pTheme.badgeBg}; color: ${pTheme.badgeText}; border: 1.5px solid ${pTheme.badgeBorder}; border-radius: 7px; display: inline-flex; align-items: center; max-width: 125px; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 2px rgba(0,0,0,0.05); letter-spacing: 0.1px;">
@@ -14279,11 +14612,11 @@ document.addEventListener('paste', function(e) {
         document.getElementById('bookingTime').value = b.time || '08:00';
         if (typeof setBookingTimeValue === 'function') setBookingTimeValue(b.time || '08:00');
         if (typeof setLocationDropdownVal === 'function') {
-            setLocationDropdownVal(document.getElementById('bookingPickupLoc'), b.pickupLoc || 'ប៉ោយប៉ែត');
-            setLocationDropdownVal(document.getElementById('bookingDropoffLoc'), b.dropoffLoc || 'ភ្នំពេញ');
+            setLocationDropdownVal(document.getElementById('bookingPickupLoc'), (b.pickupLoc === 'ភ្នំពេញ' ? 'តេជោ' : b.pickupLoc) || 'ប៉ោយប៉ែត');
+            setLocationDropdownVal(document.getElementById('bookingDropoffLoc'), (b.dropoffLoc === 'ភ្នំពេញ' ? 'តេជោ' : b.dropoffLoc) || 'តេជោ');
         } else {
-            document.getElementById('bookingPickupLoc').value = b.pickupLoc || 'ប៉ោយប៉ែត';
-            document.getElementById('bookingDropoffLoc').value = b.dropoffLoc || 'ភ្នំពេញ';
+            document.getElementById('bookingPickupLoc').value = (b.pickupLoc === 'ភ្នំពេញ' ? 'តេជោ' : b.pickupLoc) || 'ប៉ោយប៉ែត';
+            document.getElementById('bookingDropoffLoc').value = (b.dropoffLoc === 'ភ្នំពេញ' ? 'តេជោ' : b.dropoffLoc) || 'តេជោ';
         }
         document.getElementById('bookingVipService').value = b.vipService || '';
         document.getElementById('bookingBorderClear').value = b.borderClear || '';
@@ -14542,18 +14875,6 @@ document.addEventListener('paste', function(e) {
     window.getLocationTheme = function(loc) {
         if (!loc) return null;
         const s = String(loc).toLowerCase().trim();
-        if (s.includes('ភ្នំពេញ') || s.includes('phnom penh') || s.includes('pp')) {
-            return { 
-                name: 'ភ្នំពេញ', 
-                emoji: '', 
-                bg: '#7c3aed', 
-                color: '#ffffff', 
-                border: '#6d28d9', 
-                badgeBg: '#f3e8ff', 
-                badgeText: '#581c87', 
-                badgeBorder: '#c084fc' 
-            };
-        }
         if (s.includes('ប៉ោយប៉ែត') || s.includes('poipet') || s.includes('poi pet') || s.includes('poi')) {
             return { 
                 name: 'ប៉ោយប៉ែត', 
@@ -14578,7 +14899,7 @@ document.addEventListener('paste', function(e) {
                 badgeBorder: '#7dd3fc' 
             };
         }
-        if (s.includes('តេជោ') || s.includes('techo')) {
+        if (s.includes('តេជោ') || s.includes('techo') || s.includes('ភ្នំពេញ') || s.includes('phnom penh') || s.includes('pp')) {
             return { 
                 name: 'តេជោ', 
                 emoji: '', 
@@ -14605,10 +14926,9 @@ document.addEventListener('paste', function(e) {
     window.getLocationTelegramColorEmoji = function(loc) {
         if (!loc) return '🟢';
         const s = String(loc).toLowerCase().trim();
-        if (s.includes('ភ្នំពេញ') || s.includes('phnom penh') || s.includes('pp')) return '🟣';
         if (s.includes('ប៉ោយប៉ែត') || s.includes('poipet') || s.includes('poi pet') || s.includes('poi')) return '🟢';
         if (s.includes('សៀមរាប') || s.includes('siem reap') || s.includes('sr')) return '🔵';
-        if (s.includes('តេជោ') || s.includes('techo')) return '🟠';
+        if (s.includes('តេជោ') || s.includes('techo') || s.includes('ភ្នំពេញ') || s.includes('phnom penh') || s.includes('pp')) return '🟠';
         return '🟢';
     };
 
@@ -15306,6 +15626,7 @@ document.addEventListener('paste', function(e) {
 
         const targetId = editingBookingId || getSafeNextBookingId(bookings);
 
+        const nowIso = new Date().toISOString();
         const newBooking = {
             id: targetId,
             customerName: custName,
@@ -15324,8 +15645,11 @@ document.addEventListener('paste', function(e) {
             invoiceNo: existingInvNo,
             notes: document.getElementById('bookingNotes') ? document.getElementById('bookingNotes').value.trim() : '',
             rawMessage: document.getElementById('telegramPasteInput') ? document.getElementById('telegramPasteInput').value : '',
-            images: currentBookingImages ? [...currentBookingImages] : []
+            images: currentBookingImages ? [...currentBookingImages] : [],
+            created_at: (existingBookingForSave && existingBookingForSave.created_at) ? existingBookingForSave.created_at : nowIso,
+            updated_at: nowIso
         };
+        window.lastSavedBookingId = newBooking.id;
 
         if (isEditing) {
             const idx = bookings.findIndex(b => b.id === editingBookingId);
@@ -16000,22 +16324,61 @@ document.addEventListener('paste', function(e) {
             evt.preventDefault();
         }
         const bookings = getBookings();
-        const b = bookings.find(x => String(x.id).trim() === String(id).trim());
+        const b = bookings.find(x => String(x.id || '').trim().toLowerCase() === String(id || '').trim().toLowerCase());
         if (!b) return;
 
         window.activeBookingForGroupInvoice = b.id;
 
-        // If this booking already has an invoice number, check if it exists in saved database records to open in edit mode
-        if (b.invoiceNo && typeof openGroupMembersModal === 'function') {
-            const invNo = b.invoiceNo;
-            openGroupMembersModal(invNo);
+        // Persist active booking reference directly in DOM
+        const gmmActiveInp = document.getElementById('gmmActiveBookingId');
+        if (gmmActiveInp) gmmActiveInp.value = b.id;
+        const modal = document.getElementById('groupMembersModal');
+        if (modal) {
+            modal.setAttribute('data-active-booking-id', b.id);
+            modal.setAttribute('data-active-booking-cust', b.customerName || '');
+            modal.setAttribute('data-active-booking-date', b.date || '');
+        }
+
+        // If booking already has invoiceNo or matches an existing invoice in allDatabaseRecords, open in edit mode
+        let effectiveInvNo = (b.invoiceNo || '').trim();
+        if (!effectiveInvNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) {
+            const bIdStr = String(b.id || '').trim().toLowerCase();
+            const bName = (b.customerName || '').trim().toLowerCase();
+            const bDate = (b.date || '').trim();
+            const matchedRec = allDatabaseRecords.find(r => {
+                if (!r) return false;
+                const rBId = String(r.booking_id || r.group_data?.booking_id || '').trim().toLowerCase();
+                if (rBId && bIdStr && rBId === bIdStr) return true;
+                if (!bName) return false;
+                const rName = (r.sender_name || r.sender || r.customer_name || r.group_info?.sender_name || r.customer?.full_english_name || '').trim().toLowerCase();
+                if (rName && (rName === bName || rName.includes(bName) || bName.includes(rName))) {
+                    const rDate = (r.travel_date || r.date_saved || '').trim();
+                    if (!bDate || !rDate) return true;
+                    if (rDate.includes(bDate) || bDate.includes(rDate)) return true;
+                }
+                return false;
+            });
+            if (matchedRec) {
+                effectiveInvNo = (matchedRec.receipt_no || matchedRec.receiptNo || matchedRec.group_data?.receipt_no || '').trim();
+                if (effectiveInvNo) {
+                    b.invoiceNo = effectiveInvNo;
+                    b.invoiceDone = true;
+                }
+            }
+        }
+
+        if (effectiveInvNo && typeof openGroupMembersModal === 'function') {
+            const isNewInp = document.getElementById('gmmIsNewInvoice');
+            if (isNewInp) isNewInp.value = '0';
+            window.currentGmmIsNewInvoice = false;
+            openGroupMembersModal(effectiveInvNo);
             if (typeof populateGmmVerificationPanel === 'function') {
                 populateGmmVerificationPanel(b);
             }
             if (typeof allDatabaseRecords === 'undefined' || !allDatabaseRecords || allDatabaseRecords.length === 0) {
                 if (typeof loadDatabaseRecords === 'function') {
                     loadDatabaseRecords(() => {
-                        openGroupMembersModal(invNo);
+                        openGroupMembersModal(effectiveInvNo);
                         if (typeof populateGmmVerificationPanel === 'function') populateGmmVerificationPanel(b);
                     });
                 }
@@ -16028,8 +16391,11 @@ document.addEventListener('paste', function(e) {
         // =========================================================================
         currentServiceCategory = 'car';
 
-        // 1. Immediately open the modal
-        const modal = document.getElementById('groupMembersModal');
+        // 1. Immediately open the modal (marked as NEW invoice)
+        const isNewInp = document.getElementById('gmmIsNewInvoice');
+        if (isNewInp) isNewInp.value = '1';
+        window.currentGmmIsNewInvoice = true;
+
         if (modal) {
             modal.style.display = 'flex';
             modal.classList.add('active');
@@ -19409,7 +19775,10 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
                 let merged = serverBks.map(sb => {
                     const sId = String(sb.id || '').trim().toUpperCase();
                     if (localMap.has(sId)) {
-                        return { ...sb, ...localMap.get(sId) };
+                        const lb = localMap.get(sId);
+                        const invNo = (lb && lb.invoiceNo) ? lb.invoiceNo : (sb && sb.invoiceNo ? sb.invoiceNo : '');
+                        const invDone = (lb && lb.invoiceDone) || (sb && sb.invoiceDone) || !!invNo;
+                        return { ...sb, ...lb, invoiceNo: invNo, invoiceDone: invDone };
                     }
                     return sb;
                 });
@@ -19565,7 +19934,7 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
             if (Date.now() < (window.syncCooldownUntil || 0)) return;
             // Skip sync if user is currently typing in an input or modal is open
             if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
-            const openModal = document.querySelector('.modal.active, #bookingModal.active, #customerModal.active');
+            const openModal = document.querySelector('.modal.active, #bookingModal.active, #customerModal.active, #groupMembersModal.active, .modal-overlay.active');
             if (openModal) return;
 
             if (typeof window.syncBookingsWithServer === 'function') window.syncBookingsWithServer();
