@@ -12963,16 +12963,6 @@ document.addEventListener('paste', function(e) {
             }
         }
 
-        const rangeBadge = document.getElementById('dashDateRangeCountBadge');
-        if (rangeBadge) {
-            if (currentDashScheduleFilter === 'dateRange' && (currentDashRangeStart || currentDashRangeEnd)) {
-                rangeBadge.textContent = `${filteredTrips.length} ជើង`;
-                rangeBadge.style.display = 'inline-block';
-            } else {
-                rangeBadge.style.display = 'none';
-            }
-        }
-
         if (typeof updateDriverCarsSummaryBadge === 'function') {
             updateDriverCarsSummaryBadge();
         }
@@ -13006,14 +12996,16 @@ document.addEventListener('paste', function(e) {
         });
 
         if (q) {
-            // First check matches in currently selected tab
-            const inTabMatches = filteredTrips.filter(b => matchBookingSearch(b, q));
-            if (inTabMatches.length > 0 || currentDashScheduleFilter === 'all') {
-                filteredTrips = inTabMatches;
+            // If filtering by dateRange or customDate, strictly filter within that date scope!
+            if (currentDashScheduleFilter === 'dateRange' || currentDashScheduleFilter === 'customDate') {
+                filteredTrips = filteredTrips.filter(b => matchBookingSearch(b, q));
             } else {
-                // If 0 matches in current tab, search across ALL bookings so user doesn't miss what they seek!
-                const allMatches = bookings.filter(b => matchBookingSearch(b, q));
-                filteredTrips = allMatches;
+                const inTabMatches = filteredTrips.filter(b => matchBookingSearch(b, q));
+                if (inTabMatches.length > 0 || currentDashScheduleFilter === 'all') {
+                    filteredTrips = inTabMatches;
+                } else {
+                    filteredTrips = bookings.filter(b => matchBookingSearch(b, q));
+                }
             }
         }
 
@@ -13055,6 +13047,16 @@ document.addEventListener('paste', function(e) {
 
         const schedCount = document.getElementById('todayScheduleCount');
         if (schedCount) schedCount.textContent = (q ? `រកឃើញ ${filteredTrips.length}` : filteredTrips.length) + ' ជើង';
+
+        const rangeBadge = document.getElementById('dashDateRangeCountBadge');
+        if (rangeBadge) {
+            if (currentDashScheduleFilter === 'dateRange' && (currentDashRangeStart || currentDashRangeEnd)) {
+                rangeBadge.textContent = `${filteredTrips.length} ជើង`;
+                rangeBadge.style.display = 'inline-block';
+            } else {
+                rangeBadge.style.display = 'none';
+            }
+        }
 
         // Render Action List
         const tbody = document.getElementById('todayActionList');
@@ -13251,26 +13253,14 @@ document.addEventListener('paste', function(e) {
         }
         const borderBadge = borderText ? `<span class="table-badge-car" style="background:#dcfce7;color:#166534;border: 1.5px solid #16a34a;white-space: nowrap; font-size: 13.5px; font-weight: 900; padding: 4px 12px; border-radius: 6px;">${borderText}</span>` : '';
 
-        // Auto-resolve invoice number from allDatabaseRecords if not directly set on b
+        // Auto-resolve invoice number from allDatabaseRecords strictly by booking_id (1-to-1 unique mapping, never fuzzy steal across multiple trips)
         let effInvoiceNo = (b.invoiceNo || '').trim();
         if (!effInvoiceNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords) && allDatabaseRecords.length > 0) {
             const bIdStr = String(b.id || '').trim().toLowerCase();
-            const bName = (b.customerName || '').trim().toLowerCase();
-            const bDate = (b.date || '').trim();
             const matchedRec = allDatabaseRecords.find(r => {
                 if (!r) return false;
                 const rBId = String(r.booking_id || r.group_data?.booking_id || '').trim().toLowerCase();
-                if (rBId && bIdStr && rBId === bIdStr) return true;
-                if (!bName) return false;
-                const rName = (r.sender_name || r.sender || r.customer_name || r.group_info?.sender_name || r.customer?.full_english_name || '').trim().toLowerCase();
-                if (rName && (rName === bName || rName.includes(bName) || bName.includes(rName))) {
-                    const rDate = (r.travel_date || r.date_saved || '').trim();
-                    if (!bDate || !rDate) return true;
-                    if (rDate.includes(bDate) || bDate.includes(rDate)) return true;
-                    const p = bDate.split('-');
-                    if (p.length === 3 && rDate.includes(`${p[2]}-${p[1]}-${p[0]}`)) return true;
-                }
-                return false;
+                return Boolean(rBId && bIdStr && rBId === bIdStr);
             });
             if (matchedRec) {
                 effInvoiceNo = (matchedRec.receipt_no || matchedRec.receiptNo || matchedRec.group_data?.receipt_no || matchedRec.customer?.receipt_no || '').trim();
@@ -16339,24 +16329,14 @@ document.addEventListener('paste', function(e) {
             modal.setAttribute('data-active-booking-date', b.date || '');
         }
 
-        // If booking already has invoiceNo or matches an existing invoice in allDatabaseRecords, open in edit mode
+        // If booking already has invoiceNo or matches an existing invoice strictly by booking_id, open in edit mode
         let effectiveInvNo = (b.invoiceNo || '').trim();
         if (!effectiveInvNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) {
             const bIdStr = String(b.id || '').trim().toLowerCase();
-            const bName = (b.customerName || '').trim().toLowerCase();
-            const bDate = (b.date || '').trim();
             const matchedRec = allDatabaseRecords.find(r => {
                 if (!r) return false;
                 const rBId = String(r.booking_id || r.group_data?.booking_id || '').trim().toLowerCase();
-                if (rBId && bIdStr && rBId === bIdStr) return true;
-                if (!bName) return false;
-                const rName = (r.sender_name || r.sender || r.customer_name || r.group_info?.sender_name || r.customer?.full_english_name || '').trim().toLowerCase();
-                if (rName && (rName === bName || rName.includes(bName) || bName.includes(rName))) {
-                    const rDate = (r.travel_date || r.date_saved || '').trim();
-                    if (!bDate || !rDate) return true;
-                    if (rDate.includes(bDate) || bDate.includes(rDate)) return true;
-                }
-                return false;
+                return Boolean(rBId && bIdStr && rBId === bIdStr);
             });
             if (matchedRec) {
                 effectiveInvNo = (matchedRec.receipt_no || matchedRec.receiptNo || matchedRec.group_data?.receipt_no || '').trim();
