@@ -4490,80 +4490,83 @@ input[type="date"] {
                             </div>
                         </div>
 
-                        <!-- Action Toolbar in Dashboard (ផ្ទាំងសង្ខេប) -->
-                        <div class="filter-toolbar" style="margin: 8px 14px 4px 14px; padding-bottom: 6px; border-bottom: 1px solid #f1f5f9; justify-content: flex-start; gap: 10px;">
+                        <!-- Action Toolbar in Dashboard (ផ្ទាំងសង្ខេប - រៀបចំយ៉ាងស្អាតនៅលើបន្ទាត់តែមួយ) -->
+                        <div class="filter-toolbar" style="margin: 6px 14px 4px 14px; padding-bottom: 5px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: flex-start; gap: 5px; flex-wrap: nowrap !important; overflow-x: auto; overflow-y: hidden;">
 
-                            <!-- Action Buttons shifted directly to the left beside the tabs -->
-                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                                <button type="button" class="btn-ar btn-ar-primary" style="padding: 5px 11px; font-size: 11.5px; font-weight: 800;" onclick="openNewBookingModal()">
-                                    <i class="fa-solid fa-plus"></i> កក់ឡានថ្មី
+                            <!-- Action Buttons: កក់ឡានថ្មី, ទាញពី Bot, Inbox, ទើបបញ្ចូលថ្មីៗ -->
+                            <div style="display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; flex-wrap: nowrap;">
+                                <button type="button" class="btn-ar btn-ar-primary" style="padding: 3px 8px; height: 28px; font-size: 11px; font-weight: 800; border-radius: 6px; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;" onclick="openNewBookingModal()">
+                                    <i class="fa-solid fa-plus"></i> <span>កក់ឡានថ្មី</span>
                                 </button>
-                                <button type="button" class="btn-ar btn-ar-telegram" style="font-weight: 800; font-size: 11.5px; padding: 5px 11px; display: inline-flex; align-items: center; gap: 6px;" onclick="fetchAndFillLatestTelegramMessage()">
-                                    <i class="fa-brands fa-telegram"></i> <span>ទាញសារពី Bot ចូលបង្កើតថ្មី</span>
+                                <button type="button" class="btn-ar btn-ar-telegram" style="padding: 3px 8px; height: 28px; font-size: 11px; font-weight: 800; border-radius: 6px; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;" onclick="fetchAndFillLatestTelegramMessage()" title="ទាញសារពី Telegram Bot ចូលបង្កើតថ្មី">
+                                    <i class="fa-brands fa-telegram"></i> <span>ទាញសារ Bot</span>
                                 </button>
-                                <button type="button" class="btn-ar btn-ar-outline" style="font-size: 11.5px; padding: 5px 11px; font-weight: 700; position: relative;" onclick="openModal('telegramInboxModal'); renderTelegramInboxList();">
-                                    <i class="fa-brands fa-telegram text-info"></i> Telegram Inbox
-                                    <span id="topBarTgCountBadge" class="badge" style="display: none; background: #0284c7; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 800; margin-left: 4px;">0</span>
+                                <button type="button" class="btn-ar btn-ar-outline" style="padding: 3px 8px; height: 28px; font-size: 11px; font-weight: 700; border-radius: 6px; white-space: nowrap; position: relative; display: inline-flex; align-items: center; gap: 4px;" onclick="openModal('telegramInboxModal'); renderTelegramInboxList();">
+                                    <i class="fa-brands fa-telegram text-info"></i> <span>Inbox</span>
+                                    <span id="topBarTgCountBadge" class="badge" style="display: none; background: #0284c7; color: #fff; font-size: 9.5px; padding: 1px 5px; border-radius: 8px; font-weight: 800; margin-left: 2px;">0</span>
                                 </button>
-                                <button type="button" id="btnDashRecentBookings" class="btn-ar" onclick="toggleDashRecentBookings()" style="padding: 5px 11px; font-size: 11.5px; font-weight: 800; background: #fdf4ff; color: #a21caf; border: 1.5px solid #f0abfc; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; transition: all 0.2s;" title="បង្ហាញការកក់ដែលទើបតែបញ្ចូល ឬកែប្រែថ្មីៗបំផុត (Recently Created / Updated)">
-                                    <i class="fa-solid fa-clock-rotate-left"></i> <span>ទើបបញ្ចូលថ្មីៗ</span>
-                                    <span id="dashRecentCountBadge" style="background: #a21caf; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 800;">0</span>
+                                <button type="button" id="btnDashRecentBookings" class="btn-ar" onclick="toggleDashRecentBookings()" style="padding: 3px 8px; height: 28px; font-size: 11px; font-weight: 800; background: #fdf4ff; color: #a21caf; border: 1.2px solid #f0abfc; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s; white-space: nowrap;" title="បង្ហាញការកក់ដែលទើបតែបញ្ចូល ឬកែប្រែថ្មីៗបំផុត">
+                                    <i class="fa-solid fa-clock-rotate-left"></i> <span>ទើបបញ្ចូល</span>
+                                    <span id="dashRecentCountBadge" style="background: #a21caf; color: #fff; font-size: 9.5px; padding: 1px 5px; border-radius: 8px; font-weight: 800;">0</span>
                                 </button>
                             </div>
 
-                            <!-- Calendar Date Picker & Daily Count Widget (ប្រតិទិនមើលចំនួនតាមថ្ងៃនីមួយៗ) -->
-                            <div id="dashScheduleCalendarWrapper" style="display: inline-flex; align-items: center; gap: 4px; background: #ffffff; border: 1.5px solid #0284c7; border-radius: 8px; padding: 2px 7px; box-shadow: 0 1px 3px rgba(2,132,199,0.12); flex-shrink: 0;">
-                                <button type="button" class="btn-ar" onclick="stepDashScheduleDate(-1)" style="padding: 2px 7px; font-size: 11px; height: 26px; line-height: 1; border-radius: 5px; background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; cursor: pointer;" title="ថ្ងៃមុន (Previous Day)">
+                            <!-- Calendar Date Picker & Daily Count Widget (ប្រតិទិនមើលចំនួនតាមថ្ងៃ) -->
+                            <div id="dashScheduleCalendarWrapper" style="display: inline-flex; align-items: center; gap: 3px; background: #ffffff; border: 1.2px solid #0284c7; border-radius: 6px; padding: 1px 5px; height: 28px; box-shadow: 0 1px 2px rgba(2,132,199,0.1); flex-shrink: 0; white-space: nowrap;">
+                                <button type="button" class="btn-ar" onclick="stepDashScheduleDate(-1)" style="padding: 0; width: 20px; height: 22px; font-size: 9.5px; border-radius: 4px; background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;" title="ថ្ងៃមុន">
                                     <i class="fa-solid fa-chevron-left"></i>
                                 </button>
-                                <div style="display: inline-flex; align-items: center; gap: 5px; cursor: pointer;" onclick="const inp=document.getElementById('dashScheduleDateInput'); if(inp && inp.showPicker){inp.showPicker();}else if(inp){inp.focus();}">
-                                    <i class="fa-regular fa-calendar-days" style="color: #0284c7; font-size: 14px;"></i>
-                                    <input type="date" id="dashScheduleDateInput" onchange="onDashScheduleDateSelected(this.value)" style="border: none; outline: none; font-size: 13px; font-weight: 800; color: #0f172a; background: transparent; cursor: pointer; padding: 2px 0; width: 115px; color-scheme: light;" title="ចុចរើសថ្ងៃលើប្រតិទិនដើម្បីមើលចំនួន និងជើងឡាន">
+                                <div style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer;" onclick="const inp=document.getElementById('dashScheduleDateInput'); if(inp && inp.showPicker){inp.showPicker();}else if(inp){inp.focus();}">
+                                    <i class="fa-regular fa-calendar-days" style="color: #0284c7; font-size: 12.5px;"></i>
+                                    <input type="date" id="dashScheduleDateInput" onchange="onDashScheduleDateSelected(this.value)" style="border: none; outline: none; font-size: 11.5px; font-weight: 800; color: #0f172a; background: transparent; cursor: pointer; padding: 0; width: 100px; color-scheme: light;" title="ចុចរើសថ្ងៃលើប្រតិទិន">
                                 </div>
-                                <button type="button" class="btn-ar" onclick="stepDashScheduleDate(1)" style="padding: 2px 7px; font-size: 11px; height: 26px; line-height: 1; border-radius: 5px; background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; cursor: pointer;" title="ថ្ងៃបន្ទាប់ (Next Day)">
+                                <button type="button" class="btn-ar" onclick="stepDashScheduleDate(1)" style="padding: 0; width: 20px; height: 22px; font-size: 9.5px; border-radius: 4px; background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;" title="ថ្ងៃបន្ទាប់">
                                     <i class="fa-solid fa-chevron-right"></i>
                                 </button>
-                                <span id="dashScheduleDateCountBadge" style="background: #0284c7; color: #ffffff; font-weight: 900; font-size: 11.5px; padding: 2px 8px; border-radius: 10px; white-space: nowrap; margin-left: 2px;" title="ចំនួនជើងឡានសរុបក្នុងថ្ងៃនេះ">0 ជើង</span>
-                                <button type="button" id="dashScheduleDateResetBtn" onclick="resetDashScheduleDateFilter()" style="display: none; background: #fee2e2; color: #dc2626; border: 1.2px solid #fca5a5; border-radius: 6px; padding: 3px 8px; font-size: 11.5px; font-weight: 800; cursor: pointer; line-height: 1; margin-left: 4px; align-items: center; gap: 4px; white-space: nowrap;" title="សម្អាតការស្វែងរកតាមថ្ងៃ (បង្ហាញទាំងអស់)">
-                                    <i class="fa-solid fa-xmark"></i> <span>សម្អាត</span>
+                                <span id="dashScheduleDateCountBadge" style="background: #0284c7; color: #ffffff; font-weight: 900; font-size: 10.5px; padding: 1px 6px; border-radius: 8px; white-space: nowrap;" title="ចំនួនជើងឡានសរុបក្នុងថ្ងៃនេះ">0 ជើង</span>
+                                <button type="button" id="dashScheduleDateResetBtn" onclick="resetDashScheduleDateFilter()" style="display: none; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 4px; padding: 1px 5px; font-size: 10.5px; font-weight: 800; cursor: pointer; height: 22px; align-items: center; gap: 2px; white-space: nowrap;" title="សម្អាត">
+                                    <i class="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
 
                             <!-- Date Range Picker Widget (ស្វែងរកចាប់ពីថ្ងៃណា ដល់ថ្ងៃណា) -->
-                            <div id="dashDateRangeWrapper" style="display: inline-flex; align-items: center; gap: 5px; background: #ffffff; border: 1.5px solid #0284c7; border-radius: 8px; padding: 2px 8px; box-shadow: 0 1px 3px rgba(2,132,199,0.12); flex-shrink: 0; transition: all 0.2s ease;">
-                                <div style="display: inline-flex; align-items: center; gap: 3px; cursor: pointer;" onclick="const s=document.getElementById('dashDateRangeStart'); if(s && s.showPicker) s.showPicker(); else if(s) s.focus();">
-                                    <span style="font-size: 11.5px; font-weight: 800; color: #0284c7; white-space: nowrap;"><i class="fa-regular fa-calendar-days"></i> ពី:</span>
-                                    <input type="date" id="dashDateRangeStart" onchange="onDashDateRangeChanged()" style="border: 1px solid #cbd5e1; border-radius: 5px; padding: 2px 4px; font-size: 12px; font-weight: 800; color: #0f172a; width: 115px; color-scheme: light; cursor: pointer; height: 26px; outline: none;" title="កាលបរិច្ឆេទចាប់ផ្តើម (From Date)">
+                            <div id="dashDateRangeWrapper" style="display: inline-flex; align-items: center; gap: 3px; background: #ffffff; border: 1.2px solid #0284c7; border-radius: 6px; padding: 1px 5px; height: 28px; box-shadow: 0 1px 2px rgba(2,132,199,0.1); flex-shrink: 0; white-space: nowrap;">
+                                <div style="display: inline-flex; align-items: center; gap: 2px; cursor: pointer;" onclick="const s=document.getElementById('dashDateRangeStart'); if(s && s.showPicker) s.showPicker(); else if(s) s.focus();">
+                                    <span style="font-size: 10.5px; font-weight: 800; color: #0284c7; white-space: nowrap;"><i class="fa-regular fa-calendar-days"></i> ពី:</span>
+                                    <input type="date" id="dashDateRangeStart" onchange="onDashDateRangeChanged()" style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 1px 3px; font-size: 11px; font-weight: 800; color: #0f172a; width: 95px; color-scheme: light; cursor: pointer; height: 22px; outline: none;" title="កាលបរិច្ឆេទចាប់ផ្តើម">
                                 </div>
-                                <span style="font-size: 11px; font-weight: 900; color: #64748b;">➔</span>
-                                <div style="display: inline-flex; align-items: center; gap: 3px; cursor: pointer;" onclick="const e=document.getElementById('dashDateRangeEnd'); if(e && e.showPicker) e.showPicker(); else if(e) e.focus();">
-                                    <span style="font-size: 11.5px; font-weight: 800; color: #0284c7; white-space: nowrap;">ដល់:</span>
-                                    <input type="date" id="dashDateRangeEnd" onchange="onDashDateRangeChanged()" style="border: 1px solid #cbd5e1; border-radius: 5px; padding: 2px 4px; font-size: 12px; font-weight: 800; color: #0f172a; width: 115px; color-scheme: light; cursor: pointer; height: 26px; outline: none;" title="កាលបរិច្ឆេទបញ្ចប់ (To Date)">
+                                <span style="font-size: 9px; font-weight: 900; color: #64748b;">➔</span>
+                                <div style="display: inline-flex; align-items: center; gap: 2px; cursor: pointer;" onclick="const e=document.getElementById('dashDateRangeEnd'); if(e && e.showPicker) e.showPicker(); else if(e) e.focus();">
+                                    <span style="font-size: 10.5px; font-weight: 800; color: #0284c7; white-space: nowrap;">ដល់:</span>
+                                    <input type="date" id="dashDateRangeEnd" onchange="onDashDateRangeChanged()" style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 1px 3px; font-size: 11px; font-weight: 800; color: #0f172a; width: 95px; color-scheme: light; cursor: pointer; height: 22px; outline: none;" title="កាលបរិច្ឆេទបញ្ចប់">
                                 </div>
-                                <button type="button" id="btnDashDateRangeSearch" class="btn-ar" onclick="applyDashDateRangeFilter()" style="padding: 2px 9px; font-size: 11.5px; height: 26px; line-height: 1; font-weight: 800; border-radius: 5px; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border: none; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; box-shadow: 0 1px 2px rgba(2,132,199,0.25);" title="ចុចស្វែងរកជើងឡានតាមចន្លោះកាលបរិច្ឆេទនេះ">
-                                    <i class="fa-solid fa-magnifying-glass"></i> <span>រក</span>
+                                <button type="button" id="btnDashDateRangeSearch" class="btn-ar" onclick="applyDashDateRangeFilter()" style="padding: 1px 6px; font-size: 11px; height: 22px; font-weight: 800; border-radius: 4px; background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border: none; display: inline-flex; align-items: center; gap: 3px; cursor: pointer;" title="ស្វែងរក">
+                                    <i class="fa-solid fa-magnifying-glass" style="font-size: 9.5px;"></i> <span>រក</span>
                                 </button>
-                                <span id="dashDateRangeCountBadge" style="display: none; background: #059669; color: #ffffff; font-weight: 900; font-size: 11px; padding: 2px 8px; border-radius: 10px; white-space: nowrap;" title="ចំនួនជើងឡានក្នុងចន្លោះកាលបរិច្ឆេទនេះ">0 ជើង</span>
-                                <button type="button" id="dashDateRangeResetBtn" onclick="resetDashDateRangeFilter()" style="display: none; background: #fee2e2; color: #dc2626; border: 1.2px solid #fca5a5; border-radius: 5px; padding: 2px 7px; font-size: 11px; font-weight: 800; cursor: pointer; height: 26px; line-height: 1; align-items: center; gap: 3px; white-space: nowrap;" title="សម្អាតការស្វែងរកចន្លោះថ្ងៃ (បង្ហាញទាំងអស់)">
-                                    <i class="fa-solid fa-xmark"></i> <span>សម្អាត</span>
-                                </button>
-                            </div>
-
-                            <!-- Driver Cars Summary Button (ប៊ូតុងសរុបចំនួនឡានតាមអ្នកបើកបរ) -->
-                            <button type="button" id="btnDriverCarsSummary" class="btn-ar" onclick="openDriverCarsSummaryModal()" style="font-weight: 800; font-size: 11.5px; padding: 4px 12px; height: 32px; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: none; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.28); white-space: nowrap; flex-shrink: 0;" title="ចុចដើម្បីមើលតារាងសរុបចំនួនឡានតាមអ្នកបើកបរ (Driver Car Summary)">
-                                <i class="fa-solid fa-car-side"></i> <span>សរុបឡានតាមតៃកុង</span>
-                                <span id="driverCarsSummaryBadge" style="background: rgba(255,255,255,0.28); color: #ffffff; padding: 1px 7px; border-radius: 10px; font-size: 11px; font-weight: 900;">0 ឡាន</span>
-                            </button>
-
-                            <div class="filter-search-box" style="margin-left: auto; position: relative; display: flex; align-items: center; min-width: 260px; max-width: 380px;">
-                                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; color: #0284c7; cursor: pointer;" onclick="document.getElementById('dashScheduleSearch').focus(); renderDashboard();" title="ចុចដើម្បីស្វែងរក"></i>
-                                <input type="text" id="dashScheduleSearch" oninput="renderDashboard()" onkeyup="if(event.key==='Escape')clearDashScheduleSearch(); else renderDashboard();" placeholder="🔍 ស្វែងរក (ឈ្មោះ, ម៉ោង, ឡាន, ផ្លូវ, Telegram, VIP...)" autocomplete="off" spellcheck="false" style="padding-left: 32px; padding-right: 28px; width: 100%;">
-                                <button type="button" id="dashScheduleSearchClearBtn" onclick="clearDashScheduleSearch()" style="position: absolute; right: 8px; background: none; border: none; color: #94a3b8; font-size: 13px; cursor: pointer; display: none; padding: 2px;" title="សម្អាតការស្វែងរក">
+                                <span id="dashDateRangeCountBadge" style="display: none; background: #059669; color: #ffffff; font-weight: 900; font-size: 10.5px; padding: 1px 6px; border-radius: 8px; white-space: nowrap;" title="ចំនួនជើង">0 ជើង</span>
+                                <button type="button" id="dashDateRangeResetBtn" onclick="resetDashDateRangeFilter()" style="display: none; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 4px; padding: 1px 5px; font-size: 10px; font-weight: 800; cursor: pointer; height: 22px; align-items: center; gap: 2px; white-space: nowrap;" title="សម្អាត">
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
-                            <button type="button" class="btn-ar btn-toggle-table-max" onclick="toggleTableMaximize()" style="padding: 5px 10px; font-size: 11.5px; font-weight: 800; background: #f0f9ff; color: #0284c7; border: 1.5px solid #bae6fd; border-radius: 8px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; white-space: nowrap; flex-shrink: 0; margin-left: 6px;" title="ពង្រីកទិដ្ឋភាពតារាងឱ្យកាន់តែធំ និងវែងចុះក្រោម (Expand Table View)">
-                                <i class="fa-solid fa-up-down"></i> <span class="d-none-sm">ពង្រីកវែង</span>
+
+                            <!-- Driver Cars Summary Button (ប៊ូតុងសរុបចំនួនឡាន) -->
+                            <button type="button" id="btnDriverCarsSummary" class="btn-ar" onclick="openDriverCarsSummaryModal()" style="font-weight: 800; font-size: 11px; padding: 3px 8px; height: 28px; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: none; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; box-shadow: 0 1px 2px rgba(16, 185, 129, 0.25); white-space: nowrap; flex-shrink: 0;" title="ចុចដើម្បីមើលតារាងសរុបចំនួនឡានតាមអ្នកបើកបរ">
+                                <i class="fa-solid fa-car-side" style="font-size: 11px;"></i> <span>សរុបឡាន</span>
+                                <span id="driverCarsSummaryBadge" style="background: rgba(255,255,255,0.28); color: #ffffff; padding: 1px 6px; border-radius: 8px; font-size: 10px; font-weight: 900;">0 ឡាន</span>
+                            </button>
+
+                            <!-- Search Input (ស្វែងរក - នៅកៀកគ្នាជាប់ប៊ូតុងសរុបឡាន) -->
+                            <div class="filter-search-box" style="margin: 0 0 0 4px !important; position: relative; display: inline-flex; align-items: center; width: 175px; height: 28px; flex-shrink: 0;">
+                                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 8px; font-size: 11px; color: #0284c7; cursor: pointer;" onclick="document.getElementById('dashScheduleSearch').focus(); renderDashboard();" title="ចុចដើម្បីស្វែងរក"></i>
+                                <input type="text" id="dashScheduleSearch" oninput="renderDashboard()" onkeyup="if(event.key==='Escape')clearDashScheduleSearch(); else renderDashboard();" placeholder="🔍 ស្វែងរក..." autocomplete="off" spellcheck="false" style="padding-left: 26px; padding-right: 22px; width: 100%; height: 28px !important; font-size: 11.5px !important; border-radius: 6px; border: 1.2px solid #cbd5e1;">
+                                <button type="button" id="dashScheduleSearchClearBtn" onclick="clearDashScheduleSearch()" style="position: absolute; right: 6px; background: none; border: none; color: #94a3b8; font-size: 12px; cursor: pointer; display: none; padding: 2px;" title="សម្អាតការស្វែងរក">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+
+                            <!-- Expand Table Button (ពង្រីកតារាង) -->
+                            <button type="button" class="btn-ar btn-toggle-table-max" onclick="toggleTableMaximize()" style="padding: 2px 7px; height: 28px; font-size: 11px; font-weight: 800; background: #f0f9ff; color: #0284c7; border: 1.2px solid #bae6fd; border-radius: 6px; display: inline-flex; align-items: center; gap: 3px; cursor: pointer; white-space: nowrap; flex-shrink: 0; margin-left: 2px;" title="ពង្រីកទិដ្ឋភាពតារាង (Expand Table View)">
+                                <i class="fa-solid fa-up-down" style="font-size: 10.5px;"></i> <span class="d-none-sm" style="font-size: 10.5px;">ពង្រីក</span>
                             </button>
                         </div>
 
@@ -4578,17 +4581,20 @@ input[type="date"] {
                                     <tr>
                                         <th style="width: 44px; text-align: center; font-size: 13px; padding: 7px 4px;"><i class="fa-solid fa-hashtag text-primary" style="font-size: 11px;"></i> ល.រ</th>
                                         <th style="text-align: center; padding: 7px 6px; width: 95px; font-size: 13.5px;"><i class="fa-solid fa-file-invoice-dollar text-primary"></i> វិក្កយបត្រ</th>
-                                        <th style="cursor: pointer; user-select: none; padding: 7px 6px; width: 105px; font-size: 13.5px;" onclick="toggleBookingSortDateTime()" title="ចុចដើម្បីប្តូរលំដាប់ ម៉ោង និងកាលបរិច្ឆេទ">
-                                            <i class="fa-regular fa-clock text-primary"></i> ម៉ោង / ថ្ងៃ
+                                        <th style="cursor: pointer; user-select: none; padding: 7px 6px; width: 130px; font-size: 13.5px;" onclick="toggleBookingSortDateTime()" title="ចុចដើម្បីប្តូរលំដាប់ ម៉ោង និងកាលបរិច្ឆេទ">
+                                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
+                                                <span><i class="fa-regular fa-clock text-primary"></i> ម៉ោង / ថ្ងៃ</span>
+                                                <span style="font-size: 11px; color: #7c3aed; font-weight: 800;"><i class="fa-solid fa-paper-plane"></i> Share</span>
+                                            </div>
                                         </th>
                                         <th style="padding: 7px 8px; width: 175px; font-size: 13.5px;"><i class="fa-solid fa-user text-primary"></i> ភ្ញៀវ / អ្នកកក់</th>
                                         <th style="text-align: center; padding: 7px 6px; width: 135px; font-size: 13.5px;"><i class="fa-brands fa-telegram text-primary"></i> តេលេក្រាមតៃកុង</th>
                                         <th style="padding: 7px 8px; width: 235px; font-size: 13.5px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅធ្វើដំណើរ (Route)</th>
                                         <th style="padding: 7px 6px; width: 155px; font-size: 13.5px;"><i class="fa-solid fa-car text-primary"></i> ប្រភេទរថយន្ត</th>
                                         <th style="text-align: center; padding: 7px 8px; width: 120px; font-size: 13.5px;"><i class="fa-solid fa-star text-warning"></i> VIP / ក្លៀដាន</th>
-                                        <th style="text-align: center; padding: 7px 6px; width: 95px; font-size: 13.5px;"><i class="fa-solid fa-pen-to-square text-primary"></i> កែប្រែ</th>
-                                        <th style="text-align: center; padding: 7px 6px; width: 125px; font-size: 13.5px;"><i class="fa-solid fa-eye text-primary"></i> មើលលម្អិត</th>
-                                        <th style="text-align: center; padding: 7px 8px; min-width: 220px; font-size: 13.5px;"><i class="fa-solid fa-sliders text-primary"></i> សកម្មភាព</th>
+                                        <th style="text-align: center; padding: 7px 4px; width: 80px; font-size: 13px;"><i class="fa-solid fa-pen-to-square text-primary"></i> កែប្រែ</th>
+                                        <th style="text-align: center; padding: 7px 4px; width: 75px; font-size: 13px;"><i class="fa-solid fa-eye text-primary"></i> លម្អិត</th>
+                                        <th style="text-align: center; padding: 7px 4px; width: 175px; font-size: 13px;"><i class="fa-solid fa-sliders text-primary"></i> សកម្មភាព</th>
                                     </tr>
                                 </thead>
                                 <tbody id="todayActionList"></tbody>
@@ -4645,17 +4651,20 @@ input[type="date"] {
                                     <tr>
                                         <th style="width: 44px; text-align: center; font-size: 13px; padding: 7px 4px;"><i class="fa-solid fa-hashtag text-primary" style="font-size: 11px;"></i> ល.រ</th>
                                         <th style="text-align: center; padding: 7px 6px; width: 95px; font-size: 13.5px;"><i class="fa-solid fa-file-invoice-dollar text-primary"></i> វិក្កយបត្រ</th>
-                                        <th style="cursor: pointer; user-select: none; padding: 7px 6px; width: 105px; font-size: 13.5px;" onclick="toggleBookingSortDateTime()" title="ចុចដើម្បីប្តូរលំដាប់ ម៉ោង និងកាលបរិច្ឆេទ">
-                                            <i class="fa-regular fa-clock text-primary"></i> ម៉ោង / ថ្ងៃ
+                                        <th style="cursor: pointer; user-select: none; padding: 7px 6px; width: 130px; font-size: 13.5px;" onclick="toggleBookingSortDateTime()" title="ចុចដើម្បីប្តូរលំដាប់ ម៉ោង និងកាលបរិច្ឆេទ">
+                                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
+                                                <span><i class="fa-regular fa-clock text-primary"></i> ម៉ោង / ថ្ងៃ</span>
+                                                <span style="font-size: 11px; color: #7c3aed; font-weight: 800;"><i class="fa-solid fa-paper-plane"></i> Share</span>
+                                            </div>
                                         </th>
                                         <th style="padding: 7px 8px; width: 175px; font-size: 13.5px;"><i class="fa-solid fa-user text-primary"></i> ភ្ញៀវ / អ្នកកក់</th>
                                         <th style="text-align: center; padding: 7px 6px; width: 135px; font-size: 13.5px;"><i class="fa-brands fa-telegram text-primary"></i> តេលេក្រាមតៃកុង</th>
                                         <th style="padding: 7px 8px; width: 210px; font-size: 13.5px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅធ្វើដំណើរ (Route)</th>
                                         <th style="padding: 7px 6px; width: 155px; font-size: 13.5px;"><i class="fa-solid fa-car text-primary"></i> ប្រភេទរថយន្ត</th>
                                         <th style="text-align: center; padding: 7px 8px; width: 120px; font-size: 13.5px;"><i class="fa-solid fa-star text-warning"></i> VIP / ក្លៀដាន</th>
-                                        <th style="text-align: center; padding: 7px 6px; width: 95px; font-size: 13.5px;"><i class="fa-solid fa-pen-to-square text-primary"></i> កែប្រែ</th>
-                                        <th style="text-align: center; padding: 7px 6px; width: 125px; font-size: 13.5px;"><i class="fa-solid fa-eye text-primary"></i> មើលលម្អិត</th>
-                                        <th style="text-align: center; padding: 7px 8px; min-width: 220px; font-size: 13.5px;"><i class="fa-solid fa-sliders text-primary"></i> សកម្មភាព</th>
+                                        <th style="text-align: center; padding: 7px 4px; width: 80px; font-size: 13px;"><i class="fa-solid fa-pen-to-square text-primary"></i> កែប្រែ</th>
+                                        <th style="text-align: center; padding: 7px 4px; width: 75px; font-size: 13px;"><i class="fa-solid fa-eye text-primary"></i> លម្អិត</th>
+                                        <th style="text-align: center; padding: 7px 4px; width: 175px; font-size: 13px;"><i class="fa-solid fa-sliders text-primary"></i> សកម្មភាព</th>
                                     </tr>
                                 </thead>
                                 <tbody id="bookingsGrid"></tbody>
@@ -13288,15 +13297,11 @@ document.addEventListener('paste', function(e) {
         const invDetailsBtn = effInvoiceNo ? `
             <button type="button" class="btn-ar" onclick="openCarInvoiceForBooking('${b.id}', event)" 
                 title="ចុចដើម្បីមើលលម្អិត និងកែប្រែវិក្កយបត្រ (${effInvoiceNo})"
-                style="padding: 5px 12px; font-size: 13.5px; font-weight: 800; border-radius: 7px; white-space: nowrap; cursor: pointer; background: linear-gradient(135deg, #0284c7, #2563eb); border: 1.5px solid #38bdf8; color: #ffffff; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(2,132,199,0.25); transition: all 0.15s ease;">
-                <i class="fa-solid fa-eye" style="font-size: 13px;"></i> <span>មើលលម្អិត</span>
+                style="padding: 3px 8px; font-size: 12px; font-weight: 800; border-radius: 6px; white-space: nowrap; cursor: pointer; background: linear-gradient(135deg, #0284c7, #2563eb); border: 1.5px solid #38bdf8; color: #ffffff; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(2,132,199,0.2); transition: all 0.15s ease;">
+                <i class="fa-solid fa-eye" style="font-size: 11px;"></i> <span>លម្អិត</span>
             </button>
         ` : `
-            <button type="button" class="btn-ar" onclick="openCarInvoiceForBooking('${b.id}', event)" 
-                title="មិនទាន់មានវិក្កយបត្រទេ (ចុចដើម្បីបង្កើត និងបំពេញវិក្កយបត្រ)"
-                style="padding: 5px 12px; font-size: 13px; font-weight: 800; border-radius: 7px; white-space: nowrap; cursor: pointer; background: #f8fafc; color: #64748b; border: 1.5px dashed #94a3b8; display: inline-flex; align-items: center; gap: 5px;">
-                <i class="fa-regular fa-file-lines" style="color: #94a3b8; font-size: 13px;"></i> <span>គ្មានវិក្កយបត្រ</span>
-            </button>
+            <span style="color: #94a3b8; font-size: 13px; font-weight: 800;">--</span>
         `;
         const driverTg = b.driverTelegram ? `
             <button type="button" class="btn-ar btn-ar-primary" style="padding: 5px 12px; font-size: 13.5px; font-weight: 800; white-space: nowrap; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(2,132,199,0.25);" onclick="openDispatchDriverModal('${b.id}')" title="ចុចដើម្បីបញ្ជូន ឬចាត់ចែងតៃកុង">
@@ -13314,15 +13319,26 @@ document.addEventListener('paste', function(e) {
                     <span style="display: inline-block; font-size: 13px; font-weight: 800; color: #1e293b; background: #e2e8f0; border: 1px solid #cbd5e1; border-radius: 5px; min-width: 26px; padding: 2px 6px; line-height: 1.4;">${idx != null ? (idx + 1) : '-'}</span>
                 </td>
                 <td style="text-align: center; white-space: nowrap; padding: 6px 5px; width: 95px;">${invoiceBtn}</td>
-                <td style="white-space: nowrap; padding: 6px 7px; width: 105px;">
-                    <div style="display: inline-flex; align-items: baseline; gap: 5px;">
-                        <span style="font-weight: 900; color: ${tInfo.color || '#0284c7'}; font-size: 14.5px; letter-spacing: 0.2px;">
-                            ${b.time || '--:--'}
-                        </span>
-                        ${tInfo.label ? `<span style="font-size: 12.5px; font-weight: 800; color: #334155;">${tInfo.label}</span>` : ''}
-                    </div>
-                    <div style="font-size: 12px; font-weight: 800; color: #334155; margin-top: 1px;">
-                        ${b.date || ''}
+                <td style="white-space: nowrap; padding: 6px 7px; width: 130px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                        <div>
+                            <div style="display: inline-flex; align-items: baseline; gap: 5px;">
+                                <span style="font-weight: 900; color: ${tInfo.color || '#0284c7'}; font-size: 14.5px; letter-spacing: 0.2px;">
+                                    ${b.time || '--:--'}
+                                </span>
+                                ${tInfo.label ? `<span style="font-size: 12.5px; font-weight: 800; color: #334155;">${tInfo.label}</span>` : ''}
+                            </div>
+                            <div style="font-size: 12px; font-weight: 800; color: #334155; margin-top: 1px;">
+                                ${b.date || ''}
+                            </div>
+                        </div>
+                        ${effInvoiceNo ? `
+                            <button type="button" class="btn-ar" onclick="directShareBookingInvoice('${b.id}', '${encodeURIComponent(effInvoiceNo)}', event)" 
+                                style="padding: 3px 6px; font-size: 11px; font-weight: 800; border-radius: 6px; background: #f5f3ff; color: #7c3aed; border: 1.5px solid #ddd6fe; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; box-shadow: 0 1px 2px rgba(124, 58, 237, 0.12); flex-shrink: 0;" 
+                                title="Share វិក្កយបត្រ (${effInvoiceNo}) ទៅ Telegram ភ្លាមៗ">
+                                <i class="fa-solid fa-paper-plane" style="font-size: 10px;"></i> <span>Share</span>
+                            </button>
+                        ` : ''}
                     </div>
                 </td>
                 <td style="white-space: nowrap; padding: 6px 8px; width: 175px;">
@@ -13362,15 +13378,15 @@ document.addEventListener('paste', function(e) {
                         ${(vipBadge || borderBadge) ? (vipBadge + (vipBadge && borderBadge ? ' ' : '') + borderBadge) : '<span style="color: #64748b; font-size: 13px; font-weight: 800;">--</span>'}
                     </div>
                 </td>
-                <td style="text-align: center; white-space: nowrap; padding: 6px 8px; width: 95px;">
-                    <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 12px; font-size: 13px; font-weight: 800; border: 1.5px solid #bfdbfe; color: #2563eb; background: #eff6ff; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;" onclick="openEditBookingModal('${b.id}')" title="កែប្រែ"><i class="fa-solid fa-pen-to-square"></i> <span>កែប្រែ</span></button>
+                <td style="text-align: center; white-space: nowrap; padding: 5px 4px; width: 80px;">
+                    <button type="button" class="btn-ar btn-ar-outline" style="padding: 3px 8px; font-size: 12px; font-weight: 800; border: 1.5px solid #bfdbfe; color: #2563eb; background: #eff6ff; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;" onclick="openEditBookingModal('${b.id}')" title="កែប្រែ"><i class="fa-solid fa-pen-to-square" style="font-size: 11px;"></i> <span>កែប្រែ</span></button>
                 </td>
-                <td style="text-align: center; white-space: nowrap; padding: 6px 8px;">${invDetailsBtn}</td>
-                <td style="text-align: center; white-space: nowrap; padding: 6px 8px;">
-                    <div style="display: inline-flex; gap: 6px; align-items: center;">
-                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #7dd3fc; color: #0284c7; background: #e0f2fe; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;" onclick="openDispatchDriverModal('${b.id}')" title="បញ្ជូនទិន្នន័យ & ទីតាំងទៅ Telegram តៃកុង"><i class="fa-solid fa-share-nodes"></i> <span>ផ្ញើ</span></button>
-                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #99f6e4; color: #0f766e; background: #f0fdfa; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;" onclick="viewBookingDetails('${b.id}')" title="ព័ត៌មានកក់ឡាន (Booking Info)"><i class="fa-solid fa-circle-info"></i> <span>ព័ត៌មាន</span></button>
-                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 5px 10px; font-size: 13px; font-weight: 800; border: 1.5px solid #fca5a5; color: #dc2626; background: #fef2f2; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;" onclick="deleteBooking('${b.id}', this)" title="លុប"><i class="fa-solid fa-trash-can"></i> <span>លុប</span></button>
+                <td style="text-align: center; white-space: nowrap; padding: 5px 4px; width: 75px;">${invDetailsBtn}</td>
+                <td style="text-align: center; white-space: nowrap; padding: 5px 4px; width: 175px;">
+                    <div style="display: inline-flex; gap: 4px; align-items: center;">
+                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 3px 7px; font-size: 11.5px; font-weight: 800; border: 1.5px solid #7dd3fc; color: #0284c7; background: #e0f2fe; border-radius: 6px; display: inline-flex; align-items: center; gap: 3px;" onclick="openDispatchDriverModal('${b.id}')" title="បញ្ជូនទិន្នន័យ & ទីតាំងទៅ Telegram តៃកុង"><i class="fa-solid fa-share-nodes" style="font-size: 10.5px;"></i> <span>ផ្ញើ</span></button>
+                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 3px 7px; font-size: 11.5px; font-weight: 800; border: 1.5px solid #99f6e4; color: #0f766e; background: #f0fdfa; border-radius: 6px; display: inline-flex; align-items: center; gap: 3px;" onclick="viewBookingDetails('${b.id}')" title="ព័ត៌មានកក់ឡាន (Booking Info)"><i class="fa-solid fa-circle-info" style="font-size: 10.5px;"></i> <span>ព័ត៌មាន</span></button>
+                        <button type="button" class="btn-ar btn-ar-outline" style="padding: 3px 7px; font-size: 11.5px; font-weight: 800; border: 1.5px solid #fca5a5; color: #dc2626; background: #fef2f2; border-radius: 6px; display: inline-flex; align-items: center; gap: 3px;" onclick="deleteBooking('${b.id}', this)" title="លុប"><i class="fa-solid fa-trash-can" style="font-size: 10.5px;"></i> <span>លុប</span></button>
                     </div>
                 </td>
             </tr>
@@ -15367,6 +15383,43 @@ document.addEventListener('paste', function(e) {
     });
 
     // Clear Booking Form & Telegram Cards State Completely
+    window.directShareBookingInvoice = async function(bookingId, rNoEnc, event) {
+        if (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+        const cleanNo = decodeURIComponent(rNoEnc || '').trim();
+        if (!cleanNo || cleanNo === 'None' || cleanNo === 'null') {
+            if (typeof showToast === 'function') {
+                showToast('⚠️ ការកក់នេះមិនទាន់មានវិក្កយបត្រដើម្បី Share ទេ!', false);
+            }
+            return;
+        }
+
+        if (typeof showToast === 'function') {
+            showToast(`⏳ កំពុងរៀបចំ Share វិក្កយបត្រ ${cleanNo}...`, true);
+        }
+
+        // Ensure database records are loaded
+        if (typeof allDatabaseRecords === 'undefined' || !Array.isArray(allDatabaseRecords) || allDatabaseRecords.length === 0) {
+            if (typeof loadDatabaseRecords === 'function') {
+                await new Promise(resolve => loadDatabaseRecords(resolve));
+            }
+        }
+
+        // Open modal & trigger 1-click share
+        if (typeof openReceiptModal === 'function') {
+            openReceiptModal(encodeURIComponent(cleanNo));
+            setTimeout(async () => {
+                if (typeof shareReceiptTelegram === 'function') {
+                    await shareReceiptTelegram();
+                }
+            }, 350);
+        } else {
+            window.location.href = 'tg://msg';
+        }
+    };
+
     window.handleClearBookingFormModal = function() {
         editingBookingId = null;
 

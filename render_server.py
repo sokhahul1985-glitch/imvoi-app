@@ -296,122 +296,160 @@ def format_group_customer_names(members):
         return clean_names[0]
     return ", ".join([f"{idx + 1}. {n}" for idx, n in enumerate(clean_names)])
 
-def get_next_invoice_no(category='car'):
-    data = load_json(SAVED_CUSTOMERS_FILE, [])
-    counter = load_json(INVOICE_COUNTER_FILE, {
-        "last_number": 0, "prefix": "INV ",
-        "last_visa_number": 0, "visa_prefix": "VISA ",
-        "last_passport_number": 0, "passport_prefix": "INV "
-    })
-    cat = (category or 'car').lower().strip()
-    
-    if cat == 'visa':
-        prefix = counter.get("visa_prefix", "VISA ")
-        nums = []
-        for item in data:
-            if item.get('service_category') == 'visa' or item.get('group_info', {}).get('service_category') == 'visa':
-                r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
-                if r_no.startswith('VISA'):
-                    num_part = re.sub(r'[^0-9]', '', r_no)
-                    if num_part.isdigit():
-                        nums.append(int(num_part))
-        if nums:
-            max_num = max(nums)
-        else:
-            max_num = int(counter.get("last_visa_number", 0))
+_INVOICE_LOCK = threading.Lock()
+_ACTIVE_RESERVATIONS = {
+    'car': {},
+    'visa': {},
+    'passport': {},
+    'quote': {}
+}
+RESERVATION_TTL_SECONDS = 300
+
+def invoice_number_matches(item, target_no):
+    if not item or not target_no:
+        return False
+    t = str(target_no).strip().lower().replace(' ', '')
+    candidates = [
+        str(item.get('receipt_no') or ''),
+        str(item.get('group_data', {}).get('receipt_no') or ''),
+        str(item.get('customer', {}).get('receipt_no') or ''),
+        str(item.get('group_info', {}).get('receipt_no') or '')
+    ]
+    return any(c.strip().lower().replace(' ', '') == t for c in candidates if c)
+
+def get_next_invoice_no(category='car', reserve=True):
+    with _INVOICE_LOCK:
+        cat = (category or 'car').lower().strip()
+        if cat in ['line']:
+            cat = 'car'
+        elif cat in ['quotation']:
+            cat = 'quote'
         
-        # Keep counter file in sync
-        if counter.get("last_visa_number") != max_num:
-            counter["last_visa_number"] = max_num
-            save_json(INVOICE_COUNTER_FILE, counter)
-            
-        return f"{prefix}{(max_num + 1):05d}"
+        now = time.time()
+        for c_key in list(_ACTIVE_RESERVATIONS.keys()):
+            _ACTIVE_RESERVATIONS[c_key] = {
+                num: exp for num, exp in _ACTIVE_RESERVATIONS[c_key].items()
+                if exp > now
+            }
+        
+        if cat not in _ACTIVE_RESERVATIONS:
+            _ACTIVE_RESERVATIONS[cat] = {}
 
-    elif cat == 'passport':
-        prefix = counter.get("passport_prefix", "INV ")
-        nums = []
-        for item in data:
-            if item.get('service_category') == 'passport' or item.get('group_info', {}).get('service_category') == 'passport':
-                r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
-                num_part = re.sub(r'[^0-9]', '', r_no)
-                if num_part.isdigit():
-                    nums.append(int(num_part))
-        if nums:
-            max_num = max(nums)
-        else:
-            max_num = int(counter.get("last_passport_number", 0))
-            
-        # Keep counter file in sync
-        if counter.get("last_passport_number") != max_num:
-            counter["last_passport_number"] = max_num
-            save_json(INVOICE_COUNTER_FILE, counter)
-            
-        return f"{prefix}{(max_num + 1):05d}"
+        data = load_json(SAVED_CUSTOMERS_FILE, [])
+        counter = load_json(INVOICE_COUNTER_FILE, {
+            "last_number": 0, "prefix": "INV ",
+            "last_visa_number": 0, "visa_prefix": "VISA ",
+            "last_passport_number": 0, "passport_prefix": "INV ",
+            "last_quote_number": 0, "quote_prefix": "QT "
+        })
+        if not isinstance(counter, dict):
+            counter = {}
+        
+        if cat == 'visa':
+            prefix = counter.get("visa_prefix", "VISA ")
+            nums = []
+            for item in data:
+                if item.get('service_category') == 'visa' or item.get('group_info', {}).get('service_category') == 'visa':
+                    r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
+                    if r_no.startswith('VISA'):
+                        num_part = re.sub(r'[^0-9]', '', r_no)
+                        if num_part.isdigit():
+                            nums.append(int(num_part))
+            db_max = max(nums) if nums else 0
+            counter_max = safe_int(counter.get("last_visa_number", 0))
+            res_nums = list(_ACTIVE_RESERVATIONS['visa'].keys())
+            max_all = max([db_max, counter_max] + res_nums)
+            next_num = max_all + 1
 
-    elif cat in ['quote', 'quotation']:
-        prefix = counter.get("quote_prefix", "QT ")
-        nums = []
-        for item in data:
-            if item.get('service_category') in ['quote', 'quotation'] or item.get('group_info', {}).get('service_category') in ['quote', 'quotation']:
-                r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
-                if r_no.startswith('QT') or r_no.startswith('QUO'):
+            if reserve:
+                _ACTIVE_RESERVATIONS['visa'][next_num] = now + RESERVATION_TTL_SECONDS
+                counter["last_visa_number"] = next_num
+                save_json(INVOICE_COUNTER_FILE, counter)
+            elif counter.get("last_visa_number") != max_all:
+                counter["last_visa_number"] = max_all
+                save_json(INVOICE_COUNTER_FILE, counter)
+
+            return f"{prefix}{next_num:05d}"
+
+        elif cat == 'passport':
+            prefix = counter.get("passport_prefix", "INV ")
+            nums = []
+            for item in data:
+                if item.get('service_category') == 'passport' or item.get('group_info', {}).get('service_category') == 'passport':
+                    r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
                     num_part = re.sub(r'[^0-9]', '', r_no)
                     if num_part.isdigit():
                         nums.append(int(num_part))
-        if nums:
-            max_num = max(nums)
-        else:
-            max_num = int(counter.get("last_quote_number", 0))
-            
-        # Keep counter file in sync
-        if counter.get("last_quote_number") != max_num:
-            counter["last_quote_number"] = max_num
-            save_json(INVOICE_COUNTER_FILE, counter)
-            
-        return f"{prefix}{(max_num + 1):05d}"
+            db_max = max(nums) if nums else 0
+            counter_max = safe_int(counter.get("last_passport_number", 0))
+            res_nums = list(_ACTIVE_RESERVATIONS['passport'].keys())
+            max_all = max([db_max, counter_max] + res_nums)
+            next_num = max_all + 1
 
-    else:
-        prefix = counter.get("prefix", "INV ")
-        nums = []
-        for item in data:
-            if item.get('service_category') in ['car', 'line'] or (not item.get('service_category') and not item.get('group_info', {}).get('service_category')):
-                r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
-                if r_no.startswith('INV'):
-                    num_part = re.sub(r'[^0-9]', '', r_no)
-                    if num_part.isdigit():
-                        nums.append(int(num_part))
-        if nums:
-            max_num = max(nums)
-        else:
-            max_num = int(counter.get("last_number", 0))
-            
-        # Keep counter file in sync
-        if counter.get("last_number") != max_num:
-            counter["last_number"] = max_num
-            save_json(INVOICE_COUNTER_FILE, counter)
-            
-        return f"{prefix}{(max_num + 1):05d}"
+            if reserve:
+                _ACTIVE_RESERVATIONS['passport'][next_num] = now + RESERVATION_TTL_SECONDS
+                counter["last_passport_number"] = next_num
+                save_json(INVOICE_COUNTER_FILE, counter)
+            elif counter.get("last_passport_number") != max_all:
+                counter["last_passport_number"] = max_all
+                save_json(INVOICE_COUNTER_FILE, counter)
+
+            return f"{prefix}{next_num:05d}"
+
+        elif cat in ['quote', 'quotation']:
+            prefix = counter.get("quote_prefix", "QT ")
+            nums = []
+            for item in data:
+                if item.get('service_category') in ['quote', 'quotation'] or item.get('group_info', {}).get('service_category') in ['quote', 'quotation']:
+                    r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
+                    if r_no.startswith('QT') or r_no.startswith('QUO'):
+                        num_part = re.sub(r'[^0-9]', '', r_no)
+                        if num_part.isdigit():
+                            nums.append(int(num_part))
+            db_max = max(nums) if nums else 0
+            counter_max = safe_int(counter.get("last_quote_number", 0))
+            res_nums = list(_ACTIVE_RESERVATIONS['quote'].keys())
+            max_all = max([db_max, counter_max] + res_nums)
+            next_num = max_all + 1
+
+            if reserve:
+                _ACTIVE_RESERVATIONS['quote'][next_num] = now + RESERVATION_TTL_SECONDS
+                counter["last_quote_number"] = next_num
+                save_json(INVOICE_COUNTER_FILE, counter)
+            elif counter.get("last_quote_number") != max_all:
+                counter["last_quote_number"] = max_all
+                save_json(INVOICE_COUNTER_FILE, counter)
+
+            return f"{prefix}{next_num:05d}"
+
+        else: # car / default
+            prefix = counter.get("prefix", "INV ")
+            nums = []
+            for item in data:
+                if item.get('service_category') in ['car', 'line'] or (not item.get('service_category') and not item.get('group_info', {}).get('service_category')):
+                    r_no = str(item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or '').strip().upper()
+                    if r_no.startswith('INV'):
+                        num_part = re.sub(r'[^0-9]', '', r_no)
+                        if num_part.isdigit():
+                            nums.append(int(num_part))
+            db_max = max(nums) if nums else 0
+            counter_max = safe_int(counter.get("last_number", 0))
+            res_nums = list(_ACTIVE_RESERVATIONS['car'].keys())
+            max_all = max([db_max, counter_max] + res_nums)
+            next_num = max_all + 1
+
+            if reserve:
+                _ACTIVE_RESERVATIONS['car'][next_num] = now + RESERVATION_TTL_SECONDS
+                counter["last_number"] = next_num
+                save_json(INVOICE_COUNTER_FILE, counter)
+            elif counter.get("last_number") != max_all:
+                counter["last_number"] = max_all
+                save_json(INVOICE_COUNTER_FILE, counter)
+
+            return f"{prefix}{next_num:05d}"
 
 def increment_invoice_no(category='car'):
-    next_no = get_next_invoice_no(category)
-    cat = (category or 'car').lower().strip()
-    counter = load_json(INVOICE_COUNTER_FILE, {
-        "last_number": 0, "prefix": "INV ",
-        "last_visa_number": 0, "visa_prefix": "VISA ",
-        "last_passport_number": 0, "passport_prefix": "INV ",
-        "last_quote_number": 0, "quote_prefix": "QT "
-    })
-    num_part = int(re.sub(r'[^0-9]', '', next_no))
-    if cat == 'visa':
-        counter["last_visa_number"] = num_part
-    elif cat == 'passport':
-        counter["last_passport_number"] = num_part
-    elif cat in ['quote', 'quotation']:
-        counter["last_quote_number"] = num_part
-    else:
-        counter["last_number"] = num_part
-    save_json(INVOICE_COUNTER_FILE, counter)
-    return next_no
+    return get_next_invoice_no(category, reserve=True)
 
 def decode_b64_image(b64_str):
     if ',' in b64_str:
@@ -1121,6 +1159,53 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 data = load_json(bk_file, [])
             del_ids = list(load_deleted_booking_ids())
             data = [b for b in data if isinstance(b, dict) and str(b.get('id') or '').strip().upper() not in del_ids]
+
+            # Auto-resolve invoice numbers for bookings missing invoiceNo
+            try:
+                inv_file = SAVED_CUSTOMERS_FILE if os.path.exists(SAVED_CUSTOMERS_FILE) else os.path.join(BASE_DIR, 'saved_customers.json')
+                all_invs = load_json(inv_file, [])
+                if all_invs:
+                    inv_by_bid = {}
+                    inv_by_name_date = {}
+                    for inv in all_invs:
+                        r_no = inv.get('receipt_no') or inv.get('group_data', {}).get('receipt_no')
+                        if not r_no: continue
+                        bid = str(inv.get('booking_id') or inv.get('group_data', {}).get('booking_id') or '').strip().lower()
+                        if bid: inv_by_bid[bid] = r_no
+                        s_name = (inv.get('sender_name') or inv.get('sender') or inv.get('customer_name') or '').strip().lower()
+                        t_date = (inv.get('travel_date') or '').strip()
+                        if s_name and t_date:
+                            inv_by_name_date[(s_name, t_date)] = r_no
+
+                    changed = False
+                    for b in data:
+                        if not b.get('invoiceNo'):
+                            bid = str(b.get('id') or '').strip().lower()
+                            if bid in inv_by_bid:
+                                b['invoiceNo'] = inv_by_bid[bid]
+                                b['invoiceDone'] = True
+                                changed = True
+                                continue
+                            c_name = (b.get('customerName') or '').strip().lower()
+                            b_date = (b.get('date') or '').strip()
+                            if c_name and b_date:
+                                p = b_date.split('-')
+                                alt_date = f"{p[2]}-{p[1]}-{p[0]}" if len(p) == 3 else b_date
+                                m_no = inv_by_name_date.get((c_name, b_date)) or inv_by_name_date.get((c_name, alt_date))
+                                if m_no:
+                                    b['invoiceNo'] = m_no
+                                    b['invoiceDone'] = True
+                                    changed = True
+                    if changed:
+                        save_json(bk_file, data)
+                        if DATA_DIR != BASE_DIR:
+                            try:
+                                save_json(os.path.join(BASE_DIR, 'saved_bookings.json'), data)
+                            except Exception:
+                                pass
+            except Exception:
+                pass
+
             self.send_json_response({'success': True, 'bookings': data, 'count': len(data), 'deleted_ids': del_ids})
             return
 
@@ -1721,19 +1806,31 @@ try {{
             return
 
         if path == '/api/save_group':
-            group_name = req_data.get('group_name', 'VIP Group').strip()
-            customer_name = req_data.get('customer_name', '').strip()
-            agency_company = req_data.get('agency_company', '').strip()
-            travel_date = req_data.get('travel_date', '').strip()
-            exchange_rate = float(req_data.get('exchange_rate', 33.90))
-            payment_status = req_data.get('payment_status', 'UNPAID').upper()
-            members_raw = req_data.get('members', [])
-            edit_receipt_no = req_data.get('receipt_no', '').strip()
+            with _INVOICE_LOCK:
+                group_name = req_data.get('group_name', 'VIP Group').strip()
+                customer_name = req_data.get('customer_name', '').strip()
+                agency_company = req_data.get('agency_company', '').strip()
+                travel_date = req_data.get('travel_date', '').strip()
+                exchange_rate = float(req_data.get('exchange_rate', 33.90))
+                payment_status = req_data.get('payment_status', 'UNPAID').upper()
+                members_raw = req_data.get('members', [])
+                edit_receipt_no = req_data.get('receipt_no', '').strip()
+                req_is_new = req_data.get('is_new') in [True, 'true', 'True', 1, '1']
+                service_category = req_data.get('service_category', 'car')
 
-            if edit_receipt_no:
-                receipt_no = edit_receipt_no
-            else:
-                receipt_no = increment_invoice_no()
+                all_invoices = load_json(SAVED_CUSTOMERS_FILE, [])
+
+                if edit_receipt_no:
+                    existing_item = next((inv for inv in all_invoices if invoice_number_matches(inv, edit_receipt_no)), None)
+                    if existing_item and req_is_new:
+                        receipt_no = increment_invoice_no(service_category)
+                        while any(invoice_number_matches(inv, receipt_no) for inv in all_invoices):
+                            receipt_no = increment_invoice_no(service_category)
+                        edit_receipt_no = ''
+                    else:
+                        receipt_no = edit_receipt_no
+                else:
+                    receipt_no = increment_invoice_no(service_category)
 
             members = []
             items = []
@@ -1895,6 +1992,11 @@ try {{
                 all_invoices.insert(0, new_invoice)
 
             save_json(SAVED_CUSTOMERS_FILE, all_invoices)
+            if DATA_DIR != BASE_DIR:
+                try:
+                    save_json(os.path.join(BASE_DIR, 'saved_customers.json'), all_invoices)
+                except Exception:
+                    pass
 
             self.send_json_response({'success': True, 'receipt_no': receipt_no})
             return
@@ -1949,26 +2051,44 @@ try {{
             return
 
         elif path == '/api/update_members':
-            clean_r_no = req_data.get('receipt_no', '').strip()
-            receipt_no = clean_r_no.lower()
-            members_data = req_data.get('members', [])
-            travel_date = req_data.get('travel_date', '').strip()
-            sender_name = req_data.get('sender_name', '').strip()
-            agency_company = req_data.get('agency_company', '').strip()
-            group_name_input = req_data.get('group_name', '').strip()
-            req_service_category = str(req_data.get('service_category', '')).strip().lower()
+            with _INVOICE_LOCK:
+                clean_r_no = req_data.get('receipt_no', '').strip()
+                receipt_no = clean_r_no.lower()
+                members_data = req_data.get('members', [])
+                travel_date = req_data.get('travel_date', '').strip()
+                sender_name = req_data.get('sender_name', '').strip()
+                agency_company = req_data.get('agency_company', '').strip()
+                group_name_input = req_data.get('group_name', '').strip()
+                req_service_category = str(req_data.get('service_category', '')).strip().lower()
+                req_booking_id = str(req_data.get('booking_id') or '').strip().lower()
+                req_is_new = req_data.get('is_new') in [True, 'true', 'True', 1, '1']
 
-            if not receipt_no:
-                self.send_json_response({'success': False, 'error': 'Missing receipt_no'}, status=400)
-                return
+                all_invoices = load_json(SAVED_CUSTOMERS_FILE, [])
+                found = False
+                updated_item = None
 
-            all_invoices = load_json(SAVED_CUSTOMERS_FILE, [])
-            found = False
-            updated_item = None
+                # Find if invoice already exists
+                existing_item = None
+                if receipt_no:
+                    for item in all_invoices:
+                        if invoice_number_matches(item, clean_r_no or receipt_no):
+                            existing_item = item
+                            break
 
-            for item in all_invoices:
-                r_no = item.get('group_data', {}).get('receipt_no') or item.get('customer', {}).get('receipt_no') or item.get('receipt_no') or ''
-                if r_no.strip().lower() == receipt_no:
+                # Collision protection: If creating new invoice or belongs to different booking, NEVER overwrite!
+                if existing_item:
+                    existing_bid = str(existing_item.get('booking_id') or existing_item.get('group_data', {}).get('booking_id') or '').strip().lower()
+                    is_different_booking = bool(req_booking_id and existing_bid and req_booking_id != existing_bid)
+                    if req_is_new or is_different_booking:
+                        s_cat = req_service_category or 'car'
+                        clean_r_no = increment_invoice_no(s_cat)
+                        while any(invoice_number_matches(inv, clean_r_no) for inv in all_invoices):
+                            clean_r_no = increment_invoice_no(s_cat)
+                        receipt_no = clean_r_no.lower()
+                        existing_item = None
+
+                if existing_item:
+                    item = existing_item
                     if not clean_r_no:
                         clean_r_no = r_no.strip()
                     else:
@@ -2139,7 +2259,6 @@ try {{
 
                     found = True
                     updated_item = item
-                    break
 
             if not found:
                 # Create brand new group record
@@ -2250,6 +2369,7 @@ try {{
                 new_record = {
                     'id': str(uuid.uuid4()),
                     'receipt_no': clean_r_no,
+                    'booking_id': req_booking_id,
                     'service_category': service_category,
                     'date_saved': datetime.datetime.now().strftime("%d/%m/%Y %H:%M"),
                     'travel_date': formatted_tdate,
@@ -2278,6 +2398,7 @@ try {{
                     },
                     'group_data': {
                         'receipt_no': clean_r_no,
+                        'booking_id': req_booking_id,
                         'customer_name': group_name,
                         'sender_name': sender_name,
                         'date_str': formatted_tdate,
@@ -2333,27 +2454,57 @@ try {{
                 if not os.path.exists(os.path.dirname(bk_file)):
                     bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
                 bks = load_json(bk_file, [])
-                req_b_id = str(req_data.get('booking_id') or '').strip()
+                req_b_id = str(req_data.get('booking_id') or '').strip().lower()
                 target_booking = None
                 if req_b_id:
-                    target_booking = next((b for b in bks if str(b.get('id', '')).strip() == req_b_id), None)
+                    target_booking = next((b for b in bks if str(b.get('id', '')).strip().lower() == req_b_id), None)
                 if not target_booking and clean_r_no:
                     target_booking = next((b for b in bks if str(b.get('invoiceNo', '')).strip().lower() == clean_r_no.lower()), None)
+                if not target_booking and sender_name:
+                    s_clean = sender_name.strip().lower()
+                    for b in bks:
+                        c_clean = str(b.get('customerName', '')).strip().lower()
+                        if (s_clean == c_clean or s_clean in c_clean or c_clean in s_clean) and not b.get('invoiceNo'):
+                            b_date = str(b.get('date', '')).strip()
+                            t_date = str(travel_date or '').strip()
+                            if not b_date or not t_date or b_date in t_date or t_date in b_date:
+                                target_booking = b
+                                break
                 
                 if target_booking:
                     target_booking['invoiceDone'] = True
                     target_booking['invoiceNo'] = clean_r_no
                     save_json(bk_file, bks)
+                    if DATA_DIR != BASE_DIR:
+                        try:
+                            save_json(os.path.join(BASE_DIR, 'saved_bookings.json'), bks)
+                        except Exception:
+                            pass
                     if supabase_db and supabase_db.is_configured():
                         try:
                             threading.Thread(target=supabase_db.save_bookings, args=(bks,), daemon=True).start()
                         except Exception:
                             pass
+                    if updated_item:
+                        updated_item['booking_id'] = str(target_booking.get('id', ''))
             except Exception as e_bk_sync:
                 print(f"[update_members] Error syncing booking invoice status: {e_bk_sync}")
 
+            # Release active in-memory reservation
+            num_part = re.sub(r'[^0-9]', '', clean_r_no)
+            if num_part.isdigit():
+                num_val = int(num_part)
+                cat_k = 'visa' if (req_service_category == 'visa') else ('passport' if (req_service_category == 'passport') else ('quote' if (req_service_category in ['quote', 'quotation']) else 'car'))
+                if cat_k in _ACTIVE_RESERVATIONS:
+                    _ACTIVE_RESERVATIONS[cat_k].pop(num_val, None)
+
             save_json(SAVED_CUSTOMERS_FILE, all_invoices)
-            self.send_json_response({'success': True, 'receipt_no': clean_r_no, 'invoice': updated_item})
+            if DATA_DIR != BASE_DIR:
+                try:
+                    save_json(os.path.join(BASE_DIR, 'saved_customers.json'), all_invoices)
+                except Exception:
+                    pass
+            self.send_json_response({'success': True, 'receipt_no': clean_r_no, 'invoice': updated_item or new_record})
             return
 
         elif path == '/api/update_exchange_rate':
