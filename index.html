@@ -7199,13 +7199,18 @@ input[type="date"] {
                 renderDatabaseTable();
             } catch(e) {}
 
+            const abortCtrl = new AbortController();
+            const timeoutId = setTimeout(() => abortCtrl.abort(), 30000);
+
             fetch('/api/save_group', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(pendingSavePayload)
+                body: JSON.stringify(pendingSavePayload),
+                signal: abortCtrl.signal
             })
             .then(r => r.json())
             .then(res => {
+                clearTimeout(timeoutId);
                 if (res.success) {
                     const catNameKh = chosenCategory === 'car' ? 'ផ្នែកឡាន (Car)' : (chosenCategory === 'passport' ? 'ផ្នែកប៉ាសស្ព័រ & ផ្សេងៗ (Passport)' : 'ផ្នែកវីសា (Visa)');
                     alert(currentEditingReceiptNo ? `🎉 បានធ្វើបច្ចុប្បន្នភាពទិន្នន័យវិក្កយបត្រ ${currentEditingReceiptNo} ក្នុង${catNameKh} បានជោគជ័យ!` : `🎉 រក្សាទុកទិន្នន័យក្រុមទៅក្នុង${catNameKh} បានជោគជ័យ!`);
@@ -7219,7 +7224,9 @@ input[type="date"] {
                 }
             })
             .catch(err => {
-                alert('កំហុសក្នុងការតភ្ជាប់៖ ' + err.message);
+                clearTimeout(timeoutId);
+                const msg = (err && err.name === 'AbortError') ? 'ការរក្សាទុកយឺតពេក (Request Timeout)! សូមសាកល្បងម្ដងទៀត។' : (err.message || err);
+                alert('កំហុសក្នុងការតភ្ជាប់៖ ' + msg);
             });
         }
 
@@ -8980,13 +8987,18 @@ input[type="date"] {
                 btnConfirm.textContent = '⏳ កំពុងបំបែកគ្រុប...';
             }
 
+            const abortCtrl = new AbortController();
+            const timeoutId = setTimeout(() => abortCtrl.abort(), 30000);
+
             fetch('/api/split_group', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(pendingSplitPayload)
+                body: JSON.stringify(pendingSplitPayload),
+                signal: abortCtrl.signal
             })
             .then(r => r.json())
             .then(res => {
+                clearTimeout(timeoutId);
                 if (btnConfirm) {
                     btnConfirm.disabled = false;
                     btnConfirm.textContent = '✂️ បញ្ជាក់ការបំបែកគ្រុប (Confirm Split)';
@@ -9002,11 +9014,13 @@ input[type="date"] {
                 }
             })
             .catch(err => {
+                clearTimeout(timeoutId);
                 if (btnConfirm) {
                     btnConfirm.disabled = false;
                     btnConfirm.textContent = '✂️ បញ្ជាក់ការបំបែកគ្រុប (Confirm Split)';
                 }
-                alert('កំហុសក្នុងការផ្ញើទិន្នន័យ៖ ' + (err.message || err));
+                const msg = (err && err.name === 'AbortError') ? 'ការបំបែកគ្រុបយឺតពេក (Request Timeout)! សូមសាកល្បងម្ដងទៀត។' : (err.message || err);
+                alert('កំហុសក្នុងការផ្ញើទិន្នន័យ៖ ' + msg);
             });
         }
 
@@ -10393,12 +10407,17 @@ input[type="date"] {
                 btnSave.textContent = '⏳ កំពុងរក្សាទុក...';
             }
 
+            const abortCtrl = new AbortController();
+            const timeoutId = setTimeout(() => abortCtrl.abort(), 30000);
+
             fetch('/api/update_members', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(pendingGmmSavePayload)
+                body: JSON.stringify(pendingGmmSavePayload),
+                signal: abortCtrl.signal
             })
             .then(async r => {
+                clearTimeout(timeoutId);
                 const isJson = (r.headers.get('content-type') || '').includes('application/json');
                 const data = isJson ? await r.json() : null;
                 if (!r.ok) {
@@ -10408,6 +10427,7 @@ input[type="date"] {
                 return data;
             })
             .then(res => {
+                clearTimeout(timeoutId);
                 if (btnSave) {
                     btnSave.disabled = false;
                     btnSave.textContent = '💾 រក្សាទុក';
@@ -10488,11 +10508,15 @@ input[type="date"] {
                 }
             })
             .catch(err => {
+                clearTimeout(timeoutId);
                 if (btnSave) {
                     btnSave.disabled = false;
                     btnSave.textContent = '💾 រក្សាទុក';
                 }
-                alert('កំហុសក្នុងការផ្ញើទិន្នន័យ៖ ' + (err.message || err));
+                const msg = (err && err.name === 'AbortError')
+                    ? 'ការរក្សាទុកយឺតពេក (Request Timeout)! សូមពិនិត្យអ៊ីនធឺណិត ឬសាកល្បងម្ដងទៀត។'
+                    : (err.message || err);
+                alert('កំហុសក្នុងការផ្ញើទិន្នន័យ៖ ' + msg);
             });
         }
 
@@ -10514,63 +10538,111 @@ input[type="date"] {
         }
 
         function toggleStatus(rNo, newStatus, idx) {
-            let url = `/api/toggle_status?no=${rNo}&status=${newStatus}`;
+            const rawNo = decodeURIComponent(rNo || '').replace('🛂', '').trim();
+            const targetLower = rawNo.toLowerCase();
+            const targetClean = targetLower.replace(/\s+/g, '');
+
+            // 1. Optimistic instant visual toggle (0ms!)
+            if (Array.isArray(allDatabaseRecords)) {
+                let foundItem = null;
+                if (idx !== undefined && idx !== null && idx !== '' && allDatabaseRecords[idx]) {
+                    foundItem = allDatabaseRecords[idx];
+                }
+                if (!foundItem && targetLower) {
+                    foundItem = allDatabaseRecords.find(item => {
+                        const itemNo = (item.receipt_no || item.group_data?.receipt_no || item.customer?.receipt_no || item.passport_no || item.id || '').toString().trim().toLowerCase().replace('🛂', '').trim();
+                        return itemNo === targetLower || itemNo.replace(/\s+/g, '') === targetClean;
+                    });
+                }
+                if (foundItem) {
+                    foundItem.payment_status = newStatus;
+                    if (foundItem.group_data) foundItem.group_data.payment_status = newStatus;
+                    renderDatabaseTable();
+                    saveLocalVaultSnapshot(allDatabaseRecords);
+                }
+            }
+
+            // 2. Fast background server synchronization (no 5MB reload!)
+            let url = `/api/toggle_status?no=${encodeURIComponent(rawNo)}&status=${encodeURIComponent(newStatus)}`;
             if (idx !== undefined && idx !== null && idx !== '') {
-                url += `&index=${idx}`;
+                url += `&index=${encodeURIComponent(idx)}`;
             }
             fetch(url, { method: 'POST' })
                 .then(r => r.json())
-                .then(res => { if (res.success) loadDatabaseRecords(); });
+                .then(res => {
+                    if (!res || !res.success) {
+                        console.warn("Toggle status server warning:", res && res.error);
+                    }
+                })
+                .catch(err => {
+                    console.error("Toggle status error:", err);
+                });
         }
 
         function deleteRecord(rNo, recordId, originalIdx) {
             const rawNo = decodeURIComponent(rNo || '').replace('🛂', '').trim();
             const displayNo = (rawNo && rawNo !== 'N/A') ? rawNo : 'កំណត់ត្រានេះ';
-            if (confirm(`តើអ្នកពិតជាចង់លុបទិន្នន័យ ${displayNo} នេះមែនទេ?`)) {
-                let url = `/api/delete?no=${encodeURIComponent(rawNo)}`;
-                if (recordId !== undefined && recordId !== null && recordId !== '') {
-                    url += `&id=${encodeURIComponent(recordId)}`;
-                }
-                fetch(url, { method: 'POST' })
-                    .then(r => r.json())
-                    .then(res => { 
-                        if (res.success) {
-                            showToast("🗑️ បានលុបទិន្នន័យដោយជោគជ័យ!");
-                            // Immediately remove from in-memory records and local vault
-                            if (typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) {
-                                allDatabaseRecords = allDatabaseRecords.filter(item => {
-                                    const itemNo = (item.receipt_no || item.group_data?.receipt_no || item.customer?.receipt_no || item.passport_no || item.id || '').toString().trim().toLowerCase().replace('🛂', '').trim();
-                                    return itemNo !== rawNo.toLowerCase();
-                                });
-                                saveLocalVaultSnapshot(allDatabaseRecords);
-                            }
-                            loadDatabaseRecords();
-                        } else {
-                            alert("មិនអាចលុបទិន្នន័យបានឡើយ៖ " + (res.error || "Receipt not found"));
-                        }
-                    })
-                    .catch(err => {
-                        alert("មិនអាចលុបបានឡើយ៖ " + err);
-                    });
+            if (!confirm(`តើអ្នកពិតជាចង់លុបទិន្នន័យ ${displayNo} នេះមែនទេ?`)) return;
+
+            // 1. Optimistic instant visual delete (0ms!)
+            const backupRecords = Array.isArray(allDatabaseRecords) ? [...allDatabaseRecords] : [];
+            const targetLower = rawNo.toLowerCase();
+            const targetClean = targetLower.replace(/\s+/g, '');
+            const recIdStr = String(recordId || '').trim();
+
+            if (Array.isArray(allDatabaseRecords)) {
+                allDatabaseRecords = allDatabaseRecords.filter(item => {
+                    const itemNo = (item.receipt_no || item.group_data?.receipt_no || item.customer?.receipt_no || item.passport_no || item.id || '').toString().trim().toLowerCase().replace('🛂', '').trim();
+                    const itemClean = itemNo.replace(/\s+/g, '');
+                    const curId = String(item.id || '').trim();
+                    if (recIdStr && curId && curId === recIdStr) return false;
+                    if (targetLower && targetLower !== 'n/a' && (itemNo === targetLower || itemClean === targetClean)) return false;
+                    return true;
+                });
+                renderDatabaseTable();
+                saveLocalVaultSnapshot(allDatabaseRecords);
             }
+            showToast("🗑️ បានលុបទិន្នន័យដោយជោគជ័យ!");
+
+            // 2. Background server delete
+            let url = `/api/delete?no=${encodeURIComponent(rawNo)}`;
+            if (recordId !== undefined && recordId !== null && recordId !== '') {
+                url += `&id=${encodeURIComponent(recordId)}`;
+            }
+            fetch(url, { method: 'POST' })
+                .then(r => r.json())
+                .then(res => {
+                    if (!res.success) {
+                        console.warn("Delete server warning:", res.error);
+                    }
+                })
+                .catch(err => {
+                    console.error("Delete sync error:", err);
+                    allDatabaseRecords = backupRecords;
+                    renderDatabaseTable();
+                    alert("មិនអាចលុបទិន្នន័យលើ Server បានឡើយ៖ " + (err.message || err));
+                });
         }
 
         function clearAllRecords() {
-            if (confirm("⚠️ តើអ្នកពិតជាចង់លុបទិន្នន័យទាំងអស់ក្នុងប្រព័ន្ធមែនទេ?")) {
-                fetch('/api/clear_all', { method: 'POST' })
-                    .then(r => r.json())
-                    .then(res => {
-                        if (res.success) {
-                            showToast("🗑️ បានលុបទិន្នន័យទាំងអស់រួចរាល់!");
-                            loadDatabaseRecords();
-                        } else {
-                            alert("មិនអាចសម្អាតទិន្នន័យបានទេ៖ " + (res.error || "Error clearing records"));
-                        }
-                    })
-                    .catch(err => {
-                        alert("មិនអាចសម្អាតបានឡើយ៖ " + err);
-                    });
-            }
+            if (!confirm("⚠️ តើអ្នកពិតជាចង់លុបទិន្នន័យទាំងអស់ក្នុងប្រព័ន្ធមែនទេ?")) return;
+            allDatabaseRecords = [];
+            renderDatabaseTable();
+            saveLocalVaultSnapshot([]);
+            showToast("🗑️ បានលុបទិន្នន័យទាំងអស់រួចរាល់!");
+
+            fetch('/api/clear_all', { method: 'POST' })
+                .then(r => r.json())
+                .then(res => {
+                    if (!res.success) {
+                        alert("មិនអាចសម្អាតទិន្នន័យបានទេ៖ " + (res.error || "Error clearing records"));
+                        loadDatabaseRecords();
+                    }
+                })
+                .catch(err => {
+                    alert("មិនអាចសម្អាតបានឡើយ៖ " + (err.message || err));
+                    loadDatabaseRecords();
+                });
         }
 
         function resetSearch() {
@@ -16669,16 +16741,6 @@ document.addEventListener('paste', function(e) {
             }
         } catch (e) {}
 
-        try {
-            await fetch('/api/bookings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'delete', delete_id: id, bookings: bookings })
-            });
-        } catch (e) {
-            console.error('Error deleting booking:', e);
-        }
-
         closeModal('bookingDetailsModal');
         closeModal('carScheduleModal');
         showToast('បានលុបការកក់លេខ ' + id + ' រួចរាល់ 🗑️');
@@ -16688,6 +16750,15 @@ document.addEventListener('paste', function(e) {
         if (typeof renderFleetSchedule === 'function') renderFleetSchedule();
         if (typeof renderCars === 'function') renderCars(currentCarFilter);
         if (typeof switchTab === 'function') switchTab(currentTab);
+
+        // Fast background server synchronization
+        fetch('/api/bookings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'delete', delete_id: id, bookings: bookings })
+        }).catch(e => {
+            console.error('Error syncing booking delete:', e);
+        });
     };
 
     window.viewBookingDetails = function(id) {
@@ -18185,20 +18256,17 @@ document.addEventListener('paste', function(e) {
         const updated = cars.filter(x => x.id !== id);
         setCars(updated);
 
-        try {
-            await fetch('/api/cars', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cars: updated })
-            });
-        } catch (e) {
-            console.error('Error deleting car on server:', e);
-        }
-
         closeModal('carModal');
         renderCars(currentCarFilter);
         if (typeof populateCarDropdowns === 'function') populateCarDropdowns();
         showToast(`🗑️ បានលុបរថយន្ត «${label}» រួចរាល់!`);
+
+        // Fast background server synchronization
+        fetch('/api/cars', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cars: updated })
+        }).catch(e => console.error('Error deleting car on server:', e));
     };
 
     // Customer Modal
@@ -18345,20 +18413,6 @@ document.addEventListener('paste', function(e) {
         });
         setCustomers(custs);
 
-        // Also notify server /api/customers and add to hiddenSenders to prevent re-emergence
-        try {
-            await fetch('/api/customers', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'delete', delete_id: id, customer_name: name })
-            });
-            await fetch('/api/hidden_senders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sender_name: name })
-            });
-        } catch (e) {}
-
         const el = document.getElementById('bookingCustomerSelect');
         if (el && (el.value === id || el.value === name)) {
             el.value = '';
@@ -18371,6 +18425,19 @@ document.addEventListener('paste', function(e) {
         if (typeof renderCustomers === 'function') renderCustomers();
         if (typeof renderSenderManagerList === 'function') renderSenderManagerList();
         showToast(`🗑️ បានលុបភ្ញៀវ «${name}» ចេញពីបញ្ជីជោគជ័យ!`);
+
+        // Fast background server synchronization
+        fetch('/api/customers', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'delete', delete_id: id, customer_name: name })
+        }).catch(e => console.warn('Customer delete sync error:', e));
+
+        fetch('/api/hidden_senders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sender_name: name })
+        }).catch(e => {});
     };
 
     window.deleteSelectedCustomerFromDropdown = function() {

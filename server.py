@@ -190,16 +190,16 @@ def save_json(filepath, data):
 
             data = sorted(data, key=lambda b: (_date_sort_key(b.get('date')), _parse_bk_min(b.get('time')), str(b.get('id', ''))))
 
-        # 1. Thread-safe atomic write using temp file + rename
+        # 1. Thread-safe fast atomic write using temp file + rename
         tmp_file = f"{filepath}.tmp_{os.getpid()}_{int(time.time()*1000)}"
         with open(tmp_file, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+            json.dump(data, f, ensure_ascii=False)
         try:
             os.replace(tmp_file, filepath)
         except Exception:
             # Fallback for Windows lock contention
             with open(filepath, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
+                json.dump(data, f, ensure_ascii=False)
             if os.path.exists(tmp_file):
                 try: os.remove(tmp_file)
                 except Exception: pass
@@ -213,54 +213,56 @@ def save_json(filepath, data):
             elif 'saved_bookings' in filepath and isinstance(data, list):
                 threading.Thread(target=supabase_db.save_bookings, args=(data,), daemon=True).start()
 
-        # 3. Auto-backup if saving customer database
-        if 'saved_customers' in filepath and isinstance(data, list) and len(data) > 0:
-            backup_dir = os.path.join(os.path.dirname(filepath), 'backups')
-            os.makedirs(backup_dir, exist_ok=True)
-            # Latest snapshot backup
-            latest_bak = os.path.join(backup_dir, 'saved_customers_latest_vault.json')
-            with open(latest_bak, 'w', encoding='utf-8') as fb:
-                json.dump(data, fb, ensure_ascii=False, indent=2)
-            # Hourly/Daily rolling backup
-            hour_tag = datetime.datetime.now().strftime('%Y%m%d_%H')
-            hourly_bak = os.path.join(backup_dir, f'customers_auto_{hour_tag}.json')
-            if not os.path.exists(hourly_bak):
-                with open(hourly_bak, 'w', encoding='utf-8') as fh:
-                    json.dump(data, fh, ensure_ascii=False, indent=2)
+        # 3. Asynchronous Auto-backup so disk writes do NOT block user requests
+        def _async_backups_task(target_path, target_data):
+            try:
+                if 'saved_customers' in target_path and isinstance(target_data, list) and len(target_data) > 0:
+                    backup_dir = os.path.join(os.path.dirname(target_path), 'backups')
+                    os.makedirs(backup_dir, exist_ok=True)
+                    latest_bak = os.path.join(backup_dir, 'saved_customers_latest_vault.json')
+                    with open(latest_bak, 'w', encoding='utf-8') as fb:
+                        json.dump(target_data, fb, ensure_ascii=False)
+                    hour_tag = datetime.datetime.now().strftime('%Y%m%d_%H')
+                    hourly_bak = os.path.join(backup_dir, f'customers_auto_{hour_tag}.json')
+                    if not os.path.exists(hourly_bak):
+                        with open(hourly_bak, 'w', encoding='utf-8') as fh:
+                            json.dump(target_data, fh, ensure_ascii=False)
 
-            # Cross-backup to BASE_DIR when DATA_DIR differs (e.g. /var/data vs repo dir)
-            if os.path.abspath(DATA_DIR) != os.path.abspath(BASE_DIR):
-                try:
-                    base_live_bak = os.path.join(BASE_DIR, 'saved_customers_live_backup.json')
-                    with open(base_live_bak, 'w', encoding='utf-8') as fbase:
-                        json.dump(data, fbase, ensure_ascii=False, indent=2)
-                    base_bak_dir = os.path.join(BASE_DIR, 'backups')
-                    os.makedirs(base_bak_dir, exist_ok=True)
-                    base_vault = os.path.join(base_bak_dir, 'saved_customers_latest_vault.json')
-                    with open(base_vault, 'w', encoding='utf-8') as fv:
-                        json.dump(data, fv, ensure_ascii=False, indent=2)
-                except Exception as ce:
-                    print(f"[CrossBackup] Warning (non-fatal): {ce}")
+                    if os.path.abspath(DATA_DIR) != os.path.abspath(BASE_DIR):
+                        try:
+                            base_live_bak = os.path.join(BASE_DIR, 'saved_customers_live_backup.json')
+                            with open(base_live_bak, 'w', encoding='utf-8') as fbase:
+                                json.dump(target_data, fbase, ensure_ascii=False)
+                            base_bak_dir = os.path.join(BASE_DIR, 'backups')
+                            os.makedirs(base_bak_dir, exist_ok=True)
+                            base_vault = os.path.join(base_bak_dir, 'saved_customers_latest_vault.json')
+                            with open(base_vault, 'w', encoding='utf-8') as fv:
+                                json.dump(target_data, fv, ensure_ascii=False)
+                        except Exception as ce:
+                            pass
 
-        # 4. Auto-backup if saving car bookings database
-        if 'saved_bookings' in filepath and isinstance(data, list) and len(data) > 0:
-            bk_backup_dir = os.path.join(os.path.dirname(filepath), 'backups')
-            os.makedirs(bk_backup_dir, exist_ok=True)
-            latest_bk_bak = os.path.join(bk_backup_dir, 'saved_bookings_latest_vault.json')
-            with open(latest_bk_bak, 'w', encoding='utf-8') as fb:
-                json.dump(data, fb, ensure_ascii=False, indent=2)
-            hour_tag = datetime.datetime.now().strftime('%Y%m%d_%H')
-            hourly_bk_bak = os.path.join(bk_backup_dir, f'bookings_auto_{hour_tag}.json')
-            if not os.path.exists(hourly_bk_bak):
-                with open(hourly_bk_bak, 'w', encoding='utf-8') as fh:
-                    json.dump(data, fh, ensure_ascii=False, indent=2)
-            if os.path.abspath(DATA_DIR) != os.path.abspath(BASE_DIR):
-                try:
-                    base_bks_bak = os.path.join(BASE_DIR, 'saved_bookings.json')
-                    with open(base_bks_bak, 'w', encoding='utf-8') as fbase:
-                        json.dump(data, fbase, ensure_ascii=False, indent=2)
-                except Exception:
-                    pass
+                elif 'saved_bookings' in target_path and isinstance(target_data, list) and len(target_data) > 0:
+                    bk_backup_dir = os.path.join(os.path.dirname(target_path), 'backups')
+                    os.makedirs(bk_backup_dir, exist_ok=True)
+                    latest_bk_bak = os.path.join(bk_backup_dir, 'saved_bookings_latest_vault.json')
+                    with open(latest_bk_bak, 'w', encoding='utf-8') as fb:
+                        json.dump(target_data, fb, ensure_ascii=False)
+                    hour_tag = datetime.datetime.now().strftime('%Y%m%d_%H')
+                    hourly_bk_bak = os.path.join(bk_backup_dir, f'bookings_auto_{hour_tag}.json')
+                    if not os.path.exists(hourly_bk_bak):
+                        with open(hourly_bk_bak, 'w', encoding='utf-8') as fh:
+                            json.dump(target_data, fh, ensure_ascii=False)
+                    if os.path.abspath(DATA_DIR) != os.path.abspath(BASE_DIR):
+                        try:
+                            base_bks_bak = os.path.join(BASE_DIR, 'saved_bookings.json')
+                            with open(base_bks_bak, 'w', encoding='utf-8') as fbase:
+                                json.dump(target_data, fbase, ensure_ascii=False)
+                        except Exception:
+                            pass
+            except Exception:
+                pass
+
+        threading.Thread(target=_async_backups_task, args=(filepath, data), daemon=True).start()
         return True
     except Exception as e:
         print("Save JSON Error:", e)
@@ -301,7 +303,7 @@ def format_group_customer_names(members):
         return clean_names[0]
     return ", ".join([f"{idx + 1}. {n}" for idx, n in enumerate(clean_names)])
 
-_INVOICE_LOCK = threading.Lock()
+_INVOICE_LOCK = threading.RLock()
 _ACTIVE_RESERVATIONS = {
     'car': {},
     'visa': {},
@@ -2103,7 +2105,7 @@ try {{
                 if existing_item:
                     item = existing_item
                     if not clean_r_no:
-                        clean_r_no = r_no.strip()
+                        clean_r_no = item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or ''
                     else:
                         clean_r_no = item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or clean_r_no
                     if travel_date:
