@@ -6210,12 +6210,8 @@ input[type="date"] {
 
                     </div>
 
-                    <div style="text-align: right;">
-                        <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">INVOICE</div>
-                        <div style="font-size: 1.05rem; font-weight: 800; color: #0f172a;">OFFICIAL INVOICE</div>
-                        <div style="font-size: 0.88rem; font-weight: 800; color: #0284c7; margin-top: 4px;">
-                            No: <span id="mReceiptNo">INV ...</span>
-                        </div>
+                    <div style="text-align: right; display: flex; align-items: center; justify-content: flex-end;">
+                        <span id="mReceiptNo" style="font-size: 1.35rem; font-weight: 900; color: #0284c7; letter-spacing: 0.5px; white-space: nowrap;">INV ...</span>
                     </div>
                 </div>
 
@@ -6266,14 +6262,14 @@ input[type="date"] {
                     </div>
 
                     <div style="width: 270px; flex-shrink: 0;">
-                        <div style="display:flex; justify-content:space-between; padding:4px 8px; border-bottom:1px solid #e2e8f0; font-size:0.85rem;">
-                            <span>Total Pax:</span><strong id="mPaxCount">1 Pax</strong>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 8px; border-bottom:1px solid #e2e8f0; font-size:0.85rem; color:#475569;">
+                            <span style="font-weight:600;">Total Pax :</span><strong id="mPaxCount" style="font-size:0.95rem; font-weight:800; color:#0f172a;">1 Pax</strong>
                         </div>
-                        <div style="display:flex; justify-content:space-between; padding:6px 8px; font-size:0.95rem; font-weight:800; color:#0284c7; background:#f0f9ff; border-radius:6px; margin-top:4px;">
-                            <span>GRAND TOTAL:</span><span id="mGrandUSD">$0.00</span>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:5px 8px; font-size:0.98rem; font-weight:800; color:#0284c7; background:#f0f9ff; border-radius:6px; margin-top:4px; border:1px solid #bae6fd;">
+                            <span style="letter-spacing:0.3px;">GRAND  TOTAL :</span><span id="mGrandUSD" style="font-size:1.25rem; font-weight:900; color:#0284c7; font-family:'Inter', -apple-system, sans-serif; white-space:nowrap;">$0.00</span>
                         </div>
-                        <div style="display:flex; justify-content:space-between; padding:4px 8px; color:#0284c7; font-weight:700; font-size:0.82rem;">
-                            <span>Total Baht (THB):</span><span id="mGrandTHB">฿0.00</span>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 8px; color:#0284c7; font-weight:700; font-size:0.88rem; margin-top:2px;">
+                            <span>Total Baht (THB):</span><span id="mGrandTHB" style="font-size:1.1rem; font-weight:900; color:#0284c7; font-family:'Inter', -apple-system, sans-serif; white-space:nowrap;">฿0.00</span>
                         </div>
                     </div>
                 </div>
@@ -11237,21 +11233,29 @@ input[type="date"] {
             return blob;
         }
 
-        async function downloadReceiptPNG() {
-            let tDate = document.getElementById('mTravelDate')?.textContent?.trim() || '';
-            let rNo = document.getElementById('mReceiptNo')?.textContent?.trim() || 'Receipt';
-            rNo = rNo.replace(/^No\s*[:.-]?\s*/i, '').trim();
-            tDate = tDate.replace(/\//g, '-').replace(/[^a-zA-Z0-9\-]/g, '');
-            if (!tDate || tDate === '-') {
+        function getReceiptFileName(rNo, tDate) {
+            let rawNo = (rNo || '').replace(/^No\s*[:.-]?\s*/i, '').trim();
+            let rawDate = (tDate || '').replace(/\//g, '-').replace(/[^a-zA-Z0-9\-]/g, '').trim();
+            if (!rawDate || rawDate === '-') {
                 const today = new Date();
                 const dd = String(today.getDate()).padStart(2, '0');
                 const mm = String(today.getMonth() + 1).padStart(2, '0');
                 const yyyy = today.getFullYear();
-                tDate = `${dd}-${mm}-${yyyy}`;
+                rawDate = `${dd}-${mm}-${yyyy}`;
             }
+            let cleanNo = rawNo.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9_-]/g, '').replace(/[-_]+/g, '-').replace(/^[-_]|[-_]$/g, '').trim();
+            if (/^\d+$/.test(cleanNo)) {
+                cleanNo = `INV-${cleanNo}`;
+            } else if (!cleanNo) {
+                cleanNo = 'INV';
+            }
+            return `${cleanNo}_${rawDate}.png`;
+        }
 
-            const cleanRNo = rNo.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').trim();
-            const defaultFileName = cleanRNo ? `${tDate}_${cleanRNo}.png` : `${tDate}.png`;
+        async function downloadReceiptPNG() {
+            let tDate = document.getElementById('mTravelDate')?.textContent?.trim() || '';
+            let rNo = document.getElementById('mReceiptNo')?.textContent?.trim() || 'Receipt';
+            const defaultFileName = getReceiptFileName(rNo, tDate);
 
             const receiptEl = document.getElementById('printableReceiptArea');
             if (!receiptEl) return;
@@ -11312,7 +11316,7 @@ input[type="date"] {
                     document.body.removeChild(a);
                     setTimeout(() => URL.revokeObjectURL(url), 1000);
                     if (typeof showToast === 'function') {
-                        showToast('🎉 បានទាញយករូបភាពវិក្កយបត្រដោយជោគជ័យ!');
+                        showToast(`🎉 បានទាញយករូបភាពវិក្កយបត្រ ${defaultFileName} ដោយជោគជ័យ!`);
                     }
                     return;
                 } catch (fallbackErr) {
@@ -11332,7 +11336,7 @@ input[type="date"] {
                 await writable.write(blob);
                 await writable.close();
                 if (typeof showToast === 'function') {
-                    showToast('🎉 បានរក្សាទុករូបភាពវិក្កយបត្រដោយជោគជ័យ!');
+                    showToast(`🎉 បានរក្សាទុករូបភាពវិក្កយបត្រ ${defaultFileName} ដោយជោគជ័យ!`);
                 }
             } catch (err) {
                 console.error("Error saving receipt PNG:", err);
@@ -11378,18 +11382,8 @@ input[type="date"] {
 
         async function shareReceiptTelegram() {
             let rNo = document.getElementById('mReceiptNo')?.textContent?.trim() || 'INV';
-            rNo = rNo.replace(/^No\s*[:.-]?\s*/i, '').trim();
             let tDate = document.getElementById('mTravelDate')?.textContent?.trim() || '';
-            tDate = tDate.replace(/\//g, '-').replace(/[^a-zA-Z0-9\-]/g, '');
-            if (!tDate || tDate === '-') {
-                const today = new Date();
-                const dd = String(today.getDate()).padStart(2, '0');
-                const mm = String(today.getMonth() + 1).padStart(2, '0');
-                const yyyy = today.getFullYear();
-                tDate = `${dd}-${mm}-${yyyy}`;
-            }
-            const cleanRNo = rNo.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').trim();
-            const defaultFileName = cleanRNo ? `${tDate}_${cleanRNo}.png` : `${tDate}.png`;
+            const defaultFileName = getReceiptFileName(rNo, tDate);
 
             const sender = document.getElementById('mSenderName')?.textContent?.trim() || '';
             const total = document.getElementById('mGrandUSD')?.textContent?.trim() || '';
@@ -11433,8 +11427,26 @@ input[type="date"] {
                 // 2. Desktop PC Clipboard Copy & Direct Telegram Launch
                 try {
                     await copyReceiptToClipboard(receiptEl);
+
+                    // Sync file to clipboard with exact filename on Windows host via backend if available
+                    if (blob) {
+                        try {
+                            const reader = new FileReader();
+                            reader.readAsDataURL(blob);
+                            reader.onloadend = async () => {
+                                try {
+                                    await fetch('/api/copy_receipt_file_clipboard', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ image: reader.result, filename: defaultFileName })
+                                    });
+                                } catch (_) {}
+                            };
+                        } catch (_) {}
+                    }
+
                     if (typeof showToast === 'function') {
-                        showToast('📋 បាន Copy រូបភាពវិក្កយបត្ររួចរាល់! ចុច <b>Ctrl + V</b> ក្នុង Telegram ដើម្បី Paste ផ្ញើ', true);
+                        showToast(`📋 បាន Copy វិក្កយបត្រ (<b>${defaultFileName}</b>) រួចរាល់! ចុច <b>Ctrl + V</b> ក្នុង Telegram ដើម្បី Paste ផ្ញើ`, true);
                     }
                     window.location.href = 'tg://msg';
                 } catch (err) {
