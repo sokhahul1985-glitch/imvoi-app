@@ -11,6 +11,7 @@ import subprocess
 import urllib.request
 import urllib.parse
 import datetime
+import sqlite3
 try:
     from PyQt6.QtWidgets import (
         QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton,
@@ -351,6 +352,159 @@ def get_telegram_bot_info(bot_token):
         return {"ok": False, "description": str(e)}
 
 
+# =============================================================================
+# Telegram Smart Dispatch & Two-Way Sync Bridge Functions
+# =============================================================================
+def copy_telegram_message(bot_token, from_chat_id, message_id, to_chat_id, caption=None):
+    """
+    Copies a message (photo, album, text, etc.) from one chat to another via Bot API copyMessage.
+    """
+    if not bot_token or not from_chat_id or not message_id or not to_chat_id:
+        return {"ok": False, "description": "Missing parameters for copyMessage"}
+
+    url = f"https://api.telegram.org/bot{bot_token}/copyMessage"
+    body = {
+        "chat_id": str(to_chat_id),
+        "from_chat_id": str(from_chat_id),
+        "message_id": int(message_id)
+    }
+    if caption:
+        body["caption"] = caption
+    payload = json.dumps(body).encode('utf-8')
+    req = urllib.request.Request(url, data=payload, headers={'Content-Type': 'application/json'})
+
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return json.loads(resp.read().decode('utf-8'))
+    except Exception as e:
+        return {"ok": False, "description": str(e)}
+
+
+def get_bridge_db_path(data_dir=None):
+    base_data = data_dir or os.environ.get('DATA_DIR') or os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_data, "telegram_bridge.db")
+
+
+def init_bridge_db(data_dir=None):
+    db_file = get_bridge_db_path(data_dir)
+    try:
+        conn = sqlite3.connect(db_file)
+        c = conn.cursor()
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS dispatches (
+                driver_msg_id INTEGER PRIMARY KEY,
+                customer_group_id TEXT,
+                customer_name TEXT,
+                dispatch_text TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[BridgeDB] init error: {e}")
+
+
+def record_dispatch_target(driver_msg_id, customer_group_id, customer_name, text="", data_dir=None):
+    if not driver_msg_id or not customer_group_id:
+        return
+    db_file = get_bridge_db_path(data_dir)
+    try:
+        init_bridge_db(data_dir)
+        conn = sqlite3.connect(db_file)
+        c = conn.cursor()
+        c.execute("""
+            INSERT OR REPLACE INTO dispatches (driver_msg_id, customer_group_id, customer_name, dispatch_text)
+            VALUES (?, ?, ?, ?)
+        """, (int(driver_msg_id), str(customer_group_id), str(customer_name), str(text)))
+        conn.commit()
+        conn.close()
+        print(f"[BridgeDB] [OK] Recorded Dispatch #{driver_msg_id} -> {customer_name} ({customer_group_id})")
+    except Exception as e:
+        print(f"[BridgeDB] record error: {e}")
+
+
+def lookup_dispatch_target(driver_msg_id, data_dir=None):
+    if not driver_msg_id:
+        return None, None
+    db_file = get_bridge_db_path(data_dir)
+    try:
+        init_bridge_db(data_dir)
+        conn = sqlite3.connect(db_file)
+        c = conn.cursor()
+        # 1. Exact match on message ID
+        c.execute("SELECT customer_group_id, customer_name FROM dispatches WHERE driver_msg_id = ?", (int(driver_msg_id),))
+        row = c.fetchone()
+        if not row:
+            # 2. Fallback in case driver replied to photo attachment sent right after the text card (within 8 message IDs)
+            c.execute("""
+                SELECT customer_group_id, customer_name FROM dispatches 
+                WHERE driver_msg_id BETWEEN ? AND ? 
+                ORDER BY driver_msg_id DESC LIMIT 1
+            """, (int(driver_msg_id) - 8, int(driver_msg_id)))
+            row = c.fetchone()
+        conn.close()
+        if row:
+            return row[0], row[1]
+    except Exception as e:
+        print(f"[BridgeDB] lookup error: {e}")
+    return None, None
+
+
+def get_all_known_groups(data_dir=None):
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    dirs_to_check = [d for d in [data_dir, base_dir, os.environ.get('DATA_DIR')] if d]
+    groups = {
+        "-5381280318": "J Heng",
+        "-1004424429378": "CK 2849",
+        "-1004480815325": "Phinin",
+        "-1004338568933": "Nab",
+        "-1004336964750": "Smey Ap"
+    }
+    for d in dirs_to_check:
+        gf = os.path.join(d, "known_telegram_groups.json")
+        if os.path.exists(gf):
+            try:
+                with open(gf, "r", encoding="utf-8") as f:
+                    kg = json.load(f)
+                    for gid, gdata in kg.items():
+                        if isinstance(gdata, dict) and "title" in gdata:
+                            groups[str(gid).strip()] = gdata["title"].strip()
+            except Exception:
+                pass
+    return groups
+
+
+def match_customer_group(text, data_dir=None):
+    if not text:
+        return None, None
+    known = get_all_known_groups(data_dir)
+    text_clean = text.lower()
+
+    # 1. Search by 'ឈ្មោះភ្ញៀវ:'
+    m = re.search(r'ឈ្មោះភ្ញៀវ:\s*([^\n\r]+)', text)
+    if m:
+        cust_name = m.group(1).strip()
+        cust_lower = cust_name.lower()
+        for gid, title in known.items():
+            t_lower = title.lower()
+            if t_lower in cust_lower or cust_lower in t_lower:
+                return str(gid), title
+        for gid, title in known.items():
+            for part in title.lower().split():
+                if len(part) >= 3 and part in cust_lower:
+                    return str(gid), title
+
+    # 2. General substring match in full text
+    for gid, title in known.items():
+        t_lower = title.lower()
+        if len(t_lower) >= 3 and t_lower in text_clean:
+            return str(gid), title
+
+    return None, None
+
+
+
 import threading
 import time
 import io
@@ -538,8 +692,33 @@ class TelegramBotListener:
             chat_id_str = str(chat.get("id", ""))
             group_title = chat.get("title") or ""
 
-            # 🛑 Strict Filter: Allow ONLY the bot room "ការកក់ឡាន" (private chat) and booking group "កក់ឡាន" (-1004497657405)
-            # NEVER accept messages from driver groups (J Heng, CK 2849, Phinin, Nab, Smey Ap...)
+            # =========================================================================
+            # Smart Dispatch Bridge: Intercept ANY Driver Reply to a Dispatch Card!
+            # =========================================================================
+            if msg.get("reply_to_message"):
+                replied_id = msg.get("reply_to_message", {}).get("message_id")
+                cust_gid, cust_name = lookup_dispatch_target(replied_id, self.data_dir)
+                if cust_gid:
+                    try:
+                        res_copy = copy_telegram_message(token, chat_id_str, msg.get("message_id"), cust_gid)
+                        if res_copy.get("ok"):
+                            print(f"[TelegramBridge] [FORWARD OK] Driver update #{msg.get('message_id')} -> {cust_name} ({cust_gid})")
+                            confirm_txt = f"✅ បានបញ្ជូនទៅគ្រុបភ្ញៀវ «{cust_name}» រួចរាល់!"
+                            send_telegram_text_bot(token, chat_id_str, confirm_txt)
+                        else:
+                            print(f"[TelegramBridge] [FORWARD ERROR] Failed to copy to customer: {res_copy.get('description')}")
+                    except Exception as ex_copy:
+                        print(f"[TelegramBridge] Error copying message: {ex_copy}")
+                    return  # Fully handled by Smart Bridge; avoid creating customer passport records
+
+            text_peek = (msg.get("text") or msg.get("caption") or "").strip()
+            if not msg.get("reply_to_message") and any(k in text_peek for k in ["ម៉ោងចេញដំណើរ", "ឈ្មោះភ្ញៀវ", "កាលបរិច្ឆេទ", "ប្រភេទរថយន្ត"]):
+                cust_gid, cust_name = match_customer_group(text_peek, self.data_dir)
+                if cust_gid:
+                    record_dispatch_target(msg.get("message_id"), cust_gid, cust_name, text_peek, self.data_dir)
+
+            # 🛑 Strict Filter for Customer Passport OCR:
+            # Allow ONLY the bot room "ការកក់ឡាន" (private chat) and booking group "កក់ឡាន"
             DISALLOWED_DRIVER_CHAT_IDS = ["-5381280318", "-1004424429378", "-1004480815325", "-1004338568933", "-1004336964750"]
             DISALLOWED_TITLES = ["j heng", "ck 2849", "phinin", "nab", "smey ap"]
             
@@ -547,13 +726,13 @@ class TelegramBotListener:
                 return
 
             is_private_bot_chat = (chat_type == "private") or (not chat_id_str.startswith("-"))
-            is_booking_group = (chat_id_str == "-1004497657405") or ("កក់ឡាន" in group_title) or ("ការកក់ឡាន" in group_title)
+            is_booking_group = (chat_id_str in ["-1004497657405", "-1004383171328", "-1004316662584", "-5398990513"]) or ("កក់ឡាន" in group_title) or ("ការកក់ឡាន" in group_title) or ("តេះ1" in group_title) or ("តេះ2" in group_title)
 
             if not (is_private_bot_chat or is_booking_group):
                 # Silently ignore other groups / channels
                 return
 
-            text = (msg.get("text") or msg.get("caption") or "").strip()
+            text = text_peek
             photos = msg.get("photo")
             doc = msg.get("document")
             doc_mime = (doc.get("mime_type") or "").lower() if doc else ""
@@ -564,8 +743,6 @@ class TelegramBotListener:
             )
             has_img = bool(photos) or is_doc_img
 
-            if not text and not has_img:
-                return
             if text and text.startswith('/'):
                 return
 
@@ -851,11 +1028,36 @@ class TelegramBotListener:
                     if not msg:
                         continue
 
-                    # 🛑 Strict Chat filter: Allow ONLY bot room "ការកក់ឡាន" and booking group "កក់ឡាន" (-1004497657405)
+                    # =========================================================================
+                    # 1. Smart Dispatch Bridge: Intercept ANY Driver Reply to a Dispatch Card!
+                    # =========================================================================
                     c_id_str = str((msg.get("chat") or {}).get("id", "")).strip()
                     c_type = str((msg.get("chat") or {}).get("type", "")).lower()
                     c_title = str((msg.get("chat") or {}).get("title", "")).strip()
 
+                    if msg.get("reply_to_message"):
+                        replied_id = msg.get("reply_to_message", {}).get("message_id")
+                        cust_gid, cust_name = lookup_dispatch_target(replied_id, self.data_dir)
+                        if cust_gid:
+                            try:
+                                res_copy = copy_telegram_message(token, c_id_str, msg.get("message_id"), cust_gid)
+                                if res_copy.get("ok"):
+                                    print(f"[TelegramBridge] [FORWARD OK] Driver update #{msg.get('message_id')} -> {cust_name} ({cust_gid})")
+                                    confirm_txt = f"✅ បានបញ្ជូនទៅគ្រុបភ្ញៀវ «{cust_name}» រួចរាល់!"
+                                    send_telegram_text_bot(token, c_id_str, confirm_txt)
+                                else:
+                                    print(f"[TelegramBridge] [FORWARD ERROR] Failed to copy to customer: {res_copy.get('description')}")
+                            except Exception as ex_copy:
+                                print(f"[TelegramBridge] Error copying message: {ex_copy}")
+                            continue  # Handled completely by Smart Bridge!
+
+                    text_peek = (msg.get("text") or msg.get("caption") or "").strip()
+                    if not msg.get("reply_to_message") and any(k in text_peek for k in ["ម៉ោងចេញដំណើរ", "ឈ្មោះភ្ញៀវ", "កាលបរិច្ឆេទ", "ប្រភេទរថយន្ត"]):
+                        cust_gid, cust_name = match_customer_group(text_peek, self.data_dir)
+                        if cust_gid:
+                            record_dispatch_target(msg.get("message_id"), cust_gid, cust_name, text_peek, self.data_dir)
+
+                    # 🛑 Strict Chat filter for Customer Invoicing & OCR:
                     DISALLOWED_DRIVER_CHAT_IDS = ["-5381280318", "-1004424429378", "-1004480815325", "-1004338568933", "-1004336964750"]
                     DISALLOWED_TITLES = ["j heng", "ck 2849", "phinin", "nab", "smey ap"]
 
@@ -1698,13 +1900,17 @@ class UniversalShareDialog(QDialog):
         if not os.path.exists(temp_dir):
             temp_dir = os.getcwd()
         
-        # Format filename using strictly the travel date (e.g. 30-07-2026.png)
+        # Format filename using travel date and invoice number (e.g. 23-09-2026_INV_873.png)
         travel_date = (self.receipt_data.get("date_str") or datetime.datetime.now().strftime("%d-%m-%Y")).strip()
         clean_date = travel_date.replace("/", "-").replace("\\", "-").strip()
         if not clean_date:
             clean_date = datetime.datetime.now().strftime("%d-%m-%Y")
 
-        out_png = os.path.join(temp_dir, f"{clean_date}.png")
+        clean_inv = str(self.inv_no or "").replace("/", "-").replace("\\", "-").replace(" ", "_").strip()
+        clean_inv = re.sub(r'[^a-zA-Z0-9_-]', '_', clean_inv).strip('_')
+        base_name = f"{clean_date}_{clean_inv}" if clean_inv else clean_date
+
+        out_png = os.path.join(temp_dir, f"{base_name}.png")
         ReceiptGenerator.export_group_image(self.receipt_data, out_png)
         return out_png
 
@@ -1776,7 +1982,9 @@ class UniversalShareDialog(QDialog):
     def _action_save_png(self):
         travel_date = (self.receipt_data.get("date_str") or datetime.datetime.now().strftime("%d-%m-%Y")).strip()
         clean_date = travel_date.replace("/", "-").replace("\\", "-").strip() or datetime.datetime.now().strftime("%d-%m-%Y")
-        default_filename = f"{clean_date}.png"
+        clean_inv = str(self.inv_no or "").replace("/", "-").replace("\\", "-").replace(" ", "_").strip()
+        clean_inv = re.sub(r'[^a-zA-Z0-9_-]', '_', clean_inv).strip('_')
+        default_filename = f"{clean_date}_{clean_inv}.png" if clean_inv else f"{clean_date}.png"
         file_path, _ = QFileDialog.getSaveFileName(self, "Save Invoice PNG Image", default_filename, "PNG Images (*.png)")
         if file_path:
             out_file = ReceiptGenerator.export_group_image(self.receipt_data, file_path)
@@ -1786,7 +1994,9 @@ class UniversalShareDialog(QDialog):
     def _action_save_pdf(self):
         travel_date = (self.receipt_data.get("date_str") or datetime.datetime.now().strftime("%d-%m-%Y")).strip()
         clean_date = travel_date.replace("/", "-").replace("\\", "-").strip() or datetime.datetime.now().strftime("%d-%m-%Y")
-        default_filename = f"{clean_date}.pdf"
+        clean_inv = str(self.inv_no or "").replace("/", "-").replace("\\", "-").replace(" ", "_").strip()
+        clean_inv = re.sub(r'[^a-zA-Z0-9_-]', '_', clean_inv).strip('_')
+        default_filename = f"{clean_date}_{clean_inv}.pdf" if clean_inv else f"{clean_date}.pdf"
         file_path, _ = QFileDialog.getSaveFileName(self, "Save Invoice PDF Document", default_filename, "PDF Files (*.pdf)")
         if file_path:
             out_file = ReceiptGenerator.export_group_pdf(self.receipt_data, file_path)

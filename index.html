@@ -11239,7 +11239,8 @@ input[type="date"] {
 
         async function downloadReceiptPNG() {
             let tDate = document.getElementById('mTravelDate')?.textContent?.trim() || '';
-            const rNo = document.getElementById('mReceiptNo')?.textContent?.trim() || 'Receipt';
+            let rNo = document.getElementById('mReceiptNo')?.textContent?.trim() || 'Receipt';
+            rNo = rNo.replace(/^No\s*[:.-]?\s*/i, '').trim();
             tDate = tDate.replace(/\//g, '-').replace(/[^a-zA-Z0-9\-]/g, '');
             if (!tDate || tDate === '-') {
                 const today = new Date();
@@ -11249,8 +11250,8 @@ input[type="date"] {
                 tDate = `${dd}-${mm}-${yyyy}`;
             }
 
-            const cleanRNo = rNo.replace(/[^a-zA-Z0-9_-]/g, '_').trim();
-            const defaultFileName = `Receipt_${cleanRNo}_${tDate}.png`;
+            const cleanRNo = rNo.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').trim();
+            const defaultFileName = cleanRNo ? `${tDate}_${cleanRNo}.png` : `${tDate}.png`;
 
             const receiptEl = document.getElementById('printableReceiptArea');
             if (!receiptEl) return;
@@ -11299,8 +11300,26 @@ input[type="date"] {
             }
 
             if (!fileHandle) {
-                alert('⚠️ មិនអាចបើកផ្ទាំងជ្រើសរើស Folder បានទេ! សូមប្រាកដថាអ្នកកំពុងប្រើកម្មវិធី Google Chrome ឬ Microsoft Edge។');
-                return;
+                // Direct fallback: Download directly via anchor link
+                try {
+                    const blob = await getOrCaptureReceiptBlob(receiptEl);
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = defaultFileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                    if (typeof showToast === 'function') {
+                        showToast('🎉 បានទាញយករូបភាពវិក្កយបត្រដោយជោគជ័យ!');
+                    }
+                    return;
+                } catch (fallbackErr) {
+                    console.error("Standard download error:", fallbackErr);
+                    alert('⚠️ មិនអាចបើកផ្ទាំងជ្រើសរើស Folder បានទេ! សូមប្រាកដថាអ្នកកំពុងប្រើកម្មវិធី Google Chrome ឬ Microsoft Edge។');
+                    return;
+                }
             }
 
             if (typeof showToast === 'function') {
@@ -11358,7 +11377,20 @@ input[type="date"] {
         }
 
         async function shareReceiptTelegram() {
-            const rNo = document.getElementById('mReceiptNo')?.textContent?.trim() || 'INV';
+            let rNo = document.getElementById('mReceiptNo')?.textContent?.trim() || 'INV';
+            rNo = rNo.replace(/^No\s*[:.-]?\s*/i, '').trim();
+            let tDate = document.getElementById('mTravelDate')?.textContent?.trim() || '';
+            tDate = tDate.replace(/\//g, '-').replace(/[^a-zA-Z0-9\-]/g, '');
+            if (!tDate || tDate === '-') {
+                const today = new Date();
+                const dd = String(today.getDate()).padStart(2, '0');
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const yyyy = today.getFullYear();
+                tDate = `${dd}-${mm}-${yyyy}`;
+            }
+            const cleanRNo = rNo.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').trim();
+            const defaultFileName = cleanRNo ? `${tDate}_${cleanRNo}.png` : `${tDate}.png`;
+
             const sender = document.getElementById('mSenderName')?.textContent?.trim() || '';
             const total = document.getElementById('mGrandUSD')?.textContent?.trim() || '';
             const receiptEl = document.getElementById('printableReceiptArea');
@@ -11382,7 +11414,7 @@ input[type="date"] {
                 // 1. Android & Mobile Native Share
                 if (isMobileDevice && navigator.share && navigator.canShare && blob) {
                     try {
-                        const file = new File([blob], `Receipt_${rNo.replace(/[^a-zA-Z0-9_-]/g, '_')}.png`, { type: 'image/png' });
+                        const file = new File([blob], defaultFileName, { type: 'image/png' });
                         if (navigator.canShare({ files: [file] })) {
                             await navigator.share({
                                 files: [file],

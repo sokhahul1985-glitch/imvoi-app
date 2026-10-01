@@ -1018,7 +1018,8 @@ input[type="date"] {
 
         async function downloadImage() {
             let tDate = document.getElementById('rDateStr')?.textContent?.trim() || '';
-            const rNo = document.getElementById('rNoVal')?.textContent?.trim() || 'Receipt';
+            let rNo = document.getElementById('rNoVal')?.textContent?.trim() || currentReceiptNo || 'Receipt';
+            rNo = rNo.replace(/^No\s*[:.-]?\s*/i, '').trim();
             tDate = tDate.replace(/\//g, '-').replace(/[^a-zA-Z0-9\-]/g, '');
             if (!tDate || tDate === '-') {
                 const today = new Date();
@@ -1028,8 +1029,8 @@ input[type="date"] {
                 tDate = `${dd}-${mm}-${yyyy}`;
             }
 
-            const cleanRNo = rNo.replace(/[^a-zA-Z0-9_-]/g, '_').trim();
-            const defaultFileName = `Receipt_${cleanRNo}_${tDate}.png`;
+            const cleanRNo = rNo.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').trim();
+            const defaultFileName = cleanRNo ? `${tDate}_${cleanRNo}.png` : `${tDate}.png`;
 
             // 1. MUST call showSaveFilePicker FIRST in direct user gesture to open Windows Save As folder selection dialog!
             let fileHandle = null;
@@ -1069,8 +1070,25 @@ input[type="date"] {
             }
 
             if (!fileHandle) {
-                alert('⚠️ មិនអាចបើកផ្ទាំងជ្រើសរើស Folder បានទេ! សូមប្រាកដថាអ្នកកំពុងប្រើកម្មវិធី Google Chrome ឬ Microsoft Edge។');
-                return;
+                // Direct fallback: Download directly via anchor link
+                try {
+                    const canvas = await renderReceiptCanvas();
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = defaultFileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                    showTgToast('🎉 បានទាញយករូបភាពវិក្កយបត្រដោយជោគជ័យ!', 'success');
+                    return;
+                } catch (fallbackErr) {
+                    console.error("Standard download error:", fallbackErr);
+                    alert('⚠️ មិនអាចបើកផ្ទាំងជ្រើសរើស Folder បានទេ! សូមប្រាកដថាអ្នកកំពុងប្រើកម្មវិធី Google Chrome ឬ Microsoft Edge។');
+                    return;
+                }
             }
 
             try {
@@ -1286,6 +1304,17 @@ input[type="date"] {
                 const b64Image = canvas.toDataURL('image/png');
                 const caption = `🧾 Official Invoice: ${currentReceiptNo}\n👤 Customer: ${currentCustomerName}\n💵 Total: $${currentTotalUSD}\n🏢 Golden Mekong Commercial Service`;
 
+                let tDate = document.getElementById('rDateStr')?.textContent?.trim() || '';
+                let rNo = document.getElementById('rNoVal')?.textContent?.trim() || currentReceiptNo || '';
+                rNo = rNo.replace(/^No\s*[:.-]?\s*/i, '').trim();
+                tDate = tDate.replace(/\//g, '-').replace(/[^a-zA-Z0-9\-]/g, '');
+                if (!tDate || tDate === '-') {
+                    const today = new Date();
+                    tDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+                }
+                const cleanRNo = rNo.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').trim();
+                const outFileName = cleanRNo ? `${tDate}_${cleanRNo}.png` : `${tDate}.png`;
+
                 const resp = await fetch('/api/send_telegram_bot', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1293,7 +1322,7 @@ input[type="date"] {
                         image: b64Image,
                         chat_id: chatId,
                         caption: caption,
-                        filename: `Receipt_${String(currentReceiptNo || '').replace(/[^a-zA-Z0-9_-]/g, '')}.png`
+                        filename: outFileName
                     })
                 });
 
@@ -1335,9 +1364,20 @@ input[type="date"] {
         function shareNativeImageFile() {
             showTgToast('🔄 កំពុងរៀបចំ File រូបភាពសម្រាប់ Share...', 'info');
 
+            let tDate = document.getElementById('rDateStr')?.textContent?.trim() || '';
+            let rNo = document.getElementById('rNoVal')?.textContent?.trim() || currentReceiptNo || '';
+            rNo = rNo.replace(/^No\s*[:.-]?\s*/i, '').trim();
+            tDate = tDate.replace(/\//g, '-').replace(/[^a-zA-Z0-9\-]/g, '');
+            if (!tDate || tDate === '-') {
+                const today = new Date();
+                tDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+            }
+            const cleanRNo = rNo.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').trim();
+            const outFileName = cleanRNo ? `${tDate}_${cleanRNo}.png` : `${tDate}.png`;
+
             renderReceiptCanvas().then(canvas => {
                 canvas.toBlob(blob => {
-                    const file = new File([blob], `Receipt_${currentReceiptNo}.png`, { type: 'image/png' });
+                    const file = new File([blob], outFileName, { type: 'image/png' });
                     const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
                     if (isMobileDevice && navigator.canShare && navigator.canShare({ files: [file] })) {
                         navigator.share({
