@@ -7264,6 +7264,25 @@ input[type="date"] {
             const vault = getLocalVaultSnapshot();
             if (!vault || !Array.isArray(vault.records) || vault.records.length === 0) return false;
 
+            // Filter vault records against deleted IDs before considering auto-heal
+            try {
+                const delKey = 'autorent_deleted_invoice_ids';
+                let localDelList = JSON.parse(localStorage.getItem(delKey) || '[]');
+                if (localDelList.length > 0) {
+                    const delSet = new Set(localDelList.map(x => String(x).trim().toUpperCase()));
+                    vault.records = vault.records.filter(item => {
+                        if (!item) return false;
+                        const rNo = (item.receipt_no || item.group_data?.receipt_no || item.customer?.receipt_no || item.passport_no || item.id || '').toString().trim().toUpperCase().replace('🛂', '').trim();
+                        const rNoClean = rNo.replace(/\s+/g, '');
+                        const cId = String(item.id || '').trim().toUpperCase();
+                        if (cId && delSet.has(cId)) return false;
+                        if (rNo && delSet.has(rNo)) return false;
+                        if (rNoClean && delSet.has(rNoClean)) return false;
+                        return true;
+                    });
+                }
+            } catch(e) {}
+
             // If server has fewer than 10 records and local vault has significantly more
             if ((!serverRecords || serverRecords.length < 5) && vault.records.length > (serverRecords ? serverRecords.length : 0)) {
                 console.log(`[Auto-Heal] Server has ${serverRecords ? serverRecords.length : 0} records, but local vault has ${vault.records.length}. Auto-Restoring to server...`);
@@ -7310,9 +7329,39 @@ input[type="date"] {
                     let serverList = [];
                     if (d && d.success) {
                         serverList = d.invoices || d.records || [];
+                        if (Array.isArray(d.deleted_ids) && d.deleted_ids.length > 0) {
+                            try {
+                                const delKey = 'autorent_deleted_invoice_ids';
+                                let localDelList = JSON.parse(localStorage.getItem(delKey) || '[]');
+                                d.deleted_ids.forEach(x => {
+                                    const ux = String(x).trim().toUpperCase();
+                                    if (ux && !localDelList.includes(ux)) localDelList.push(ux);
+                                });
+                                localStorage.setItem(delKey, JSON.stringify(localDelList));
+                            } catch(e) {}
+                        }
                     } else if (Array.isArray(d)) {
                         serverList = d;
                     }
+
+                    // Always filter out any deleted invoice IDs / numbers
+                    try {
+                        const delKey = 'autorent_deleted_invoice_ids';
+                        let localDelList = JSON.parse(localStorage.getItem(delKey) || '[]');
+                        if (localDelList.length > 0) {
+                            const delSet = new Set(localDelList.map(x => String(x).trim().toUpperCase()));
+                            serverList = serverList.filter(item => {
+                                if (!item) return false;
+                                const rNo = (item.receipt_no || item.group_data?.receipt_no || item.customer?.receipt_no || item.passport_no || item.id || '').toString().trim().toUpperCase().replace('🛂', '').trim();
+                                const rNoClean = rNo.replace(/\s+/g, '');
+                                const cId = String(item.id || '').trim().toUpperCase();
+                                if (cId && delSet.has(cId)) return false;
+                                if (rNo && delSet.has(rNo)) return false;
+                                if (rNoClean && delSet.has(rNoClean)) return false;
+                                return true;
+                            });
+                        }
+                    } catch(e) {}
 
                     // Check if server lost data and we can auto-heal it
                     const healed = autoHealServerIfEmpty(serverList, callback);
@@ -10261,19 +10310,28 @@ input[type="date"] {
             }
 
             const senderInput = document.getElementById('gmmSenderName');
-            const senderName = senderInput?.value?.trim() || '';
+            let senderName = senderInput?.value?.trim() || '';
+            
+            // Auto fallback: If senderName is blank, auto-resolve from active booking or fallback gracefully
             if (!senderName) {
-                alert('⚠️ សូមបញ្ចូលឈ្មោះអ្នកនាំ/បញ្ជូនជាមុនសិន ទើបអាចរក្សាទុកបាន!');
-                if (senderInput) {
-                    senderInput.focus();
-                    senderInput.style.border = '2px solid #ef4444';
-                    senderInput.style.boxShadow = '0 0 10px rgba(239, 68, 68, 0.4)';
-                    setTimeout(() => {
-                        senderInput.style.border = '1.5px solid #38bdf8';
-                        senderInput.style.boxShadow = '';
-                    }, 3500);
+                const activeBId = window.activeBookingForGroupInvoice || 
+                                  document.getElementById('gmmActiveBookingId')?.value || 
+                                  document.getElementById('groupMembersModal')?.getAttribute('data-active-booking-id') || null;
+                const bks = (typeof getBookings === 'function') ? getBookings() : [];
+                let matchedBk = null;
+                if (activeBId) {
+                    matchedBk = bks.find(b => String(b.id || '').trim().toLowerCase() === String(activeBId).trim().toLowerCase());
                 }
-                return;
+                if (!matchedBk && currentGmmReceiptNo) {
+                    matchedBk = bks.find(b => b.invoiceNo && b.invoiceNo.trim().toLowerCase() === currentGmmReceiptNo.trim().toLowerCase());
+                }
+                if (matchedBk) {
+                    senderName = (matchedBk.customerName || matchedBk.sender || matchedBk.driverTelegram || '').trim();
+                }
+                if (!senderName) {
+                    senderName = 'ភ្ញៀវទូទៅ (General Guest)';
+                }
+                if (senderInput) senderInput.value = senderName;
             }
 
             const rawTravelDate = document.getElementById('gmmTravelDate')?.value || '';
@@ -10284,8 +10342,8 @@ input[type="date"] {
 
             const rows = document.querySelectorAll('#gmmMembersBody .gmm-row');
             const members = [];
-            rows.forEach(r => {
-                const name = r.querySelector('.gmm-input-name')?.value?.trim() || '';
+            rows.forEach((r, idx) => {
+                let name = r.querySelector('.gmm-input-name')?.value?.trim() || '';
                 const passport = parseFloat(r.querySelector('.gmm-input-passport')?.value || 0);
                 const namelist = parseFloat(r.querySelector('.gmm-input-namelist')?.value || 0);
                 const missingDoc = parseFloat(r.querySelector('.gmm-input-missing-doc')?.value || 0);
@@ -10313,38 +10371,47 @@ input[type="date"] {
                 const isVisaIssued = r.querySelector('.gmm-input-visa-issued')?.checked || false;
                 const photoData = r.querySelector('.gmm-input-photo')?.value || '';
 
-                if (name || photoData || usd > 0 || passport > 0 || namelist > 0 || missingDoc > 0 || stamping > 0 || evisa > 0 || vip > 0 || clearance > 0 || permit > 0 || car > 0 || visa > 0 || fine > 0) {
-                    const finalName = name || `Pax ${members.length + 1}`;
-                    members.push({
-                        full_english_name: finalName,
-                        name: finalName,
-                        photo: photoData,
-                        photo_data: photoData,
-                        passport_fee: passport,
-                        namelist_fee: namelist,
-                        missing_doc_fee: missingDoc,
-                        visa_stamping_fee: stamping,
-                        extension_months: months,
-                        months: months,
-                        visa_months: months,
-                        e_visa: evisa,
-                        vip: vip,
-                        clearance_fee: clearance,
-                        work_permit: permit,
-                        car_fee: car,
-                        visa_fee: visa,
-                        overstay: fine,
-                        fine_fee: fine,
-                        usd: usd,
-                        visa_issued: isVisaIssued,
-                        visa_status: isVisaIssued ? 'issued' : 'pending'
-                    });
+                // Never drop rows: Auto name if blank
+                if (!name) {
+                    name = `Pax ${idx + 1}`;
                 }
+
+                members.push({
+                    full_english_name: name,
+                    name: name,
+                    photo: photoData,
+                    photo_data: photoData,
+                    passport_fee: passport,
+                    namelist_fee: namelist,
+                    missing_doc_fee: missingDoc,
+                    visa_stamping_fee: stamping,
+                    extension_months: months,
+                    months: months,
+                    visa_months: months,
+                    e_visa: evisa,
+                    vip: vip,
+                    clearance_fee: clearance,
+                    work_permit: permit,
+                    car_fee: car,
+                    visa_fee: visa,
+                    overstay: fine,
+                    fine_fee: fine,
+                    usd: usd,
+                    visa_issued: isVisaIssued,
+                    visa_status: isVisaIssued ? 'issued' : 'pending'
+                });
             });
 
+            // Ensure at least 1 member is always present
             if (members.length === 0) {
-                alert('⚠️ សូមបញ្ចូលឈ្មោះ ឬព័ត៌មានសមាជិកយ៉ាងហោចណាស់ 1 នាក់!');
-                return;
+                members.push({
+                    full_english_name: senderName || 'Pax 1',
+                    name: senderName || 'Pax 1',
+                    usd: 0,
+                    qty: '1',
+                    visa_issued: false,
+                    visa_status: 'pending'
+                });
             }
 
             const activeBId = window.activeBookingForGroupInvoice || 
@@ -10400,11 +10467,11 @@ input[type="date"] {
             const btnSave = document.getElementById('btnGmmSave');
             if (btnSave) {
                 btnSave.disabled = true;
-                btnSave.textContent = '⏳ កំពុងរក្សាទុក...';
+                btnSave.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងរក្សាទុក...';
             }
 
             const abortCtrl = new AbortController();
-            const timeoutId = setTimeout(() => abortCtrl.abort(), 30000);
+            const timeoutId = setTimeout(() => abortCtrl.abort(), 60000); // 60s timeout accommodates Render cold starts
 
             fetch('/api/update_members', {
                 method: 'POST',
@@ -10423,11 +10490,6 @@ input[type="date"] {
                 return data;
             })
             .then(res => {
-                clearTimeout(timeoutId);
-                if (btnSave) {
-                    btnSave.disabled = false;
-                    btnSave.textContent = '💾 រក្សាទុក';
-                }
                 if (res && res.success) {
                     const catNameKh = chosenCategory === 'car' ? 'ផ្នែកឡាន (Car)' : (chosenCategory === 'passport' ? 'ផ្នែកប៉ាសស្ព័រ & ផ្សេងៗ (Passport)' : 'ផ្នែកវីសា (Visa)');
                     const savedNo = res.receipt_no || (pendingGmmSavePayload && pendingGmmSavePayload.receipt_no) || currentGmmReceiptNo;
@@ -10504,15 +10566,17 @@ input[type="date"] {
                 }
             })
             .catch(err => {
-                clearTimeout(timeoutId);
-                if (btnSave) {
-                    btnSave.disabled = false;
-                    btnSave.textContent = '💾 រក្សាទុក';
-                }
                 const msg = (err && err.name === 'AbortError')
                     ? 'ការរក្សាទុកយឺតពេក (Request Timeout)! សូមពិនិត្យអ៊ីនធឺណិត ឬសាកល្បងម្ដងទៀត។'
                     : (err.message || err);
                 alert('កំហុសក្នុងការផ្ញើទិន្នន័យ៖ ' + msg);
+            })
+            .finally(() => {
+                clearTimeout(timeoutId);
+                if (btnSave) {
+                    btnSave.disabled = false;
+                    btnSave.textContent = '💾 រក្សាទុក (Save Changes)';
+                }
             });
         }
 
@@ -10599,6 +10663,33 @@ input[type="date"] {
                 saveLocalVaultSnapshot(allDatabaseRecords);
             }
             showToast("🗑️ បានលុបទិន្នន័យដោយជោគជ័យ!");
+
+            // Record to permanent local storage deleted list
+            try {
+                const delKey = 'autorent_deleted_invoice_ids';
+                let localDelList = [];
+                try { localDelList = JSON.parse(localStorage.getItem(delKey) || '[]'); } catch(e) {}
+                if (rawNo && rawNo !== 'N/A') {
+                    const uNo = rawNo.toUpperCase().trim();
+                    if (!localDelList.includes(uNo)) localDelList.push(uNo);
+                    const uNoClean = uNo.replace(/\s+/g, '');
+                    if (!localDelList.includes(uNoClean)) localDelList.push(uNoClean);
+                }
+                if (recIdStr) {
+                    const uId = recIdStr.toUpperCase().trim();
+                    if (!localDelList.includes(uId)) localDelList.push(uId);
+                }
+                localStorage.setItem(delKey, JSON.stringify(localDelList));
+                
+                // Sync deleted list with server
+                fetch('/api/deleted_invoice_ids', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ deleted_ids: localDelList })
+                }).catch(() => {});
+            } catch(e) {
+                console.warn('Deleted invoice localStorage err:', e);
+            }
 
             // 2. Background server delete
             let url = `/api/delete?no=${encodeURIComponent(rawNo)}`;
@@ -16498,8 +16589,57 @@ document.addEventListener('paste', function(e) {
             modal.setAttribute('data-active-booking-date', b.date || '');
         }
 
-        // If booking already has invoiceNo or matches an existing invoice strictly by booking_id, open in edit mode
+        // Helper: Parse passenger names, car fee, and VIP fee from booking telegram message or notes
+        function parseBookingPaxAndFees(bk) {
+            const raw = `${bk.rawMessage || ''}\n${bk.notes || ''}`;
+            const pax = [];
+            let carFee = 0;
+            let vipFee = 0;
+
+            // Extract car price e.g. รถรับส่ง 60$ or car 60$
+            const carM = raw.match(/(?:รถรับส่ง|รถ|car|line)[\s:]*([0-9]+(?:\.[0-9]+)?)\s*\$?/i);
+            if (carM) carFee = parseFloat(carM[1]);
+
+            // Extract VIP price e.g. ตม. VIP 50$ or VIP 50$
+            const vipM = raw.match(/(?:ตม\.?\s*VIP|VIP)[\s:]*([0-9]+(?:\.[0-9]+)?)\s*\$?/i);
+            if (vipM) vipFee = parseFloat(vipM[1]);
+
+            // Extract numbered passengers e.g. 1.MR. ... 2.MR. ...
+            const lines = raw.split('\n');
+            lines.forEach(line => {
+                const tr = line.trim();
+                const numM = tr.match(/^[0-9]+[\.\)\-]\s*([A-Za-z\u0E00-\u0E7F\s\.\-]+)$/);
+                if (numM) {
+                    const c = numM[1].trim();
+                    if (c && !/^(?:รถ|วันที่|เวลา|สายการบิน|สถานที่|flight|date|time|ตม)/i.test(c)) {
+                        pax.push(c);
+                    }
+                }
+            });
+
+            return { pax, carFee, vipFee };
+        }
+
+        const parsedData = parseBookingPaxAndFees(b);
+
+        // Check if genuine invoice already exists in database
         let effectiveInvNo = (b.invoiceNo || '').trim();
+        let genuineInvoice = null;
+
+        if (effectiveInvNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) {
+            const bIdStr = String(b.id || '').trim().toLowerCase();
+            genuineInvoice = allDatabaseRecords.find(r => {
+                if (!r) return false;
+                const rNo = (r.receipt_no || r.receiptNo || r.group_data?.receipt_no || '').trim().toLowerCase();
+                const rBId = String(r.booking_id || r.group_data?.booking_id || '').trim().toLowerCase();
+                return (rNo === effectiveInvNo.toLowerCase()) && (!rBId || rBId === bIdStr);
+            });
+            // If the invoiceNo was a dummy or belongs to a different record, do not edit it!
+            if (!genuineInvoice) {
+                effectiveInvNo = '';
+            }
+        }
+
         if (!effectiveInvNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) {
             const bIdStr = String(b.id || '').trim().toLowerCase();
             const matchedRec = allDatabaseRecords.find(r => {
@@ -16508,6 +16648,7 @@ document.addEventListener('paste', function(e) {
                 return Boolean(rBId && bIdStr && rBId === bIdStr);
             });
             if (matchedRec) {
+                genuineInvoice = matchedRec;
                 effectiveInvNo = (matchedRec.receipt_no || matchedRec.receiptNo || matchedRec.group_data?.receipt_no || '').trim();
                 if (effectiveInvNo) {
                     b.invoiceNo = effectiveInvNo;
@@ -16516,31 +16657,22 @@ document.addEventListener('paste', function(e) {
             }
         }
 
-        if (effectiveInvNo && typeof openGroupMembersModal === 'function') {
+        if (effectiveInvNo && genuineInvoice && typeof openGroupMembersModal === 'function') {
             const isNewInp = document.getElementById('gmmIsNewInvoice');
             if (isNewInp) isNewInp.value = '0';
             window.currentGmmIsNewInvoice = false;
             openGroupMembersModal(effectiveInvNo);
             if (typeof populateGmmVerificationPanel === 'function') {
-                populateGmmVerificationPanel(b);
-            }
-            if (typeof allDatabaseRecords === 'undefined' || !allDatabaseRecords || allDatabaseRecords.length === 0) {
-                if (typeof loadDatabaseRecords === 'function') {
-                    loadDatabaseRecords(() => {
-                        openGroupMembersModal(effectiveInvNo);
-                        if (typeof populateGmmVerificationPanel === 'function') populateGmmVerificationPanel(b);
-                    });
-                }
+                populateGmmVerificationPanel(b, genuineInvoice);
             }
             return;
         }
 
         // =========================================================================
-        // INSTANT (0ms) OPEN MODAL & POPULATE FIELDS (Zero Blocking Network Wait)
+        // INSTANT (0ms) OPEN MODAL & PRE-POPULATE NEW INVOICE
         // =========================================================================
         currentServiceCategory = 'car';
 
-        // 1. Immediately open the modal (marked as NEW invoice)
         const isNewInp = document.getElementById('gmmIsNewInvoice');
         if (isNewInp) isNewInp.value = '1';
         window.currentGmmIsNewInvoice = true;
@@ -16550,17 +16682,17 @@ document.addEventListener('paste', function(e) {
             modal.classList.add('active');
         }
 
-        // 2. Immediately populate verification side-panel (Images & Booking Info)
+        // Populate verification side-panel
         populateGmmVerificationPanel(b);
 
-        // 3. Set header & temporary/cached receipt number
+        // Header & Provisional Receipt No
         const provisionalNo = currentGmmReceiptNo || 'INV 00363';
         const titleElem = document.getElementById('gmmTitle');
         const subTitleElem = document.getElementById('gmmSubTitle');
         if (titleElem) titleElem.textContent = `📋 បង្កើតទិន្នន័យក្រុមថ្មី (${provisionalNo})`;
         if (subTitleElem) subTitleElem.textContent = `👤 បញ្ចូលព័ត៌មានអ្នកនាំ និងសមាជិកក្រុមថ្មី`;
 
-        // 4. Set travel date from booking
+        // Travel date
         const dateInput = document.getElementById('gmmTravelDate');
         if (dateInput) {
             if (b.date && b.date.includes('-')) {
@@ -16580,9 +16712,10 @@ document.addEventListener('paste', function(e) {
         const rateInput = document.getElementById('gmmExchangeRate');
         if (rateInput) rateInput.value = getLatestSavedExchangeRate();
 
-        // 5. Sender / Customer name from booking
+        // Sender Name: auto-fill from customerName or sender or fallback
         const senderInp = document.getElementById('gmmSenderName');
-        if (senderInp) senderInp.value = b.customerName || '';
+        const defaultSender = (b.customerName || b.sender || b.driverTelegram || '').trim();
+        if (senderInp) senderInp.value = defaultSender;
 
         const agencyInp = document.getElementById('gmmAgencyCompany');
         if (agencyInp) {
@@ -16592,71 +16725,98 @@ document.addEventListener('paste', function(e) {
             agencyInp.value = agParts.join(' • ');
         }
 
-        // 6. Set to 'line' (Car Service) mode with empty list
+        // Switch to 'line' (Car) mode
         const tbody = document.getElementById('gmmMembersBody');
         if (tbody) tbody.innerHTML = '';
         currentGmmCachedItem = null;
         currentModalReceiptData = null;
         switchGmmMode('line', []);
 
-        // 7. Clear bulk fee inputs
+        // Bulk fee inputs
         ['gmmFeePassport', 'gmmFeeNamelist', 'gmmFeeVisa', 'gmmFeeMissingDoc', 'gmmFeeStamping', 'gmmFeeVip', 'gmmFeeCar', 'gmmFeeClearance', 'gmmFeeWork', 'gmmFeeFine'].forEach(bulkId => {
             const el = document.getElementById(bulkId);
             if (el) el.value = '';
         });
 
-        // 8. Car price from booking
-        let carPrice = '';
+        // Car fee from booking or parsed telegram text
+        let carPrice = 0;
         if (b.price != null && !isNaN(parseFloat(b.price)) && parseFloat(b.price) > 0) {
             carPrice = parseFloat(b.price);
         } else if (b.feeCar != null && !isNaN(parseFloat(b.feeCar)) && parseFloat(b.feeCar) > 0) {
             carPrice = parseFloat(b.feeCar);
+        } else if (parsedData.carFee > 0) {
+            carPrice = parsedData.carFee;
         }
 
-        // Bulk car fee input
-        const bulkCarEl = document.getElementById('gmmFeeCar');
-        if (bulkCarEl && carPrice) bulkCarEl.value = carPrice;
+        // VIP fee from booking or parsed telegram text
+        let vipPrice = parsedData.vipFee || 0;
 
-        // Set button text to: 💾 រក្សាទុក (Save Changes)
+        if (carPrice > 0) {
+            const bulkCarEl = document.getElementById('gmmFeeCar');
+            if (bulkCarEl) bulkCarEl.value = carPrice;
+        }
+        if (vipPrice > 0) {
+            const bulkVipEl = document.getElementById('gmmFeeVip');
+            if (bulkVipEl) bulkVipEl.value = vipPrice;
+        }
+
+        // Set button text
         const btnSave = document.getElementById('btnGmmSave');
         if (btnSave) {
+            btnSave.disabled = false;
             btnSave.textContent = '💾 រក្សាទុក (Save Changes)';
         }
 
-        // 9. Add 2 initial member rows (row 1 prefilled with customer name and car fee)
+        // Populate Member Rows: Use parsed passengers if available, otherwise 2 initial rows
         if (tbody) {
             tbody.innerHTML = '';
-            addNewGmmMemberRow();
-            addNewGmmMemberRow();
+            const paxList = parsedData.pax && parsedData.pax.length > 0 ? parsedData.pax : [];
+            const countRows = Math.max(paxList.length, 2);
+
+            for (let i = 0; i < countRows; i++) {
+                addNewGmmMemberRow();
+            }
 
             const rows = tbody.querySelectorAll('tr');
-            if (rows && rows.length > 0) {
-                const firstRow = rows[0];
-                const nameInp = firstRow.querySelector('.gmm-input-name');
-                if (nameInp && b.customerName) nameInp.value = b.customerName;
-
-                if (carPrice) {
-                    const carInp = firstRow.querySelector('.gmm-input-car') || firstRow.querySelector('.gmm-fee-car');
-                    if (carInp) {
-                        carInp.value = carPrice;
-                        const usdInp = firstRow.querySelector('.gmm-input-usd');
-                        if (usdInp) usdInp.value = carPrice;
+            rows.forEach((row, i) => {
+                const nameInp = row.querySelector('.gmm-input-name');
+                if (nameInp) {
+                    if (paxList[i]) {
+                        nameInp.value = paxList[i];
+                    } else if (i === 0 && defaultSender) {
+                        nameInp.value = defaultSender;
                     }
                 }
-            }
+
+                // If first row and carPrice, assign car fee
+                if (i === 0 && carPrice > 0) {
+                    const carInp = row.querySelector('.gmm-input-car') || row.querySelector('.gmm-fee-car');
+                    if (carInp) carInp.value = carPrice;
+                }
+
+                // Assign VIP fee if parsed
+                if (vipPrice > 0) {
+                    const vipInp = row.querySelector('.gmm-input-vip') || row.querySelector('.gmm-fee-vip');
+                    if (vipInp) vipInp.value = vipPrice;
+                }
+
+                const usdInp = row.querySelector('.gmm-input-usd');
+                if (usdInp) {
+                    const totalRow = (i === 0 ? carPrice : 0) + vipPrice;
+                    if (totalRow > 0) usdInp.value = totalRow;
+                }
+            });
         }
 
         calculateGmmTotal();
 
-        // Focus sender name input immediately
         if (senderInp) senderInp.focus();
 
-        // 10. Update datalist asynchronously in background
         setTimeout(() => {
             if (typeof updateGmmSenderDatalist === 'function') updateGmmSenderDatalist();
         }, 20);
 
-        // 11. Background fetch for verified next receipt number (Fast with 2s timeout)
+        // Background fetch for verified next receipt number
         const ab = new AbortController();
         const tId = setTimeout(() => ab.abort(), 2000);
         fetch('/api/next_no?category=car', { signal: ab.signal })

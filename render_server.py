@@ -123,6 +123,59 @@ INVOICE_COUNTER_FILE = os.path.join(DATA_DIR, 'invoice_counter.json')
 SAVED_BOOKINGS_FILE = os.path.join(DATA_DIR, 'saved_bookings.json')
 AUTORENT_CUSTOMERS_FILE = os.path.join(DATA_DIR, 'autorent_customers.json')
 DELETED_BOOKINGS_FILE = os.path.join(DATA_DIR, 'deleted_booking_ids.json')
+DELETED_INVOICES_FILE = os.path.join(DATA_DIR, 'deleted_invoice_ids.json')
+
+def load_deleted_invoice_ids():
+    df = DELETED_INVOICES_FILE
+    if not os.path.exists(df):
+        df = os.path.join(BASE_DIR, 'deleted_invoice_ids.json')
+    ids = load_json(df, [])
+    if not isinstance(ids, list):
+        ids = []
+    res = set()
+    for x in ids:
+        s = str(x).strip().upper().replace('🛂', '').strip()
+        if s:
+            res.add(s)
+            res.add(s.replace(' ', ''))
+    return res
+
+def record_deleted_invoice_id(inv_val):
+    if not inv_val: return
+    norm_val = str(inv_val).strip().upper().replace('🛂', '').strip()
+    if not norm_val or norm_val == 'N/A': return
+    curr_ids = load_deleted_invoice_ids()
+    changed = False
+    if norm_val not in curr_ids:
+        curr_ids.add(norm_val)
+        changed = True
+    clean_val = norm_val.replace(' ', '')
+    if clean_val and clean_val not in curr_ids:
+        curr_ids.add(clean_val)
+        changed = True
+    if changed:
+        out_list = sorted(list(curr_ids))
+        save_json(DELETED_INVOICES_FILE, out_list)
+        if DATA_DIR != BASE_DIR:
+            try:
+                save_json(os.path.join(BASE_DIR, 'deleted_invoice_ids.json'), out_list)
+            except Exception:
+                pass
+
+def is_invoice_deleted(inv_dict, deleted_set):
+    if not isinstance(inv_dict, dict) or not deleted_set:
+        return False
+    r_no = str(inv_dict.get('receipt_no') or (inv_dict.get('group_data') or {}).get('receipt_no') or (inv_dict.get('customer') or {}).get('receipt_no') or (inv_dict.get('group_info') or {}).get('receipt_no') or inv_dict.get('passport_no') or '').strip().upper().replace('🛂', '').strip()
+    c_id = str(inv_dict.get('id') or '').strip().upper()
+    if c_id and c_id in deleted_set:
+        return True
+    if r_no:
+        if r_no in deleted_set:
+            return True
+        r_clean = r_no.replace(' ', '')
+        if r_clean and r_clean in deleted_set:
+            return True
+    return False
 WEB_DIR = BASE_DIR
 
 def load_deleted_booking_ids():
@@ -1012,6 +1065,11 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
         deleted_items = []
         filtered = []
 
+        if receipt_no and receipt_no != 'n/a':
+            record_deleted_invoice_id(receipt_no)
+        if item_id:
+            record_deleted_invoice_id(item_id)
+
         # 1. Match primarily by receipt_no, passport_no, item_id, or customer_name (Safe & Accurate!)
         if (receipt_no and receipt_no != 'n/a') or item_id:
             clean_target = receipt_no.replace(' ', '')
@@ -1053,6 +1111,10 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
                 filtered = [item for i, item in enumerate(data) if i != idx]
 
         if deleted_items:
+            for del_item in deleted_items:
+                r_no = (del_item.get('receipt_no') or (del_item.get('group_data') or {}).get('receipt_no') or (del_item.get('customer') or {}).get('receipt_no') or del_item.get('passport_no') or del_item.get('id') or '').strip()
+                if r_no: record_deleted_invoice_id(r_no)
+                if del_item.get('id'): record_deleted_invoice_id(str(del_item.get('id')).strip())
             save_json(SAVED_CUSTOMERS_FILE, filtered)
             if supabase_db and supabase_db.is_configured():
                 for del_item in deleted_items:
@@ -1124,7 +1186,15 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
             if not data:
                 _startup_restore_invoices()
                 data = load_json(SAVED_CUSTOMERS_FILE, [])
-            self.send_json_response({'success': True, 'records': data, 'invoices': data})
+            del_inv_ids = load_deleted_invoice_ids()
+            if del_inv_ids:
+                data = [inv for inv in data if not is_invoice_deleted(inv, del_inv_ids)]
+            self.send_json_response({'success': True, 'records': data, 'invoices': data, 'count': len(data), 'deleted_ids': sorted(list(del_inv_ids))})
+            return
+
+        elif path == '/api/deleted_invoice_ids':
+            del_ids = sorted(list(load_deleted_invoice_ids()))
+            self.send_json_response({'success': True, 'deleted_ids': del_ids, 'count': len(del_ids)})
             return
 
         elif path == '/api/telegram_messages':
@@ -1663,6 +1733,10 @@ try {{
         path = parsed.path
         content_type = self.headers.get('Content-Type', '')
 
+        if path == '/api/copy_receipt_file_clipboard':
+            self.send_json_response({'success': True, 'copied': False})
+            return
+
         if path in ['/api/send_telegram_bot', '/api/send_telegram_photo']:
             length = int(self.headers.get('Content-Length', 0))
             body_bytes = self.rfile.read(length)
@@ -2053,461 +2127,477 @@ try {{
             return
 
         elif path == '/api/update_members':
-            with _INVOICE_LOCK:
-                clean_r_no = req_data.get('receipt_no', '').strip()
-                receipt_no = clean_r_no.lower()
-                members_data = req_data.get('members', [])
-                travel_date = req_data.get('travel_date', '').strip()
-                sender_name = req_data.get('sender_name', '').strip()
-                agency_company = req_data.get('agency_company', '').strip()
-                group_name_input = req_data.get('group_name', '').strip()
-                req_service_category = str(req_data.get('service_category', '')).strip().lower()
-                req_booking_id = str(req_data.get('booking_id') or '').strip().lower()
-                req_is_new = req_data.get('is_new') in [True, 'true', 'True', 1, '1']
-
-                all_invoices = load_json(SAVED_CUSTOMERS_FILE, [])
-                found = False
-                updated_item = None
-
-                # Find if invoice already exists
-                existing_item = None
-                if receipt_no:
-                    for item in all_invoices:
-                        if invoice_number_matches(item, clean_r_no or receipt_no):
-                            existing_item = item
-                            break
-
-                # Collision protection: If creating new invoice or belongs to different booking, NEVER overwrite!
-                if existing_item:
-                    existing_bid = str(existing_item.get('booking_id') or existing_item.get('group_data', {}).get('booking_id') or '').strip().lower()
-                    is_different_booking = bool(req_booking_id and existing_bid and req_booking_id != existing_bid)
-                    if req_is_new or is_different_booking:
-                        s_cat = req_service_category or 'car'
-                        clean_r_no = increment_invoice_no(s_cat)
-                        while any(invoice_number_matches(inv, clean_r_no) for inv in all_invoices):
-                            clean_r_no = increment_invoice_no(s_cat)
-                        receipt_no = clean_r_no.lower()
-                        existing_item = None
-
-                if existing_item:
-                    item = existing_item
-                    if not clean_r_no:
-                        clean_r_no = item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or ''
-                    else:
-                        clean_r_no = item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or clean_r_no
-                    if travel_date:
-                        formatted_tdate = format_display_date(travel_date)
-                        item['travel_date'] = formatted_tdate
-                        if 'group_info' in item:
-                            item['group_info']['travel_date'] = formatted_tdate
-                        if 'group_data' in item:
-                            item['group_data']['travel_date'] = formatted_tdate
-                            item['group_data']['date_str'] = formatted_tdate
-                        if 'customer' in item:
-                            item['customer']['travel_date'] = formatted_tdate
-
-                    if sender_name:
-                        item['sender'] = sender_name
-                        item['sender_name'] = sender_name
-                        if 'group_info' in item:
-                            item['group_info']['sender_name'] = sender_name
-                            if not group_name_input:
-                                item['group_info']['group_name'] = sender_name
-                        if 'group_data' in item:
-                            item['group_data']['sender_name'] = sender_name
-                            if not group_name_input:
-                                item['group_data']['customer_name'] = sender_name
-
-                    if group_name_input:
-                        if 'group_info' in item:
-                            item['group_info']['group_name'] = group_name_input
-                        if 'group_data' in item:
-                            item['group_data']['customer_name'] = group_name_input
-
-                    if agency_company is not None:
-                        item['agency_company'] = agency_company
-                        if 'group_info' in item:
-                            item['group_info']['agency_company'] = agency_company
-                        if 'group_data' in item:
-                            item['group_data']['agency_company'] = agency_company
-                        if 'customer' in item:
-                            item['customer']['agency_company'] = agency_company
-
-                    if req_service_category:
-                        item['service_category'] = req_service_category
-                        if 'group_info' in item:
-                            item['group_info']['service_category'] = req_service_category
-                        if 'customer' in item:
-                            item['customer']['service_category'] = req_service_category
-
-                    if req_data.get('exchange_rate') is not None and str(req_data.get('exchange_rate')).strip():
-                        exchange_rate = safe_float(req_data.get('exchange_rate'), 33.90)
-                    else:
-                        exchange_rate = safe_float(item.get('exchange_rate') or item.get('group_data', {}).get('exchange_rate', 33.90), 33.90)
-
-                    new_members = []
-                    new_items = []
-                    grand_usd = 0.0
-
-                    for idx, m in enumerate(members_data, 1):
-                        name = (m.get('full_english_name') or m.get('name') or m.get('english_name') or '').strip()
-                        pass_no = (m.get('passport_no') or m.get('passport') or '-').strip()
-                        nat = (m.get('nationality') or 'THAI').strip()
-                        usd = safe_float(m.get('usd', 0.0))
-                        vip = safe_float(m.get('vip', 0.0))
-                        clearance = safe_float(m.get('clearance_fee', 0.0) or m.get('clearance', 0.0))
-                        permit = safe_float(m.get('work_permit', 0.0))
-                        car = safe_float(m.get('car_fee', 0.0) or m.get('car', 0.0))
-                        visa = safe_float(m.get('visa_fee', 0.0) or m.get('visa', 0.0))
-                        evisa = safe_float(m.get('e_visa', 0.0) or m.get('evisa', 0.0))
-                        overstay = safe_float(m.get('overstay', 0.0) or m.get('fine_fee', 0.0) or m.get('fine', 0.0))
-                        passport_fee = safe_float(m.get('passport_fee', 0.0))
-                        namelist_fee = safe_float(m.get('namelist_fee', 0.0))
-                        missing_doc_fee = safe_float(m.get('missing_doc_fee', 0.0) or m.get('doc_fee', 0.0))
-                        visa_stamping_fee = safe_float(m.get('visa_stamping_fee', 0.0) or m.get('stamping_fee', 0.0))
-                        months = str(m.get('extension_months') or m.get('months') or m.get('visa_months') or '').strip()
-                        is_issued = m.get('visa_issued') in [True, 'true', 'True', 1, '1'] or m.get('visa_status') == 'issued' or m.get('status') == 'issued'
-                        visa_status = 'issued' if is_issued else 'pending'
-
-                        if usd == 0 and (vip or clearance or permit or car or visa or evisa or overstay or passport_fee or namelist_fee or missing_doc_fee or visa_stamping_fee):
-                            usd = vip + clearance + permit + car + visa + evisa + overstay + passport_fee + namelist_fee + missing_doc_fee + visa_stamping_fee
-
-                        photo_data = str(m.get('photo_data') or m.get('photo') or m.get('image_url') or '')
-
-                        if not name:
-                            if usd > 0 or photo_data:
-                                name = f"Pax {idx}"
-                            else:
-                                continue
-
-                        grand_usd += usd
-
-                        new_members.append({
-                            'full_english_name': name,
-                            'english_name': name,
-                            'passport_no': pass_no,
-                            'nationality': nat,
-                            'photo': photo_data,
-                            'photo_data': photo_data,
-                            'passport_fee': passport_fee,
-                            'namelist_fee': namelist_fee,
-                            'missing_doc_fee': missing_doc_fee,
-                            'visa_stamping_fee': visa_stamping_fee,
-                            'car_fee': car,
-                            'visa_fee': visa,
-                            'extension_months': months,
-                            'months': months,
-                            'visa_months': months,
-                            'price': 0.0,
-                            'e_visa': evisa,
-                            'vip': vip,
-                            'clearance_fee': clearance,
-                            'work_permit': permit,
-                            'overstay': overstay,
-                            'fine_fee': overstay,
-                            'usd': usd,
-                            'qty': '1',
-                            'visa_issued': is_issued,
-                            'visa_status': visa_status
-                        })
-
-                        new_items.append({
-                            'no': idx,
-                            'description': name,
-                            'qty': '1',
-                            'passport_fee': f"${passport_fee:.0f}" if passport_fee > 0 else '',
-                            'namelist_fee': f"${namelist_fee:.0f}" if namelist_fee > 0 else '',
-                            'missing_doc_fee': f"${missing_doc_fee:.0f}" if missing_doc_fee > 0 else '',
-                            'visa_stamping_fee': f"${visa_stamping_fee:.0f}" if visa_stamping_fee > 0 else '',
-                            'extension_months': months,
-                            'months': months,
-                            'visa_months': months,
-                            'e_visa': f"${evisa:.0f}" if evisa > 0 else '',
-                            'vip': f"${vip:.0f}" if vip > 0 else '',
-                            'overstay': f"${overstay:.0f}" if overstay > 0 else '',
-                            'car_fee': f"${car:.0f}" if car > 0 else '',
-                            'visa': f"${visa:.0f}" if visa > 0 else '',
-                            'clearance_fee': f"${clearance:.0f}" if clearance > 0 else '',
-                            'work_permit': f"${permit:.0f}" if permit > 0 else '',
-                            'usd': usd,
-                            'visa_issued': is_issued,
-                            'visa_status': visa_status
-                        })
-
-                    service_cat = req_service_category or item.get('service_category') or item.get('group_info', {}).get('service_category') or 'car'
-                    grand_thb = grand_usd if service_cat == 'passport' else (grand_usd * exchange_rate)
-                    pax_count = len(new_members)
-                    first_cust_name = new_members[0]['full_english_name'] if new_members else 'N/A'
-                    group_name = group_name_input or sender_name or item.get('group_info', {}).get('group_name') or item.get('group_data', {}).get('customer_name') or 'VIP Group'
-
-                    item['members'] = new_members
-                    item['customer_name'] = f"{group_name} ({pax_count} Pax)" if pax_count > 0 else group_name
-                    if 'customer' in item:
-                        item['customer']['full_english_name'] = f"GROUP: {group_name} ({pax_count} Pax)"
-                        item['customer']['sex'] = f"{pax_count} Pax"
-                    item['exchange_rate'] = exchange_rate
-                    if 'group_info' in item:
-                        item['group_info']['customer_name'] = first_cust_name
-                        item['group_info']['pax_count'] = pax_count
-                        item['group_info']['exchange_rate'] = exchange_rate
-                    if 'group_data' in item:
-                        item['group_data']['exchange_rate'] = exchange_rate
-                        item['group_data']['items'] = new_items
-                        item['group_data']['totals'] = {'usd': grand_usd, 'baht': grand_thb}
-                        item['group_data']['group_customer_name'] = first_cust_name
-                    if 'fees' in item:
-                        item['fees']['exchange_rate'] = exchange_rate
-                    item['totals'] = {'usd': grand_usd, 'baht': grand_thb}
-
-                    found = True
-                    updated_item = item
-
-            if not found:
-                # Create brand new group record
-                formatted_tdate = format_display_date(travel_date) if travel_date else datetime.datetime.now().strftime("%d-%m-%Y")
-                exchange_rate = safe_float(req_data.get('exchange_rate', 33.90), 33.90)
-                service_category = req_service_category or 'passport'
-                new_members = []
-                new_items = []
-                grand_usd = 0.0
-
-                for idx_m, m in enumerate(members_data, 1):
-                    m_name = (m.get('full_english_name') or m.get('name') or m.get('english_name') or '').strip()
-                    pass_no = (m.get('passport_no') or m.get('passport') or '-').strip()
-                    nat = (m.get('nationality') or 'THAI').strip()
-                    photo_data = str(m.get('photo_data') or m.get('photo') or m.get('image_url') or '')
-                    passport_fee = safe_float(m.get('passport_fee', 0.0))
-                    namelist_fee = safe_float(m.get('namelist_fee', 0.0))
-                    missing_doc_fee = safe_float(m.get('missing_doc_fee', 0.0) or m.get('doc_fee', 0.0))
-                    visa_stamping_fee = safe_float(m.get('visa_stamping_fee', 0.0) or m.get('stamping_fee', 0.0))
-                    evisa = safe_float(m.get('e_visa') or m.get('evisa') or 0)
-                    vip = safe_float(m.get('vip') or 0)
-                    clearance = safe_float(m.get('clearance_fee') or m.get('clearance') or 0)
-                    permit = safe_float(m.get('work_permit') or m.get('permit') or 0)
-                    car = safe_float(m.get('car_fee') or m.get('car') or 0)
-                    visa = safe_float(m.get('visa_fee') or m.get('visa') or 0)
-                    overstay = safe_float(m.get('overstay') or m.get('fine_fee') or m.get('fine') or 0)
-                    months = str(m.get('extension_months') or m.get('months') or m.get('visa_months') or '').strip()
-                    is_issued = m.get('visa_issued') in [True, 'true', 'True', 1, '1'] or m.get('visa_status') == 'issued' or m.get('status') == 'issued'
-                    visa_status = 'issued' if is_issued else 'pending'
-                    usd = safe_float(m.get('usd') or 0)
-                    if usd == 0 and (evisa or vip or clearance or permit or car or visa or overstay or passport_fee or namelist_fee or missing_doc_fee or visa_stamping_fee):
-                        usd = evisa + vip + clearance + permit + car + visa + overstay + passport_fee + namelist_fee + missing_doc_fee + visa_stamping_fee
-
-                    if not m_name:
-                        if usd > 0 or photo_data:
-                            m_name = f"Pax {idx_m}"
-                        else:
-                            continue
-
-                    grand_usd += usd
-                    new_members.append({
-                        'full_english_name': m_name,
-                        'name': m_name,
-                        'passport_no': pass_no,
-                        'nationality': nat,
-                        'photo': photo_data,
-                        'photo_data': photo_data,
-                        'passport_fee': passport_fee,
-                        'namelist_fee': namelist_fee,
-                        'missing_doc_fee': missing_doc_fee,
-                        'visa_stamping_fee': visa_stamping_fee,
-                        'car_fee': car,
-                        'visa_fee': visa,
-                        'extension_months': months,
-                        'months': months,
-                        'visa_months': months,
-                        'price': 0.0,
-                        'e_visa': evisa,
-                        'vip': vip,
-                        'clearance_fee': clearance,
-                        'work_permit': permit,
-                        'overstay': overstay,
-                        'fine_fee': overstay,
-                        'usd': usd,
-                        'qty': '1',
-                        'visa_issued': is_issued,
-                        'visa_status': visa_status
-                    })
-                    new_items.append({
-                        'no': idx_m,
-                        'description': m_name,
-                        'qty': '1',
-                        'passport_fee': f"${passport_fee:.0f}" if passport_fee > 0 else '',
-                        'namelist_fee': f"${namelist_fee:.0f}" if namelist_fee > 0 else '',
-                        'missing_doc_fee': f"${missing_doc_fee:.0f}" if missing_doc_fee > 0 else '',
-                        'visa_stamping_fee': f"${visa_stamping_fee:.0f}" if visa_stamping_fee > 0 else '',
-                        'extension_months': months,
-                        'months': months,
-                        'visa_months': months,
-                        'e_visa': f"${evisa:.0f}" if evisa > 0 else '',
-                        'vip': f"${vip:.0f}" if vip > 0 else '',
-                        'overstay': f"${overstay:.0f}" if overstay > 0 else '',
-                        'car_fee': f"${car:.0f}" if car > 0 else '',
-                        'visa': f"${visa:.0f}" if visa > 0 else '',
-                        'clearance_fee': f"${clearance:.0f}" if clearance > 0 else '',
-                        'work_permit': f"${permit:.0f}" if permit > 0 else '',
-                        'usd': usd,
-                        'visa_issued': is_issued,
-                        'visa_status': visa_status
-                    })
-
-                grand_thb = grand_usd if service_category == 'passport' else (grand_usd * exchange_rate)
-                pax_count = len(new_members)
-                first_cust_name = new_members[0]['full_english_name'] if new_members else 'N/A'
-                group_name = group_name_input or sender_name or 'VIP Group'
-
-                clean_r_no = req_data.get('receipt_no', '').strip()
-                if not clean_r_no:
-                    clean_r_no = increment_invoice_no(service_category)
-                else:
-                    if service_category == 'visa' and not (clean_r_no.upper().startswith('VISA') or clean_r_no.upper().startswith('INV')):
-                        clean_r_no = f"VISA {clean_r_no.lstrip('#').strip()}"
-                    elif service_category in ['quote', 'quotation'] and not (clean_r_no.upper().startswith('QT') or clean_r_no.upper().startswith('QUO')):
-                        clean_r_no = f"QT {clean_r_no.lstrip('#').strip()}"
-                    elif service_category not in ['visa', 'quote', 'quotation'] and not (clean_r_no.upper().startswith('INV') or clean_r_no.upper().startswith('CAR')):
-                        clean_r_no = f"INV {clean_r_no.lstrip('#').strip()}"
-
-                new_record = {
-                    'id': str(uuid.uuid4()),
-                    'receipt_no': clean_r_no,
-                    'booking_id': req_booking_id,
-                    'service_category': service_category,
-                    'date_saved': datetime.datetime.now().strftime("%d/%m/%Y %H:%M"),
-                    'travel_date': formatted_tdate,
-                    'sender': sender_name,
-                    'sender_name': sender_name,
-                    'agency_company': agency_company,
-                    'customer_name': f"{group_name} ({pax_count} នាក់)" if pax_count > 0 else group_name,
-                    'payment_status': 'UNPAID',
-                    'customer': {
-                        'receipt_no': clean_r_no,
-                        'full_english_name': f"GROUP: {group_name} ({pax_count} នាក់)",
-                        'agency_company': agency_company,
-                        'travel_date': formatted_tdate,
-                        'sex': f"{pax_count} Pax",
-                        'service_category': service_category
-                    },
-                    'group_info': {
-                        'receipt_no': clean_r_no,
-                        'group_name': group_name,
-                        'sender_name': sender_name,
-                        'customer_name': first_cust_name,
-                        'travel_date': formatted_tdate,
-                        'agency_company': agency_company,
-                        'service_category': service_category,
-                        'pax_count': pax_count
-                    },
-                    'group_data': {
-                        'receipt_no': clean_r_no,
-                        'booking_id': req_booking_id,
-                        'customer_name': group_name,
-                        'sender_name': sender_name,
-                        'date_str': formatted_tdate,
-                        'travel_date': formatted_tdate,
-                        'agency_company': agency_company,
-                        'exchange_rate': exchange_rate,
-                        'items': new_items,
-                        'totals': {'usd': grand_usd, 'baht': grand_thb},
-                        'group_customer_name': first_cust_name
-                    },
-                    'members': new_members,
-                    'totals': {'usd': grand_usd, 'baht': grand_thb}
-                }
-                all_invoices.insert(0, new_record)
-                found = True
-                updated_item = new_record
-
-                # Synchronize invoice counter
-                num_part = re.sub(r'[^0-9]', '', clean_r_no)
-                if num_part.isdigit():
-                    num_val = int(num_part)
-                    counter = load_json(INVOICE_COUNTER_FILE, {
-                        "last_number": 0, "prefix": "INV ",
-                        "last_visa_number": 0, "visa_prefix": "VISA ",
-                        "last_passport_number": 0, "passport_prefix": "INV ",
-                        "last_quote_number": 0, "quote_prefix": "QT "
-                    })
-                    if not isinstance(counter, dict):
-                        counter = {}
-                    if service_category == 'visa':
-                        if num_val > safe_int(counter.get("last_visa_number", 0)):
-                            counter["last_visa_number"] = num_val
-                            save_json(INVOICE_COUNTER_FILE, counter)
-                    elif service_category == 'passport':
-                        if num_val > safe_int(counter.get("last_passport_number", 0)):
-                            counter["last_passport_number"] = num_val
-                            save_json(INVOICE_COUNTER_FILE, counter)
-                    elif service_category in ['quote', 'quotation']:
-                        if num_val > safe_int(counter.get("last_quote_number", 0)):
-                            counter["last_quote_number"] = num_val
-                            save_json(INVOICE_COUNTER_FILE, counter)
-                    else:
-                        if num_val > safe_int(counter.get("last_number", 0)):
-                            counter["last_number"] = num_val
-                            save_json(INVOICE_COUNTER_FILE, counter)
-
-            if updated_item and not clean_r_no:
-                clean_r_no = updated_item.get('receipt_no') or updated_item.get('group_data', {}).get('receipt_no') or updated_item.get('customer', {}).get('receipt_no') or ''
-
-            # Synchronize with saved_bookings.json so booking invoice status turns into 'ធ្វើរួច' immediately
             try:
-                bk_file = os.path.join(DATA_DIR, 'saved_bookings.json')
-                if not os.path.exists(os.path.dirname(bk_file)):
-                    bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
-                bks = load_json(bk_file, [])
-                req_b_id = str(req_data.get('booking_id') or '').strip().lower()
-                target_booking = None
-                if req_b_id:
-                    target_booking = next((b for b in bks if str(b.get('id', '')).strip().lower() == req_b_id), None)
-                if not target_booking and clean_r_no:
-                    target_booking = next((b for b in bks if str(b.get('invoiceNo', '')).strip().lower() == clean_r_no.lower()), None)
-                if not target_booking and sender_name:
-                    s_clean = sender_name.strip().lower()
-                    for b in bks:
-                        c_clean = str(b.get('customerName', '')).strip().lower()
-                        if (s_clean == c_clean or s_clean in c_clean or c_clean in s_clean) and not b.get('invoiceNo'):
-                            b_date = str(b.get('date', '')).strip()
-                            t_date = str(travel_date or '').strip()
-                            if not b_date or not t_date or b_date in t_date or t_date in b_date:
-                                target_booking = b
+                with _INVOICE_LOCK:
+                    clean_r_no = req_data.get('receipt_no', '').strip()
+                    receipt_no = clean_r_no.lower()
+                    members_data = req_data.get('members', [])
+                    travel_date = req_data.get('travel_date', '').strip()
+                    sender_name = req_data.get('sender_name', '').strip()
+                    agency_company = req_data.get('agency_company', '').strip()
+                    group_name_input = req_data.get('group_name', '').strip()
+                    req_service_category = str(req_data.get('service_category', '')).strip().lower()
+                    req_booking_id = str(req_data.get('booking_id') or '').strip().lower()
+                    req_is_new = req_data.get('is_new') in [True, 'true', 'True', 1, '1']
+
+                    all_invoices = load_json(SAVED_CUSTOMERS_FILE, [])
+                    found = False
+                    updated_item = None
+                    new_record = None
+
+                    # Find if invoice already exists
+                    existing_item = None
+                    if receipt_no:
+                        for item in all_invoices:
+                            if invoice_number_matches(item, clean_r_no or receipt_no):
+                                existing_item = item
                                 break
-                
-                if target_booking:
-                    target_booking['invoiceDone'] = True
-                    target_booking['invoiceNo'] = clean_r_no
-                    save_json(bk_file, bks)
+
+                    # Collision protection: If creating new invoice or belongs to different booking, NEVER overwrite!
+                    if existing_item:
+                        existing_bid = str(existing_item.get('booking_id') or existing_item.get('group_data', {}).get('booking_id') or '').strip().lower()
+                        is_different_booking = bool(req_booking_id and existing_bid and req_booking_id != existing_bid)
+                        if req_is_new or is_different_booking:
+                            s_cat = req_service_category or 'car'
+                            clean_r_no = increment_invoice_no(s_cat)
+                            while any(invoice_number_matches(inv, clean_r_no) for inv in all_invoices):
+                                clean_r_no = increment_invoice_no(s_cat)
+                            receipt_no = clean_r_no.lower()
+                            existing_item = None
+
+                    if existing_item:
+                        item = existing_item
+                        if not clean_r_no:
+                            clean_r_no = item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or ''
+                        else:
+                            clean_r_no = item.get('receipt_no') or item.get('group_data', {}).get('receipt_no') or clean_r_no
+                        if travel_date:
+                            formatted_tdate = format_display_date(travel_date)
+                            item['travel_date'] = formatted_tdate
+                            if 'group_info' in item:
+                                item['group_info']['travel_date'] = formatted_tdate
+                            if 'group_data' in item:
+                                item['group_data']['travel_date'] = formatted_tdate
+                                item['group_data']['date_str'] = formatted_tdate
+                            if 'customer' in item:
+                                item['customer']['travel_date'] = formatted_tdate
+
+                        if sender_name:
+                            item['sender'] = sender_name
+                            item['sender_name'] = sender_name
+                            if 'group_info' in item:
+                                item['group_info']['sender_name'] = sender_name
+                                if not group_name_input:
+                                    item['group_info']['group_name'] = sender_name
+                            if 'group_data' in item:
+                                item['group_data']['sender_name'] = sender_name
+                                if not group_name_input:
+                                    item['group_data']['customer_name'] = sender_name
+
+                        if group_name_input:
+                            if 'group_info' in item:
+                                item['group_info']['group_name'] = group_name_input
+                            if 'group_data' in item:
+                                item['group_data']['customer_name'] = group_name_input
+
+                        if agency_company is not None:
+                            item['agency_company'] = agency_company
+                            if 'group_info' in item:
+                                item['group_info']['agency_company'] = agency_company
+                            if 'group_data' in item:
+                                item['group_data']['agency_company'] = agency_company
+                            if 'customer' in item:
+                                item['customer']['agency_company'] = agency_company
+
+                        if req_service_category:
+                            item['service_category'] = req_service_category
+                            if 'group_info' in item:
+                                item['group_info']['service_category'] = req_service_category
+                            if 'customer' in item:
+                                item['customer']['service_category'] = req_service_category
+
+                        if req_data.get('exchange_rate') is not None and str(req_data.get('exchange_rate')).strip():
+                            exchange_rate = safe_float(req_data.get('exchange_rate'), 33.90)
+                        else:
+                            exchange_rate = safe_float(item.get('exchange_rate') or item.get('group_data', {}).get('exchange_rate', 33.90), 33.90)
+
+                        new_members = []
+                        new_items = []
+                        grand_usd = 0.0
+
+                        for idx, m in enumerate(members_data, 1):
+                            name = (m.get('full_english_name') or m.get('name') or m.get('english_name') or '').strip()
+                            pass_no = (m.get('passport_no') or m.get('passport') or '-').strip()
+                            nat = (m.get('nationality') or 'THAI').strip()
+                            usd = safe_float(m.get('usd', 0.0))
+                            vip = safe_float(m.get('vip', 0.0))
+                            clearance = safe_float(m.get('clearance_fee', 0.0) or m.get('clearance', 0.0))
+                            permit = safe_float(m.get('work_permit', 0.0))
+                            car = safe_float(m.get('car_fee', 0.0) or m.get('car', 0.0))
+                            visa = safe_float(m.get('visa_fee', 0.0) or m.get('visa', 0.0))
+                            evisa = safe_float(m.get('e_visa', 0.0) or m.get('evisa', 0.0))
+                            overstay = safe_float(m.get('overstay', 0.0) or m.get('fine_fee', 0.0) or m.get('fine', 0.0))
+                            passport_fee = safe_float(m.get('passport_fee', 0.0))
+                            namelist_fee = safe_float(m.get('namelist_fee', 0.0))
+                            missing_doc_fee = safe_float(m.get('missing_doc_fee', 0.0) or m.get('doc_fee', 0.0))
+                            visa_stamping_fee = safe_float(m.get('visa_stamping_fee', 0.0) or m.get('stamping_fee', 0.0))
+                            months = str(m.get('extension_months') or m.get('months') or m.get('visa_months') or '').strip()
+                            is_issued = m.get('visa_issued') in [True, 'true', 'True', 1, '1'] or m.get('visa_status') == 'issued' or m.get('status') == 'issued'
+                            visa_status = 'issued' if is_issued else 'pending'
+
+                            if usd == 0 and (vip or clearance or permit or car or visa or evisa or overstay or passport_fee or namelist_fee or missing_doc_fee or visa_stamping_fee):
+                                usd = vip + clearance + permit + car + visa + evisa + overstay + passport_fee + namelist_fee + missing_doc_fee + visa_stamping_fee
+
+                            if not name:
+                                name = f"Pax {idx}"
+
+                            grand_usd += usd
+                            new_members.append({
+                                'full_english_name': name,
+                                'name': name,
+                                'passport_no': pass_no,
+                                'nationality': nat,
+                                'photo': m.get('photo') or m.get('photo_data') or '',
+                                'photo_data': m.get('photo_data') or m.get('photo') or '',
+                                'passport_fee': passport_fee,
+                                'namelist_fee': namelist_fee,
+                                'missing_doc_fee': missing_doc_fee,
+                                'visa_stamping_fee': visa_stamping_fee,
+                                'car_fee': car,
+                                'visa_fee': visa,
+                                'extension_months': months,
+                                'months': months,
+                                'visa_months': months,
+                                'price': 0.0,
+                                'e_visa': evisa,
+                                'vip': vip,
+                                'clearance_fee': clearance,
+                                'work_permit': permit,
+                                'overstay': overstay,
+                                'fine_fee': overstay,
+                                'usd': usd,
+                                'qty': '1',
+                                'visa_issued': is_issued,
+                                'visa_status': visa_status
+                            })
+                            new_items.append({
+                                'no': idx,
+                                'description': name,
+                                'qty': '1',
+                                'passport_fee': f"${passport_fee:.0f}" if passport_fee > 0 else '',
+                                'namelist_fee': f"${namelist_fee:.0f}" if namelist_fee > 0 else '',
+                                'missing_doc_fee': f"${missing_doc_fee:.0f}" if missing_doc_fee > 0 else '',
+                                'visa_stamping_fee': f"${visa_stamping_fee:.0f}" if visa_stamping_fee > 0 else '',
+                                'extension_months': months,
+                                'months': months,
+                                'visa_months': months,
+                                'e_visa': f"${evisa:.0f}" if evisa > 0 else '',
+                                'vip': f"${vip:.0f}" if vip > 0 else '',
+                                'overstay': f"${overstay:.0f}" if overstay > 0 else '',
+                                'car_fee': f"${car:.0f}" if car > 0 else '',
+                                'visa': f"${visa:.0f}" if visa > 0 else '',
+                                'clearance_fee': f"${clearance:.0f}" if clearance > 0 else '',
+                                'work_permit': f"${permit:.0f}" if permit > 0 else '',
+                                'usd': usd,
+                                'visa_issued': is_issued,
+                                'visa_status': visa_status
+                            })
+
+                        service_cat = req_service_category or item.get('service_category') or item.get('group_info', {}).get('service_category') or 'car'
+                        grand_thb = grand_usd if service_cat == 'passport' else (grand_usd * exchange_rate)
+                        pax_count = len(new_members)
+                        first_cust_name = new_members[0]['full_english_name'] if new_members else 'N/A'
+                        group_name = group_name_input or sender_name or item.get('group_info', {}).get('group_name') or item.get('group_data', {}).get('customer_name') or 'VIP Group'
+
+                        item['members'] = new_members
+                        item['customer_name'] = f"{group_name} ({pax_count} Pax)" if pax_count > 0 else group_name
+                        if 'customer' in item:
+                            item['customer']['full_english_name'] = f"GROUP: {group_name} ({pax_count} Pax)"
+                            item['customer']['sex'] = f"{pax_count} Pax"
+                        item['exchange_rate'] = exchange_rate
+                        if 'group_info' in item:
+                            item['group_info']['customer_name'] = first_cust_name
+                            item['group_info']['pax_count'] = pax_count
+                            item['group_info']['exchange_rate'] = exchange_rate
+                        if 'group_data' in item:
+                            item['group_data']['exchange_rate'] = exchange_rate
+                            item['group_data']['items'] = new_items
+                            item['group_data']['totals'] = {'usd': grand_usd, 'baht': grand_thb}
+                            item['group_data']['group_customer_name'] = first_cust_name
+                        if 'fees' in item:
+                            item['fees']['exchange_rate'] = exchange_rate
+                        item['totals'] = {'usd': grand_usd, 'baht': grand_thb}
+
+                        found = True
+                        updated_item = item
+
+                    if not found:
+                        # Create brand new group record
+                        formatted_tdate = format_display_date(travel_date) if travel_date else datetime.datetime.now().strftime("%d-%m-%Y")
+                        exchange_rate = safe_float(req_data.get('exchange_rate', 33.90), 33.90)
+                        service_category = req_service_category or 'car'
+                        new_members = []
+                        new_items = []
+                        grand_usd = 0.0
+
+                        for idx_m, m in enumerate(members_data, 1):
+                            m_name = (m.get('full_english_name') or m.get('name') or m.get('english_name') or '').strip()
+                            pass_no = (m.get('passport_no') or m.get('passport') or '-').strip()
+                            nat = (m.get('nationality') or 'THAI').strip()
+                            photo_data = str(m.get('photo_data') or m.get('photo') or m.get('image_url') or '')
+                            passport_fee = safe_float(m.get('passport_fee', 0.0))
+                            namelist_fee = safe_float(m.get('namelist_fee', 0.0))
+                            missing_doc_fee = safe_float(m.get('missing_doc_fee', 0.0) or m.get('doc_fee', 0.0))
+                            visa_stamping_fee = safe_float(m.get('visa_stamping_fee', 0.0) or m.get('stamping_fee', 0.0))
+                            evisa = safe_float(m.get('e_visa') or m.get('evisa') or 0)
+                            vip = safe_float(m.get('vip') or 0)
+                            clearance = safe_float(m.get('clearance_fee') or m.get('clearance') or 0)
+                            permit = safe_float(m.get('work_permit') or m.get('permit') or 0)
+                            car = safe_float(m.get('car_fee') or m.get('car') or 0)
+                            visa = safe_float(m.get('visa_fee') or m.get('visa') or 0)
+                            overstay = safe_float(m.get('overstay') or m.get('fine_fee') or m.get('fine') or 0)
+                            months = str(m.get('extension_months') or m.get('months') or m.get('visa_months') or '').strip()
+                            is_issued = m.get('visa_issued') in [True, 'true', 'True', 1, '1'] or m.get('visa_status') == 'issued' or m.get('status') == 'issued'
+                            visa_status = 'issued' if is_issued else 'pending'
+                            usd = safe_float(m.get('usd') or 0)
+                            if usd == 0 and (evisa or vip or clearance or permit or car or visa or overstay or passport_fee or namelist_fee or missing_doc_fee or visa_stamping_fee):
+                                usd = evisa + vip + clearance + permit + car + visa + overstay + passport_fee + namelist_fee + missing_doc_fee + visa_stamping_fee
+
+                            if not m_name:
+                                m_name = f"Pax {idx_m}"
+
+                            grand_usd += usd
+                            new_members.append({
+                                'full_english_name': m_name,
+                                'name': m_name,
+                                'passport_no': pass_no,
+                                'nationality': nat,
+                                'photo': photo_data,
+                                'photo_data': photo_data,
+                                'passport_fee': passport_fee,
+                                'namelist_fee': namelist_fee,
+                                'missing_doc_fee': missing_doc_fee,
+                                'visa_stamping_fee': visa_stamping_fee,
+                                'car_fee': car,
+                                'visa_fee': visa,
+                                'extension_months': months,
+                                'months': months,
+                                'visa_months': months,
+                                'price': 0.0,
+                                'e_visa': evisa,
+                                'vip': vip,
+                                'clearance_fee': clearance,
+                                'work_permit': permit,
+                                'overstay': overstay,
+                                'fine_fee': overstay,
+                                'usd': usd,
+                                'qty': '1',
+                                'visa_issued': is_issued,
+                                'visa_status': visa_status
+                            })
+                            new_items.append({
+                                'no': idx_m,
+                                'description': m_name,
+                                'qty': '1',
+                                'passport_fee': f"${passport_fee:.0f}" if passport_fee > 0 else '',
+                                'namelist_fee': f"${namelist_fee:.0f}" if namelist_fee > 0 else '',
+                                'missing_doc_fee': f"${missing_doc_fee:.0f}" if missing_doc_fee > 0 else '',
+                                'visa_stamping_fee': f"${visa_stamping_fee:.0f}" if visa_stamping_fee > 0 else '',
+                                'extension_months': months,
+                                'months': months,
+                                'visa_months': months,
+                                'e_visa': f"${evisa:.0f}" if evisa > 0 else '',
+                                'vip': f"${vip:.0f}" if vip > 0 else '',
+                                'overstay': f"${overstay:.0f}" if overstay > 0 else '',
+                                'car_fee': f"${car:.0f}" if car > 0 else '',
+                                'visa': f"${visa:.0f}" if visa > 0 else '',
+                                'clearance_fee': f"${clearance:.0f}" if clearance > 0 else '',
+                                'work_permit': f"${permit:.0f}" if permit > 0 else '',
+                                'usd': usd,
+                                'visa_issued': is_issued,
+                                'visa_status': visa_status
+                            })
+
+                        if not new_members:
+                            new_members.append({
+                                'full_english_name': 'Pax 1',
+                                'name': 'Pax 1',
+                                'usd': 0.0,
+                                'qty': '1',
+                                'visa_issued': False,
+                                'visa_status': 'pending'
+                            })
+
+                        grand_thb = grand_usd if service_category == 'passport' else (grand_usd * exchange_rate)
+                        pax_count = len(new_members)
+                        first_cust_name = new_members[0]['full_english_name'] if new_members else 'N/A'
+                        group_name = group_name_input or sender_name or 'VIP Group'
+
+                        clean_r_no = req_data.get('receipt_no', '').strip()
+                        if not clean_r_no:
+                            clean_r_no = increment_invoice_no(service_category)
+                        else:
+                            if service_category == 'visa' and not (clean_r_no.upper().startswith('VISA') or clean_r_no.upper().startswith('INV')):
+                                clean_r_no = f"VISA {clean_r_no.lstrip('#').strip()}"
+                            elif service_category in ['quote', 'quotation'] and not (clean_r_no.upper().startswith('QT') or clean_r_no.upper().startswith('QUO')):
+                                clean_r_no = f"QT {clean_r_no.lstrip('#').strip()}"
+                            elif service_category not in ['visa', 'quote', 'quotation'] and not (clean_r_no.upper().startswith('INV') or clean_r_no.upper().startswith('CAR')):
+                                clean_r_no = f"INV {clean_r_no.lstrip('#').strip()}"
+
+                        new_record = {
+                            'id': str(uuid.uuid4()),
+                            'receipt_no': clean_r_no,
+                            'booking_id': req_booking_id,
+                            'service_category': service_category,
+                            'date_saved': datetime.datetime.now().strftime("%d/%m/%Y %H:%M"),
+                            'travel_date': formatted_tdate,
+                            'sender': sender_name or group_name,
+                            'sender_name': sender_name or group_name,
+                            'agency_company': agency_company,
+                            'customer_name': f"{group_name} ({pax_count} នាក់)" if pax_count > 0 else group_name,
+                            'payment_status': 'UNPAID',
+                            'customer': {
+                                'receipt_no': clean_r_no,
+                                'full_english_name': f"GROUP: {group_name} ({pax_count} នាក់)",
+                                'agency_company': agency_company,
+                                'travel_date': formatted_tdate,
+                                'sex': f"{pax_count} Pax",
+                                'service_category': service_category
+                            },
+                            'group_info': {
+                                'receipt_no': clean_r_no,
+                                'group_name': group_name,
+                                'sender_name': sender_name or group_name,
+                                'customer_name': first_cust_name,
+                                'travel_date': formatted_tdate,
+                                'agency_company': agency_company,
+                                'service_category': service_category,
+                                'pax_count': pax_count
+                            },
+                            'group_data': {
+                                'receipt_no': clean_r_no,
+                                'booking_id': req_booking_id,
+                                'customer_name': group_name,
+                                'sender_name': sender_name or group_name,
+                                'date_str': formatted_tdate,
+                                'travel_date': formatted_tdate,
+                                'agency_company': agency_company,
+                                'exchange_rate': exchange_rate,
+                                'items': new_items,
+                                'totals': {'usd': grand_usd, 'baht': grand_thb},
+                                'group_customer_name': first_cust_name
+                            },
+                            'members': new_members,
+                            'totals': {'usd': grand_usd, 'baht': grand_thb}
+                        }
+                        all_invoices.insert(0, new_record)
+                        found = True
+                        updated_item = new_record
+
+                        # Synchronize invoice counter
+                        num_part = re.sub(r'[^0-9]', '', clean_r_no)
+                        if num_part.isdigit():
+                            num_val = int(num_part)
+                            counter = load_json(INVOICE_COUNTER_FILE, {
+                                "last_number": 0, "prefix": "INV ",
+                                "last_visa_number": 0, "visa_prefix": "VISA ",
+                                "last_passport_number": 0, "passport_prefix": "INV ",
+                                "last_quote_number": 0, "quote_prefix": "QT "
+                            })
+                            if not isinstance(counter, dict):
+                                counter = {}
+                            if service_category == 'visa':
+                                if num_val > safe_int(counter.get("last_visa_number", 0)):
+                                    counter["last_visa_number"] = num_val
+                                    save_json(INVOICE_COUNTER_FILE, counter)
+                            elif service_category == 'passport':
+                                if num_val > safe_int(counter.get("last_passport_number", 0)):
+                                    counter["last_passport_number"] = num_val
+                                    save_json(INVOICE_COUNTER_FILE, counter)
+                            elif service_category in ['quote', 'quotation']:
+                                if num_val > safe_int(counter.get("last_quote_number", 0)):
+                                    counter["last_quote_number"] = num_val
+                                    save_json(INVOICE_COUNTER_FILE, counter)
+                            else:
+                                if num_val > safe_int(counter.get("last_number", 0)):
+                                    counter["last_number"] = num_val
+                                    save_json(INVOICE_COUNTER_FILE, counter)
+
+                    res_inv = updated_item or new_record or {}
+                    if not clean_r_no and res_inv:
+                        clean_r_no = res_inv.get('receipt_no') or (res_inv.get('group_data') or {}).get('receipt_no') or ''
+
+                    # Synchronize with saved_bookings.json so booking invoice status turns into 'ធ្វើរួច' immediately
+                    try:
+                        bk_file = os.path.join(DATA_DIR, 'saved_bookings.json')
+                        if not os.path.exists(os.path.dirname(bk_file)):
+                            bk_file = os.path.join(BASE_DIR, 'saved_bookings.json')
+                        bks = load_json(bk_file, [])
+                        req_b_id = str(req_data.get('booking_id') or '').strip().lower()
+                        target_booking = None
+                        if req_b_id:
+                            target_booking = next((b for b in bks if str(b.get('id', '')).strip().lower() == req_b_id), None)
+                        if not target_booking and clean_r_no:
+                            target_booking = next((b for b in bks if str(b.get('invoiceNo', '')).strip().lower() == clean_r_no.lower()), None)
+                        if not target_booking and sender_name:
+                            s_clean = sender_name.strip().lower()
+                            for b in bks:
+                                c_clean = str(b.get('customerName', '')).strip().lower()
+                                if (s_clean == c_clean or s_clean in c_clean or c_clean in s_clean) and not b.get('invoiceNo'):
+                                    b_date = str(b.get('date', '')).strip()
+                                    t_date = str(travel_date or '').strip()
+                                    if not b_date or not t_date or b_date in t_date or t_date in b_date:
+                                        target_booking = b
+                                        break
+                        
+                        if target_booking:
+                            target_booking['invoiceDone'] = True
+                            target_booking['invoiceNo'] = clean_r_no
+                            save_json(bk_file, bks)
+                            if DATA_DIR != BASE_DIR:
+                                try:
+                                    save_json(os.path.join(BASE_DIR, 'saved_bookings.json'), bks)
+                                except Exception:
+                                    pass
+                            if supabase_db and supabase_db.is_configured():
+                                try:
+                                    threading.Thread(target=supabase_db.save_bookings, args=(bks,), daemon=True).start()
+                                except Exception:
+                                    pass
+                            if res_inv:
+                                res_inv['booking_id'] = str(target_booking.get('id', ''))
+                    except Exception as e_bk_sync:
+                        print(f"[update_members] Booking sync note: {e_bk_sync}")
+
+                    # Release active in-memory reservation
+                    num_part = re.sub(r'[^0-9]', '', clean_r_no)
+                    if num_part.isdigit():
+                        num_val = int(num_part)
+                        cat_k = 'visa' if (req_service_category == 'visa') else ('passport' if (req_service_category == 'passport') else ('quote' if (req_service_category in ['quote', 'quotation']) else 'car'))
+                        if cat_k in _ACTIVE_RESERVATIONS:
+                            _ACTIVE_RESERVATIONS[cat_k].pop(num_val, None)
+
+                    save_json(SAVED_CUSTOMERS_FILE, all_invoices)
                     if DATA_DIR != BASE_DIR:
                         try:
-                            save_json(os.path.join(BASE_DIR, 'saved_bookings.json'), bks)
+                            save_json(os.path.join(BASE_DIR, 'saved_customers.json'), all_invoices)
                         except Exception:
                             pass
-                    if supabase_db and supabase_db.is_configured():
+
+                    # Sync invoice to Supabase asynchronously
+                    if supabase_db and supabase_db.is_configured() and res_inv:
                         try:
-                            threading.Thread(target=supabase_db.save_bookings, args=(bks,), daemon=True).start()
+                            threading.Thread(target=supabase_db.upsert_invoices, args=([res_inv],), daemon=True).start()
                         except Exception:
                             pass
-                    if updated_item:
-                        updated_item['booking_id'] = str(target_booking.get('id', ''))
-            except Exception as e_bk_sync:
-                print(f"[update_members] Error syncing booking invoice status: {e_bk_sync}")
 
-            # Release active in-memory reservation
-            num_part = re.sub(r'[^0-9]', '', clean_r_no)
-            if num_part.isdigit():
-                num_val = int(num_part)
-                cat_k = 'visa' if (req_service_category == 'visa') else ('passport' if (req_service_category == 'passport') else ('quote' if (req_service_category in ['quote', 'quotation']) else 'car'))
-                if cat_k in _ACTIVE_RESERVATIONS:
-                    _ACTIVE_RESERVATIONS[cat_k].pop(num_val, None)
-
-            save_json(SAVED_CUSTOMERS_FILE, all_invoices)
-            if DATA_DIR != BASE_DIR:
-                try:
-                    save_json(os.path.join(BASE_DIR, 'saved_customers.json'), all_invoices)
-                except Exception:
-                    pass
-            self.send_json_response({'success': True, 'receipt_no': clean_r_no, 'invoice': updated_item or new_record})
-            return
+                    self.send_json_response({'success': True, 'receipt_no': clean_r_no, 'invoice': res_inv})
+                    return
+            except Exception as e_main:
+                print(f"[update_members] Error: {e_main}")
+                traceback.print_exc()
+                self.send_json_response({'success': False, 'error': f"បរាជ័យក្នុងការរក្សាទុក៖ {str(e_main)}"}, status=500)
+                return
 
         elif path == '/api/update_exchange_rate':
             clean_r_no = req_data.get('receipt_no', '').strip()
@@ -2821,6 +2911,10 @@ try {{
             if not isinstance(new_records, list) or len(new_records) == 0:
                 self.send_json_response({'success': False, 'error': 'No valid records provided'}, status=400)
                 return
+
+            del_inv_ids = load_deleted_invoice_ids()
+            if del_inv_ids:
+                new_records = [inv for inv in new_records if not is_invoice_deleted(inv, del_inv_ids)]
 
             save_json(SAVED_CUSTOMERS_FILE, new_records)
 
@@ -3416,6 +3510,17 @@ try {{
                         save_json(os.path.join(BASE_DIR, 'deleted_booking_ids.json'), out_list)
                     except Exception:
                         pass
+                self.send_json_response({'success': True, 'deleted_ids': out_list})
+                return
+            self.send_json_response({'success': False, 'error': 'Invalid deleted_ids'}, status=400)
+            return
+
+        elif path == '/api/deleted_invoice_ids':
+            new_ids = req_data.get('deleted_ids')
+            if isinstance(new_ids, list):
+                for x in new_ids:
+                    record_deleted_invoice_id(x)
+                out_list = sorted(list(load_deleted_invoice_ids()))
                 self.send_json_response({'success': True, 'deleted_ids': out_list})
                 return
             self.send_json_response({'success': False, 'error': 'Invalid deleted_ids'}, status=400)
