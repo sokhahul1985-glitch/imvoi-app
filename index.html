@@ -1268,8 +1268,6 @@ textarea.form-control {
    CMP Golden Mekong Commercial Service - Exact Desktop App Web UI Replica
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&family=Noto+Sans+Khmer:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap');
-
 :root {
     --bg-main: #f8fafc;
     --bg-card: #ffffff;
@@ -7235,10 +7233,13 @@ input[type="date"] {
         function saveLocalVaultSnapshot(records) {
             if (!Array.isArray(records) || records.length === 0) return;
             try {
+                // Keep the most recent 150 records to stay safely within browser localStorage 5MB quota and prevent UI freeze
+                const snapshotRecords = records.length > 150 ? records.slice(0, 150) : records;
                 const payload = {
                     timestamp: new Date().toISOString(),
-                    count: records.length,
-                    records: records
+                    count: snapshotRecords.length,
+                    total_count: records.length,
+                    records: snapshotRecords
                 };
                 localStorage.setItem(AUTO_BACKUP_STORAGE_KEY, JSON.stringify(payload));
             } catch (e) {
@@ -7369,6 +7370,13 @@ input[type="date"] {
                         return; // Auto-heal is restoring and will render
                     }
 
+                    // Prevent UI freezes: skip DOM re-render if data signature is unchanged
+                    const firstItem = serverList[0] || {};
+                    const lastItem = serverList[serverList.length - 1] || {};
+                    const newSig = serverList.length + '_' + (firstItem.id || firstItem.receipt_no || '') + '_' + (lastItem.id || lastItem.receipt_no || '') + '_' + (firstItem.payment_status || '');
+                    const isSameData = (window.__lastDbRecordsSig === newSig);
+                    window.__lastDbRecordsSig = newSig;
+
                     allDatabaseRecords = serverList;
                     if (allDatabaseRecords.length > 0) {
                         // Update local vault snapshot
@@ -7381,7 +7389,10 @@ input[type="date"] {
                         }
                     }
 
-                    renderDatabaseTable();
+                    if (!isSameData || !window.__hasRenderedDbOnce) {
+                        window.__hasRenderedDbOnce = true;
+                        renderDatabaseTable();
+                    }
                     if (typeof callback === 'function') callback();
                 })
                 .catch(err => {
@@ -7493,11 +7504,39 @@ input[type="date"] {
                         if (!isPassportRecord(item)) return false;
                     }
                     if (!search) return true;
-                    try {
-                        return JSON.stringify(item).toLowerCase().includes(search);
-                    } catch (e) {
-                        return false;
+                    // Lightning-fast search without JSON.stringify serialization
+                    if (item.receipt_no && String(item.receipt_no).toLowerCase().includes(search)) return true;
+                    if (item.sender && String(item.sender).toLowerCase().includes(search)) return true;
+                    if (item.sender_name && String(item.sender_name).toLowerCase().includes(search)) return true;
+                    if (item.customer_name && String(item.customer_name).toLowerCase().includes(search)) return true;
+                    if (item.full_english_name && String(item.full_english_name).toLowerCase().includes(search)) return true;
+                    if (item.passport_no && String(item.passport_no).toLowerCase().includes(search)) return true;
+                    if (item.travel_date && String(item.travel_date).toLowerCase().includes(search)) return true;
+                    if (item.group_info) {
+                        if (item.group_info.sender_name && String(item.group_info.sender_name).toLowerCase().includes(search)) return true;
+                        if (item.group_info.customer_name && String(item.group_info.customer_name).toLowerCase().includes(search)) return true;
+                        if (item.group_info.receipt_no && String(item.group_info.receipt_no).toLowerCase().includes(search)) return true;
+                        if (item.group_info.travel_date && String(item.group_info.travel_date).toLowerCase().includes(search)) return true;
                     }
+                    if (item.group_data) {
+                        if (item.group_data.sender_name && String(item.group_data.sender_name).toLowerCase().includes(search)) return true;
+                        if (item.group_data.receipt_no && String(item.group_data.receipt_no).toLowerCase().includes(search)) return true;
+                    }
+                    if (item.customer) {
+                        if (item.customer.full_english_name && String(item.customer.full_english_name).toLowerCase().includes(search)) return true;
+                        if (item.customer.receipt_no && String(item.customer.receipt_no).toLowerCase().includes(search)) return true;
+                    }
+                    if (Array.isArray(item.members)) {
+                        for (let mi = 0; mi < item.members.length; mi++) {
+                            const m = item.members[mi];
+                            if (!m) continue;
+                            if (m.full_english_name && String(m.full_english_name).toLowerCase().includes(search)) return true;
+                            if (m.english_name && String(m.english_name).toLowerCase().includes(search)) return true;
+                            if (m.name && String(m.name).toLowerCase().includes(search)) return true;
+                            if (m.passport_no && String(m.passport_no).toLowerCase().includes(search)) return true;
+                        }
+                    }
+                    return false;
                 });
 
                 // Safe descending sort: highest invoice number or newest record first
@@ -7540,7 +7579,9 @@ input[type="date"] {
                 }
 
                 let html = '';
-                filtered.forEach((item, idx) => {
+                const pageLimit = search ? Math.min(filtered.length, 100) : (window.__dbTablePageLimit || 50);
+                const itemsToRender = filtered.slice(0, pageLimit);
+                itemsToRender.forEach((item, idx) => {
                     const originalIdx = (typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) ? allDatabaseRecords.indexOf(item) : idx;
                     const realIdx = originalIdx !== -1 ? originalIdx : idx;
                     const itemId = item.id || '';
@@ -7626,12 +7667,36 @@ input[type="date"] {
                     `;
                 });
 
+                if (filtered.length > itemsToRender.length) {
+                    html += `
+                        <tr id="dbLoadMoreRow">
+                            <td colspan="8" style="text-align:center; padding:12px; background:#f8fafc; border-top:2px solid #e2e8f0;">
+                                <button type="button" class="btn-sys btn-indigo" style="font-size:12.5px; font-weight:800; padding:7px 22px; border-radius:8px; cursor:pointer;" onclick="loadMoreDatabaseRows()">
+                                    ⏬ បង្ហាញបន្ថែម 50 ទៀត (កំពុងបង្ហាញ ${itemsToRender.length} / ${filtered.length})
+                                </button>
+                                <button type="button" class="btn-sys btn-dark" style="font-size:12px; font-weight:700; padding:7px 16px; margin-left:8px; border-radius:8px; cursor:pointer;" onclick="loadAllDatabaseRows()">
+                                    ⚡ បង្ហាញទាំងអស់ (${filtered.length})
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }
+
                 tbody.innerHTML = html;
             } catch (err) {
                 console.error("renderDatabaseTable error:", err);
                 tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:#ef4444;">កំហុសក្នុងការបង្ហាញទិន្នន័យ៖ ${err.message || err}</td></tr>`;
             }
         }
+
+        window.loadMoreDatabaseRows = function() {
+            window.__dbTablePageLimit = (window.__dbTablePageLimit || 50) + 50;
+            renderDatabaseTable();
+        };
+        window.loadAllDatabaseRows = function() {
+            window.__dbTablePageLimit = 99999;
+            renderDatabaseTable();
+        };
 
         async function exportCSV() {
             const records = Array.isArray(allDatabaseRecords) ? allDatabaseRecords : [];
@@ -10733,7 +10798,9 @@ input[type="date"] {
         }
 
         function resetSearch() {
-            document.getElementById('searchInput').value = '';
+            window.__dbTablePageLimit = 50;
+            const sInp = document.getElementById('searchInput');
+            if (sInp) sInp.value = '';
             renderDatabaseTable();
         }
 
@@ -12410,21 +12477,35 @@ document.addEventListener('paste', function(e) {
     }
 
     function getBookings() {
+        let delIds = [];
+        try { delIds = JSON.parse(localStorage.getItem('autorent_deleted_booking_ids') || '[]'); } catch(e) {}
+        const delSet = new Set((Array.isArray(delIds) ? delIds : []).map(x => String(x).trim().toUpperCase()));
+
         if (_memoryBookingsCache && Array.isArray(_memoryBookingsCache) && _memoryBookingsCache.length > 0) {
+            if (delSet.size > 0) {
+                _memoryBookingsCache = _memoryBookingsCache.filter(b => b && !delSet.has(String(b.id || '').trim().toUpperCase()));
+            }
             return sanitizeBookingsLocations(_memoryBookingsCache);
         }
         let list = loadData(STORAGE_KEY_BOOKINGS, null);
         if (Array.isArray(list) && list.length > 0) {
+            if (delSet.size > 0) {
+                list = list.filter(b => b && !delSet.has(String(b.id || '').trim().toUpperCase()));
+            }
             sanitizeBookingsLocations(list);
             _memoryBookingsCache = list;
             return list;
         }
         // Direct Fallback to preloaded server data if localStorage is empty or []
         if (typeof window !== 'undefined' && window.__SERVER_PRELOADED_BOOKINGS__ && Array.isArray(window.__SERVER_PRELOADED_BOOKINGS__) && window.__SERVER_PRELOADED_BOOKINGS__.length > 0) {
-            sanitizeBookingsLocations(window.__SERVER_PRELOADED_BOOKINGS__);
-            try { saveData(STORAGE_KEY_BOOKINGS, window.__SERVER_PRELOADED_BOOKINGS__); } catch(e) {}
-            _memoryBookingsCache = window.__SERVER_PRELOADED_BOOKINGS__;
-            return window.__SERVER_PRELOADED_BOOKINGS__;
+            let pre = window.__SERVER_PRELOADED_BOOKINGS__;
+            if (delSet.size > 0) {
+                pre = pre.filter(b => b && !delSet.has(String(b.id || '').trim().toUpperCase()));
+            }
+            sanitizeBookingsLocations(pre);
+            try { saveData(STORAGE_KEY_BOOKINGS, pre); } catch(e) {}
+            _memoryBookingsCache = pre;
+            return pre;
         }
         const init = sanitizeBookingsLocations(getInitialBookings());
         _memoryBookingsCache = init;
@@ -13641,6 +13722,8 @@ document.addEventListener('paste', function(e) {
         const cntTomorrow = bookings.filter(b => (b.date === tomorrowStr && b.status !== 'completed')).length;
         const cntUpcoming = bookings.filter(b => ((b.date && b.date > tomorrowStr) || b.status === 'upcoming') && b.status !== 'completed' && b.date !== todayStr).length;
         const cntCompleted = bookings.filter(b => b.status === 'completed' || (b.date && b.date < todayStr)).length;
+        const recentTodayBookings = bookings.filter(b => (b.updated_at && b.updated_at.startsWith(todayStr)) || (b.created_at && b.created_at.startsWith(todayStr)));
+        const cntRecent = recentTodayBookings.length > 0 ? recentTodayBookings.length : Math.min(bookings.length, 15);
 
         const elAll = document.getElementById('countFilterAll'); if (elAll) elAll.textContent = cntAll;
         const elRec = document.getElementById('countFilterRecent'); if (elRec) elRec.textContent = cntRecent;
@@ -16916,83 +16999,70 @@ document.addEventListener('paste', function(e) {
 
     window.deleteBooking = async function(id, btnEl) {
         if (!id) return;
-        window.syncCooldownUntil = Date.now() + 15000;
+        window.syncCooldownUntil = Date.now() + 60000;
         if (!confirm(`តើអ្នកប្រាកដជាចង់លុបការកក់លេខ ${id} នេះមែនទេ?`)) return;
-        window.syncCooldownUntil = Date.now() + 15000;
+        window.syncCooldownUntil = Date.now() + 60000;
 
         const strId = String(id).trim().toLowerCase();
-        let bookings = getBookings();
-        
-        let targetIdx = -1;
-        // 1. If btnEl passed from table row, check row text to accurately match customerName if multiple exist
+        const upId = String(id).trim().toUpperCase();
+
+        // 0. Immediate DOM feedback: remove row from table instantly
         if (btnEl && typeof btnEl.closest === 'function') {
             const tr = btnEl.closest('tr');
-            if (tr) {
-                const matchIndices = [];
-                bookings.forEach((b, i) => {
-                    if (String(b.id || '').trim().toLowerCase() === strId) {
-                        matchIndices.push(i);
-                    }
-                });
-                if (matchIndices.length === 1) {
-                    targetIdx = matchIndices[0];
-                } else if (matchIndices.length > 1) {
-                    const rowText = tr.textContent || '';
-                    for (const mIdx of matchIndices) {
-                        const cust = String(bookings[mIdx].customerName || '').trim();
-                        if (cust && rowText.includes(cust)) {
-                            targetIdx = mIdx;
-                            break;
-                        }
-                    }
-                    if (targetIdx === -1) targetIdx = matchIndices[0];
-                }
-            }
+            if (tr) tr.remove();
         }
 
-        // 2. Fallback to standard index lookup
-        if (targetIdx === -1) {
-            targetIdx = bookings.findIndex(b => String(b.id || '').trim().toLowerCase() === strId);
-        }
-
-        // 3. Remove ONLY that specific single booking (never wipe sibling rows)
-        if (targetIdx >= 0) {
-            bookings.splice(targetIdx, 1);
-        } else {
-            bookings = bookings.filter(b => String(b.id || '').trim().toLowerCase() !== strId);
-        }
-        
-        setBookings(bookings);
-
-        // Record to local deleted blacklist
+        // 1. Immediately record to local deleted blacklist
+        const delKey = 'autorent_deleted_booking_ids';
+        let localDelIds = [];
         try {
-            const delKey = 'autorent_deleted_booking_ids';
-            let localDelIds = JSON.parse(localStorage.getItem(delKey) || '[]');
-            const upId = String(id).trim().toUpperCase();
+            localDelIds = JSON.parse(localStorage.getItem(delKey) || '[]');
+            if (!Array.isArray(localDelIds)) localDelIds = [];
             if (!localDelIds.includes(upId)) {
                 localDelIds.push(upId);
                 localStorage.setItem(delKey, JSON.stringify(localDelIds));
             }
         } catch (e) {}
 
+        // 2. Immediately filter out from in-memory cache and localStorage
+        let bookings = getBookings().filter(b => b && String(b.id || '').trim().toUpperCase() !== upId);
+        _memoryBookingsCache = bookings;
+        setBookings(bookings);
+
         closeModal('bookingDetailsModal');
         closeModal('carScheduleModal');
-        showToast('បានលុបការកក់លេខ ' + id + ' រួចរាល់ 🗑️');
-        if (typeof renderDashboard === 'function') renderDashboard();
+        showToast('បានលុបការកក់លេខ ' + id + ' រួចរាល់ជាស្ថាពរ 🗑️');
+
+        // Refresh UI views without re-triggering network sync
         if (typeof renderBookings === 'function') renderBookings(currentBookingFilter);
+        if (typeof renderDashboard === 'function') renderDashboard();
         if (typeof renderCalendar === 'function') renderCalendar();
         if (typeof renderFleetSchedule === 'function') renderFleetSchedule();
         if (typeof renderCars === 'function') renderCars(currentCarFilter);
-        if (typeof switchTab === 'function') switchTab(currentTab);
 
-        // Fast background server synchronization
-        fetch('/api/bookings', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'delete', delete_id: id, bookings: bookings })
-        }).catch(e => {
-            console.error('Error syncing booking delete:', e);
-        });
+        // Update counts in header
+        const countBadge = document.getElementById('activeBookingsCount');
+        if (countBadge) countBadge.textContent = bookings.length;
+        const cloudSyncBtn = document.getElementById('cloudSyncStatusText');
+        if (cloudSyncBtn) cloudSyncBtn.textContent = `Cloud (${bookings.length})`;
+
+        // 3. Directly await server deletion so it is 100% committed to server disk and Supabase
+        try {
+            const resp = await fetch('/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete', delete_id: id })
+            });
+            if (resp.ok) {
+                const resData = await resp.json();
+                if (resData && Array.isArray(resData.deleted_ids)) {
+                    const mergedDel = Array.from(new Set([...localDelIds, ...resData.deleted_ids.map(x => String(x).toUpperCase())]));
+                    try { localStorage.setItem(delKey, JSON.stringify(mergedDel)); } catch(e) {}
+                }
+            }
+        } catch (e) {
+            console.error('Error syncing booking delete to server:', e);
+        }
     };
 
     window.viewBookingDetails = function(id) {
@@ -19972,6 +20042,22 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
 
     // Initialization
     window.initAutoRentSystem = function() {
+        // Auto-purge any deleted bookings and reset phantom invoice numbers
+        try {
+            let curBks = loadData(STORAGE_KEY_BOOKINGS, []);
+            if (Array.isArray(curBks)) {
+                let changed = false;
+                curBks.forEach(b => {
+                    if (b && String(b.id || '').toUpperCase() === 'BK-1062' && b.invoiceNo === 'INV 00001') {
+                        b.invoiceNo = '';
+                        b.invoiceDone = false;
+                        changed = true;
+                    }
+                });
+                if (changed) saveData(STORAGE_KEY_BOOKINGS, curBks);
+            }
+        } catch(e) {}
+
         // Auto-purge any deleted bookings from localStorage on init
         try {
             const delKey = 'autorent_deleted_booking_ids';
@@ -20104,17 +20190,44 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
                 const serverBks = data.bookings.filter(b => b && b.id && !delIdsSet.has(String(b.id).trim().toUpperCase()));
                 const serverIds = new Set(serverBks.map(b => String(b.id || '').trim().toLowerCase()));
 
+                // Helper: verify if an invoiceNo genuinely belongs to this booking
+                const isGenuineInvoice = (rNo, bId, cName) => {
+                    if (!rNo || !Array.isArray(allDatabaseRecords) || allDatabaseRecords.length === 0) return true; // if not loaded yet, assume ok
+                    const cleanRNo = String(rNo).trim().toLowerCase();
+                    const bIdStr = String(bId || '').trim().toLowerCase();
+                    const cNameStr = String(cName || '').trim().toLowerCase();
+                    return allDatabaseRecords.some(r => {
+                        if (!r) return false;
+                        const recNo = String(r.receipt_no || r.receiptNo || r.group_data?.receipt_no || r.customer?.receipt_no || '').trim().toLowerCase();
+                        if (recNo !== cleanRNo) return false;
+                        const recBId = String(r.booking_id || r.group_data?.booking_id || '').trim().toLowerCase();
+                        if (recBId && bIdStr && recBId === bIdStr) return true;
+                        const recCat = String(r.service_category || r.group_info?.service_category || '').toLowerCase();
+                        const recCust = String(r.customer_name || r.sender || r.sender_name || r.group_info?.sender_name || '').toLowerCase();
+                        const isCar = recCat === 'car' || recCat === 'line' || (!recCat && isCarRecord(r));
+                        const nameMatches = Boolean(cNameStr && recCust && (recCust.includes(cNameStr) || cNameStr.includes(recCust)));
+                        return isCar && nameMatches;
+                    });
+                };
+
                 // Smart merge: keep local edits and local bookings so background sync never wipes freshly saved bookings!
                 const localMap = new Map((Array.isArray(localBks) ? localBks : []).map(b => [String(b.id || '').trim().toUpperCase(), b]));
                 let merged = serverBks.map(sb => {
                     const sId = String(sb.id || '').trim().toUpperCase();
                     if (localMap.has(sId)) {
                         const lb = localMap.get(sId);
-                        const invNo = (lb && lb.invoiceNo) ? lb.invoiceNo : (sb && sb.invoiceNo ? sb.invoiceNo : '');
-                        const invDone = (lb && lb.invoiceDone) || (sb && sb.invoiceDone) || !!invNo;
+                        let invNo = (lb && lb.invoiceNo) ? lb.invoiceNo : (sb && sb.invoiceNo ? sb.invoiceNo : '');
+                        if (invNo && !isGenuineInvoice(invNo, sId, sb.customerName || lb.customerName)) {
+                            invNo = '';
+                        }
+                        const invDone = Boolean(invNo);
                         return { ...sb, ...lb, invoiceNo: invNo, invoiceDone: invDone };
                     }
-                    return sb;
+                    let invNo = sb && sb.invoiceNo ? sb.invoiceNo : '';
+                    if (invNo && !isGenuineInvoice(invNo, sId, sb.customerName)) {
+                        invNo = '';
+                    }
+                    return { ...sb, invoiceNo: invNo, invoiceDone: Boolean(invNo) };
                 });
                 let hasLocalOnly = false;
                 (Array.isArray(localBks) ? localBks : []).forEach(lb => {
@@ -20259,11 +20372,17 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
         if (typeof window.syncBookingsWithServer === 'function') window.syncBookingsWithServer();
         if (typeof window.syncCustomersWithServer === 'function') window.syncCustomersWithServer();
         if (typeof window.syncCarsWithServer === 'function') window.syncCarsWithServer();
-        if (typeof loadDatabaseRecords === 'function') loadDatabaseRecords();
+        // Throttle heavy database reload on focus (max once per 30s)
+        const now = Date.now();
+        if (!window.__lastFocusSync || (now - window.__lastFocusSync) > 30000) {
+            window.__lastFocusSync = now;
+            if (typeof loadDatabaseRecords === 'function') loadDatabaseRecords();
+        }
     });
 
-    // Real-time Live Background Sync (every 12 seconds) so Phone <-> PC sync smoothly without network lag
+    // Real-time Live Background Sync (every 25 seconds) so Phone <-> PC sync smoothly without network lag
     if (!window.__autoRentSyncTimer) {
+        window.__bgSyncCounter = 0;
         window.__autoRentSyncTimer = setInterval(() => {
             if (Date.now() < (window.syncCooldownUntil || 0)) return;
             // Skip sync if user is currently typing in an input or modal is open
@@ -20271,11 +20390,18 @@ https://maps.app.goo.gl/xEemJdDc4BeuBEuP6?g_st=ic`;
             const openModal = document.querySelector('.modal.active, #bookingModal.active, #customerModal.active, #groupMembersModal.active, .modal-overlay.active');
             if (openModal) return;
 
+            window.__bgSyncCounter = (window.__bgSyncCounter || 0) + 1;
+            // Lightweight endpoints (bookings, customers, cars)
             if (typeof window.syncBookingsWithServer === 'function') window.syncBookingsWithServer();
             if (typeof window.syncCustomersWithServer === 'function') window.syncCustomersWithServer();
             if (typeof window.syncCarsWithServer === 'function') window.syncCarsWithServer();
-            if (typeof loadDatabaseRecords === 'function') loadDatabaseRecords();
-        }, 12000);
+            
+            // Heavy 5MB invoice database records sync every 50s or when visible
+            const isDbActive = !document.hidden && document.getElementById('bottomDbPanel') && document.getElementById('bottomDbPanel').offsetParent !== null;
+            if (window.__bgSyncCounter % 2 === 0 || isDbActive) {
+                if (typeof loadDatabaseRecords === 'function') loadDatabaseRecords();
+            }
+        }, 25000);
     }
 
     // Auto initialize if DOM is already loaded or when ready

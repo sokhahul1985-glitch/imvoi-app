@@ -206,7 +206,7 @@ def load_json(filepath, default):
         return default
     for attempt in range(4):
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(filepath, 'r', encoding='utf-8-sig') as f:
                 return json.load(f)
         except Exception:
             time.sleep(0.08)
@@ -372,7 +372,7 @@ def invoice_number_matches(item, target_no):
     ]
     return any(c.strip().lower().replace(' ', '') == t for c in candidates if c)
 
-def get_next_invoice_no(category='car', reserve=True):
+def get_next_invoice_no(category='car', reserve=False):
     with _INVOICE_LOCK:
         cat = (category or 'car').lower().strip()
         if cat in ['line']:
@@ -391,6 +391,9 @@ def get_next_invoice_no(category='car', reserve=True):
             _ACTIVE_RESERVATIONS[cat] = {}
 
         data = load_json(SAVED_CUSTOMERS_FILE, [])
+        del_inv_ids = load_deleted_invoice_ids()
+        if del_inv_ids and data:
+            data = [inv for inv in data if not is_invoice_deleted(inv, del_inv_ids)]
         counter = load_json(INVOICE_COUNTER_FILE, {
             "last_number": 0, "prefix": "INV ",
             "last_visa_number": 0, "visa_prefix": "VISA ",
@@ -412,16 +415,13 @@ def get_next_invoice_no(category='car', reserve=True):
                             nums.append(int(num_part))
             db_max = max(nums) if nums else 0
             counter_max = safe_int(counter.get("last_visa_number", 0))
-            res_nums = list(_ACTIVE_RESERVATIONS['visa'].keys())
+            res_nums = list(_ACTIVE_RESERVATIONS['visa'].keys()) if reserve else []
             max_all = max([db_max, counter_max] + res_nums)
             next_num = max_all + 1
 
             if reserve:
                 _ACTIVE_RESERVATIONS['visa'][next_num] = now + RESERVATION_TTL_SECONDS
                 counter["last_visa_number"] = next_num
-                save_json(INVOICE_COUNTER_FILE, counter)
-            elif counter.get("last_visa_number") != max_all:
-                counter["last_visa_number"] = max_all
                 save_json(INVOICE_COUNTER_FILE, counter)
 
             return f"{prefix}{next_num:05d}"
@@ -437,16 +437,13 @@ def get_next_invoice_no(category='car', reserve=True):
                         nums.append(int(num_part))
             db_max = max(nums) if nums else 0
             counter_max = safe_int(counter.get("last_passport_number", 0))
-            res_nums = list(_ACTIVE_RESERVATIONS['passport'].keys())
+            res_nums = list(_ACTIVE_RESERVATIONS['passport'].keys()) if reserve else []
             max_all = max([db_max, counter_max] + res_nums)
             next_num = max_all + 1
 
             if reserve:
                 _ACTIVE_RESERVATIONS['passport'][next_num] = now + RESERVATION_TTL_SECONDS
                 counter["last_passport_number"] = next_num
-                save_json(INVOICE_COUNTER_FILE, counter)
-            elif counter.get("last_passport_number") != max_all:
-                counter["last_passport_number"] = max_all
                 save_json(INVOICE_COUNTER_FILE, counter)
 
             return f"{prefix}{next_num:05d}"
@@ -463,16 +460,13 @@ def get_next_invoice_no(category='car', reserve=True):
                             nums.append(int(num_part))
             db_max = max(nums) if nums else 0
             counter_max = safe_int(counter.get("last_quote_number", 0))
-            res_nums = list(_ACTIVE_RESERVATIONS['quote'].keys())
+            res_nums = list(_ACTIVE_RESERVATIONS['quote'].keys()) if reserve else []
             max_all = max([db_max, counter_max] + res_nums)
             next_num = max_all + 1
 
             if reserve:
                 _ACTIVE_RESERVATIONS['quote'][next_num] = now + RESERVATION_TTL_SECONDS
                 counter["last_quote_number"] = next_num
-                save_json(INVOICE_COUNTER_FILE, counter)
-            elif counter.get("last_quote_number") != max_all:
-                counter["last_quote_number"] = max_all
                 save_json(INVOICE_COUNTER_FILE, counter)
 
             return f"{prefix}{next_num:05d}"
@@ -489,16 +483,13 @@ def get_next_invoice_no(category='car', reserve=True):
                             nums.append(int(num_part))
             db_max = max(nums) if nums else 0
             counter_max = safe_int(counter.get("last_number", 0))
-            res_nums = list(_ACTIVE_RESERVATIONS['car'].keys())
+            res_nums = list(_ACTIVE_RESERVATIONS['car'].keys()) if reserve else []
             max_all = max([db_max, counter_max] + res_nums)
             next_num = max_all + 1
 
             if reserve:
                 _ACTIVE_RESERVATIONS['car'][next_num] = now + RESERVATION_TTL_SECONDS
                 counter["last_number"] = next_num
-                save_json(INVOICE_COUNTER_FILE, counter)
-            elif counter.get("last_number") != max_all:
-                counter["last_number"] = max_all
                 save_json(INVOICE_COUNTER_FILE, counter)
 
             return f"{prefix}{next_num:05d}"
@@ -1336,26 +1327,32 @@ class ImvoiWebHandler(http.server.SimpleHTTPRequestHandler):
 
         elif path == '/api/next_no':
             cat = query.get('category', ['car'])[0]
-            self.send_json_response({'success': True, 'next_no': get_next_invoice_no(cat)})
+            self.send_json_response({'success': True, 'next_no': get_next_invoice_no(cat, reserve=False)})
             return
 
         elif path == '/api/set_counter':
             cat = query.get('category', ['car'])[0].lower().strip()
             num_str = query.get('number', ['0'])[0]
             num = int(re.sub(r'[^0-9]', '', str(num_str)) or 0)
+            if cat in ['line']: cat = 'car'
+            if cat in _ACTIVE_RESERVATIONS:
+                _ACTIVE_RESERVATIONS[cat].clear()
             counter = load_json(INVOICE_COUNTER_FILE, {
                 "last_number": 0, "prefix": "INV ",
                 "last_visa_number": 0, "visa_prefix": "VISA ",
-                "last_passport_number": 0, "passport_prefix": "INV "
+                "last_passport_number": 0, "passport_prefix": "INV ",
+                "last_quote_number": 0, "quote_prefix": "QT "
             })
             if cat == 'visa':
                 counter["last_visa_number"] = num
             elif cat == 'passport':
                 counter["last_passport_number"] = num
+            elif cat in ['quote', 'quotation']:
+                counter["last_quote_number"] = num
             else:
                 counter["last_number"] = num
             save_json(INVOICE_COUNTER_FILE, counter)
-            self.send_json_response({'success': True, 'category': cat, 'last_number': num, 'next_no': get_next_invoice_no(cat)})
+            self.send_json_response({'success': True, 'category': cat, 'last_number': num, 'next_no': get_next_invoice_no(cat, reserve=False)})
             return
 
         elif path in ['/api/invoice', '/api/receipt']:
