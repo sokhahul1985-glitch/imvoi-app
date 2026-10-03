@@ -1,10 +1,8 @@
 {
-    "last_number": 877,
-    "prefix": "INV ",
-    "last_visa_number": 87,
-    "visa_prefix": "VISA ",
-    "last_passport_number": 2,
-    "passport_prefix": "PASS ",
-    "last_quote_number": 0,
-    "quote_prefix": "QT "
+  "last_number": 888,
+  "prefix": "INV ",
+  "last_visa_number": 87,
+  "visa_prefix": "VISA ",
+  "last_passport_number": 1,
+  "passport_prefix": "PASS "
 }

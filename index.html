@@ -4587,7 +4587,8 @@ input[type="date"] {
                                         </th>
                                         <th style="padding: 7px 8px; width: 175px; font-size: 13.5px;"><i class="fa-solid fa-user text-primary"></i> ភ្ញៀវ / អ្នកកក់</th>
                                         <th style="text-align: center; padding: 7px 6px; width: 135px; font-size: 13.5px;"><i class="fa-brands fa-telegram text-primary"></i> តេលេក្រាមតៃកុង</th>
-                                        <th style="padding: 7px 8px; width: 235px; font-size: 13.5px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅធ្វើដំណើរ (Route)</th>
+                                        <th style="padding: 7px 2px 7px 6px; width: 130px; font-size: 13px; white-space: nowrap;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅ (Route)</th>
+                                        <th style="text-align: left; padding: 7px 0 7px 2px; width: 34px; font-size: 11.5px; white-space: nowrap;" title="ស្ថានភាពបង់លុយ (Payment Status)"><i class="fa-solid fa-money-bill-wave text-success"></i> បង់</th>
                                         <th style="padding: 7px 6px; width: 155px; font-size: 13.5px;"><i class="fa-solid fa-car text-primary"></i> ប្រភេទរថយន្ត</th>
                                         <th style="text-align: center; padding: 7px 8px; width: 120px; font-size: 13.5px;"><i class="fa-solid fa-star text-warning"></i> VIP / ក្លៀដាន</th>
                                         <th style="text-align: center; padding: 7px 4px; width: 80px; font-size: 13px;"><i class="fa-solid fa-pen-to-square text-primary"></i> កែប្រែ</th>
@@ -4657,7 +4658,8 @@ input[type="date"] {
                                         </th>
                                         <th style="padding: 7px 8px; width: 175px; font-size: 13.5px;"><i class="fa-solid fa-user text-primary"></i> ភ្ញៀវ / អ្នកកក់</th>
                                         <th style="text-align: center; padding: 7px 6px; width: 135px; font-size: 13.5px;"><i class="fa-brands fa-telegram text-primary"></i> តេលេក្រាមតៃកុង</th>
-                                        <th style="padding: 7px 8px; width: 210px; font-size: 13.5px;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅធ្វើដំណើរ (Route)</th>
+                                        <th style="padding: 7px 2px 7px 6px; width: 130px; font-size: 13px; white-space: nowrap;"><i class="fa-solid fa-route text-primary"></i> ទិសដៅ (Route)</th>
+                                        <th style="text-align: left; padding: 7px 0 7px 2px; width: 34px; font-size: 11.5px; white-space: nowrap;" title="ស្ថានភាពបង់លុយ (Payment Status)"><i class="fa-solid fa-money-bill-wave text-success"></i> បង់</th>
                                         <th style="padding: 7px 6px; width: 155px; font-size: 13.5px;"><i class="fa-solid fa-car text-primary"></i> ប្រភេទរថយន្ត</th>
                                         <th style="text-align: center; padding: 7px 8px; width: 120px; font-size: 13.5px;"><i class="fa-solid fa-star text-warning"></i> VIP / ក្លៀដាន</th>
                                         <th style="text-align: center; padding: 7px 4px; width: 80px; font-size: 13px;"><i class="fa-solid fa-pen-to-square text-primary"></i> កែប្រែ</th>
@@ -13368,7 +13370,7 @@ document.addEventListener('paste', function(e) {
             } else if (currentDashScheduleFilter === 'tomorrow') {
                 emptyMsg = 'គ្មានជើងឡានត្រូវចេញដំណើរនៅថ្ងៃស្អែកទេ';
             }
-            tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; padding: 28px; color: #64748b;">
+            tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 28px; color: #64748b;">
                 <i class="fa-solid fa-magnifying-glass" style="font-size: 1.8rem; opacity: 0.4; margin-bottom: 6px;"></i><br>
                 ${emptyMsg}
             </td></tr>`;
@@ -13622,6 +13624,35 @@ document.addEventListener('paste', function(e) {
             </button>
         `;
 
+        // Payment status resolve: check booking property or matched invoice in allDatabaseRecords
+        let isPaid = (b.paymentStatus === 'PAID' || b.payment_status === 'PAID');
+        if (!isPaid && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords) && allDatabaseRecords.length > 0) {
+            const bIdStr = String(b.id || '').trim().toLowerCase();
+            const invRec = allDatabaseRecords.find(r => {
+                if (!r) return false;
+                if (effInvoiceNo) {
+                    const rNo = (r.receipt_no || r.receiptNo || r.group_data?.receipt_no || r.customer?.receipt_no || '').trim().toLowerCase();
+                    if (rNo === effInvoiceNo.toLowerCase()) return true;
+                }
+                const rBId = String(r.booking_id || r.group_data?.booking_id || '').trim().toLowerCase();
+                return Boolean(rBId && bIdStr && rBId === bIdStr);
+            });
+            if (invRec && String(invRec.payment_status || '').toUpperCase() === 'PAID') {
+                isPaid = true;
+            }
+        }
+
+        const paymentBtn = `
+            <button type="button"
+                class="btn-ar btn-payment-icon"
+                style="width: 28px !important; height: 26px !important; min-height: 26px !important; max-height: 26px !important; padding: 0 !important; border-radius: 6px; font-size: 13px !important; font-weight: 800; cursor: pointer; border: 1.5px solid ${isPaid ? '#10b981' : '#f87171'}; background: ${isPaid ? '#ecfdf5' : '#fef2f2'}; color: ${isPaid ? '#047857' : '#dc2626'}; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.04); transition: all 0.15s ease;"
+                onclick="event.stopPropagation(); toggleBookingPaymentStatus('${b.id}', this)"
+                title="${isPaid ? 'បានបង់រួច (PAID) - ចុចដើម្បីប្តូរ' : 'មិនទាន់បង់ (UNPAID) - ចុចដើម្បីប្តូរ'}"
+                aria-label="${isPaid ? 'បង់រួច' : 'មិនទាន់បង់'}">
+                ${isPaid ? '<i class="fa-solid fa-circle-check" style="font-size: 14px; color: #16a34a;"></i>' : '<i class="fa-solid fa-hourglass-half" style="font-size: 12.5px; color: #dc2626;"></i>'}
+            </button>
+        `;
+
         return `
             <tr style="white-space: nowrap; border-bottom: 1.5px solid #e2e8f0; ${isJustSaved ? 'background: #fdf4ff !important; box-shadow: inset 4px 0 0 #a21caf;' : ''}">
                 <td style="text-align: center; padding: 6px 4px; width: 44px;">
@@ -13656,7 +13687,7 @@ document.addEventListener('paste', function(e) {
                     ${b.images && b.images.length > 0 ? ` <span class="badge" style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;font-size:12px;font-weight:800;margin-left:4px;cursor:pointer;vertical-align:middle;padding:2px 6px;" onclick="viewBookingDetails('${b.id}')" title="${b.images.length} រូបភាពភ្ជាប់"><i class="fa-solid fa-camera"></i> ${b.images.length}</span>` : ''}
                 </td>
                 <td style="text-align: center; white-space: nowrap; padding: 6px 5px;">${driverTg}</td>
-                <td style="white-space: nowrap; padding: 6px 8px; width: 235px;">
+                <td style="white-space: nowrap; padding: 6px 2px 6px 6px; width: 130px;">
                     ${(() => {
                         const rawP = b.pickupLoc === 'ភ្នំពេញ' ? 'តេជោ' : (b.pickupLoc || 'ប៉ោយប៉ែត');
                         const rawD = b.dropoffLoc === 'ភ្នំពេញ' ? 'តេជោ' : (b.dropoffLoc || 'តេជោ');
@@ -13676,6 +13707,9 @@ document.addEventListener('paste', function(e) {
                             </div>
                         `;
                     })()}
+                </td>
+                <td style="text-align: left; white-space: nowrap; padding: 4px 0 4px 2px; width: 34px;" onclick="event.stopPropagation()">
+                    ${paymentBtn}
                 </td>
                 <td style="white-space: nowrap; padding: 6px 6px;">
                     <div style="display: inline-flex; align-items: center; gap: 5px; flex-wrap: nowrap; vertical-align: middle;">
@@ -13769,7 +13803,7 @@ document.addEventListener('paste', function(e) {
         if (!tbody) return;
 
         if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; padding: 24px; color: #64748b;">
+            tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; padding: 24px; color: #64748b;">
                 <i class="fa-solid fa-magnifying-glass" style="font-size: 1.5rem; opacity: 0.4; margin-bottom: 6px;"></i><br>
                 រកមិនឃើញទិន្នន័យការកក់ឡើយ
             </td></tr>`;
@@ -17062,6 +17096,67 @@ document.addEventListener('paste', function(e) {
             }
         } catch (e) {
             console.error('Error syncing booking delete to server:', e);
+        }
+    };
+
+    window.toggleBookingPaymentStatus = async function(bookingId, btnEl) {
+        if (!bookingId) return;
+        const bookings = getBookings();
+        const b = bookings.find(x => x && String(x.id).trim().toUpperCase() === String(bookingId).trim().toUpperCase());
+        if (!b) return;
+
+        // Current status check
+        let effInvNo = (b.invoiceNo || '').trim();
+        if (!effInvNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) {
+            const m = allDatabaseRecords.find(r => r && String(r.booking_id || r.group_data?.booking_id || '').toLowerCase() === String(bookingId).toLowerCase());
+            if (m) effInvNo = (m.receipt_no || m.group_data?.receipt_no || m.customer?.receipt_no || '').trim();
+        }
+
+        let currentlyPaid = (b.paymentStatus === 'PAID' || b.payment_status === 'PAID');
+        if (!currentlyPaid && effInvNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) {
+            const matchedInv = allDatabaseRecords.find(r => r && (String(r.receipt_no || '').toLowerCase() === effInvNo.toLowerCase() || String(r.group_data?.receipt_no || '').toLowerCase() === effInvNo.toLowerCase()));
+            if (matchedInv && String(matchedInv.payment_status || '').toUpperCase() === 'PAID') {
+                currentlyPaid = true;
+            }
+        }
+
+        const newStatus = currentlyPaid ? 'UNPAID' : 'PAID';
+        b.paymentStatus = newStatus;
+        b.payment_status = newStatus;
+        setBookings(bookings);
+
+        // Immediate visual update on button
+        if (btnEl) {
+            btnEl.innerHTML = newStatus === 'PAID' 
+                ? '<i class="fa-solid fa-circle-check" style="font-size: 14px; color: #16a34a;"></i>' 
+                : '<i class="fa-solid fa-hourglass-half" style="font-size: 12.5px; color: #dc2626;"></i>';
+            btnEl.style.background = newStatus === 'PAID' ? '#ecfdf5' : '#fef2f2';
+            btnEl.style.color = newStatus === 'PAID' ? '#047857' : '#dc2626';
+            btnEl.style.borderColor = newStatus === 'PAID' ? '#10b981' : '#f87171';
+            btnEl.title = newStatus === 'PAID' ? 'បានបង់រួច (PAID) - ចុចដើម្បីប្តូរ' : 'មិនទាន់បង់ (UNPAID) - ចុចដើម្បីប្តូរ';
+            btnEl.setAttribute('aria-label', newStatus === 'PAID' ? 'បង់រួច' : 'មិនទាន់បង់');
+        }
+
+        // Sync with invoice database if invoice exists
+        if (effInvNo && typeof toggleStatus === 'function') {
+            try {
+                toggleStatus(effInvNo, newStatus);
+            } catch (err) {
+                console.warn('Sync booking payment to invoice error:', err);
+            }
+        }
+
+        // Sync booking update to server
+        try {
+            fetch('/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ booking: b })
+            }).catch(() => {});
+        } catch (e) {}
+
+        if (typeof showToast === 'function') {
+            showToast(newStatus === 'PAID' ? `✅ ការកក់ ${bookingId} ប្តូរជា «បង់រួច»` : `⏳ ការកក់ ${bookingId} ប្តូរជា «មិនទាន់បង់»`);
         }
     };
 
