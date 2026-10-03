@@ -875,7 +875,9 @@ def _merge_booking_records(base_bks, incoming_bks):
             if bid in bk_map:
                 existing_item = bk_map[bid]
                 for k, v in b.items():
-                    if v is not None and v != '' and v != []:
+                    if k in ['invoiceNo', 'invoiceDone']:
+                        existing_item[k] = v
+                    elif v is not None and v != '' and v != []:
                         existing_item[k] = v
                     elif k not in existing_item:
                         existing_item[k] = v

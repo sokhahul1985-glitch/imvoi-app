@@ -13469,8 +13469,29 @@ document.addEventListener('paste', function(e) {
         }
         const borderBadge = borderText ? `<span class="table-badge-car" style="background:#dcfce7;color:#166534;border: 1.5px solid #16a34a;white-space: nowrap; font-size: 13.5px; font-weight: 900; padding: 4px 12px; border-radius: 6px;">${borderText}</span>` : '';
 
-        // Auto-resolve invoice number from allDatabaseRecords strictly by booking_id (1-to-1 unique mapping, never fuzzy steal across multiple trips)
+        // Auto-resolve or validate invoice number from allDatabaseRecords
         let effInvoiceNo = (b.invoiceNo || '').trim();
+        if (effInvoiceNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords) && allDatabaseRecords.length > 0) {
+            const bIdStr = String(b.id || '').trim().toLowerCase();
+            const bCustName = String(b.customerName || '').trim().toLowerCase();
+            const matchedRec = allDatabaseRecords.find(r => {
+                if (!r) return false;
+                const rNo = (r.receipt_no || r.receiptNo || r.group_data?.receipt_no || r.customer?.receipt_no || '').trim().toLowerCase();
+                if (rNo !== effInvoiceNo.toLowerCase()) return false;
+                const rBId = String(r.booking_id || r.group_data?.booking_id || '').trim().toLowerCase();
+                if (rBId && bIdStr && rBId === bIdStr) return true;
+                const rCat = String(r.service_category || r.group_info?.service_category || '').toLowerCase();
+                const rCust = String(r.customer_name || r.sender || r.sender_name || r.group_info?.sender_name || '').toLowerCase();
+                const isCar = rCat === 'car' || rCat === 'line' || (!rCat && isCarRecord(r));
+                const nameMatches = Boolean(bCustName && rCust && (rCust.includes(bCustName) || bCustName.includes(rCust)));
+                return isCar && nameMatches;
+            });
+            if (!matchedRec) {
+                effInvoiceNo = '';
+                b.invoiceNo = '';
+                b.invoiceDone = false;
+            }
+        }
         if (!effInvoiceNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords) && allDatabaseRecords.length > 0) {
             const bIdStr = String(b.id || '').trim().toLowerCase();
             const matchedRec = allDatabaseRecords.find(r => {
@@ -16628,15 +16649,24 @@ document.addEventListener('paste', function(e) {
 
         if (effectiveInvNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) {
             const bIdStr = String(b.id || '').trim().toLowerCase();
+            const bCustName = String(b.customerName || '').trim().toLowerCase();
             genuineInvoice = allDatabaseRecords.find(r => {
                 if (!r) return false;
-                const rNo = (r.receipt_no || r.receiptNo || r.group_data?.receipt_no || '').trim().toLowerCase();
+                const rNo = (r.receipt_no || r.receiptNo || r.group_data?.receipt_no || r.customer?.receipt_no || '').trim().toLowerCase();
+                if (rNo !== effectiveInvNo.toLowerCase()) return false;
                 const rBId = String(r.booking_id || r.group_data?.booking_id || '').trim().toLowerCase();
-                return (rNo === effectiveInvNo.toLowerCase()) && (!rBId || rBId === bIdStr);
+                if (rBId && bIdStr && rBId === bIdStr) return true;
+                const rCat = String(r.service_category || r.group_info?.service_category || '').toLowerCase();
+                const rCust = String(r.customer_name || r.sender || r.sender_name || r.group_info?.sender_name || '').toLowerCase();
+                const isCar = rCat === 'car' || rCat === 'line' || (!rCat && isCarRecord(r));
+                const nameMatches = Boolean(bCustName && rCust && (rCust.includes(bCustName) || bCustName.includes(rCust)));
+                return isCar && nameMatches;
             });
-            // If the invoiceNo was a dummy or belongs to a different record, do not edit it!
+            // If the invoiceNo was a dummy or belongs to a different record, reset it!
             if (!genuineInvoice) {
                 effectiveInvNo = '';
+                b.invoiceNo = '';
+                b.invoiceDone = false;
             }
         }
 
