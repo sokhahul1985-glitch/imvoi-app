@@ -165,16 +165,9 @@ def record_deleted_invoice_id(inv_val):
 def is_invoice_deleted(inv_dict, deleted_set):
     if not isinstance(inv_dict, dict) or not deleted_set:
         return False
-    r_no = str(inv_dict.get('receipt_no') or (inv_dict.get('group_data') or {}).get('receipt_no') or (inv_dict.get('customer') or {}).get('receipt_no') or (inv_dict.get('group_info') or {}).get('receipt_no') or inv_dict.get('passport_no') or '').strip().upper().replace('🛂', '').strip()
     c_id = str(inv_dict.get('id') or '').strip().upper()
     if c_id and c_id in deleted_set:
         return True
-    if r_no:
-        if r_no in deleted_set:
-            return True
-        r_clean = r_no.replace(' ', '')
-        if r_clean and r_clean in deleted_set:
-            return True
     return False
 WEB_DIR = BASE_DIR
 
@@ -2567,6 +2560,26 @@ try {{
                                 res_inv['booking_id'] = str(target_booking.get('id', ''))
                     except Exception as e_bk_sync:
                         print(f"[update_members] Booking sync note: {e_bk_sync}")
+
+                    # Ensure saved invoice is never blacklisted in deleted IDs
+                    try:
+                        clean_u = clean_r_no.upper()
+                        clean_n = clean_u.replace(' ', '')
+                        c_id = str((res_inv or {}).get('id') or '').strip().upper()
+                        df = DELETED_INVOICES_FILE
+                        if not os.path.exists(df):
+                            df = os.path.join(BASE_DIR, 'deleted_invoice_ids.json')
+                        curr_del = load_json(df, [])
+                        if isinstance(curr_del, list) and any(x in curr_del for x in [clean_r_no, clean_u, clean_n, c_id]):
+                            curr_del = [x for x in curr_del if x not in [clean_r_no, clean_u, clean_n, c_id]]
+                            save_json(df, curr_del)
+                            if DATA_DIR != BASE_DIR:
+                                try:
+                                    save_json(os.path.join(BASE_DIR, 'deleted_invoice_ids.json'), curr_del)
+                                except Exception:
+                                    pass
+                    except Exception as e_undel:
+                        print(f"[update_members] Un-delete note: {e_undel}")
 
                     # Release active in-memory reservation
                     num_part = re.sub(r'[^0-9]', '', clean_r_no)

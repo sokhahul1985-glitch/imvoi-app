@@ -7347,7 +7347,7 @@ input[type="date"] {
                         serverList = d;
                     }
 
-                    // Always filter out any deleted invoice IDs / numbers
+                    // Always filter out any deleted invoice IDs
                     try {
                         const delKey = 'autorent_deleted_invoice_ids';
                         let localDelList = JSON.parse(localStorage.getItem(delKey) || '[]');
@@ -7355,12 +7355,8 @@ input[type="date"] {
                             const delSet = new Set(localDelList.map(x => String(x).trim().toUpperCase()));
                             serverList = serverList.filter(item => {
                                 if (!item) return false;
-                                const rNo = (item.receipt_no || item.group_data?.receipt_no || item.customer?.receipt_no || item.passport_no || item.id || '').toString().trim().toUpperCase().replace('🛂', '').trim();
-                                const rNoClean = rNo.replace(/\s+/g, '');
                                 const cId = String(item.id || '').trim().toUpperCase();
                                 if (cId && delSet.has(cId)) return false;
-                                if (rNo && delSet.has(rNo)) return false;
-                                if (rNoClean && delSet.has(rNoClean)) return false;
                                 return true;
                             });
                         }
@@ -8034,23 +8030,63 @@ input[type="date"] {
         let currentGmmReceiptNo = '';
 
         function getItemByRef(rNoEnc, idx) {
-            if (typeof allDatabaseRecords === 'undefined' || !Array.isArray(allDatabaseRecords) || allDatabaseRecords.length === 0) return null;
             const cleanNo = decodeURIComponent(rNoEnc || '').trim();
-            
-            // 1. Match by cleanNo if valid
-            if (cleanNo && cleanNo !== 'N/A' && cleanNo !== '-') {
-                const found = allDatabaseRecords.find(i => {
-                    const no = (i.receipt_no || i.group_data?.receipt_no || i.customer?.receipt_no || (i.passport_no ? `🛂 ${i.passport_no}` : '') || '').trim();
-                    const sender = (i.sender || i.group_info?.sender_name || i.group_name || '').trim();
-                    return no === cleanNo || (i.passport_no && (i.passport_no === cleanNo || ('🛂 ' + i.passport_no) === cleanNo)) || (i.id && String(i.id) === cleanNo) || sender === cleanNo;
-                });
-                if (found) return found;
+            const normClean = cleanNo.toUpperCase().replace(/\s+/g, '').replace('🛂', '');
+
+            if (typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords) && allDatabaseRecords.length > 0) {
+                if (cleanNo && cleanNo !== 'N/A' && cleanNo !== '-') {
+                    const found = allDatabaseRecords.find(i => {
+                        if (!i) return false;
+                        const rNo = (i.receipt_no || i.group_data?.receipt_no || i.customer?.receipt_no || '').trim();
+                        const normRNo = rNo.toUpperCase().replace(/\s+/g, '').replace('🛂', '');
+                        if (rNo === cleanNo || (normClean && normRNo && normRNo === normClean)) return true;
+
+                        const passNo = (i.passport_no || '').trim();
+                        const normPass = passNo.toUpperCase().replace(/\s+/g, '').replace('🛂', '');
+                        if (passNo === cleanNo || (normClean && normPass && normPass === normClean)) return true;
+
+                        const cId = String(i.id || '').trim();
+                        if (cId && (cId === cleanNo || cId.toUpperCase() === normClean)) return true;
+
+                        const bId = String(i.booking_id || i.group_data?.booking_id || '').trim();
+                        if (bId && (bId === cleanNo || bId.toUpperCase() === normClean)) return true;
+
+                        const sender = (i.sender || i.group_info?.sender_name || i.group_name || '').trim();
+                        if (sender && (sender === cleanNo || sender.toLowerCase() === cleanNo.toLowerCase())) return true;
+
+                        return false;
+                    });
+                    if (found) return found;
+                }
+
+                if (idx !== undefined && idx !== null && idx >= 0 && allDatabaseRecords[idx]) {
+                    return allDatabaseRecords[idx];
+                }
             }
 
-            // 2. Match by index
-            if (idx !== undefined && idx !== null && idx >= 0 && allDatabaseRecords[idx]) {
-                return allDatabaseRecords[idx];
+            if (window.currentModalReceiptData) {
+                const rNo = (window.currentModalReceiptData.receipt_no || window.currentModalReceiptData.group_data?.receipt_no || '').trim();
+                const normRNo = rNo.toUpperCase().replace(/\s+/g, '');
+                if (rNo === cleanNo || (normClean && normRNo && normRNo === normClean)) return window.currentModalReceiptData;
             }
+            if (window.currentGmmCachedItem) {
+                const rNo = (window.currentGmmCachedItem.receipt_no || window.currentGmmCachedItem.group_data?.receipt_no || '').trim();
+                const normRNo = rNo.toUpperCase().replace(/\s+/g, '');
+                if (rNo === cleanNo || (normClean && normRNo && normRNo === normClean)) return window.currentGmmCachedItem;
+            }
+
+            try {
+                const vault = getLocalVaultSnapshot();
+                if (vault && Array.isArray(vault.records)) {
+                    const found = vault.records.find(i => {
+                        if (!i) return false;
+                        const rNo = (i.receipt_no || i.group_data?.receipt_no || i.customer?.receipt_no || '').trim();
+                        const normRNo = rNo.toUpperCase().replace(/\s+/g, '').replace('🛂', '');
+                        return rNo === cleanNo || (normClean && normRNo && normRNo === normClean);
+                    });
+                    if (found) return found;
+                }
+            } catch(e) {}
 
             return null;
         }
@@ -10567,6 +10603,21 @@ input[type="date"] {
                     if (isNewInp) isNewInp.value = '0';
                     window.currentGmmIsNewInvoice = false;
                     
+                    // Un-blacklist this invoice number from local deleted IDs if present
+                    try {
+                        const delKey = 'autorent_deleted_invoice_ids';
+                        let localDelList = JSON.parse(localStorage.getItem(delKey) || '[]');
+                        if (localDelList.length > 0 && savedNo) {
+                            const normSaved = String(savedNo).trim().toUpperCase();
+                            const cleanSaved = normSaved.replace(/\s+/g, '');
+                            localDelList = localDelList.filter(x => {
+                                const ux = String(x).trim().toUpperCase();
+                                return ux !== normSaved && ux !== cleanSaved;
+                            });
+                            localStorage.setItem(delKey, JSON.stringify(localDelList));
+                        }
+                    } catch(e) {}
+
                     // Immediate Booking Auto-Link & Update with robust fallback
                     try {
                         let bookings = getBookings();
@@ -10953,8 +11004,19 @@ input[type="date"] {
            ========================================================================== */
         function openReceiptModal(rNoEnc, idx) {
             if (typeof invalidateReceiptCache === 'function') invalidateReceiptCache();
-            const item = getItemByRef(rNoEnc, idx);
+            let item = getItemByRef(rNoEnc, idx);
             if (!item) {
+                if (typeof loadDatabaseRecords === 'function') {
+                    loadDatabaseRecords(() => {
+                        const retryItem = getItemByRef(rNoEnc, idx);
+                        if (retryItem) {
+                            openReceiptModal(rNoEnc, idx);
+                        } else {
+                            alert('⚠️ មិនអាចស្វែងរកទិន្នន័យវិក្កយបត្រនេះបានទេ!');
+                        }
+                    });
+                    return;
+                }
                 alert('⚠️ មិនអាចស្វែងរកទិន្នន័យវិក្កយបត្រនេះបានទេ!');
                 return;
             }
@@ -13554,27 +13616,6 @@ document.addEventListener('paste', function(e) {
 
         // Auto-resolve or validate invoice number from allDatabaseRecords
         let effInvoiceNo = (b.invoiceNo || '').trim();
-        if (effInvoiceNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords) && allDatabaseRecords.length > 0) {
-            const bIdStr = String(b.id || '').trim().toLowerCase();
-            const bCustName = String(b.customerName || '').trim().toLowerCase();
-            const matchedRec = allDatabaseRecords.find(r => {
-                if (!r) return false;
-                const rNo = (r.receipt_no || r.receiptNo || r.group_data?.receipt_no || r.customer?.receipt_no || '').trim().toLowerCase();
-                if (rNo !== effInvoiceNo.toLowerCase()) return false;
-                const rBId = String(r.booking_id || r.group_data?.booking_id || '').trim().toLowerCase();
-                if (rBId && bIdStr && rBId === bIdStr) return true;
-                const rCat = String(r.service_category || r.group_info?.service_category || '').toLowerCase();
-                const rCust = String(r.customer_name || r.sender || r.sender_name || r.group_info?.sender_name || '').toLowerCase();
-                const isCar = rCat === 'car' || rCat === 'line' || (!rCat && isCarRecord(r));
-                const nameMatches = Boolean(bCustName && rCust && (rCust.includes(bCustName) || bCustName.includes(rCust)));
-                return isCar && nameMatches;
-            });
-            if (!matchedRec) {
-                effInvoiceNo = '';
-                b.invoiceNo = '';
-                b.invoiceDone = false;
-            }
-        }
         if (!effInvoiceNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords) && allDatabaseRecords.length > 0) {
             const bIdStr = String(b.id || '').trim().toLowerCase();
             const matchedRec = allDatabaseRecords.find(r => {
@@ -15733,7 +15774,13 @@ document.addEventListener('paste', function(e) {
             event.stopPropagation();
             event.preventDefault();
         }
-        const cleanNo = decodeURIComponent(rNoEnc || '').trim();
+        let cleanNo = decodeURIComponent(rNoEnc || '').trim();
+        if (!cleanNo || cleanNo === 'None' || cleanNo === 'null') {
+            const bookings = (typeof getBookings === 'function') ? getBookings() : [];
+            const b = bookings.find(x => String(x.id).trim().toLowerCase() === String(bookingId || '').trim().toLowerCase());
+            if (b && b.invoiceNo) cleanNo = b.invoiceNo.trim();
+        }
+
         if (!cleanNo || cleanNo === 'None' || cleanNo === 'null') {
             if (typeof showToast === 'function') {
                 showToast('⚠️ ការកក់នេះមិនទាន់មានវិក្កយបត្រដើម្បី Share ទេ!', false);
@@ -15745,11 +15792,11 @@ document.addEventListener('paste', function(e) {
             showToast(`⏳ កំពុងរៀបចំ Share វិក្កយបត្រ ${cleanNo}...`, true);
         }
 
-        // Ensure database records are loaded
-        if (typeof allDatabaseRecords === 'undefined' || !Array.isArray(allDatabaseRecords) || allDatabaseRecords.length === 0) {
-            if (typeof loadDatabaseRecords === 'function') {
-                await new Promise(resolve => loadDatabaseRecords(resolve));
-            }
+        // Ensure item is available; if not, wait for server database load
+        let item = (typeof getItemByRef === 'function') ? getItemByRef(encodeURIComponent(cleanNo)) : null;
+        if (!item && typeof loadDatabaseRecords === 'function') {
+            await new Promise(resolve => loadDatabaseRecords(resolve));
+            item = getItemByRef(encodeURIComponent(cleanNo));
         }
 
         // Open modal & trigger 1-click share
@@ -16764,43 +16811,23 @@ document.addEventListener('paste', function(e) {
         let effectiveInvNo = (b.invoiceNo || '').trim();
         let genuineInvoice = null;
 
-        if (effectiveInvNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) {
+        if (typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords) && allDatabaseRecords.length > 0) {
             const bIdStr = String(b.id || '').trim().toLowerCase();
-            const bCustName = String(b.customerName || '').trim().toLowerCase();
+            const normInv = effectiveInvNo.toLowerCase().replace(/\s+/g, '');
             genuineInvoice = allDatabaseRecords.find(r => {
                 if (!r) return false;
-                const rNo = (r.receipt_no || r.receiptNo || r.group_data?.receipt_no || r.customer?.receipt_no || '').trim().toLowerCase();
-                if (rNo !== effectiveInvNo.toLowerCase()) return false;
                 const rBId = String(r.booking_id || r.group_data?.booking_id || '').trim().toLowerCase();
                 if (rBId && bIdStr && rBId === bIdStr) return true;
-                const rCat = String(r.service_category || r.group_info?.service_category || '').toLowerCase();
-                const rCust = String(r.customer_name || r.sender || r.sender_name || r.group_info?.sender_name || '').toLowerCase();
-                const isCar = rCat === 'car' || rCat === 'line' || (!rCat && isCarRecord(r));
-                const nameMatches = Boolean(bCustName && rCust && (rCust.includes(bCustName) || bCustName.includes(rCust)));
-                return isCar && nameMatches;
-            });
-            // If the invoiceNo was a dummy or belongs to a different record, reset it!
-            if (!genuineInvoice) {
-                effectiveInvNo = '';
-                b.invoiceNo = '';
-                b.invoiceDone = false;
-            }
-        }
-
-        if (!effectiveInvNo && typeof allDatabaseRecords !== 'undefined' && Array.isArray(allDatabaseRecords)) {
-            const bIdStr = String(b.id || '').trim().toLowerCase();
-            const matchedRec = allDatabaseRecords.find(r => {
-                if (!r) return false;
-                const rBId = String(r.booking_id || r.group_data?.booking_id || '').trim().toLowerCase();
-                return Boolean(rBId && bIdStr && rBId === bIdStr);
-            });
-            if (matchedRec) {
-                genuineInvoice = matchedRec;
-                effectiveInvNo = (matchedRec.receipt_no || matchedRec.receiptNo || matchedRec.group_data?.receipt_no || '').trim();
-                if (effectiveInvNo) {
-                    b.invoiceNo = effectiveInvNo;
-                    b.invoiceDone = true;
+                if (normInv) {
+                    const rNo = (r.receipt_no || r.receiptNo || r.group_data?.receipt_no || r.customer?.receipt_no || '').trim().toLowerCase().replace(/\s+/g, '');
+                    if (rNo && rNo === normInv) return true;
                 }
+                return false;
+            });
+            if (genuineInvoice) {
+                effectiveInvNo = (genuineInvoice.receipt_no || genuineInvoice.receiptNo || genuineInvoice.group_data?.receipt_no || effectiveInvNo).trim();
+                b.invoiceNo = effectiveInvNo;
+                b.invoiceDone = true;
             }
         }
 
